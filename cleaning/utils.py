@@ -1,4 +1,4 @@
-def get_input_types(df, target_field=""):
+def get_input_types(df, field_types={}, target_field=""):
     """
     Credit: https://github.com/minimaxir/automl-gs/
 
@@ -8,6 +8,8 @@ def get_input_types(df, target_field=""):
     
     Inputs:
         df -- A pandas DataFrame.
+        field_types -- A dictionary defining the column name as the key and the data type of that column,
+                       possible values are: 'datetime', 'numeric', 'text', 'categorical'
         target_field -- string indicating the target field, default empty string to allow for unsupervised learning.
     Returns:
         [Dictionary] -- A dict of {field_name: type} mappings.
@@ -20,7 +22,10 @@ def get_input_types(df, target_field=""):
     field_types = OrderedDict()
 
     for field in fields:
-       
+        if field in col_types:
+            field_types[field] = col_types[field]
+            continue
+
         field_type = df[field].dtype
         num_unique_values = df[field].nunique()
         if field_type == 'object':
