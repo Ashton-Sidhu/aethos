@@ -41,9 +41,11 @@ class CleanUtil(CleanBase):
 
             field_type = self.df[field].dtype
             num_unique_values = self.df[field].nunique()
+
             if field_type == 'object':
                 avg_spaces = self.df[field].str.count(' ').mean()
-
+            
+            # CHECK DATA TYPES FOR CATEGORIZATION            
             # Automatically ignore `id`-related fields
             if any(word in field.lower() for word in id_field_substrings):
                 self.field_types[field] = 'ignore'
@@ -56,11 +58,12 @@ class CleanUtil(CleanBase):
             elif field_type == 'float64':
                 self.field_types[field] = 'numeric'
 
-            # If it's an object where the contents has
-            # many spaces on average, it's text
+            # TODO: Figure out a better way to identify text that is not categorical
+            # If it's an object where the content has many spaces on average, it's text
             elif field_type == 'object' and avg_spaces >= 2.0:
                 self.field_types[field] = 'text'
 
+            # TODO: Figure out a better way to identify text that is categorical
             # If the field has very few distinct values, it's categorical
             elif  self.field_types == 'object' and avg_spaces < 2.0:
                 self.field_types[field] = 'categorical'
@@ -68,15 +71,20 @@ class CleanUtil(CleanBase):
             # If the field has many distinct integers, assume numeric.
             elif field_type == 'int64':
                 self.field_types[field] = 'numeric'
-
-            # If the field has many distinct nonintegers, it's not helpful.
-            elif num_unique_values > 0.9 * nrows:
-                self.field_types[field] = 'ignore'
-
-            # The rest (e.g. bool) is categorical
+            
             else:
                 self.field_types[field] = 'categorical'
+            
+            # CHECK DATA CHARACTERISTIC FOR CATEGORIZATION
+            # If the field has many distinct nonintegers, it's not helpful.
+            if num_unique_values > 0.9 * nrows and field_type == 'object':
+                self.field_types[field] = 'ignore'
 
+            # If the field has only 1 unique value, it does not tell us anything
+            if num_unique_values == 1:
+                self.field_types[field] = 'ignore'          
+        
+        # TODO: Log the categorization down as a report.
         # Print to console for user-level debugging
         print("Modeling with field specifications:")
         print("\n".join(["{}: {}".format(k, v) for k, v in self.field_types.items() if k != target_field]))
