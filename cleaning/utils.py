@@ -1,93 +1,111 @@
-def get_input_types(df, field_types={}, target_field=""):
-    """
-    Credit: https://github.com/minimaxir/automl-gs/
+import re
 
-    Get the input types for each field in the DataFrame that corresponds
-    to an input type to be fed into the model.
-    Valid values are ['text', 'categorical', 'numeric', 'datetime', 'ignore']
+import pandas as pd
+
+
+class CleanBase():
     
-    Inputs:
-        df -- A pandas DataFrame.
-        field_types -- A dictionary defining the column name as the key and the data type of that column,
-                       possible values are: 'datetime', 'numeric', 'text', 'categorical'
-        target_field -- string indicating the target field, default empty string to allow for unsupervised learning.
-    Returns:
-        [Dictionary] -- A dict of {field_name: type} mappings.
-    """
+    def __init__(self, data):
+        self.field_types = {}
+        self.df = data 
 
-    fields = df.columns
-    nrows = df.shape[0]
-    avg_spaces = -1
+class CleanUtil(CleanBase):
 
-    field_types = OrderedDict()
+    def GetInputTypes(self, custom_cols={}, target_field=""):
+        """
+        Credit: https://github.com/minimaxir/automl-gs/
 
-    for field in fields:
-        if field in col_types:
-            field_types[field] = col_types[field]
-            continue
+        Get the input types for each field in the DataFrame that corresponds
+        to an input type to be fed into the model.
+        Valid values are ['text', 'categorical', 'numeric', 'datetime', 'ignore']
+        
+        Inputs:            
+            custom_cols -- A dictionary defining the column name as the key and the data type of that column,
+                        possible values are: 'datetime', 'numeric', 'text', 'categorical'
+            target_field -- string indicating the target field, default empty string to allow for unsupervised learning
+        """
 
-        field_type = df[field].dtype
-        num_unique_values = df[field].nunique()
-        if field_type == 'object':
-            avg_spaces = df[field].str.count(' ').mean()
+        #TODO: Improve this detection function overall and to detect numeric categorical data
 
-        # Automatically ignore `id`-related fields
-        if field.lower() in ['id', 'uuid', 'guid', 'pk', 'name']:
-            field_types[field] = 'ignore'
+        fields = self.df.columns
+        nrows = self.df.shape[0]
+        avg_spaces = -1
+        id_field_substrings = ['id', 'uuid', 'guid', 'pk', 'name']
 
-        # Datetime is a straightforward data type.
-        elif field_type == 'datetime64[ns]':
-            field_types[field] = 'datetime'
+        for field in fields:
+            if field in custom_cols:
+                self.field_types[field] = custom_cols[field]
+                continue
 
-        # Assume a float is always numeric.
-        elif field_type == 'float64':
-            field_types[field] = 'numeric'
+            field_type = self.df[field].dtype
+            num_unique_values = self.df[field].nunique()
+            if field_type == 'object':
+                avg_spaces = self.df[field].str.count(' ').mean()
 
-        # If it's an object where the contents has
-        # many spaces on average, it's text
-        elif field_type == 'object' and avg_spaces >= 2.0:
-            field_types[field] = 'text'
+            # Automatically ignore `id`-related fields
+            if any(word in field.lower() for word in id_field_substrings):
+                self.field_types[field] = 'ignore'
 
-        # If the field has very few distinct values, it's categorical
-        elif  field_types == 'object' and avg_spaces < 2.0:
-            field_types[field] = 'categorical'
+            # Datetime is a straightforward data type.
+            elif field_type == 'datetime64[ns]':
+                self.field_types[field] = 'datetime'
 
-        # If the field has many distinct integers, assume numeric.
-        elif field_type == 'int64':
-            field_types[field] = 'numeric'
+            # Assume a float is always numeric.
+            elif field_type == 'float64':
+                self.field_types[field] = 'numeric'
 
-        # If the field has many distinct nonintegers, it's not helpful.
-        elif num_unique_values > 0.9 * nrows:
-            field_types[field] = 'ignore'
+            # If it's an object where the contents has
+            # many spaces on average, it's text
+            elif field_type == 'object' and avg_spaces >= 2.0:
+                self.field_types[field] = 'text'
 
-        # The rest (e.g. bool) is categorical
-        else:
-            field_types[field] = 'categorical'
+            # If the field has very few distinct values, it's categorical
+            elif  self.field_types == 'object' and avg_spaces < 2.0:
+                self.field_types[field] = 'categorical'
 
-    # Print to console for user-level debugging
-    print("Modeling with field specifications:")
-    print("\n".join(["{}: {}".format(k, v) for k, v in field_types.items() if k != target_field]))
+            # If the field has many distinct integers, assume numeric.
+            elif field_type == 'int64':
+                self.field_types[field] = 'numeric'
 
-    field_types = {k: v for k, v in field_types.items() if v != 'ignore'}
+            # If the field has many distinct nonintegers, it's not helpful.
+            elif num_unique_values > 0.9 * nrows:
+                self.field_types[field] = 'ignore'
 
-    return field_types
+            # The rest (e.g. bool) is categorical
+            else:
+                self.field_types[field] = 'categorical'
+
+        # Print to console for user-level debugging
+        print("Modeling with field specifications:")
+        print("\n".join(["{}: {}".format(k, v) for k, v in self.field_types.items() if k != target_field]))
+
+        self.field_types = {k: v for k, v in self.field_types.items() if v != 'ignore'}
 
 
-def normalize_col_names(input_types):
-    """
-    Credit: https://github.com/minimaxir/automl-gs/
+    def NormalizeColNames(self):
+        """
+        Utility function that fixes unusual column names (e.g. Caps, Spaces)
+        to make them suitable printing into code templates.        
+        """
+        new_column_names = {}
+        pattern = re.compile('\W+')
 
-    Fixes unusual column names (e.g. Caps, Spaces)
-    to make them suitable printing into code templates.
+        for name in self.df.columns:
+            new_column_names[name] = re.sub(pattern, '_', name.lower())          
 
-    Inputs:
-        input_types -- dict of col names: input types
-    Returns:
-        Dictionary -- A dict of col names: input types with normalized keys
-    """
+        self.df.rename(index=str, columns=new_column_names, inplace=True)
 
-    pattern = re.compile('\W+')
-    fields = [(re.sub(pattern, '_', field.lower()), field, field_type)
-                   for field, field_type in input_types.items()]
+    def ReduceData(self):
+        """
+        Utility function that selects a subset of the data that has been categorized as a column worth feature engineering on.
+        """
+        self.df = self.df[list(self.field_types.keys())]
 
-    return fields
+    def CheckMissingData(self):
+        """
+        Utility function that checks if the data has any missing values.
+                
+        Returns:
+            [Boolean] -- True if the data is missing values, False o/w.
+        """
+        return self.df.isnull().values.any()
