@@ -11,6 +11,8 @@ class CleanBase():
 
 class CleanUtil(CleanBase):
 
+    self.colMapping = {}
+
     def GetInputTypes(self, custom_cols={}, target_field=""):
         """
         Credit: https://github.com/minimaxir/automl-gs/
@@ -91,8 +93,10 @@ class CleanUtil(CleanBase):
         pattern = re.compile('\W+')
 
         for name in self.df.columns:
-            new_column_names[name] = re.sub(pattern, '_', name.lower())          
+            new_column_names[name] = re.sub(pattern, '_', name.lower())
 
+                  
+        self.colMapping = new_column_names
         self.df.rename(index=str, columns=new_column_names, inplace=True)
 
     def ReduceData(self):

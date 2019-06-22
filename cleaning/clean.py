@@ -16,18 +16,3 @@ class Clean(CleanUtil):
 
     def GenerateCode(self):
         return
-
-
-#For testing
-def main():
-    df = pd.read_csv("./datasets/train.csv")
-
-    clean = Clean(df)
-    clean.NormalizeColNames()
-    clean.GetInputTypes()
-    clean.ReduceData()
-    print(clean.df.head())
-
-
-if __name__ == "__main__":
-    main()
