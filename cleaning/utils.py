@@ -27,7 +27,7 @@ class CleanUtil(CleanBase):
             target_field -- string indicating the target field, default empty string to allow for unsupervised learning
         """
 
-        #TODO: Improve this detection function overall and to detect numeric categorical data
+        #TODO: Improve this detection function and to detect numeric categorical data
 
         fields = self.df.columns
         nrows = self.df.shape[0]
