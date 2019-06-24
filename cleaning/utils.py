@@ -84,7 +84,7 @@ class CleanUtil(CleanBase):
             if num_unique_values == 1:
                 self.field_types[field] = 'ignore'          
         
-        # TODO: Log the categorization down as a report.
+        # TODO: Log the input type classification as a report.
         # Print to console for user-level debugging
         print("Modeling with field specifications:")
         print("\n".join(["{}: {}".format(k, v) for k, v in self.field_types.items() if k != target_field]))
