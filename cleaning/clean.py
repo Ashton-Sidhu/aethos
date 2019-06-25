@@ -1,9 +1,10 @@
 import pandas as pd
 
+from numeric import *
 from utils import *
 
 
-class Clean(CleanUtil):
+class Clean(CleanUtil, CleanNumeric):
 
     def __init__(self, data):
         CleanBase.__init__(self, data)
