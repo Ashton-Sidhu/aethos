@@ -43,8 +43,7 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
 
 #### Phase 4
   - [ ]	Spark
-  - [ ]	Community centric optimization
-    	Making it easier to share techniques and models with other engineers.
+  - [ ]	Community centric optimization (making it easier to share techniques and models with other engineers).
     
 #### Phase 5
   - [ ]	Cloud computing
