@@ -28,27 +28,27 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
 
 ## Development Timeline
 #### Phase 1
-  []	UI framework
-  []	Data Processing techniques
-  []	Code Generation
-  []	Reporting V1
+  - [ ]	UI framework
+  - [ ]	Data Processing techniques
+  - [ ]	Code Generation
+  - [ ]	Reporting V1
 
 #### Phase 2
-  []	Data visualizations
-  []	Models and Evaluation
-  []	Reporting V2
+  - [ ]	Data visualizations
+  - [ ]	Models and Evaluation
+  - [ ]	Reporting V2
 
 #### Phase 3
-  [] Parallelization
+  - [ ] Parallelization
 
 #### Phase 4
-  []	Spark
-  []	Community centric optimization
+  - [ ]	Spark
+  - [ ]	Community centric optimization
     	Making it easier to share techniques and models with other engineers.
     
 #### Phase 5
-  []	Cloud computing
-  []	Deep learning integration
+  - [ ]	Cloud computing
+  - [ ]	Deep learning integration
 
 These are subject to change.
 
