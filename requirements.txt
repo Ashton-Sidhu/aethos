@@ -1,1 +1,2 @@
 pandas==0.23.3
+pandas_validation==0.5.0

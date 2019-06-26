@@ -121,3 +121,12 @@ class CleanUtil(CleanBase):
             [Boolean] -- True if the data is missing values, False o/w.
         """
         return self.df.isnull().values.any()
+
+    def GetKeysByValues(self, dict_of_elements, value):
+        """Utility function that returns the list of keys whos value matches a criteria
+        
+        Arguments:
+            dict {Dictionary} -- Dictionary of key value mapping
+            value {any} -- Value you want to return keys of
+        """
+        return [key for (key, value) in dict_of_elements.items() if value == value]
