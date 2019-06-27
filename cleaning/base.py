@@ -1,5 +1,3 @@
-import pandas as pd
-
 from data.data import Data
 
 
