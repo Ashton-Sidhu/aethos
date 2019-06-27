@@ -66,7 +66,7 @@ class CleanUtil(CleanBase):
             # TODO: Figure out a better way to identify text that is categorical
             # If the field has very few distinct values, it's categorical
             elif  self.field_types == 'object' and avg_spaces < 2.0:
-                self.field_types[field] = 'categorical'
+                self.field_types[field] = 'str_categorical'
 
             # If the field has many distinct integers, assume numeric.
             elif field_type == 'int64':
@@ -130,3 +130,27 @@ class CleanUtil(CleanBase):
             value {any} -- Value you want to return keys of
         """
         return [key for (key, value) in dict_of_elements.items() if value == value]
+
+    def GetListOfCols(self, custom_cols, override, column_type):
+        """Utility function to get the list of columns based off their column type (numeric, str_categorical, num_categorical, text, etc.).
+        If `custom_cols` is provided and override is True, then `custom_cols` will only be returned. If override is False then the filtered columns
+        and the custom columns provided will be returned.
+        
+        Arguments:
+            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
+            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
+                                  Example: if custom_cols is provided and override is true, the technique will only be applied
+                                  to the the columns in custom_cols
+            column_type {string} -- Type of the column - can be categorical, numeric, text or datetime
+        
+        Returns:
+            [list] -- list of columns matching the column_type criteria plus any custom columns specified or
+                      just the columns specified in custom_cols if override is True
+        """
+        
+        if override:
+            list_of_cols = custom_cols
+        else:
+            list_of_cols = set(custom_cols + self.GetKeysByValues(self.field_types, column_type))
+
+        return list_of_cols

@@ -17,13 +17,10 @@ class CleanNumeric(CleanUtil):
             custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
                                   Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols                        
+                                  to the the columns in custom_cols (default: {False})                       
         """
 
-        if override:
-            list_of_cols = custom_cols
-        else:
-            list_of_cols = set(custom_cols + self.GetKeysByValues(self.field_types, "numeric"))
+        list_of_cols = self.GetListOfCols(custom_cols, override, "numeric")
 
         for col in list_of_cols:
             self.df[col].fillna(self.df[col].mean()[0], inplace=True)
@@ -37,13 +34,10 @@ class CleanNumeric(CleanUtil):
             custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
                                   Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols                        
+                                  to the the columns in custom_cols (default: {False})                       
         """
 
-        if override:
-            list_of_cols = custom_cols
-        else:
-            list_of_cols = set(custom_cols + self.GetKeysByValues(self.field_types, "numeric"))
+        list_of_cols = self.GetListOfCols(custom_cols, override, "numeric")
 
         for col in list_of_cols:
             self.df[col].fillna(self.df[col].median()[0], inplace=True)
@@ -57,17 +51,15 @@ class CleanNumeric(CleanUtil):
             custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
                                   Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols         
+                                  to the the columns in custom_cols (default: {False})      
         """
-        if override:
-            list_of_cols = custom_cols
-        else:
-            list_of_cols = set(custom_cols + self.GetKeysByValues(self.field_types, "numeric"))
+
+         list_of_cols = self.GetListOfCols(custom_cols, override, "numeric")
        
         for col in list_of_cols:
             self.df[col].fillna(self.df[col].mode()[0], inplace=True)
 
-    def ReplaceMissingConstant(self, constant=0, override=False, custom_cols=[]):
+    def ReplaceMissingConstant(self, constant=0, custom_cols=[] override=False):
         """Replaces missing values in every numeric column with a constant.
         
         Keyword Arguments:
@@ -75,12 +67,10 @@ class CleanNumeric(CleanUtil):
             custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
                                   Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols
+                                  to the the columns in custom_cols (default: {False})
         """
-        if override:
-            list_of_cols = custom_cols
-        else:
-            list_of_cols = set(custom_cols + self.GetKeysByValues(self.field_types, "numeric"))
+
+        list_of_cols = self.GetListOfCols(custom_cols, override, "numeric")
 
         for col in list_of_cols:
             self.df[col].fillna(constant, inplace=True)
