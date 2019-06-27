@@ -62,8 +62,21 @@ class CleanCategorical(CleanUtil):
         
 
     def ReplaceMissingRemoveRow(self, custom_cols=[], override=False):
-        return
+        """Remove rows where the value of a column for those rows is missing.
+        
+        Keyword Arguments:
+            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
+            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
+                                  Example: if custom_cols is provided and override is true, the technique will only be applied
+                                  to the the columns in custom_cols (default: {False})
+        """
+        
+        list_of_cols = self.GetListOfCols(custom_cols, override, "categorical")
 
+        for col in list_of_cols:
+            self.df[pd.notnull(self.df[col])]
+
+        
     def _DetermineDefaultCategory(self, col, replacement_categories):
         """A utility function to help determine the default category name for a column that has missing
         categorical values. It takes in a list of possible values and if any the first value in the list
