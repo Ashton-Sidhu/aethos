@@ -114,23 +114,32 @@ class Data():
     def ReduceData(self, df):
         """
         Utility function that selects a subset of the data that has been categorized as a column worth feature engineering on.
+
+        Arguments:
+            df {Dataframe} -- Dataframe of the data
+        
+        Returns:
+            [Dataframe] -- Subset of the dataframe
         """
         return df[list(self.field_types.keys())]
 
     
-    def StandardizeData(self, df, custom_cols):
-        """Standarizes the properties of the dataset, 
+    def StandardizeData(self, df, custom_cols={}):
+        """Standarizes the properties of the dataset: column names and removes unimportant columns.
+        Initializes the types of each column (categorical, numeric, etc.)
         
         Arguments:
-            df {[type]} -- [description]
-            custom_cols {[type]} -- [description]
+            df {Dataframe} -- Dataframe of the data
+        
+        Keyword Arguments:
+            custom_cols {dict} -- Mapping of column name to a column type (numeric, str_categorical, num_categorical, text, etc.)  (default: {{}})
         
         Returns:
-            [type] -- [description]
+            [Dataframe] -- Standardized version of the dataframe
         """
 
         df = self.NormalizeColNames(df)
-        self.GetInputTypes(df)
+        self.GetInputTypes(df, custom_cols)
         df = self.ReduceData(df)
         self.standardized = True
 
