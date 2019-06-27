@@ -1,9 +1,10 @@
 import pandas as pd
 
-from utils import *
+from base import CleanBase
+from data.util import GetListOfCols
 
 
-class CleanNumeric(CleanUtil):
+class CleanNumeric(CleanBase):
 
     #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
     #TODO: Add data validation on the custom_cols argument to make sure it is float or int
@@ -20,7 +21,7 @@ class CleanNumeric(CleanUtil):
                                   to the the columns in custom_cols (default: {False})                       
         """
 
-        list_of_cols = self.GetListOfCols(custom_cols, override, "numeric")
+        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
 
         for col in list_of_cols:
             self.df[col].fillna(self.df[col].mean()[0], inplace=True)
@@ -37,7 +38,7 @@ class CleanNumeric(CleanUtil):
                                   to the the columns in custom_cols (default: {False})                       
         """
 
-        list_of_cols = self.GetListOfCols(custom_cols, override, "numeric")
+        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
 
         for col in list_of_cols:
             self.df[col].fillna(self.df[col].median()[0], inplace=True)
@@ -54,7 +55,7 @@ class CleanNumeric(CleanUtil):
                                   to the the columns in custom_cols (default: {False})      
         """
 
-         list_of_cols = self.GetListOfCols(custom_cols, override, "numeric")
+         list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
        
         for col in list_of_cols:
             self.df[col].fillna(self.df[col].mode()[0], inplace=True)
@@ -70,7 +71,7 @@ class CleanNumeric(CleanUtil):
                                   to the the columns in custom_cols (default: {False})
         """
 
-        list_of_cols = self.GetListOfCols(custom_cols, override, "numeric")
+        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
 
         for col in list_of_cols:
             self.df[col].fillna(constant, inplace=True)

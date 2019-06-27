@@ -3,17 +3,16 @@ import re
 import pandas as pd
 
 
-class CleanBase():
-    
-    def __init__(self, data):
+class Data():    
+
+    def __init__(self, data, target_field):
+
+        self.orig_data = data
         self.field_types = {}
-        self.df = data 
+        self.colMapping = {}
+        self.target_field = target_field
 
-class CleanUtil(CleanBase):
-
-    self.colMapping = {}
-
-    def GetInputTypes(self, custom_cols={}, target_field=""):
+    def GetInputTypes(self, df, custom_cols={}):
         """
         Credit: https://github.com/minimaxir/automl-gs/
 
@@ -21,16 +20,16 @@ class CleanUtil(CleanBase):
         to an input type to be fed into the model.
         Valid values are ['text', 'categorical', 'numeric', 'datetime', 'ignore']
         
-        Inputs:            
-            custom_cols -- A dictionary defining the column name as the key and the data type of that column,
+        Arguemnts:
+            df {Dataframe} -- Dataframe of the data            
+            custom_cols {list} -- A dictionary defining the column name as the key and the data type of that column,
                         possible values are: 'datetime', 'numeric', 'text', 'categorical'
-            target_field -- string indicating the target field, default empty string to allow for unsupervised learning
         """
 
         #TODO: Improve this detection function and to detect numeric categorical data
 
-        fields = self.df.columns
-        nrows = self.df.shape[0]
+        fields = df.columns
+        nrows = df.shape[0]
         avg_spaces = -1
         id_field_substrings = ['id', 'uuid', 'guid', 'pk', 'name']
 
@@ -39,11 +38,11 @@ class CleanUtil(CleanBase):
                 self.field_types[field] = custom_cols[field]
                 continue
 
-            field_type = self.df[field].dtype
-            num_unique_values = self.df[field].nunique()
+            field_type = df[field].dtype
+            num_unique_values = df[field].nunique()
 
             if field_type == 'object':
-                avg_spaces = self.df[field].str.count(' ').mean()
+                avg_spaces = df[field].str.count(' ').mean()
             
             # CHECK DATA TYPES FOR CATEGORIZATION            
             # Automatically ignore `id`-related fields
@@ -87,70 +86,52 @@ class CleanUtil(CleanBase):
         # TODO: Log the input type classification as a report.
         # Print to console for user-level debugging
         print("Modeling with field specifications:")
-        print("\n".join(["{}: {}".format(k, v) for k, v in self.field_types.items() if k != target_field]))
+        print("\n".join(["{}: {}".format(k, v) for k, v in self.field_types.items() if k != self.target_field]))
 
         self.field_types = {k: v for k, v in self.field_types.items() if v != 'ignore'}
 
 
-    def NormalizeColNames(self):
+    def NormalizeColNames(self, df):
         """
         Utility function that fixes unusual column names (e.g. Caps, Spaces)
-        to make them suitable printing into code templates.        
+        to make them suitable printing into code templates.
+
+        Arguemnts:
+            df {Dataframe} -- Dataframe of the data
+
+        Returns:
+            [Dataframe] -- Dataframe whos column names have been normalized.       
         """
         new_column_names = {}
         pattern = re.compile('\W+')
 
-        for name in self.df.columns:
+        for name in df.columns:
             new_column_names[name] = re.sub(pattern, '_', name.lower())
-
                   
         self.colMapping = new_column_names
-        self.df.rename(index=str, columns=new_column_names, inplace=True)
+        return df.rename(index=str, columns=new_column_names, inplace=True)
 
-    def ReduceData(self):
+    def ReduceData(self, df):
         """
         Utility function that selects a subset of the data that has been categorized as a column worth feature engineering on.
         """
-        self.df = self.df[list(self.field_types.keys())]
+        return df[list(self.field_types.keys())]
 
-    def CheckMissingData(self):
-        """
-        Utility function that checks if the data has any missing values.
-                
-        Returns:
-            [Boolean] -- True if the data is missing values, False o/w.
-        """
-        return self.df.isnull().values.any()
-
-    def GetKeysByValues(self, dict_of_elements, value):
-        """Utility function that returns the list of keys whos value matches a criteria
+    
+    def StandardizeData(self, df, custom_cols):
+        """Standarizes the properties of the dataset, 
         
         Arguments:
-            dict {Dictionary} -- Dictionary of key value mapping
-            value {any} -- Value you want to return keys of
-        """
-        return [key for (key, value) in dict_of_elements.items() if value == value]
-
-    def GetListOfCols(self, custom_cols, override, column_type):
-        """Utility function to get the list of columns based off their column type (numeric, str_categorical, num_categorical, text, etc.).
-        If `custom_cols` is provided and override is True, then `custom_cols` will only be returned. If override is False then the filtered columns
-        and the custom columns provided will be returned.
-        
-        Arguments:
-            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
-            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
-                                  Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols
-            column_type {string} -- Type of the column - can be categorical, numeric, text or datetime
+            df {[type]} -- [description]
+            custom_cols {[type]} -- [description]
         
         Returns:
-            [list] -- list of columns matching the column_type criteria plus any custom columns specified or
-                      just the columns specified in custom_cols if override is True
+            [type] -- [description]
         """
-        
-        if override:
-            list_of_cols = custom_cols
-        else:
-            list_of_cols = set(custom_cols + self.GetKeysByValues(self.field_types, column_type))
 
-        return list_of_cols
+        df = self.NormalizeColNames(df)
+        self.GetInputTypes(df)
+        df = self.ReduceData(df)
+        self.standardized = True
+
+        return df

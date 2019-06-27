@@ -1,9 +1,10 @@
 import pandas as pd
 
-from utils import *
+from base import CleanBase
+from data.util import GetListOfCols
 
 
-class CleanCategorical(CleanUtil):
+class CleanCategorical(CleanBase):
 
     #TODO: Implement KNN, and replacing with most common category 
 
@@ -32,15 +33,15 @@ class CleanCategorical(CleanUtil):
 
         if new_category_name is None:
 
-            list_of_cols = self.GetListOfCols(custom_cols, override, "categorical")
+            list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "categorical")
             
             for col in list_of_cols:
                 #If column is categorical string, replace NaNs with default string category from str_missing_categories
-                if self.field_types[col] is "str_categorical":
+                if self.data_properties.field_types[col] is "str_categorical":
                     #Determine default missing category for string
                     new_category_name = self._DetermineDefaultCategory(col, str_missing_categories)
 
-                if self.field_types[col] is "num_categorical":
+                if self.data_properties.field_types[col] is "num_categorical":
                     #Determine default missing category for numeric columns
                     new_category_name = self._DetermineDefaultCategory(col, num_missing_categories)
 
@@ -49,13 +50,13 @@ class CleanCategorical(CleanUtil):
         else:
 
             if isinstance(new_category_name, (int, float)):
-                list_of_cols = self.GetListOfCols(custom_cols, override, "num_categorical")
+                list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "num_categorical")
                 
                 for col in list_of_cols:
                     self.df[col].fillna(new_category_name, inplace=True)
 
             if isinstance(new_category_name, str):
-                list_of_cols = self.GetListOfCols(custom_cols, override, "str_categorical")
+                list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "str_categorical")
                 
                 for col in list_of_cols:
                     self.df[col].fillna(new_category_name, inplace=True)
@@ -71,7 +72,7 @@ class CleanCategorical(CleanUtil):
                                   to the the columns in custom_cols (default: {False})
         """
         
-        list_of_cols = self.GetListOfCols(custom_cols, override, "categorical")
+        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "categorical")
 
         for col in list_of_cols:
             self.df[pd.notnull(self.df[col])]

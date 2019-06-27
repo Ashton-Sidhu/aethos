@@ -1,13 +1,14 @@
 import pandas as pd
 
-from numeric import *
-from utils import *
+from categorical import CleanCategorical
+from numeric import CleanNumeric
+from text import CleanText
 
 
-class Clean(CleanUtil, CleanNumeric):
+class Clean(CleanNumeric, CleanCategorical, CleanText):
 
-    def __init__(self, data):
-        CleanBase.__init__(self, data)
+    def __init__(self, data, target_field=""):
+        CleanBase.__init__(self, data, target_field)
 
     def RemoveColumns(self, threshold):
         """Remove columns from the dataframe that have more than the threshold value of missing columns.
