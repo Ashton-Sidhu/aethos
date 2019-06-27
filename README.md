@@ -9,7 +9,7 @@
 - [Development Timeline](#development-timeline)
 - [Feedback](#feedback)
 - [Contributors](#contributors)
-- [Sponsors](#sponsors-)
+- [Sponsors](#sponsors)
 - [Acknowledgments](#acknowledgments)
 - [Developers](#for-developers)
 
