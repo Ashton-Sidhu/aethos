@@ -9,8 +9,7 @@
 - [Development Timeline](#development-timeline)
 - [Feedback](#feedback)
 - [Contributors](#contributors)
-- [Build Process](#build-process)
-- [Sponsors](#sponsors-)
+- [Sponsors](#sponsors)
 - [Acknowledgments](#acknowledgments)
 - [Developers](#for-developers)
 
@@ -30,6 +29,8 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
 #### Phase 1
   - [ ]	UI framework
   - [ ]	Data Processing techniques
+    - [x] Data Cleaning V1
+    - [ ] Feature Engineering V1
   - [ ]	Code Generation
   - [ ]	Reporting V1
 
@@ -52,6 +53,8 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
 These are subject to change.
 
 ## Feedback
+
+I appreciate any feedback so if you have any feature requests or issues make an issue with the appropriate tag or futhermore, send me an email at ashton.sidhu1994@gmail.com
 
 ## Contributors
 
