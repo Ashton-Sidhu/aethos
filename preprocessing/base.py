@@ -1,7 +1,7 @@
 from data.data import Data
 
 
-class PreprocessingBase():
+class PreprocessBase():
 
     def __init__(self, data_properties, data, target_field):
 

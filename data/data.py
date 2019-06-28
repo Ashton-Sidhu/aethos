@@ -1,6 +1,7 @@
 import re
 
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 class Data():    
@@ -11,6 +12,8 @@ class Data():
         self.field_types = {}
         self.colMapping = {}
         self.target_field = target_field
+        self.train_data = None
+        self.test_data = None
 
     def GetInputTypes(self, df, custom_cols={}):
         """
@@ -144,3 +147,7 @@ class Data():
         self.standardized = True
 
         return df
+
+    def SplitData(self, split_percentage):
+
+        self.train, self.test = train_test_split(df, test_size=split_percentage)
