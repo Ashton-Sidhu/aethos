@@ -27,7 +27,7 @@ class CleanCategorical(CleanBase):
         str_missing_categories = ["Other", "MissingDataCategory"]
         num_missing_categories = [-1, -999, -9999]
 
-        if isinstance(new_category_name, (None, str, int, float):
+        if isinstance(new_category_name, (None, str, int, float)):
             print("Replace category is an invadlid type.")
             return
 

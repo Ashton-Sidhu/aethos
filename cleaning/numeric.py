@@ -56,12 +56,12 @@ class CleanNumeric(CleanBase):
                                   to the the columns in custom_cols (default: {False})      
         """
 
-         list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
+        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
        
         for col in list_of_cols:
             self.df[col].fillna(self.df[col].mode()[0], inplace=True)
 
-    def ReplaceMissingConstant(self, constant=0, custom_cols=[] override=False):
+    def ReplaceMissingConstant(self, constant=0, custom_cols=[], override=False):
         """Replaces missing values in every numeric column with a constant.
         
         Keyword Arguments:
