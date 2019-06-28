@@ -14,6 +14,7 @@ class Data():
         self.target_field = target_field
         self.train_data = None
         self.test_data = None
+        self.use_full_dataset = False
 
     def GetInputTypes(self, df, custom_cols={}):
         """
@@ -150,4 +151,4 @@ class Data():
 
     def SplitData(self, split_percentage):
 
-        self.train, self.test = train_test_split(df, test_size=split_percentage)
+        self.train_data, self.test_data = train_test_split(df, test_size=split_percentage)

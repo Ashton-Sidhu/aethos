@@ -8,6 +8,7 @@ class CleanNumeric(CleanBase):
 
     #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
     #TODO: Add data validation on the custom_cols argument to make sure it is float or int
+    #TODO: Add self.use_full_dataset condition to imputer values based off training set to prevent data leakage
 
     def ReplaceMissingMean(self, custom_cols=[], override=False):
         """Replaces missing values in every numeric column with the mean of that column.
