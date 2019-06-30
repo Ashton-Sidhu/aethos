@@ -110,3 +110,5 @@ class CleanNumeric(CleanBase):
 
         for col in list_of_cols:
             self.df[col].fillna(constant, inplace=True)
+            self.data_properties.train_data[col].fillna(constant, inplace=True)
+            self.data_properties.test_data[col].fillna(constant, inplace=True)
