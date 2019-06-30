@@ -1,7 +1,7 @@
 from sklearn.preprocessing import MinMaxScaler
 
 from base import PreprocessBase
-from data.util import GetListOfCols
+from data.util import DropAndReplaceColumns, GetListOfCols
 
 
 class PreprocessNumeric(PreprocessBase):
@@ -18,16 +18,16 @@ class PreprocessNumeric(PreprocessBase):
         """
         scaler = MinMaxScaler()
         list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
-        
+        train_data = self.data_properties.train_data
+        test_data = self.data_properties.test_data
+
         if self.data_properties.use_full_dataset:
             scaled_data = scaler.fit_transform(self.df[list_of_cols])
-            self.df.drop(self.df[list_of_cols], inplace=True)
-            self.df.concat(scaled_data, axis=1, inplace=True)
+            self.df = DropAndReplaceColumns(self.df, list_of_cols, scaled_data)
+        
         else:
-            scaled_train_data = scaler.fit_transform(self.data_properties.train_data)
-            self.data_properties.train_data(self.data_properties.train_data[list_of_cols], inplace=True)
-            self.data_properties.train_data.concat(scaled_train_data, axis=1, inplace=True)
+            scaled_train_data = scaler.fit_transform(train_data)
+            self.data_properties.train_data = DropAndReplaceColumns(train_data, list_of_cols, scaled_train_data)
 
             scaled_test_data = scaler.transform(self.data_properties.test_data)
-            self.data_properties.test_data(self.data_properties.test_data[list_of_cols], inplace=True)
-            self.data_properties.test_data.concat(scaled_test_data, axis=1, inplace=True)
+            self.data_properties.test_data = DropAndReplaceColumns(test_data, list_of_cols, scaled_test_data)
