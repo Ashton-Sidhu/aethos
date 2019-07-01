@@ -51,8 +51,8 @@ def GetListOfCols(custom_cols, dict_of_values, override, column_type):
 
     return list_of_cols
 
-def DropAndReplaceColumns(df, drop_cols, new_cols):
+def DropAndReplaceColumns(df, drop_cols, new_data):
 
     df.drop(df[list_of_cols], inplace=True)
-    df.concat(new_cols, axis=1, inplace=True)
+    df.concat(new_data, axis=1, inplace=True)
     return df
