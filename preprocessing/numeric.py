@@ -17,7 +17,7 @@ class PreprocessNumeric(PreprocessBase):
                                   to the the columns in custom_cols (default: {False})
         """
         scaler = MinMaxScaler()
-        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
+        list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, override, custom_cols)
         train_data = self.data_properties.train_data
         test_data = self.data_properties.test_data
 

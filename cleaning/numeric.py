@@ -106,7 +106,7 @@ class CleanNumeric(CleanBase):
                                   to the the columns in custom_cols (default: {False})
         """
 
-        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
+        list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
 
         for col in list_of_cols:
             self.df[col].fillna(constant, inplace=True)

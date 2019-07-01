@@ -9,9 +9,17 @@ from data.util import DropAndReplaceColumns, GetListOfCols
 class FeatureText(FeatureBase):
 
     def FeatureBagOfWords(self, custom_cols=[], override=False):
+        """Creates a matrix of how many times a word appears in a document.
+        
+        Keyword Arguments:
+            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
+            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
+                                  Example: if custom_cols is provided and override is true, the technique will only be applied
+                                  to the the columns in custom_cols (default: {False})
+        """
 
         enc = CountVectorizer()
-        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "text")
+        list_of_cols = GetListOfCols("text", self.data_properties.field_types, override, custom_cols)
         train_data = self.data_properties.train_data
         test_data = self.data_properties.test_data
 
@@ -33,9 +41,17 @@ class FeatureText(FeatureBase):
 
     
     def FeatureTFIDF(self, custom_cols=[], override=False):
+        """Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
+        
+        Keyword Arguments:
+            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
+            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
+                                  Example: if custom_cols is provided and override is true, the technique will only be applied
+                                  to the the columns in custom_cols (default: {False})
+        """
 
         enc = TfidfTransformer()
-        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "text")
+        list_of_cols = GetListOfCols("text", self.data_properties.field_types, override, custom_cols)
         train_data = self.data_properties.train_data
         test_data = self.data_properties.test_data
 

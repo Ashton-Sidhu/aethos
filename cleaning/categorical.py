@@ -33,7 +33,7 @@ class CleanCategorical(CleanBase):
 
         if new_category_name is None:
 
-            list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "categorical")
+            list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, custom_cols, override)
             
             for col in list_of_cols:
                 #If column is categorical string, replace NaNs with default string category from str_missing_categories
@@ -50,13 +50,13 @@ class CleanCategorical(CleanBase):
         else:
 
             if isinstance(new_category_name, (int, float)):
-                list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "num_categorical")
+                list_of_cols = GetListOfCols("num_categorical", self.data_properties.field_types, custom_cols, override)
                 
                 for col in list_of_cols:
                     self.df[col].fillna(new_category_name, inplace=True)
 
             if isinstance(new_category_name, str):
-                list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "str_categorical")
+                list_of_cols = GetListOfCols("str_categorical", self.data_properties.field_types, custom_cols, override)
                 
                 for col in list_of_cols:
                     self.df[col].fillna(new_category_name, inplace=True)

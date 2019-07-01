@@ -150,5 +150,11 @@ class Data():
         return df
 
     def SplitData(self, split_percentage):
+        """Function that splits the data into a training and testing set. Split percentage is passed in through
+        the split_percentage variable.
+
+        Arguments:
+            split_percentage {[float]} -- The % of data that you want in your test set, 1-split_percentage is the percentage of data in the traning set.
+        """
 
         self.train_data, self.test_data = train_test_split(df, test_size=split_percentage)

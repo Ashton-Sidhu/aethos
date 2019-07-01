@@ -8,9 +8,19 @@ from data.util import DropAndReplaceColumns, GetListOfCols
 class FeatureCategorical(FeatureBase):
 
     def FeatureOneHotEncode(self, handle_unknown='ignore', custom_cols=[], override=False):
+        """[summary]
+        
+        Keyword Arguments:
+            handle_unknown {str} -- Parameter to pass into OneHotEncoder constructor to specify how to deal with values
+            it has not seen before. (default: {'ignore'})
+            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
+            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
+                                  Example: if custom_cols is provided and override is true, the technique will only be applied
+                                  to the the columns in custom_cols (default: {False})
+        """
 
         enc = OneHotEncoder(handle_unknown=handle_unknown)
-        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "categorical")
+        list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, override, custom_cols)
         train_data = self.data_properties.train_data
         test_data = self.data_properties.test_data
 
