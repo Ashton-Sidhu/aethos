@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 class Data():    
 
-    def __init__(self, data, target_field):
+    def __init__(self, data, target_field=""):
 
         self.orig_data = data
         self.field_types = {}
@@ -80,7 +80,7 @@ class Data():
             
             # CHECK DATA CHARACTERISTIC FOR CATEGORIZATION
             # If the field has many distinct nonintegers, it's not helpful.
-            if num_unique_values > 0.9 * nrows and field_type == 'object':
+            if num_unique_values > 0.9 * nrows and field_type == 'object' and avg_spaces < 2.0:
                 self.field_types[field] = 'ignore'
 
             # If the field has only 1 unique value, it does not tell us anything
@@ -113,7 +113,7 @@ class Data():
             new_column_names[name] = re.sub(pattern, '_', name.lower())
                   
         self.colMapping = new_column_names
-        return df.rename(index=str, columns=new_column_names, inplace=True)
+        return df.rename(index=str, columns=new_column_names)
 
     def ReduceData(self, df):
         """
@@ -149,11 +149,12 @@ class Data():
 
         return df
 
-    def SplitData(self, split_percentage):
+    def SplitData(self, df, split_percentage):
         """Function that splits the data into a training and testing set. Split percentage is passed in through
         the split_percentage variable.
 
         Arguments:
+            df {[DataFrame]} -- Full dataset you want to split.
             split_percentage {[float]} -- The % of data that you want in your test set, 1-split_percentage is the percentage of data in the traning set.
         """
 

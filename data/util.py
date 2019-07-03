@@ -1,3 +1,5 @@
+import collections
+
 import pandas as pd
 
 
@@ -13,18 +15,18 @@ def CheckMissingData(df):
         """
         return df.isnull().values.any()
 
-def GetKeysByValues(dict_of_elements, value):
+def GetKeysByValues(dict_of_elements, item):
     """Utility function that returns the list of keys whos value matches a criteria defined
     by the param `value`.
     
     Arguments:
         dict {Dictionary} -- Dictionary of key value mapping
-        value {any} -- Value you want to return keys of
+        item {any} -- Value you want to return keys of
 
     Returns:
         [list] -- List of keys whos value matches the criteria defined by the param `value`
     """
-    return [key for (key, value) in dict_of_elements.items() if value == value]
+    return [key for (key, value) in dict_of_elements.items() if value == item]
 
 def GetListOfCols(column_type, dict_of_values, override, custom_cols):
     """Utility function to get the list of columns based off their column type (numeric, str_categorical, num_categorical, text, etc.).
@@ -47,9 +49,9 @@ def GetListOfCols(column_type, dict_of_values, override, custom_cols):
     if override:
         list_of_cols = custom_cols
     else:
-        list_of_cols = set(custom_cols + GetKeysByValues(dict_of_values, column_type))
+        list_of_cols = collections.OrderedDict.fromkeys(GetKeysByValues(dict_of_values, column_type) + custom_cols).keys()
 
-    return list_of_cols
+    return list(list_of_cols)
 
 def DropAndReplaceColumns(df, drop_cols, new_data):
     """Utility function that drops a column that has been processed and replaces it with the new columns that have been derived from it.
@@ -63,6 +65,6 @@ def DropAndReplaceColumns(df, drop_cols, new_data):
         [Dataframe] -- Dataframe with the dropped column and the new data added
     """
 
-    df.drop(df[list_of_cols], inplace=True)
-    df.concat(new_data, axis=1, inplace=True)
+    df = df.drop(drop_cols, axis=1)
+    df = pd.concat([df, new_data], axis=1)
     return df
