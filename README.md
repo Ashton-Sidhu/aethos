@@ -30,7 +30,7 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
   - [ ]	UI framework
   - [ ]	Data Processing techniques
     - [x] Data Cleaning V1
-    - [ ] Feature Engineering V1
+    - [x] Feature Engineering V1
   - [ ]	Code Generation
   - [ ]	Reporting V1
 
