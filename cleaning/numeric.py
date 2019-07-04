@@ -1,114 +1,125 @@
+'''
+This file contains the following methods:
+
+ReplaceMissingMMM
+ReplaceMissingConstant
+'''
+
 import pandas as pd
 from sklearn.impute import SimpleImputer
 
-from base import CleanBase
-from data.util import GetListOfCols
+from data.util import DropAndReplaceColumns
 
+#TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
+#TODO: Add conditional validation based off list_of_cols, data, train_data and test_data input
 
-class CleanNumeric(CleanBase):
+def ReplaceMissingMMM(strategy, list_of_cols=None, data=None, train_data=None, test_data=None):
+    """Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
 
-    #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
-    #TODO: Add data validation on the custom_cols argument to make sure it is float or int
+    Mean: Average value of the column. Effected by outliers.
+    Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
+    Mode: Most common number in a list of numbers.
+    
+    Keyword Arguments:
+        strategy {boolean} -- Can be either "mean", "median" or "most_frequent"
+        list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {None})
+        data {int or float} -- Numeric value to replace all missing values with (default: {0})
+        train_data {int or float} -- Numeric value to replace all missing values with (default: {0})
+        test_data {int or float} -- Numeric value to replace all missing values with (default: {0})
 
-    def ReplaceMissingMean(self, custom_cols=[], override=False):
-        """Replaces missing values in every numeric column with the mean of that column.
+    Returns:
+        [DataFrame, DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+        of both are returned.              
+    """
 
-        Mean: Average value of the column. Effected by outliers.
+    if not _FunctionInputValidation(list_of_cols, data, train_data, test_data):
+        return "Function input is incorrectly provided."
+
+    list_of_cols = _FunctionInputConditions(list_of_cols, data, train_data, test_data)
+    imp = SimpleImputer(strategy=strategy)
+    
+    if data is not None:                
+        fit_data = imp.fit_transform(data[list_of_cols])
+        fit_df = pd.DataFrame(fit_data, columns=list_of_cols)
+        data = DropAndReplaceColumns(data, list_of_cols, fit_df)
+
+        return data, None
+    else:
+        fit_train_data = imp.fit_transform(train_data[list_of_cols])
+        fit_train_df = pd.DataFrame(fit_data, columns=list_of_cols)            
+        train_data = DropAndReplaceColumns(train_data, list_of_cols, fit_train_df)
         
-        Keyword Arguments:
-            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
-            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
-                                  Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols (default: {False})                       
-        """
+        fit_test_data = imp.transform(test_data[list_of_cols])
+        fit_test_df = pd.DataFrame(fit_test_data, columns=list_of_cols)      
+        test_data = DropAndReplaceColumns(test_data, list_of_cols, fit_test_df)
 
+        return train_data, test_data
+
+def ReplaceMissingConstant(constant=0, list_of_cols=[], data=None, train_data=None, test_data=None):
+    """Replaces missing values in every numeric column with a constant.
+    
+    Keyword Arguments:
+        list_of_cols {list} -- A list of specific columns to apply this technique to.        
+        constant {int or float} -- Numeric value to replace all missing values with (default: {0})
+        data {int or float} -- Numeric value to replace all missing values with (default: None)
+        train_data {int or float} -- Numeric value to replace all missing values with (default: None)
+        test_data {int or float} -- Numeric value to replace all missing values with (default: None)
+
+     Returns:
+        [DataFrame, DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+        of both are returned.     
+    """
+
+    if not _FunctionInputValidation(list_of_cols, data, train_data, test_data):
+        return "Function input is incorrectly provided."
+
+    list_of_cols = _FunctionInputConditions(list_of_cols, data, train_data, test_data)
+
+    if data is not None:   
+        fit_data = data[list_of_cols].fillna(constant)
+        fit_df = pd.DataFrame(fit_data, columns=list_of_cols)             
+        data = DropAndReplaceColumns(data, list_of_cols, fit_df)
+
+        return data, None
+    else:
+        fit_train_data = train_data[list_of_cols].fillna(constant)
+        fit_train_df = pd.DataFrame(fit_data, columns=list_of_cols)        
+        train_data = DropAndReplaceColumns(train_data, list_of_cols, fit_train_df)
         
-        imp_mean = SimpleImputer(strategy='mean')
-        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
-        train_data = self.data_properties.train_data
-        test_data = self.data_properties.test_data
+        fit_test_data = test_data[list_of_cols].fillna(constant)
+        fit_test_df = pd.DataFrame(fit_test_data, columns=list_of_cols)       
+        test_data = DropAndReplaceColumns(test_data, list_of_cols, fit_test_df)
 
-        for col in cols:
-            if self.data_properties.use_full_dataset:                
-                fit_data = imp_mean.fit_transform(self.df[list_of_cols])
-                self.df = DropAndReplaceColumns(self.df, list_of_cols, fit_data)
-            else:
-                fit_train_data = imp_mean.fit_transform(train_data)
-                self.data_properties.train_data = DropAndReplaceColumns(train_data, list_of_cols, fit_train_data)
-                
-                fit_test_data = imp_mean.transform(test_data)
-                self.data_properties.test_data = DropAndReplaceColumns(test_data, list_of_cols, fit_test_data)
+        return train_data, test_data
 
-    def ReplaceMissingMedian(self, custom_cols=[], override=False):
-        """Replaces missing values in every numeric column with the median of that column.
+def _FunctionInputValidation(list_of_cols, data, train_data, test_data):
+    """
+    Helper function to help determine if input is valid.
+    """
 
-        Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
-        
-        Keyword Arguments:
-            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
-            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
-                                  Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols (default: {False})                       
-        """
+    if data is not None and (train_data is not None or test_data is not None):
+        return False
 
-        imp_median = SimpleImputer(strategy='median')
-        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
-        train_data = self.data_properties.train_data
-        test_data = self.data_properties.test_data
+    if train_data is not None and test_data is None:
+        return False
 
-        for col in cols:
-            if self.data_properties.use_full_dataset:                
-                fit_data = imp_median.fit_transform(self.df[list_of_cols])
-                self.df = DropAndReplaceColumns(self.df, list_of_cols, fit_data)
-            else:
-                fit_train_data = imp_median.fit_transform(train_data)
-                self.data_properties.train_data = DropAndReplaceColumns(train_data, list_of_cols, fit_train_data)
-                
-                fit_test_data = imp_median.transform(test_data)
-                self.data_properties.test_data = DropAndReplaceColumns(test_data, list_of_cols, fit_test_data)
+    if test_data is not None and train_data is None:
+        return False
 
-    def ReplaceMissingMode(self, custom_cols=[], override=False):
-        """Replaces missing values in every numeric column with the mode of that column
+    return True
 
-        Mode: Most common number in a list of numbers.
-        
-        Keyword Arguments:
-            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
-            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
-                                  Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols (default: {False})      
-        """
 
-        imp_mode = SimpleImputer(strategy='most_frequent')
-        list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
-        train_data = self.data_properties.train_data
-        test_data = self.data_properties.test_data
+def _FunctionInputConditions(list_of_cols, data, train_data, test_data):
+    """
+    Helper function to help set variable values of numeric cleaning method functions.
+    """
 
-        for col in cols:
-            if self.data_properties.use_full_dataset:                
-                fit_data = imp_mode.fit_transform(self.df[list_of_cols])
-                self.df = DropAndReplaceColumns(self.df, list_of_cols, fit_data)
-            else:
-                fit_train_data = imp_mode.fit_transform(train_data)
-                self.data_properties.train_data = DropAndReplaceColumns(train_data, list_of_cols, fit_train_data)
-                
-                fit_test_data = imp_mode.transform(test_data)
-                self.data_properties.test_data = DropAndReplaceColumns(test_data, list_of_cols, fit_test_data)
+    if list_of_cols:
+        list_of_cols = list_of_cols
+    else:
+        if data is not None:
+            list_of_cols = data.columns.tolist()
+        else:
+            list_of_cols = train_data.columns.tolist()
 
-    def ReplaceMissingConstant(self, constant=0, custom_cols=[], override=False):
-        """Replaces missing values in every numeric column with a constant.
-        
-        Keyword Arguments:
-            constant {int or float} -- Numeric value to replace all missing values with (default: {0})
-            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
-            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
-                                  Example: if custom_cols is provided and override is true, the technique will only be applied
-                                  to the the columns in custom_cols (default: {False})
-        """
-
-        list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
-
-        for col in list_of_cols:
-            self.df[col].fillna(constant, inplace=True)
-            self.data_properties.train_data[col].fillna(constant, inplace=True)
-            self.data_properties.test_data[col].fillna(constant, inplace=True)
+    return list_of_cols
