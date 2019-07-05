@@ -1,5 +1,6 @@
 import collections
 
+import numpy as np
 import pandas as pd
 
 
@@ -68,3 +69,37 @@ def DropAndReplaceColumns(df, drop_cols, new_data):
     df = df.drop(drop_cols, axis=1)
     df = pd.concat([df, new_data], axis=1)
     return df
+
+def _FunctionInputValidation(data, train_data, test_data):
+    """
+    Helper function to help determine if input is valid.
+    """
+
+    if data is None and (train_data is None or test_data is None):
+        return False
+
+    if data is not None and (train_data is not None or test_data is not None):
+        return False
+
+    if train_data is not None and test_data is None:
+        return False
+
+    if test_data is not None and train_data is None:
+        return False
+
+    return True
+
+def _NumericFunctionInputConditions(list_of_cols, data, train_data, test_data):
+    """
+    Helper function to help set variable values of numeric cleaning method functions.
+    """
+
+    if list_of_cols:
+        list_of_cols = list_of_cols
+    else:
+        if data is not None:
+            list_of_cols = data.select_dtypes([np.number]).columns.tolist()
+        else:
+            list_of_cols = train_data.select_dtypes([np.number]).columns.tolist()
+
+    return list_of_cols

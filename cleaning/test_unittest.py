@@ -39,9 +39,9 @@ class TestCleaning(unittest.TestCase):
         self.assertListEqual(validate, np.array([(1, 0, 0)]).tolist())
 
     def test_cleannumeric_mean(self):
-        int_missing_data = np.array([(1, 0, 2),
-                                 (0, None, 1),
-                                 (None, None, None)])
+        int_missing_data = [[1, 0, 2],
+                            [0, np.nan, 1],
+                            [np.nan, np.nan, np.nan]]
 
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
@@ -49,14 +49,14 @@ class TestCleaning(unittest.TestCase):
         clean_data = ReplaceMissingMeanMedianMode("mean", data=data)
         validate = clean_data.values.tolist()
 
-        self.assertListEqual(validate, np.array([(1, 0, 2),
-                                                (0, 0, 1),
-                                                (0.5, 0, 1.5)]).tolist())
+        self.assertListEqual(validate, [[1, 0, 2],
+                                        [0, 0, 1],
+                                        [0.5, 0, 1.5]])
 
     def test_cleannumeric_median(self):
-        int_missing_data = np.array([(1, 0, 2),
-                                 (0, None, 1),
-                                 (None, None, None)])
+        int_missing_data = [[1, 0, 2],
+                            [0, np.nan, 1],
+                            [np.nan, np.nan, np.nan]]
 
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
@@ -64,9 +64,9 @@ class TestCleaning(unittest.TestCase):
         clean_data = ReplaceMissingMeanMedianMode("median", data=data)
         validate = clean_data.values.tolist()
 
-        self.assertListEqual(validate, np.array([(1, 0, 2),
-                                                (0, 0, 1),
-                                                (0.5, 0, 1.5)]).tolist())
+        self.assertListEqual(validate, [[1, 0, 2],
+                                        [0, 0, 1],
+                                        [0.5, 0, 1.5]])
 
     def test_cleannumeric_mostfrequent(self):
         int_missing_data = np.array([(1, 0, 2),

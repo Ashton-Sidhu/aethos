@@ -8,8 +8,7 @@ ReplaceMissingRemoveRow
 import numpy as np
 import pandas as pd
 
-from data.util import DropAndReplaceColumns
-from util import _FunctionInputValidation
+from data.util import DropAndReplaceColumns, _FunctionInputValidation
 
 #TODO: Implement KNN, and replacing with most common category 
 

@@ -9,12 +9,12 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 
 from categorical import ReplaceMissingNewCategory
-from data.util import DropAndReplaceColumns
-from util import _FunctionInputValidation
+from data.util import (DropAndReplaceColumns, _FunctionInputValidation,
+                       _NumericFunctionInputConditions)
 
 #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
 
-def ReplaceMissingMeanMedianMode(strategy, list_of_cols=None, data=None, train_data=None, test_data=None):
+def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], data=None, train_data=None, test_data=None):
     """Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
     Either data or train_data or test_data MUST be provided, not both.
 
@@ -24,7 +24,7 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=None, data=None, train_d
     
     Keyword Arguments:
         strategy {boolean} -- Can be either "mean", "median" or "most_frequent"
-        list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {None})
+        list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
         data {DataFrame} -- Full dataset (default: {None})
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
@@ -37,7 +37,7 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=None, data=None, train_d
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
-    list_of_cols = _FunctionInputConditions(list_of_cols, data, train_data, test_data)
+    list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data, test_data)
     imp = SimpleImputer(strategy=strategy)
     
     if data is not None:                
@@ -120,19 +120,3 @@ def ReplaceMissingConstant(constant=0, col_to_constant=None, data=None, train_da
             train_data, test_data = ReplaceMissingNewCategory(constant=constant, train_data=train_data, test_data=test_data)
 
             return train_data, test_data
-        
-
-def _FunctionInputConditions(list_of_cols, data, train_data, test_data):
-    """
-    Helper function to help set variable values of numeric cleaning method functions.
-    """
-
-    if list_of_cols:
-        list_of_cols = list_of_cols
-    else:
-        if data is not None:
-            list_of_cols = data.columns.tolist()
-        else:
-            list_of_cols = train_data.columns.tolist()
-
-    return list_of_cols
