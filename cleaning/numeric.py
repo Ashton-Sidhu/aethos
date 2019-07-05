@@ -8,14 +8,15 @@ ReplaceMissingConstant
 import pandas as pd
 from sklearn.impute import SimpleImputer
 
+from categorical import ReplaceMissingNewCategory
 from data.util import DropAndReplaceColumns
 from util import _FunctionInputValidation
 
 #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
-#TODO: Add conditional validation based off list_of_cols, data, train_data and test_data input
 
 def ReplaceMissingMeanMedianMode(strategy, list_of_cols=None, data=None, train_data=None, test_data=None):
     """Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
+    Either data or train_data or test_data MUST be provided, not both.
 
     Mean: Average value of the column. Effected by outliers.
     Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
@@ -24,12 +25,12 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=None, data=None, train_d
     Keyword Arguments:
         strategy {boolean} -- Can be either "mean", "median" or "most_frequent"
         list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {None})
-        data {int or float} -- Numeric value to replace all missing values with (default: {0})
-        train_data {int or float} -- Numeric value to replace all missing values with (default: {0})
-        test_data {int or float} -- Numeric value to replace all missing values with (default: {0})
+        data {DataFrame} -- Full dataset (default: {None})
+        train_data {DataFrame} -- Training dataset (default: {None})
+        test_data {DataFrame} -- Testing dataset (default: {None})
 
     Returns:
-        [DataFrame, DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
         of both are returned.              
     """
 
@@ -56,42 +57,70 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=None, data=None, train_d
 
         return train_data, test_data
 
-def ReplaceMissingConstant(constant=0, list_of_cols=[], data=None, train_data=None, test_data=None):
-    """Replaces missing values in every numeric column with a constant.
+def ReplaceMissingConstant(constant=0, col_to_constant=None, data=None, train_data=None, test_data=None):
+    """Replaces missing values in every numeric column with a constant. If `col_to_constant` is not provided,
+    all the missing values in the data will be replaced with `constant`
+
+    Either data or train_data or test_data MUST be provided, not both. 
+
+    The underlying function resides in `clean/categorical.py`
     
     Keyword Arguments:
-        list_of_cols {list} -- A list of specific columns to apply this technique to.        
-        constant {int or float} -- Numeric value to replace all missing values with (default: {0})
-        data {int or float} -- Numeric value to replace all missing values with (default: None)
-        train_data {int or float} -- Numeric value to replace all missing values with (default: None)
-        test_data {int or float} -- Numeric value to replace all missing values with (default: None)
+        col_to_constant {list} or {dict}  -- A list of specific columns to apply this technique to.        
+        constant {int or float} -- Numeric value to replace all missing values with (default: 0)
+        data {DataFrame} -- Full dataset (default: {None})
+        train_data {DataFrame} -- Training dataset (default: {None})
+        test_data {DataFrame} -- Testing dataset (default: {None})
 
      Returns:
-        [DataFrame, DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+        [DataFrame], DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
         of both are returned.     
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
-    list_of_cols = _FunctionInputConditions(list_of_cols, data, train_data, test_data)
+    if isinstance(col_to_constant, dict):
+        if data is not None:
 
-    if data is not None:   
-        fit_data = data[list_of_cols].fillna(constant)
-        fit_df = pd.DataFrame(fit_data, columns=list_of_cols)             
-        data = DropAndReplaceColumns(data, list_of_cols, fit_df)
+            data = ReplaceMissingNewCategory(col_to_constant, data=data)
 
-        return data
-    else:
-        fit_train_data = train_data[list_of_cols].fillna(constant)
-        fit_train_df = pd.DataFrame(fit_data, columns=list_of_cols)        
-        train_data = DropAndReplaceColumns(train_data, list_of_cols, fit_train_df)
+            return data
         
-        fit_test_data = test_data[list_of_cols].fillna(constant)
-        fit_test_df = pd.DataFrame(fit_test_data, columns=list_of_cols)       
-        test_data = DropAndReplaceColumns(test_data, list_of_cols, fit_test_df)
+        else:
 
-        return train_data, test_data
+            train_data, test_data = ReplaceMissingNewCategory(col_to_constant, train_data=train_data, test_data=test_data)
+
+            return train_data, test_data
+
+    elif isinstance(col_to_constant, list):
+
+        if data is not None:
+
+            data = ReplaceMissingNewCategory(col_to_constant, constant=constant, data=data)
+
+            return data
+        
+        else:
+
+            train_data, test_data = ReplaceMissingNewCategory(col_to_constant, constant=constant, train_data=train_data, test_data=test_data)
+
+            return train_data, test_data
+
+    else:
+
+        if data is not None:
+
+            data = ReplaceMissingNewCategory(constant=constant, data=data)
+
+            return data
+        
+        else:
+
+            train_data, test_data = ReplaceMissingNewCategory(constant=constant, train_data=train_data, test_data=test_data)
+
+            return train_data, test_data
+        
 
 def _FunctionInputConditions(list_of_cols, data, train_data, test_data):
     """

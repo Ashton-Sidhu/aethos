@@ -94,9 +94,9 @@ class TestCleaning(unittest.TestCase):
         clean_data = ReplaceMissingConstant(10.5, ["col1", "col3"], data=data)
         validate = clean_data.values.tolist()
 
-        self.assertListEqual(validate, np.array([(0, 1, 2),
-                                                (None, 1, 1),
-                                                (None, 10.5, 10.5)]).tolist())
+        self.assertListEqual(validate, np.array([(1, 0, 2),
+                                                (1, None, 1),
+                                                (10.5, None, 10.5)]).tolist())
 
     def test_cleancategorical_removerow(self):
 

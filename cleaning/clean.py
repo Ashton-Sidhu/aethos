@@ -12,7 +12,9 @@ class Clean():
 
     def RemoveColumns(self, threshold):
         """Remove columns from the dataframe that have more than the threshold value of missing columns.
-        Example: Remove columns where > 50% of the data is missing
+        Example: Remove columns where > 50% of the data is missing.
+
+        This function exists in clean/utils.py.
         
         Arguments:
             threshold {[float]} -- Value between 0 and 1 that describes what percentage of a column can be missing values.
@@ -22,7 +24,9 @@ class Clean():
 
     def RemoveRows(self, threshold):
         """Remove rows from the dataframe that have more than the threshold value of missing rows.
-        Example: Remove rows where > 50% of the data is missing
+        Example: Remove rows where > 50% of the data is missing.
+
+        This function exists in clean/utils.py.
         
         Arguments:
             threshold {[float]} -- Value between 0 and 1 that describes what percentage of a row can be missing values.
@@ -34,7 +38,9 @@ class Clean():
         """Replaces missing values in every numeric column with the mean of that column.
 
         Mean: Average value of the column. Effected by outliers.
-        
+
+        This function exists in `clean/numeric.py` as `ReplaceMissingMeanMedianMode`.
+       
         Keyword Arguments:
             custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
@@ -45,12 +51,14 @@ class Clean():
         
         list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
         
-        self.df = ReplaceMissingMMM(list_of_cols, "mean", self.df)
+        self.df = ReplaceMissingMeanMedianMode(list_of_cols, "mean", self.df)
 
     def ReplaceMissingMedian(self, custom_cols=[], override=False):
         """Replaces missing values in every numeric column with the median of that column.
 
         Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
+
+        This function exists in `clean/numeric.py` as `ReplaceMissingMeanMedianMode`.
         
         Keyword Arguments:
             custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
@@ -61,12 +69,14 @@ class Clean():
 
         list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
         
-        self.df = ReplaceMissingMMM(list_of_cols, "median", self.df)
+        self.df = ReplaceMissingMeanMedianMode(list_of_cols, "median", self.df)
 
     def ReplaceMissingMode(self, custom_cols=[], override=False):
         """Replaces missing values in every numeric column with the mode of that column
 
         Mode: Most common number in a list of numbers.
+
+        This function exists in `clean/numeric.py` as `ReplaceMissingMeanMedianMode`.
         
         Keyword Arguments:
             custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
@@ -77,10 +87,12 @@ class Clean():
 
         list_of_cols = GetListOfCols(custom_cols, self.data_properties.field_types, override, "numeric")
         
-        self.df = ReplaceMissingMMM(list_of_cols, "most_frequent", self.df)
+        self.df = ReplaceMissingMeanMedianMode(list_of_cols, "most_frequent", self.df)
 
     def ReplaceMissingConstant(self, constant=0, custom_cols=[], override=False):
         """Replaces missing values in every numeric column with a constant.
+
+        This function exists in `clean/numeric.py` as `ReplaceMissingConstant`.
         
         Keyword Arguments:
             constant {int or float} -- Numeric value to replace all missing values with (default: {0})
@@ -95,12 +107,13 @@ class Clean():
         self.df = ReplaceMissingConstant(constant, list_of_cols, self.df)
 
     def ReplaceMissingNewCategory(self, new_category_name=None, custom_cols=[], override=False):
-        """Replaces missing values in categorical column with its own category. The category name can be provided
-        through the `new_category_name` parameter or if a category name is not provided, this function will assign 
-        the name based off default categories.
+        """Replaces missing values in categorical column with its own category. The categories can be autochosen
+        from the defaults set.
 
         For numeric categorical columns default values are: -1, -999, -9999
-        For string categorical columns default values are: "Other", "MissingDataCategory"
+        For string categorical columns default values are: "Other", "Unknown", "MissingDataCategory"
+
+        This function exists in `clean/categorical.py` as `ReplaceMissingNewCategory`.
         
         Keyword Arguments:
             new_category_name {None, str, int, float} -- Category to replace missing values with (default: {None})
@@ -117,6 +130,8 @@ class Clean():
 
     def ReplaceMissingRemoveRow(cols_to_remove=[], override=False):
         """Remove rows where the value of a column for those rows is missing.
+
+        This function exists in `clean/categorical.py` as `ReplaceMissingRemoveRow`.
         
         Keyword Arguments:
             custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
