@@ -118,3 +118,6 @@ dmypy.json
 
 #test datasets
 datasets/
+
+#reports
+reports/
