@@ -1,7 +1,7 @@
 '''
 This file contains the following methods:
 
-ReplaceMissingMMM
+ReplaceMissingMeanMedianMode
 ReplaceMissingConstant
 '''
 
@@ -9,11 +9,12 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 
 from data.util import DropAndReplaceColumns
+from util import _FunctionInputValidation
 
 #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
 #TODO: Add conditional validation based off list_of_cols, data, train_data and test_data input
 
-def ReplaceMissingMMM(strategy, list_of_cols=None, data=None, train_data=None, test_data=None):
+def ReplaceMissingMeanMedianMode(strategy, list_of_cols=None, data=None, train_data=None, test_data=None):
     """Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
 
     Mean: Average value of the column. Effected by outliers.
@@ -32,7 +33,7 @@ def ReplaceMissingMMM(strategy, list_of_cols=None, data=None, train_data=None, t
         of both are returned.              
     """
 
-    if not _FunctionInputValidation(list_of_cols, data, train_data, test_data):
+    if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
     list_of_cols = _FunctionInputConditions(list_of_cols, data, train_data, test_data)
@@ -43,7 +44,7 @@ def ReplaceMissingMMM(strategy, list_of_cols=None, data=None, train_data=None, t
         fit_df = pd.DataFrame(fit_data, columns=list_of_cols)
         data = DropAndReplaceColumns(data, list_of_cols, fit_df)
 
-        return data, None
+        return data
     else:
         fit_train_data = imp.fit_transform(train_data[list_of_cols])
         fit_train_df = pd.DataFrame(fit_data, columns=list_of_cols)            
@@ -70,7 +71,7 @@ def ReplaceMissingConstant(constant=0, list_of_cols=[], data=None, train_data=No
         of both are returned.     
     """
 
-    if not _FunctionInputValidation(list_of_cols, data, train_data, test_data):
+    if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
     list_of_cols = _FunctionInputConditions(list_of_cols, data, train_data, test_data)
@@ -80,7 +81,7 @@ def ReplaceMissingConstant(constant=0, list_of_cols=[], data=None, train_data=No
         fit_df = pd.DataFrame(fit_data, columns=list_of_cols)             
         data = DropAndReplaceColumns(data, list_of_cols, fit_df)
 
-        return data, None
+        return data
     else:
         fit_train_data = train_data[list_of_cols].fillna(constant)
         fit_train_df = pd.DataFrame(fit_data, columns=list_of_cols)        
@@ -91,23 +92,6 @@ def ReplaceMissingConstant(constant=0, list_of_cols=[], data=None, train_data=No
         test_data = DropAndReplaceColumns(test_data, list_of_cols, fit_test_df)
 
         return train_data, test_data
-
-def _FunctionInputValidation(list_of_cols, data, train_data, test_data):
-    """
-    Helper function to help determine if input is valid.
-    """
-
-    if data is not None and (train_data is not None or test_data is not None):
-        return False
-
-    if train_data is not None and test_data is None:
-        return False
-
-    if test_data is not None and train_data is None:
-        return False
-
-    return True
-
 
 def _FunctionInputConditions(list_of_cols, data, train_data, test_data):
     """

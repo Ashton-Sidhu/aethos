@@ -1,5 +1,6 @@
 import pandas as pd
 
+from categorical import *
 from numeric import *
 from util import *
 
@@ -91,11 +92,42 @@ class Clean():
 
         list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
 
-        for col in list_of_cols:
-            self.df[col].fillna(constant, inplace=True)
-            self.data_properties.train_data[col].fillna(constant, inplace=True)
-            self.data_properties.test_data[col].fillna(constant, inplace=True)
+        self.df = ReplaceMissingConstant(constant, list_of_cols, self.df)
 
+    def ReplaceMissingNewCategory(self, new_category_name=None, custom_cols=[], override=False):
+        """Replaces missing values in categorical column with its own category. The category name can be provided
+        through the `new_category_name` parameter or if a category name is not provided, this function will assign 
+        the name based off default categories.
+
+        For numeric categorical columns default values are: -1, -999, -9999
+        For string categorical columns default values are: "Other", "MissingDataCategory"
+        
+        Keyword Arguments:
+            new_category_name {None, str, int, float} -- Category to replace missing values with (default: {None})
+            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
+            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
+                                    Example: if custom_cols is provided and override is true, the technique will only be applied
+                                    to the the columns in custom_cols (default: {False})
+        """
+        
+        list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
+
+        self.df = ReplaceMissingNewCategory(constant, list_of_cols, self.df)
+
+
+    def ReplaceMissingRemoveRow(cols_to_remove=[], override=False):
+        """Remove rows where the value of a column for those rows is missing.
+        
+        Keyword Arguments:
+            custom_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
+            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
+                                    Example: if custom_cols is provided and override is true, the technique will only be applied
+                                    to the the columns in custom_cols (default: {False})
+        """
+
+        list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
+
+        self.df = ReplaceMissingNewCategory(constant, list_of_cols, self.df)
 
     def GenerateCode(self):
         return
