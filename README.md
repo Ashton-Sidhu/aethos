@@ -6,7 +6,7 @@
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Development Timeline](#development-timeline)
+- [Development Phases](#development-timeline)
 - [Feedback](#feedback)
 - [Contributors](#contributors)
 - [Sponsors](#sponsors)
@@ -24,11 +24,22 @@ Py-automl provides you with the code for each technique that was ran on your dat
 It is Py-automls's goal that Data Scientists and Machine Learning Engineers will contribute the techniques they have used and that researchers will contribute with their code and paper so that everyone using the platform can apply the latest advancements and techniques in A.I. onto their dataset.
 
 ## Features
+- Python package that simplifies and automates cleaning, preprocessing, feature engineering, and modelling techniques.
+- Web application that allows you to use those same packages through a GUI
+- Report generation detailing exact steps how you transformed your dataset
+- If automating workflow through the GUI, the application will generate the code that was ran on your data.
+  - If you are doing a PoC or experimenting the code will output in a `.ipynb` and a `.py` format.
+  - While if the plan is to create a full pipeline the code will out a `.py` containing the full pipeline.
+- Model Evaluation
+- Spark Integration
+- Data visualizations
+- On prem deployment
+- 3rd Party application integration (Azure, AWS, GC)
 
-## Development Timeline
+## Development Phases
 #### Phase 1
   - [ ]	UI framework
-  - [ ]	Data Processing techniques
+  - [x]	Data Processing techniques
     - [x] Data Cleaning V1
     - [x] Feature Engineering V1
   - [ ]	Code Generation
