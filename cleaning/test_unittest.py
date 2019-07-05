@@ -197,10 +197,5 @@ class TestCleaning(unittest.TestCase):
                                         [1, "Other", 1],
                                         [-1, "Unknown", -1]])
 
-
-
-
-
-
 if __name__ == "__main__":
     unittest.main()

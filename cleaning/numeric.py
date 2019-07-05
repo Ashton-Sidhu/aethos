@@ -16,7 +16,10 @@ from data.util import (DropAndReplaceColumns, _FunctionInputValidation,
 
 def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], data=None, train_data=None, test_data=None):
     """Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
-    Either data or train_data or test_data MUST be provided, not both.
+
+    Either data or train_data or test_data MUST be provided, not both. 
+    
+    If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
 
     Mean: Average value of the column. Effected by outliers.
     Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
