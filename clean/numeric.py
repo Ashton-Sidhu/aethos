@@ -40,7 +40,7 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], data=None, train_dat
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
-    list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data, test_data)
+    list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data)
     imp = SimpleImputer(strategy=strategy)
     
     if data is not None:                
