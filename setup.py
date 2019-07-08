@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='py_automl',
-    url='https://github.com/Ashton-Sidhu/py-automl'
+    url='https://github.com/Ashton-Sidhu/py-automl',
     packages=find_packages(),
     author='Ashton Sidhu',
     author_email='ashton.sidhu1994@gmail.com',
