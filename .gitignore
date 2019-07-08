@@ -121,3 +121,6 @@ datasets/
 
 #reports
 reports/
+
+#github
+.github/
