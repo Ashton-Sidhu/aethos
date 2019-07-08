@@ -89,7 +89,7 @@ def _FunctionInputValidation(data, train_data, test_data):
 
     return True
 
-def _NumericFunctionInputConditions(list_of_cols, data, train_data, test_data):
+def _NumericFunctionInputConditions(list_of_cols, data, train_data)
     """
     Helper function to help set variable values of numeric cleaning method functions.
     """

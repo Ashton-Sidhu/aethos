@@ -1,7 +1,6 @@
 import re
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 
 class Data():    
@@ -113,6 +112,7 @@ class Data():
             new_column_names[name] = re.sub(pattern, '_', name.lower())
                   
         self.colMapping = new_column_names
+        
         return df.rename(index=str, columns=new_column_names)
 
     def ReduceData(self, df):
@@ -148,14 +148,3 @@ class Data():
         self.standardized = True
 
         return df
-
-    def SplitData(self, df, split_percentage):
-        """Function that splits the data into a training and testing set. Split percentage is passed in through
-        the split_percentage variable.
-
-        Arguments:
-            df {[DataFrame]} -- Full dataset you want to split.
-            split_percentage {[float]} -- The % of data that you want in your test set, 1-split_percentage is the percentage of data in the traning set.
-        """
-
-        self.train_data, self.test_data = train_test_split(df, test_size=split_percentage)
