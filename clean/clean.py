@@ -41,7 +41,7 @@ class Clean():
             of both are returned. 
         """
 
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = RemoveColumns(threshold, data=self.data)
 
             return self.data
@@ -68,7 +68,7 @@ class Clean():
             of both are returned. 
         """
 
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = RemoveRows(threshold, data=self.data)
 
             return self.data
@@ -95,7 +95,7 @@ class Clean():
         """
         #list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
 
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = ReplaceMissingMeanMedianMode("mean", list_of_cols, data=self.data)
 
             return self.data
@@ -124,7 +124,7 @@ class Clean():
 
         #list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
         
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = ReplaceMissingMeanMedianMode("median", list_of_cols, data=self.data)
 
             return self.data
@@ -153,7 +153,7 @@ class Clean():
 
         #list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, override, list_of_cols)
         
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = ReplaceMissingMeanMedianMode("most_frequent", list_of_cols, data=self.data)
 
             return self.data
@@ -182,7 +182,7 @@ class Clean():
 
         #list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
 
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = ReplaceMissingConstant(constant, col_to_constant, data=self.data)
 
             return self.data
@@ -215,7 +215,7 @@ class Clean():
         
         #list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, custom_cols, override)
 
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = ReplaceMissingNewCategory(col_to_category=col_to_category, constant=new_category, data=self.data)
 
             return self.data
@@ -243,7 +243,7 @@ class Clean():
 
         #list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, cols_to_remove, override)
 
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = ReplaceMissingRemoveRow(cols_to_remove, data=self.data)
 
             return self.data
