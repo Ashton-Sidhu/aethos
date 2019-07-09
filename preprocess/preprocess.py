@@ -9,7 +9,7 @@ from numeric import *
 class Preprocess():
 
     
-    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, target_field="", reporting=True):        
+    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", reporting=True):        
 
         if not _FunctionInputValidation(data, train_data, test_data):
             return "Please provide one of either data or train_data and test_data, not both."
@@ -18,6 +18,7 @@ class Preprocess():
 
         if data_properties is None:
             self.data_properties = Data(self.data)
+            self.data_properties.use_full_data = use_full_data
         else:
             self.data_properties = data_properties
 
@@ -43,7 +44,7 @@ class Preprocess():
             of both are returned. 
         """
 
-        if self.data is not None:
+        if self.data_properties.use_full_data:
             self.data = PreprocessNormalize(list_of_cols=list_of_cols, data=self.data)
             
             return self.data
