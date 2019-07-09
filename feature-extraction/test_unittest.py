@@ -12,7 +12,7 @@ class TestFeatureExtraction(unittest.TestCase):
         list_of_sentences = ['Hi my name is pyml',
                             'Hi name pyml']
 
-        feature = Feature(list_of_sentences)
+        feature = Feature(list_of_sentences, test_split_percentage=0.5, use_full_data=True)
         transform_data = feature.BagofWords()
         validate = transform_data.toarray().tolist()
 
@@ -24,7 +24,7 @@ class TestFeatureExtraction(unittest.TestCase):
         list_of_sentences = ['Hi my name is pyml',
                             'Hi name pyml']
 
-        feature = Feature(list_of_sentences)
+        feature = Feature(list_of_sentences, test_split_percentage=0.5, use_full_data=True)
         transform_data = feature.TFIDF(params={"lowercase": False})
         validate = transform_data.shape[1]
 
@@ -39,7 +39,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(data)
+        feature = Feature(data, test_split_percentage=0.5, use_full_data=True)
         transform_data = feature.OneHotEncode(["col1", "col3"], data=data)
         validate = transform_data.values.tolist()
 

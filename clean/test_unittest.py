@@ -18,7 +18,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean.RemoveColumns(0.5)
         validate = clean.data.columns.tolist()
 
@@ -32,7 +32,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean.RemoveRows(0.5)
         validate = clean.data.values.tolist()
 
@@ -46,7 +46,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingMean()
         validate = clean_data.values.tolist()
 
@@ -62,7 +62,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingMedian()
         validate = clean_data.values.tolist()
 
@@ -78,7 +78,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingMode()
         validate = clean_data.values.tolist()
 
@@ -94,7 +94,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingConstant(10.5, ["col1", "col3"])
         validate = clean_data.values.tolist()
 
@@ -111,7 +111,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingRemoveRow(["col1", "col2"])
         validate = clean_data.values.tolist()
 
@@ -127,7 +127,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         category_dict_mapping = {"col1": 2, "col2": "Blue"}
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingNewCategory(col_to_category=category_dict_mapping)
         validate = clean_data.values.tolist()
 
@@ -145,7 +145,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         list_col = ["col1", "col3"]
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingNewCategory(new_category=0, col_to_category=list_col)
         validate = clean_data.values.tolist()
 
@@ -163,7 +163,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         list_col = ["col1", "col2"]
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingNewCategory(col_to_category=list_col)
         #Replacing NaNs with strings for validations as regular assert does == and to compare NaNs you need `is`
         clean_data = clean_data.fillna("NaN was here")
@@ -182,7 +182,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingNewCategory(new_category=1)
         validate = clean_data.values.tolist()
 
@@ -199,7 +199,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean_data = clean.ReplaceMissingNewCategory()
         validate = clean_data.values.tolist()
 
