@@ -104,9 +104,3 @@ def _NumericFunctionInputConditions(list_of_cols, data, train_data):
             list_of_cols = train_data.select_dtypes([np.number]).columns.tolist()
 
     return list_of_cols
-
-def SplitOrigData(data, split_percentage):
-
-    train, test = train_test_split(data, train_size=split_percentage)
-
-    return train, test
