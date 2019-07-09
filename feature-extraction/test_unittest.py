@@ -25,7 +25,7 @@ class TestFeatureExtraction(unittest.TestCase):
                             'Hi name pyml']
 
         feature = Feature(list_of_sentences)
-        transform_data = feature.TFIDF(data=list_of_sentences, tfidf_kwargs={"lowercase": False})
+        transform_data = feature.TFIDF(params={"lowercase": False})
         validate = transform_data.shape[1]
 
         self.assertEqual(validate, 5)

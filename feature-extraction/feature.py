@@ -64,14 +64,14 @@ class Feature():
             return self.data_properties.train_data, self.data_properties.test_data
 
 
-    def TFIDF(self, list_of_cols=[], **tfidf_kwargs):
+    def TFIDF(self, list_of_cols=[], params={}):
         """Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
         This function exists in `feature-extraction/text.py`
         
         Keyword Arguments:
             list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
-            **tfidf_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+            tfidf_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
         
         Returns:
             [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
@@ -80,27 +80,27 @@ class Feature():
 
         if self.data is not None:
 
-            self.data = FeatureTFIDF(list_of_cols, data=self.data, **tfidf_kwargs) 
+            self.data = FeatureTFIDF(list_of_cols=list_of_cols, data=self.data, params=params) 
 
             return self.data
 
         else:
 
-            self.data_properties.train_data, self.data_properties.test_data = FeatureTFIDF(list_of_cols,
+            self.data_properties.train_data, self.data_properties.test_data = FeatureTFIDF(list_of_cols=list_of_cols,
                                                                                             train_data=self.data_properties.train_data,
                                                                                             test_data=self.data_properties.test_data,
-                                                                                            **tfidf_kwargs)
+                                                                                            params=params)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def BagofWords(self, list_of_cols=[], **bow_kwargs):
+    def BagofWords(self, list_of_cols=[], params={}):
         """Creates a matrix of how many times a word appears in a document.
 
         This function exists in `feature-extraction/text.py`
 
         Keyword Arguments:
             list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
-            **bow_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+            params {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
 
         Returns:
             [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
@@ -109,7 +109,7 @@ class Feature():
 
         if self.data is not None:
 
-            self.data = FeatureBagOfWords(list_of_cols, data=self.data, **bow_kwargs) 
+            self.data = FeatureBagOfWords(list_of_cols, data=self.data, params=params) 
 
             return self.data
 
@@ -118,6 +118,6 @@ class Feature():
             self.data_properties.train_data, self.data_properties.test_data = FeatureBagOfWords(list_of_cols,
                                                                                             train_data=self.data_properties.train_data,
                                                                                             test_data=self.data_properties.test_data,
-                                                                                            **bow_kwargs)
+                                                                                            params=params)
 
             return self.data_properties.train_data, self.data_properties.test_data

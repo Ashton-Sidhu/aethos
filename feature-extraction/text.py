@@ -6,7 +6,7 @@ from data.util import (DropAndReplaceColumns, GetListOfCols,
 
 #TODO: Add customization to BoW and TF-IDF through the parameters of the constructor
 
-def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=None, **bow_kwargs):
+def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=None, params={}):
     """Creates a matrix of how many times a word appears in a document.
 
     Either data or train_data or test_data MUST be provided, not both. 
@@ -16,7 +16,7 @@ def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=Non
         data {DataFrame} or {[list]} -- Full dataset (default: {None})
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
-        **bow_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+        params {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
 
     Returns:
         [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
@@ -26,7 +26,7 @@ def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=Non
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
-    enc = CountVectorizer(**bow_kwargs)
+    enc = CountVectorizer(**params)
     
     if isinstance(data, list):
 
@@ -55,7 +55,7 @@ def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=Non
         return train_data, test_data
 
 
-def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, **tfidf_kwargs):
+def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, params={}):
     """Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
     Either data or train_data or test_data MUST be provided, not both. 
@@ -65,7 +65,7 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, **
         data {DataFrame} -- Full dataset (default: {None})
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
-        **tfidf_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+        params {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
 
     Returns:
         [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
@@ -75,7 +75,8 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, **
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
         
-    enc = TfidfVectorizer(tfidf_kwargs)
+    enc = TfidfVectorizer(**params)
+    print(enc)
 
     if isinstance(data, list):
 
