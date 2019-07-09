@@ -4,8 +4,7 @@ import numpy as np
 import pandas as pd
 
 from data import Data
-from util import (CheckMissingData, DropAndReplaceColumns, GetKeysByValues,
-                  GetListOfCols)
+from util import *
 
 
 class TestData(unittest.TestCase):
@@ -85,7 +84,7 @@ class TestData(unittest.TestCase):
 
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(dataset)
-        data.SplitData(dataset, 0.2)
+        data.SplitData(0.8)
 
         self.assertEqual(data.train_data.shape[0], 4)
 

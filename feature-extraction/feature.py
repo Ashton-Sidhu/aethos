@@ -22,7 +22,7 @@ class Feature():
         else:
             self.data_properties = data_properties
 
-        if self.data is None:
+        if self.data is not None:
             self.train_data, self.test_data = self.data_properties.SplitData(test_split_percentage)
         
         else:

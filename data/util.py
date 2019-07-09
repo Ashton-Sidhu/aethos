@@ -2,19 +2,20 @@ import collections
 
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 def CheckMissingData(df):
-        """
-        Utility function that checks if the data has any missing values.
+    """Utility function that checks if the data has any missing values.
 
-        Arguemnts:
-            df {Dataframe} -- Dataframe of the data
-                
-        Returns:
-            [Boolean] -- True if the data is missing values, False o/w.
-        """
-        return df.isnull().values.any()
+    Arguemnts:
+        df {Dataframe} -- Dataframe of the data
+            
+    Returns:
+        [Boolean] -- True if the data is missing values, False o/w.
+    """
+    
+    return df.isnull().values.any()
 
 def GetKeysByValues(dict_of_elements, item):
     """Utility function that returns the list of keys whos value matches a criteria defined
@@ -103,3 +104,9 @@ def _NumericFunctionInputConditions(list_of_cols, data, train_data):
             list_of_cols = train_data.select_dtypes([np.number]).columns.tolist()
 
     return list_of_cols
+
+def SplitOrigData(data, split_percentage):
+
+    train, test = train_test_split(data, train_size=split_percentage)
+
+    return train, test

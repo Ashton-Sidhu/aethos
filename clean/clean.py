@@ -18,7 +18,7 @@ class Clean():
         self.data = data
         self.data_properties = Data(self.data)
 
-        if self.data is None:
+        if self.data is not None:
             self.train_data, self.test_data = self.data_properties.SplitData(test_split_percentage)
         
         else:
