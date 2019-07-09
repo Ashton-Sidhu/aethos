@@ -1,3 +1,10 @@
+"""
+This file contains the following methods:
+
+RemoveColumns
+RemoveRows
+SplitData
+"""
 import pandas as pd
 
 from data.util import _FunctionInputValidation
@@ -30,7 +37,6 @@ def RemoveColumns(threshold, data=None, train_data=None, test_data=None):
         criteria_meeting_columns = train_data.columns(train_data.isnull().mean() < threshold)
 
         return train_data[criteria_meeting_columns], test_data[criteria_meeting_columns]
-    
 
 def RemoveRows(threshold, data=None, train_data=None, test_data=None):
     """Remove rows from the dataframe that have more than the threshold value of missing rows.
@@ -60,13 +66,15 @@ def RemoveRows(threshold, data=None, train_data=None, test_data=None):
 
         return train_data, test_data
 
-def SplitData(self, df, split_percentage):
-        """Function that splits the data into a training and testing set. Split percentage is passed in through
-        the split_percentage variable.
+def SplitData(df, split_percentage):
+    """Function that splits the data into a training and testing set. Split percentage is passed in through
+    the split_percentage variable.
 
-        Arguments:
-            df {[DataFrame]} -- Full dataset you want to split.
-            split_percentage {[float]} -- The % of data that you want in your test set, 1-split_percentage is the percentage of data in the traning set.
-        """
+    Arguments:
+        df {[DataFrame]} -- Full dataset you want to split.
+        split_percentage {[float]} -- The % of data that you want in your test set, 1-split_percentage is the percentage of data in the traning set.
+    """
 
-        self.train_data, self.test_data = train_test_split(df, test_size=split_percentage)
+    train_data, test_data = train_test_split(df, test_size=split_percentage)
+
+    return train_data, test_data

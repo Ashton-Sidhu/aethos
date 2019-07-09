@@ -20,7 +20,7 @@ class Clean():
         self.data_properties.use_full_data = use_full_data
 
         if self.data is not None:
-            self.train_data, self.test_data = self.data_properties.SplitData(test_split_percentage)
+            self.train_data, self.test_data = SplitData(self.data, test_split_percentage)
         
         else:
             self.train_data = self.data_properties.train_data
