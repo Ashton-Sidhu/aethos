@@ -24,16 +24,18 @@ def PreprocessNormalize(list_of_cols=[], data=None, train_data=None, test_data=N
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
     """
+
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
-    list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data, test_data)
+    list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data)
     scaler = MinMaxScaler()
 
     if data is not None:
         scaled_data = scaler.fit_transform(data[list_of_cols])
         scaled_df = pd.DataFrame(scaled_data, columns=list_of_cols)
         data = DropAndReplaceColumns(data, list_of_cols, scaled_df)
+        
         return data
     
     else:

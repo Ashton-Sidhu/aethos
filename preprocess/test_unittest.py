@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from numeric import *
+from preprocess import Preprocess
 
 
 class TestPreprocessing(unittest.TestCase):
@@ -17,7 +17,8 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        normal_data = PreprocessNormalize(data=data)
+        preprocess = Preprocess(data)
+        normal_data = preprocess.NormalizeNumeric()
         validate = normal_data.values.tolist()
 
         self.assertListEqual(validate, [[.375, 1.0, 0.0],
