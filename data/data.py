@@ -14,6 +14,7 @@ class Data():
         self.target_field = target_field
         self.train_data = None
         self.test_data = None
+        self.use_full_data = False
 
     def GetInputTypes(self, df, custom_cols={}):
         """
