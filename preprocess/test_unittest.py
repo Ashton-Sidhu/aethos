@@ -17,7 +17,7 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(data)
+        preprocess = Preprocess(data, test_split_percentage=0.5, use_full_data=True)
         normal_data = preprocess.NormalizeNumeric()
         validate = normal_data.values.tolist()
 
