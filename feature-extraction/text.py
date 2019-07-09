@@ -17,6 +17,10 @@ def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=Non
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
         **bow_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+
+    Returns:
+        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+        of both are returned. 
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
@@ -62,12 +66,16 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, **
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
         **tfidf_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+
+    Returns:
+        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+        of both are returned. 
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
         
-    enc = TfidfVectorizer(**tfidf_kwargs)
+    enc = TfidfVectorizer(tfidf_kwargs)
 
     if isinstance(data, list):
 

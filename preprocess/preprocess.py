@@ -29,7 +29,26 @@ class Preprocess():
             self.test_data = self.data_properties.test_data
 
     def NormalizeNumeric(self, list_of_cols=[]):
+        """Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 
+       This function can be found in `preprocess/numeric.py`
+        
+        If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
+        
+        Keyword Arguments:
+            list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
+        
+        Returns:
+            [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+            of both are returned. 
+        """
+        
+    
+    Keyword Arguments:
+        list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
+        data {DataFrame} -- Full dataset (default: {None})
+        train_data {DataFrame} -- Training dataset (default: {None})
+        test_data {DataFrame} -- Testing dataset (default: {None})
         if self.data is not None:
             self.data = PreprocessNormalize(list_of_cols=list_of_cols, data=self.data)
             

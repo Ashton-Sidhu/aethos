@@ -1,6 +1,7 @@
 import unittest
 
 from categorical import *
+from feature import *
 from text import *
 
 
@@ -11,7 +12,8 @@ class TestFeatureExtraction(unittest.TestCase):
         list_of_sentences = ['Hi my name is pyml',
                             'Hi name pyml']
 
-        transform_data = FeatureBagOfWords(data=list_of_sentences)
+        feature = Feature(list_of_sentences)
+        transform_data = feature.BagofWords()
         validate = transform_data.toarray().tolist()
 
         self.assertListEqual(validate, [[1, 1, 1, 1, 1],
@@ -22,7 +24,8 @@ class TestFeatureExtraction(unittest.TestCase):
         list_of_sentences = ['Hi my name is pyml',
                             'Hi name pyml']
 
-        transform_data = FeatureTFIDF(data=list_of_sentences)
+        feature = Feature(list_of_sentences)
+        transform_data = feature.TFIDF(data=list_of_sentences, tfidf_kwargs={"lowercase": False})
         validate = transform_data.shape[1]
 
         self.assertEqual(validate, 5)
@@ -36,7 +39,8 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(normal_data, columns=columns)
 
-        transform_data = FeatureOneHotEncode(["col1", "col3"], data=data)
+        feature = Feature(data)
+        transform_data = feature.OneHotEncode(["col1", "col3"], data=data)
         validate = transform_data.values.tolist()
 
         self.assertListEqual(validate, [["Green", 0, 1, 1, 0],

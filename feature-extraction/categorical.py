@@ -16,6 +16,10 @@ def FeatureOneHotEncode(list_of_cols, data=None, train_data=None, test_data=None
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
         **tfidf_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+
+    Returns:
+        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+        of both are returned. 
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):

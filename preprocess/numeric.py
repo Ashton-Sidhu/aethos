@@ -23,6 +23,10 @@ def PreprocessNormalize(list_of_cols=[], data=None, train_data=None, test_data=N
         data {DataFrame} -- Full dataset (default: {None})
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
+        
+    Returns:
+            [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
+            of both are returned. 
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
