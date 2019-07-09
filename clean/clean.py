@@ -80,7 +80,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
     
-    def ReplaceMissingMean(self, list_of_cols=[], override=True):
+    def ReplaceMissingMean(self, list_of_cols=[]):
         """Replaces missing values in every numeric column with the mean of that column.
 
         Mean: Average value of the column. Effected by outliers.
@@ -108,7 +108,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingMedian(self, list_of_cols=[], override=True):
+    def ReplaceMissingMedian(self, list_of_cols=[]):
         """Replaces missing values in every numeric column with the median of that column.
 
         Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
@@ -137,7 +137,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingMode(self, list_of_cols=[], override=True):
+    def ReplaceMissingMode(self, list_of_cols=[]):
         """Replaces missing values in every numeric column with the mode of that column
 
         Mode: Most common number in a list of numbers.
@@ -166,7 +166,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingConstant(self, constant=0, col_to_constant=None, override=True):
+    def ReplaceMissingConstant(self, constant=0, col_to_constant=None):
         """Replaces missing values in every numeric column with a constant.
 
         This function exists in `clean/numeric.py` as `ReplaceMissingConstant`.
@@ -195,7 +195,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingNewCategory(self, new_category=None, col_to_category=None, override=True):
+    def ReplaceMissingNewCategory(self, new_category=None, col_to_category=None):
         """Replaces missing values in categorical column with its own category. The categories can be autochosen
         from the defaults set.
 
@@ -229,7 +229,7 @@ class Clean():
             return self.data_properties.train_data, self.data_properties.test_data
 
 
-    def ReplaceMissingRemoveRow(self, cols_to_remove, override=True):
+    def ReplaceMissingRemoveRow(self, cols_to_remove):
         """Remove rows where the value of a column for those rows is missing.
 
         This function exists in `clean/categorical.py` as `ReplaceMissingRemoveRow`.
