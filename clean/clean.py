@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 
 from categorical import *
 from data.data import Data
+from data.util import GetListOfCols, _FunctionInputValidation
 from numeric import *
 from util import *
 
@@ -92,7 +93,7 @@ class Clean():
                                     Example: if list_of_cols is provided and override is true, the technique will only be applied
                                     to the the columns in list_of_cols (default: {False})
         """
-        list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
+        #list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
 
         if self.data is not None:
             self.data = ReplaceMissingMeanMedianMode("mean", list_of_cols, data=self.data)
@@ -121,7 +122,7 @@ class Clean():
                                     to the the columns in list_of_cols (default: {False})                       
         """
 
-        list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
+        #list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
         
         if self.data is not None:
             self.data = ReplaceMissingMeanMedianMode("median", list_of_cols, data=self.data)
@@ -150,7 +151,7 @@ class Clean():
                                     to the the columns in list_of_cols (default: {False})      
         """
 
-        list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, override, list_of_cols)
+        #list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, override, list_of_cols)
         
         if self.data is not None:
             self.data = ReplaceMissingMeanMedianMode("most_frequent", list_of_cols, data=self.data)
@@ -179,7 +180,7 @@ class Clean():
                                     to the the columns in custom_cols (default: {False})
         """
 
-        list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
+        #list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
 
         if self.data is not None:
             self.data = ReplaceMissingConstant(constant, col_to_constant, data=self.data)
@@ -194,7 +195,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingNewCategory(self, new_category_name=None, col_to_category=None, override=True):
+    def ReplaceMissingNewCategory(self, new_category=None, col_to_category=None, override=True):
         """Replaces missing values in categorical column with its own category. The categories can be autochosen
         from the defaults set.
 
@@ -204,7 +205,7 @@ class Clean():
         This function exists in `clean/categorical.py` as `ReplaceMissingNewCategory`.
         
         Keyword Arguments:
-            new_category_name {None, str, int, float} -- Category to replace missing values with (default: {None})
+            new_category {None, str, int, float} -- Category to replace missing values with (default: {None})
             col_to_category {list} or {dict} -- A list of specific columns to apply this technique to or a dictionary
                                                 mapping {Column Name: `constant`}. (default: {[]})
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
@@ -212,23 +213,23 @@ class Clean():
                                     to the the columns in custom_cols (default: {False})
         """
         
-        list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, custom_cols, override)
+        #list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, custom_cols, override)
 
         if self.data is not None:
-            self.data = ReplaceMissingNewCategory(col_to_category=list_of_cols, constant=new_category_name, data=self.data)
+            self.data = ReplaceMissingNewCategory(col_to_category=col_to_category, constant=new_category, data=self.data)
 
             return self.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingNewCategory(col_to_category=col_to_category,
-                                                                                                    constant=new_category_name,
+                                                                                                    constant=new_category,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
 
-    def ReplaceMissingRemoveRow(cols_to_remove=[], override=True):
+    def ReplaceMissingRemoveRow(self, cols_to_remove, override=True):
         """Remove rows where the value of a column for those rows is missing.
 
         This function exists in `clean/categorical.py` as `ReplaceMissingRemoveRow`.
@@ -240,15 +241,15 @@ class Clean():
                                     to the the columns in custom_cols (default: {False})
         """
 
-        list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, cols_to_remove, override)
+        #list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, cols_to_remove, override)
 
         if self.data is not None:
-            self.data = ReplaceMissingRemoveRow(list_of_cols, data=self.data)
+            self.data = ReplaceMissingRemoveRow(cols_to_remove, data=self.data)
 
             return self.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingRemoveRow(list_of_cols,                                                                                                    
+            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingRemoveRow(cols_to_remove,                                                                                                    
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
 
