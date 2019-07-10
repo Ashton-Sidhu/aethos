@@ -1,3 +1,10 @@
+"""
+This file contains the following methods:
+
+FeatureBagOfWords
+FeatureTFIDF
+"""
+
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 

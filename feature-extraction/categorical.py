@@ -1,3 +1,9 @@
+"""
+This file contains the following methods:
+
+FeatureOneHotEncode
+"""
+
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 
