@@ -78,16 +78,6 @@ class TestData(unittest.TestCase):
 
         self.assertIsNotNone(new_df)
 
-    def test_data_splitdata(self):
-        data = np.zeros((5,5))
-        columns = ["col1", "col2", "col3", "col4", "col5"]
-
-        dataset = pd.DataFrame(data, columns=columns)
-        data = Data(dataset)
-        data.SplitData(0.8)
-
-        self.assertEqual(data.train_data.shape[0], 4)
-
     def test_datautil_checkmissingdata(self):
         data = np.array([(1, 1, 0, "hi my name is pyautoml", "green", 532.1),
                         (2, 0, None, "this is my story", "yellow", 213.5),

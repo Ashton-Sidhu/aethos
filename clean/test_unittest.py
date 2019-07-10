@@ -6,11 +6,12 @@ import pandas as pd
 from categorical import *
 from clean import Clean
 from numeric import *
+from util import *
 
 
 class TestCleaning(unittest.TestCase):    
     
-    def test_clean_removecolumns(self):
+    def test_cleanutil_removecolumns(self):
 
         int_missing_data = np.array([(1, 0, 0),
                                  (0, None, None),
@@ -24,7 +25,7 @@ class TestCleaning(unittest.TestCase):
 
         self.assertListEqual(validate, ["col1"])
 
-    def test_clean_removerows(self):
+    def test_cleanutil_removerows(self):
 
         int_missing_data = np.array([(1, 0, 0),
                                  (0, None, None),
@@ -37,6 +38,16 @@ class TestCleaning(unittest.TestCase):
         validate = clean.data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 0)]).tolist())
+
+    def test_cleanutil_splitdata(self):
+        
+        data = np.zeros((5,5))
+        columns = ["col1", "col2", "col3", "col4", "col5"]
+        dataset = pd.DataFrame(data, columns=columns)
+
+        clean = Clean(data)
+
+        self.assertEqual(clean.train_data.shape[0], 4)
 
     def test_cleannumeric_mean(self):
         int_missing_data = [[1, 0, 2],
