@@ -73,13 +73,25 @@ This project follows the [all-contributors](https://github.com/kentcdodds/all-co
 
 ## Build Process
 
+For package use (no ui): 
+
+`pip install py-automl`
+
+For Web App:
+
+TBD
+
 ## Sponsors
+
+N/A
 
 ## Acknowledgments
 
+N/A
+
 ## For Developers
 
-To generate requirements file install `pipreqs`, `pip install pipreqs`.
+To generate requirements file install `pipreqs`: `pip install pipreqs`.
 
 Navigate to py-automl root directory and run `pipreqs .`
 
