@@ -3,8 +3,8 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from data import Data
-from util import *
+from data.data import Data
+from data.util import *
 
 
 class TestData(unittest.TestCase):

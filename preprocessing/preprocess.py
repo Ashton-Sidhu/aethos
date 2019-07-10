@@ -1,11 +1,11 @@
 import pandas as pd
 
-from categorical import *
 from clean.util import SplitData
 from data.data import Data
 from data.util import GetListOfCols, _FunctionInputValidation
-from numeric import *
-from text import *
+from preprocessing.categorical import *
+from preprocessing.numeric import *
+from preprocessing.text import *
 
 
 class Preprocess():

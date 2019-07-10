@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from preprocess import Preprocess
+from preprocessing.preprocess import Preprocess
 
 
 class TestPreprocessing(unittest.TestCase):

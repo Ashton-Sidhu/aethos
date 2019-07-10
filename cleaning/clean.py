@@ -1,10 +1,10 @@
 import pandas as pd
 
-from categorical import *
+from cleaning.categorical import *
+from cleaning.numeric import *
+from cleaning.util import *
 from data.data import Data
 from data.util import GetListOfCols, _FunctionInputValidation
-from numeric import *
-from util import *
 
 
 class Clean():

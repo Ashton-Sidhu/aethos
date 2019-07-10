@@ -8,7 +8,7 @@ ReplaceMissingConstant
 import pandas as pd
 from sklearn.impute import SimpleImputer
 
-from categorical import ReplaceMissingNewCategory
+from cleaning.categorical import ReplaceMissingNewCategory
 from data.util import (DropAndReplaceColumns, _FunctionInputValidation,
                        _NumericFunctionInputConditions)
 
