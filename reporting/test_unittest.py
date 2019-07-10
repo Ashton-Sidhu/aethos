@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from report import Report
+from reporting.report import Report
 
 
 class TestReport(unittest.TestCase):

@@ -1,11 +1,11 @@
 import pandas as pd
 
-from categorical import *
 from clean.util import SplitData
 from data.data import Data
 from data.util import GetListOfCols, _FunctionInputValidation
-from numeric import *
-from text import *
+from feature_engineering.categorical import *
+from feature_engineering.numeric import *
+from feature_engineering.text import *
 
 
 class Feature():

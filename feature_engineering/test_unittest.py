@@ -1,8 +1,8 @@
 import unittest
 
-from categorical import *
-from feature import *
-from text import *
+from feature_engineering.categorical import *
+from feature_engineering.feature import *
+from feature_engineering.text import *
 
 
 class TestFeatureExtraction(unittest.TestCase):
