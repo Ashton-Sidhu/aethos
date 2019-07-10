@@ -73,13 +73,13 @@ This project follows the [all-contributors](https://github.com/kentcdodds/all-co
 
 ## Build Process
 
-For package use (no ui): 
+For package use (no GUI): 
 
 `pip install py-automl`
 
 For Web App:
 
-TBD
+`TBD`
 
 ## Sponsors
 
