@@ -2,11 +2,10 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
-from categorical import *
-from clean import Clean
-from numeric import *
-from util import *
+from cleaning.categorical import *
+from cleaning.clean import Clean
+from cleaning.numeric import *
+from cleaning.util import *
 
 
 class TestCleaning(unittest.TestCase):    

@@ -83,7 +83,6 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, pa
         return "Function input is incorrectly provided."
         
     enc = TfidfVectorizer(**params)
-    print(enc)
 
     if isinstance(data, list):
 
