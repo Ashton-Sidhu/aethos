@@ -8,9 +8,9 @@ ReplaceMissingConstant
 import pandas as pd
 from sklearn.impute import SimpleImputer
 
-from cleaning.categorical import ReplaceMissingNewCategory
-from data.util import (DropAndReplaceColumns, _FunctionInputValidation,
-                       _NumericFunctionInputConditions)
+from pyautoml.cleaning.categorical import ReplaceMissingNewCategory
+from pyautoml.util import (DropAndReplaceColumns, _FunctionInputValidation,
+                           _NumericFunctionInputConditions)
 
 #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
 

@@ -2,6 +2,7 @@ import collections
 
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 def CheckMissingData(df):
@@ -68,7 +69,21 @@ def DropAndReplaceColumns(df, drop_cols, new_data):
 
     df = df.drop(drop_cols, axis=1)
     df = pd.concat([df, new_data], axis=1)
+
     return df
+
+def SplitData(df, split_percentage):
+    """Function that splits the data into a training and testing set. Split percentage is passed in through
+    the split_percentage variable.
+
+    Arguments:
+        df {[DataFrame]} -- Full dataset you want to split.
+        split_percentage {[float]} -- The % of data that you want in your test set, 1-split_percentage is the percentage of data in the traning set.
+    """
+
+    train_data, test_data = train_test_split(df, test_size=split_percentage)
+
+    return train_data, test_data
 
 def _FunctionInputValidation(data, train_data, test_data):
     """

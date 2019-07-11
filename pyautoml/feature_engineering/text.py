@@ -8,8 +8,8 @@ FeatureTFIDF
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-from data.util import (DropAndReplaceColumns, GetListOfCols,
-                       _FunctionInputValidation)
+from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
+                           _FunctionInputValidation)
 
 #TODO: Add customization to BoW and TF-IDF through the parameters of the constructor
 

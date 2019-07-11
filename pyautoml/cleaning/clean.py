@@ -1,10 +1,10 @@
 import pandas as pd
 
-from cleaning.categorical import *
-from cleaning.numeric import *
-from cleaning.util import *
-from data.data import Data
-from data.util import GetListOfCols, _FunctionInputValidation
+from pyautoml.cleaning.categorical import *
+from pyautoml.cleaning.numeric import *
+from pyautoml.cleaning.util import *
+from pyautoml.data.data import Data
+from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 
 
 class Clean():

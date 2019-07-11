@@ -1,11 +1,10 @@
 import pandas as pd
 
-from clean.util import SplitData
-from data.data import Data
-from data.util import GetListOfCols, _FunctionInputValidation
-from preprocessing.categorical import *
-from preprocessing.numeric import *
-from preprocessing.text import *
+from pyautoml.data.data import Data
+from pyautoml.preprocessing.categorical import *
+from pyautoml.preprocessing.numeric import *
+from pyautoml.preprocessing.text import *
+from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 
 
 class Preprocess():

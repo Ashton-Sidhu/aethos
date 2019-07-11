@@ -1,8 +1,8 @@
 import unittest
 
-from feature_engineering.categorical import *
-from feature_engineering.feature import *
-from feature_engineering.text import *
+import pandas as pd
+
+from pyautoml.feature_engineering.feature import Feature
 
 
 class TestFeatureExtraction(unittest.TestCase):

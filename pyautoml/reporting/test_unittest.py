@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from reporting.report import Report
+from pyautoml.reporting.report import Report
 
 
 class TestReport(unittest.TestCase):

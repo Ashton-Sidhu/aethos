@@ -6,11 +6,22 @@ RemoveRows
 SplitData
 """
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
-from data.util import _FunctionInputValidation
+from pyautoml.util import _FunctionInputValidation
 
 
+def CheckMissingData(df):
+    """Utility function that checks if the data has any missing values.
+
+    Arguemnts:
+        df {Dataframe} -- Dataframe of the data
+            
+    Returns:
+        [Boolean] -- True if the data is missing values, False o/w.
+    """
+    
+    return df.isnull().values.any()
+    
 def RemoveColumns(threshold, data=None, train_data=None, test_data=None):
     """Remove columns from the dataframe that have more than the threshold value of missing columns.
     Example: Remove columns where > 50% of the data is missing
@@ -66,16 +77,3 @@ def RemoveRows(threshold, data=None, train_data=None, test_data=None):
         test_data = test_data.dropna(thresh=round(test_data.shape[1] * threshold), axis=0)
 
         return train_data, test_data
-
-def SplitData(df, split_percentage):
-    """Function that splits the data into a training and testing set. Split percentage is passed in through
-    the split_percentage variable.
-
-    Arguments:
-        df {[DataFrame]} -- Full dataset you want to split.
-        split_percentage {[float]} -- The % of data that you want in your test set, 1-split_percentage is the percentage of data in the traning set.
-    """
-
-    train_data, test_data = train_test_split(df, test_size=split_percentage)
-
-    return train_data, test_data

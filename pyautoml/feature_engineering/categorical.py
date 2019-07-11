@@ -7,8 +7,8 @@ FeatureOneHotEncode
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 
-from data.util import (DropAndReplaceColumns, GetListOfCols,
-                       _FunctionInputValidation)
+from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
+                           _FunctionInputValidation)
 
 
 def FeatureOneHotEncode(list_of_cols, data=None, train_data=None, test_data=None, **onehot_kwargs):

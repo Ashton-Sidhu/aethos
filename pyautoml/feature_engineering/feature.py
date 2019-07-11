@@ -1,11 +1,10 @@
 import pandas as pd
 
-from clean.util import SplitData
-from data.data import Data
-from data.util import GetListOfCols, _FunctionInputValidation
-from feature_engineering.categorical import *
-from feature_engineering.numeric import *
-from feature_engineering.text import *
+from pyautoml.data.data import Data
+from pyautoml.feature_engineering.categorical import *
+from pyautoml.feature_engineering.numeric import *
+from pyautoml.feature_engineering.text import *
+from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 
 
 class Feature():

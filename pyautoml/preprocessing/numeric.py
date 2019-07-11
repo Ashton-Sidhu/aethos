@@ -7,8 +7,8 @@ PreprocessNormalize
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-from data.util import (DropAndReplaceColumns, _FunctionInputValidation,
-                       _NumericFunctionInputConditions)
+from pyautoml.util import (DropAndReplaceColumns, _FunctionInputValidation,
+                           _NumericFunctionInputConditions)
 
 
 def PreprocessNormalize(list_of_cols=[], data=None, train_data=None, test_data=None):

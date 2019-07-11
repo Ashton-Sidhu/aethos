@@ -2,10 +2,8 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from cleaning.categorical import *
-from cleaning.clean import Clean
-from cleaning.numeric import *
-from cleaning.util import *
+
+from pyautoml.cleaning.clean import Clean
 
 
 class TestCleaning(unittest.TestCase):    

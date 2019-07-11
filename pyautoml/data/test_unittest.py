@@ -3,8 +3,8 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from data.data import Data
-from data.util import *
+from pyautoml.data.data import Data
+from pyautoml.util import *
 
 
 class TestData(unittest.TestCase):
@@ -79,6 +79,7 @@ class TestData(unittest.TestCase):
         self.assertIsNotNone(new_df)
 
     def test_datautil_checkmissingdata(self):
+        
         data = np.array([(1, 1, 0, "hi my name is pyautoml", "green", 532.1),
                         (2, 0, None, "this is my story", "yellow", 213.5),
                         (3, None, None, "its me", "yellow", 154.2)])
