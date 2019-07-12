@@ -10,10 +10,10 @@ from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 class Feature():
 
     
-    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", reporting=True):        
+    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):        
 
         if not _FunctionInputValidation(data, train_data, test_data):
-            return "Please provide one of either data or train_data and test_data, not both."
+            print("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
         self.data = data
 

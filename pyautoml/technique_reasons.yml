@@ -4,7 +4,7 @@ clean:
       Removed num_rows_placeholder rows because it had over threshold_placeholder% of missing values as those records don't 
       contain enough information.
 
-    remove_features: |
+    remove_columns: |
       Removed column column_name_placeholder because it had over threshold_placeholder% of missing values and didn't 
       contain enough information.
 

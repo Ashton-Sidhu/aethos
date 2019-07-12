@@ -20,3 +20,5 @@ class Report():
 
         with open(self.filename, 'a+') as f:
             f.write(content + "\n")
+
+    def 
