@@ -6,7 +6,8 @@
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Development Phases](#development-timeline)
+- [Installation](#installation)
+- [Development Phases](#development-phases)
 - [Feedback](#feedback)
 - [Contributors](#contributors)
 - [Sponsors](#sponsors)
@@ -35,6 +36,16 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
 - Data visualizations
 - On prem deployment
 - 3rd Party application integration (Azure, AWS, GC)
+
+## Installation
+
+For package use (no GUI): 
+
+`pip install py-automl`
+
+For Web App:
+
+`TBD`
 
 ## Development Phases
 #### Phase 1
@@ -70,16 +81,6 @@ I appreciate any feedback so if you have any feature requests or issues make an 
 ## Contributors
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification and is brought to you by these [awesome contributors](./CONTRIBUTORS.md).
-
-## Build Process
-
-For package use (no GUI): 
-
-`pip install py-automl`
-
-For Web App:
-
-`TBD`
 
 ## Sponsors
 
