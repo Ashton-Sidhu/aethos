@@ -1,5 +1,7 @@
 # py-automl
 
+<i>"Analytics shouldn't be about the code, but the analysis itself."</i>
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
@@ -54,7 +56,7 @@ For Web App:
     - [x] Data Cleaning V1
     - [x] Feature Engineering V1
   - [ ]	Code Generation
-  - [ ]	Reporting V1
+  - [x]	Reporting V1
 
 #### Phase 2
   - [ ]	Data visualizations
@@ -91,9 +93,5 @@ N/A
 N/A
 
 ## For Developers
-
-To generate requirements file install `pipreqs`: `pip install pipreqs`.
-
-Navigate to py-automl root directory and run `pipreqs .`
 
 To install packages `python setup.py install`
