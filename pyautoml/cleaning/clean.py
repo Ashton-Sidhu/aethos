@@ -251,7 +251,7 @@ class Clean():
                                                                                                     test_data=self.data_properties.test_data)
 
             if col_to_constant is None:
-                self.report.ReportTechnique(report_info, self.train_data.columns)
+                self.report.ReportTechnique(report_info, self.data_properties.train_data.columns)
             else:
                 self.report.ReportTechnique(report_info, list(col_to_constant))
 
@@ -281,10 +281,10 @@ class Clean():
         if self.data_properties.use_full_data:
             self.data = ReplaceMissingNewCategory(col_to_category=col_to_category, constant=new_category, data=self.data)
 
-            if col_to_constant is None:
+            if col_to_category is None:
                 self.report.ReportTechnique(report_info, self.data.columns)
             else:
-                self.report.ReportTechnique(report_info, list(col_to_constant))
+                self.report.ReportTechnique(report_info, list(col_to_category))
 
             return self.data
 
@@ -294,7 +294,10 @@ class Clean():
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
 
-            self.report.ReportTechnique(report_info, list_of_cols)                                                                                                    
+            if col_to_category is None:
+                self.report.ReportTechnique(report_info, self.data_properties.train_data.columns)
+            else:
+                self.report.ReportTechnique(report_info, list(col_to_category))                                                                                                   
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -325,12 +328,9 @@ class Clean():
         else:
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingRemoveRow(cols_to_remove,                                                                                                    
                                                                                                     train_data=self.data_properties.train_data,
-                                                                                                    test_data=self.data_properties.test_data)
-                                                                                                
-            if col_to_constant is None:
-                self.report.ReportTechnique(report_info, self.train_data.columns)
-            else:
-                self.report.ReportTechnique(report_info, list(col_to_constant))
+                                                                                                    test_data=self.data_properties.test_data)                                                                                        
+        
+            self.report.ReportTechnique(report_info, list(cols_to_remove))
 
             return self.data_properties.train_data, self.data_properties.test_data
 

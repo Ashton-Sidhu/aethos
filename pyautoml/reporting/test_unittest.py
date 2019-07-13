@@ -44,5 +44,25 @@ class TestReport(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_report_cleaning_new_category(self):
+
+        missing_data = [[1.0, "Green", 2],
+                        [1.0, "Other", 1],
+                        [np.nan, np.nan, np.nan]]
+
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(missing_data, columns=columns)
+
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
+        clean_data = clean.ReplaceMissingNewCategory()
+
+        with open("reports/test.txt") as f:
+            content = f.read()
+        validate = "col1" in content and "col2" in content and "col3" in content
+
+        os.remove("reports/test.txt")
+
+        self.assertTrue(validate)
+
 if __name__ == "__main__":
     unittest.main()
