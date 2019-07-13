@@ -1,7 +1,7 @@
 clean:
   general:
     remove_rows: >
-      Removed num_rows_placeholder rows because it had too many missing values and those records don't 
+      Removed rows because it had too many missing values and those records don't 
       contain enough information.
 
     remove_columns: >

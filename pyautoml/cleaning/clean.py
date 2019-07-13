@@ -52,24 +52,30 @@ class Clean():
             of both are returned. 
         """
 
-        if self.data_properties.use_full_data:
-            
+        report_info = technique_reason_repo['clean']['general']['remove_columns']
+
+        if self.data_properties.use_full_data:            
             #Gather original data information
             original_columns = set(list(self.data.columns))
 
             self.data = RemoveColumns(threshold, data=self.data)
 
-            #Write to report
-            report_info = technique_reason_repo['clean']['general']['remove_columns']
+            #Write to report            
             new_columns = original_columns.difference(self.data.columns)
             self.report.ReportTechnique(report_info, new_columns)
 
             return self.data
 
         else:
+            #Gather original data information
+            original_columns = set(list(self.train_data.columns))
+
             self.data_properties.train_data, self.data_properties.test_data = RemoveColumns(threshold,
                                                                                             train_data=self.data_properties.train_data,
                                                                                             test_data=self.data_properties.test_data)
+
+            new_columns = original_columns.difference(self.train_data.columns)
+            self.report.ReportTechnique(report_info, new_columns)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -87,9 +93,14 @@ class Clean():
             [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
             of both are returned. 
         """
+        
+        report_info = technique_reason_repo['clean']['general']['remove_rows']
 
         if self.data_properties.use_full_data:
             self.data = RemoveRows(threshold, data=self.data)
+
+            #Write to report            
+            self.report.ReportTechnique(report_info, [])
 
             return self.data
 
@@ -97,6 +108,9 @@ class Clean():
             self.data_properties.train_data, self.data_properties.test_data = RemoveRows(threshold,
                                                                                         train_data=self.data_properties.train_data,
                                                                                         test_data=self.data_properties.test_data)
+
+            #Write to report            
+            self.report.ReportTechnique(report_info, [])                                                                                    
 
             return self.data_properties.train_data, self.data_properties.test_data
     
@@ -115,8 +129,13 @@ class Clean():
         """
         #list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
 
+        report_info = technique_reason_repo['clean']['numeric']['mean']
+
         if self.data_properties.use_full_data:
             self.data = ReplaceMissingMeanMedianMode("mean", list_of_cols, data=self.data)
+
+            #Write to report            
+            self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data
 
@@ -125,6 +144,8 @@ class Clean():
                                                                                                             list_of_cols=list_of_cols,
                                                                                                             train_data=self.data_properties.train_data,
                                                                                                             test_data=self.data_properties.test_data)
+
+            self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -143,9 +164,12 @@ class Clean():
         """
 
         #list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
-        
+        report_info = technique_reason_repo['clean']['numeric']['median']
+
         if self.data_properties.use_full_data:
             self.data = ReplaceMissingMeanMedianMode("median", list_of_cols, data=self.data)
+
+            self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data
 
@@ -154,6 +178,8 @@ class Clean():
                                                                                                             list_of_cols=list_of_cols,
                                                                                                             train_data=self.data_properties.train_data,
                                                                                                             test_data=self.data_properties.test_data)
+
+            self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -173,8 +199,12 @@ class Clean():
 
         #list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, override, list_of_cols)
         
+        report_info = technique_reason_repo['clean']['numeric']['mode']
+
         if self.data_properties.use_full_data:
             self.data = ReplaceMissingMeanMedianMode("most_frequent", list_of_cols, data=self.data)
+
+            self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data
 
@@ -183,6 +213,7 @@ class Clean():
                                                                                                             list_of_cols=list_of_cols,
                                                                                                             train_data=self.data_properties.train_data,
                                                                                                             test_data=self.data_properties.test_data)
+            self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -201,9 +232,15 @@ class Clean():
         """
 
         #list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
+        report_info = technique_reason_repo['clean']['numeric']['constant']
 
         if self.data_properties.use_full_data:
             self.data = ReplaceMissingConstant(constant, col_to_constant, data=self.data)
+
+            if col_to_constant is None:
+                self.report.ReportTechnique(report_info, self.data.columns)
+            else:
+                self.report.ReportTechnique(report_info, list(col_to_constant))
 
             return self.data
 
@@ -212,6 +249,11 @@ class Clean():
                                                                                                     col_to_constant,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
+
+            if col_to_constant is None:
+                self.report.ReportTechnique(report_info, self.train_data.columns)
+            else:
+                self.report.ReportTechnique(report_info, list(col_to_constant))
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -225,7 +267,7 @@ class Clean():
         This function exists in `clean/categorical.py` as `ReplaceMissingNewCategory`.
         
         Keyword Arguments:
-            new_category {None, str, int, float} -- Category to replace missing values with (default: {None})
+            new_category {str} or  {int} or {float} -- Category to replace missing values with (default: {None})
             col_to_category {list} or {dict} -- A list of specific columns to apply this technique to or a dictionary
                                                 mapping {Column Name: `constant`}. (default: {[]})
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
@@ -234,9 +276,15 @@ class Clean():
         """
         
         #list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, custom_cols, override)
+        report_info = technique_reason_repo['clean']['categorical']['new_category']
 
         if self.data_properties.use_full_data:
             self.data = ReplaceMissingNewCategory(col_to_category=col_to_category, constant=new_category, data=self.data)
+
+            if col_to_constant is None:
+                self.report.ReportTechnique(report_info, self.data.columns)
+            else:
+                self.report.ReportTechnique(report_info, list(col_to_constant))
 
             return self.data
 
@@ -245,6 +293,8 @@ class Clean():
                                                                                                     constant=new_category,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
+
+            self.report.ReportTechnique(report_info, list_of_cols)                                                                                                    
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -263,8 +313,12 @@ class Clean():
 
         #list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, cols_to_remove, override)
 
+        report_info = technique_reason_repo['clean']['categorical']['remove_rows']
+
         if self.data_properties.use_full_data:
             self.data = ReplaceMissingRemoveRow(cols_to_remove, data=self.data)
+
+            self.report.ReportTechnique(report_info, cols_to_remove)
 
             return self.data
 
@@ -272,6 +326,11 @@ class Clean():
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingRemoveRow(cols_to_remove,                                                                                                    
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
+                                                                                                
+            if col_to_constant is None:
+                self.report.ReportTechnique(report_info, self.train_data.columns)
+            else:
+                self.report.ReportTechnique(report_info, list(col_to_constant))
 
             return self.data_properties.train_data, self.data_properties.test_data
 
