@@ -1,5 +1,7 @@
 # py-automl
 
+Analytics shouldn't be about the code, but the analysis.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
