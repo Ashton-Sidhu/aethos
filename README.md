@@ -94,8 +94,4 @@ N/A
 
 ## For Developers
 
-To generate requirements file install `pipreqs`: `pip install pipreqs`.
-
-Navigate to py-automl root directory and run `pipreqs .`
-
 To install packages `python setup.py install`
