@@ -9,7 +9,7 @@ from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 
 with open("pyautoml/technique_reasons.yml", 'r') as stream:
     try:
-        technique_reason_repo = yaml.safe_load(stream))
+        technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
 
@@ -35,6 +35,7 @@ class Clean():
         else:
             self.reporting = True
             self.report = self.data_properties.report
+            self.report.WriteHeader("Cleaning")
 
 
     def RemoveColumns(self, threshold):
@@ -54,13 +55,14 @@ class Clean():
         if self.data_properties.use_full_data:
             
             #Gather original data information
-            original_columns = set(self.data.columns)
+            original_columns = set(list(self.data.columns))
 
             self.data = RemoveColumns(threshold, data=self.data)
 
+            #Write to report
             report_info = technique_reason_repo['clean']['general']['remove_columns']
-            new_columns =                       
-
+            new_columns = original_columns.difference(self.data.columns)
+            self.report.ReportTechnique(report_info, new_columns)
 
             return self.data
 

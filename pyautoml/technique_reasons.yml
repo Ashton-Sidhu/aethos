@@ -1,33 +1,33 @@
 clean:
   general:
-    remove_rows: |
-      Removed num_rows_placeholder rows because it had over threshold_placeholder% of missing values as those records don't 
+    remove_rows: >
+      Removed num_rows_placeholder rows because it had too many missing values and those records don't 
       contain enough information.
 
-    remove_columns: |
-      Removed column column_name_placeholder because it had over threshold_placeholder% of missing values and didn't 
+    remove_columns: >
+      Removed column column_name_placeholder because it had too many missing values and didn't 
       contain enough information.
 
   categorical:
-    new_category: |
-      Replaced missing values in column column_name_placeholder with its own category named new_name_placeholder because 
+    new_category: >
+      Replaced missing values in column column_name_placeholder with its own category name because 
       the missing values have meaning that should be captured.
 
-    remove_rows: |
-      Removed num_rows_placeholder that have missing values in column_name_placeholder because column_name_placeholder 
+    remove_rows: >
+      Removed rows that have missing values in column_name_placeholder because column_name_placeholder 
       is an important feature and data points with missing data in this column are inconsequential to this problem.
 
   numeric:
-    mean: |
-      Replaced missing values in column column_name_placeholder with the average of the values in the column stat_placeholder.
+    mean: >
+      Replaced missing values in column column_name_placeholder with the average of the values in the column.
 
-    median: |
-      Replaced missing values in column column_name_placeholder with the middlemost value in the column stat_placeholder.
+    median: >
+      Replaced missing values in column column_name_placeholder with the middlemost value in the column.
 
-    mode: |
-      Replaced missing values in column column_name_placeholder with the most frequent value in the column stat_placeholder.
+    mode: >
+      Replaced missing values in column column_name_placeholder with the most frequent value in the column.
 
-    constant: |
-      Replaced missing values in column column_name_placeholder with the constant stat_placeholder.
+    constant: >
+      Replaced missing values in column column_name_placeholder with the constant.
 
   text:

@@ -14,11 +14,17 @@ class Report():
     def WriteHeader(self, header):
 
         with open(self.filename, 'a+') as f:
-            f.write(header + "\n")
+            f.write(header + "\n\n")
 
     def WriteContents(self, content):
 
         with open(self.filename, 'a+') as f:
-            f.write(content + "\n")
+            f.write(content)
 
-    def 
+    def ReportTechnique(self, technique, list_of_cols):
+
+        for col in list_of_cols:
+
+            log = technique.replace("column_name_placeholder", col)
+
+            self.WriteContents(log)
