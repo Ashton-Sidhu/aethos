@@ -1,4 +1,5 @@
 import pandas as pd
+import yaml
 
 from pyautoml.data.data import Data
 from pyautoml.preprocessing.categorical import *
@@ -6,6 +7,11 @@ from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
 from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 
+with open("pyautoml/technique_reasons.yml", 'r') as stream:
+    try:
+        technique_reason_repo = yaml.safe_load(stream)
+    except yaml.YAMLError as e:
+        print("Could not load yaml file.")
 
 class Preprocess():
 
@@ -29,6 +35,12 @@ class Preprocess():
             self.train_data = self.data_properties.train_data
             self.test_data = self.data_properties.test_data
 
+        if self.data_properties.report is None:
+            self.report = None
+        else:
+            self.report = self.data_properties.report
+            self.report.WriteHeader("Preprocessing")
+
     def NormalizeNumeric(self, list_of_cols=[]):
         """Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 
@@ -44,14 +56,22 @@ class Preprocess():
             of both are returned. 
         """
 
+        report_info = technique_reason_repo['preprocess']['numeric']['standardize']
+
         if self.data_properties.use_full_data:
             self.data = PreprocessNormalize(list_of_cols=list_of_cols, data=self.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, list_of_cols)
             
             return self.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data =  PreprocessNormalize(list_of_cols=list_of_cols,
+            self.data_properties.train_data, self.data_properties.test_data = PreprocessNormalize(list_of_cols=list_of_cols,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
