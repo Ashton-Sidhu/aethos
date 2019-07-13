@@ -120,7 +120,7 @@ dmypy.json
 datasets/
 
 #reports
-reports/
+pyautoml_reports/
 
 #github
 .github/
