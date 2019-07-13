@@ -1,4 +1,5 @@
 import pandas as pd
+import yaml
 
 from pyautoml.data.data import Data
 from pyautoml.feature_engineering.categorical import *
@@ -6,6 +7,11 @@ from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
 from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 
+with open("pyautoml/technique_reasons.yml", 'r') as stream:
+    try:
+        technique_reason_repo = yaml.safe_load(stream)
+    except yaml.YAMLError as e:
+        print("Could not load yaml file.")
 
 class Feature():
 
@@ -15,20 +21,25 @@ class Feature():
         if not _FunctionInputValidation(data, train_data, test_data):
             print("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
-        self.data = data
-
         if data_properties is None:
-            self.data_properties = Data(self.data)
-            self.data_properties.use_full_data = use_full_data
-        else:
-            self.data_properties = data_properties
+            self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
-        if self.data is not None:
-            self.train_data, self.test_data = SplitData(self.data, test_split_percentage)
-        
+            if data is not None:
+                self.data = data
+                self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data, test_split_percentage)
+                
         else:
-            self.train_data = self.data_properties.train_data
-            self.test_data = self.data_properties.test_data
+            self.data = data
+            self.data_properties = data_properties            
+
+        if self.data_properties.report is None:
+            self.report = None
+        else:
+            self.report = self.data_properties.report
+            self.report.WriteHeader("Feature Engineering")
+
+        self.train_data = self.data_properties.train_data
+        self.test_data = self.data_properties.test_data
 
     def OneHotEncode(self, list_of_cols, data=None, train_data=None, test_data=None):
         """Creates a matrix of converted categorical columns into binary columns.
@@ -49,10 +60,14 @@ class Feature():
             of both are returned.  
         
         """
+        report_info = technique_reason_repo['feature']['categorical']['onehotencode']
 
         if self.data_properties.use_full_data:
 
             self.data = FeatureOneHotEncode(list_of_cols, data=self.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data
 
@@ -61,6 +76,8 @@ class Feature():
             self.data_properties.train_data, self.data_properties.test_data = FeatureOneHotEncode(list_of_cols,
                                                                                                 train_data=self.data_properties.train_data,
                                                                                                 test_data=self.data_properties.test_data)
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -78,10 +95,14 @@ class Feature():
             [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
             of both are returned. 
         """
+        report_info = technique_reason_repo['feature']['text']['tfidf']
 
         if self.data_properties.use_full_data:
 
-            self.data = FeatureTFIDF(list_of_cols=list_of_cols, data=self.data, params=params) 
+            self.data = FeatureTFIDF(list_of_cols=list_of_cols, data=self.data, params=params)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, [])
 
             return self.data
 
@@ -91,6 +112,9 @@ class Feature():
                                                                                             train_data=self.data_properties.train_data,
                                                                                             test_data=self.data_properties.test_data,
                                                                                             params=params)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, [])
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -107,10 +131,14 @@ class Feature():
             [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
             of both are returned. 
         """
+        report_info = technique_reason_repo['feature']['text']['bow']
 
         if self.data_properties.use_full_data:
 
-            self.data = FeatureBagOfWords(list_of_cols, data=self.data, params=params) 
+            self.data = FeatureBagOfWords(list_of_cols, data=self.data, params=params)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, [])
 
             return self.data
 
@@ -120,5 +148,8 @@ class Feature():
                                                                                             train_data=self.data_properties.train_data,
                                                                                             test_data=self.data_properties.test_data,
                                                                                             params=params)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, [])
 
             return self.data_properties.train_data, self.data_properties.test_data

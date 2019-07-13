@@ -8,14 +8,14 @@ from pyautoml.reporting.report import Report
 
 class Data():    
 
-    def __init__(self, data, use_full_data, target_field, report_name):
+    def __init__(self, data, train_data, test_data, use_full_data, target_field, report_name):
 
         self.orig_data = data
         self.field_types = {}
         self.colMapping = {}
         self.target_field = target_field
-        self.train_data = None
-        self.test_data = None
+        self.train_data = train_data
+        self.test_data = test_data
         self.use_full_data = use_full_data
         
         if report_name is not None:

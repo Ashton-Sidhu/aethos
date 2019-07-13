@@ -23,8 +23,11 @@ class Report():
 
     def ReportTechnique(self, technique, list_of_cols):
 
-        for col in list_of_cols:
+        if list(list_of_cols) != []:        
+            for col in list_of_cols:
+                log = technique.replace("column_name_placeholder", col)
 
-            log = technique.replace("column_name_placeholder", col)
+                self.WriteContents(log)
 
-            self.WriteContents(log)
+        else:
+            self.WriteContents(technique)

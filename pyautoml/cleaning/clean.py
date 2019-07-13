@@ -5,7 +5,8 @@ from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
 from pyautoml.data.data import Data
-from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
+from pyautoml.util import (GetListOfCols, SplitData, _FunctionInputValidation,
+                           _NumericFunctionInputConditions)
 
 with open("pyautoml/technique_reasons.yml", 'r') as stream:
     try:
@@ -21,21 +22,20 @@ class Clean():
         if not _FunctionInputValidation(data, train_data, test_data):
             print("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
-        self.data = data
-        self.data_properties = Data(self.data, use_full_data=use_full_data, target_field="", report_name=report_name)
+        self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
-        if self.data is not None:
-            self.train_data, self.test_data = SplitData(self.data, test_split_percentage)        
-        else:
-            self.train_data = self.data_properties.train_data
-            self.test_data = self.data_properties.test_data
+        if data is not None:
+            self.data = data
+            self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data, test_split_percentage)        
 
         if self.data_properties.report is None:
-            self.reporting = False
+            self.report = None
         else:
-            self.reporting = True
             self.report = self.data_properties.report
             self.report.WriteHeader("Cleaning")
+
+        self.train_data = self.data_properties.train_data
+        self.test_data = self.data_properties.test_data
 
     def RemoveColumns(self, threshold):
         """Remove columns from the dataframe that have more than the threshold value of missing columns.
@@ -138,8 +138,12 @@ class Clean():
             self.data = ReplaceMissingMeanMedianMode("mean", list_of_cols, data=self.data)
 
             #Write to report
-            if self.data is not None:            
-                self.report.ReportTechnique(report_info, list_of_cols)
+            if self.report is not None:            
+                if list_of_cols:
+                    self.report.ReportTechnique(report_info, list_of_cols)
+                else:
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data, None)
+                    self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data
 
@@ -149,8 +153,12 @@ class Clean():
                                                                                                             train_data=self.data_properties.train_data,
                                                                                                             test_data=self.data_properties.test_data)
             
-            if self.data is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
+            if self.report is not None:
+                if list_of_cols:
+                    self.report.ReportTechnique(report_info, list_of_cols)
+                else:
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
+                    self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -175,7 +183,11 @@ class Clean():
             self.data = ReplaceMissingMeanMedianMode("median", list_of_cols, data=self.data)
             
             if self.report is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
+                if list_of_cols:
+                    self.report.ReportTechnique(report_info, list_of_cols)
+                else:
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data, None)
+                    self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data
 
@@ -186,7 +198,11 @@ class Clean():
                                                                                                             test_data=self.data_properties.test_data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
+                if list_of_cols:
+                    self.report.ReportTechnique(report_info, list_of_cols)
+                else:
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
+                    self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -212,7 +228,11 @@ class Clean():
             self.data = ReplaceMissingMeanMedianMode("most_frequent", list_of_cols, data=self.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
+                if list_of_cols:
+                    self.report.ReportTechnique(report_info, list_of_cols)
+                else:
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data, None)
+                    self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data
 
@@ -222,7 +242,11 @@ class Clean():
                                                                                                             train_data=self.data_properties.train_data,
                                                                                                             test_data=self.data_properties.test_data)
             if self.report is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
+                if list_of_cols:
+                    self.report.ReportTechnique(report_info, list_of_cols)
+                else:
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
+                    self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
