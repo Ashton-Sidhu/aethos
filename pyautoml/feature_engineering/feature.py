@@ -1,13 +1,17 @@
-import pandas as pd
-import yaml
+import os
 
+import pandas as pd
+import pyautoml
+import yaml
 from pyautoml.data.data import Data
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
 from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 
-with open("pyautoml/technique_reasons.yml", 'r') as stream:
+pkg_directory = os.path.dirname(pyautoml.__file__)
+
+with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
     try:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
