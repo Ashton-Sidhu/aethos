@@ -20,10 +20,10 @@ class TestReport(unittest.TestCase):
         report.WriteHeader(header)
         report.WriteContents(contents)
 
-        with open("reports/test.txt") as f:
+        with open("pyautoml_reports/test.txt") as f:
             content = f.read()
 
-        os.remove("reports/test.txt")
+        os.remove("pyautoml_reports/test.txt")
 
         self.assertEqual(content, "Test\n\nThis is a test.")
 
@@ -38,11 +38,11 @@ class TestReport(unittest.TestCase):
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
         clean.RemoveColumns(0.5)
 
-        with open("reports/test.txt") as f:
+        with open("pyautoml_reports/test.txt") as f:
             content = f.read()
         validate = "col2" in content and "col3" in content
 
-        os.remove("reports/test.txt")
+        os.remove("pyautoml_reports/test.txt")
 
         self.assertTrue(validate)
 
@@ -58,11 +58,11 @@ class TestReport(unittest.TestCase):
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
         clean_data = clean.ReplaceMissingNewCategory()
 
-        with open("reports/test.txt") as f:
+        with open("pyautoml_reports/test.txt") as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
 
-        os.remove("reports/test.txt")
+        os.remove("pyautoml_reports/test.txt")
 
         self.assertTrue(validate)
 
@@ -78,11 +78,11 @@ class TestReport(unittest.TestCase):
         preprocess = Preprocess(data, test_split_percentage=0.5, use_full_data=False, report_name="test")
         normal_data, test = preprocess.NormalizeNumeric()
 
-        with open("reports/test.txt") as f:
+        with open("pyautoml_reports/test.txt") as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
 
-        os.remove("reports/test.txt")
+        os.remove("pyautoml_reports/test.txt")
 
         self.assertTrue(validate)
 
@@ -94,11 +94,11 @@ class TestReport(unittest.TestCase):
         feature = Feature(list_of_sentences, test_split_percentage=0.5, use_full_data=True, report_name="test")
         transform_data = feature.BagofWords()
 
-        with open("reports/test.txt") as f:
+        with open("pyautoml_reports/test.txt") as f:
             content = f.read()
         validate = "representation" in content
 
-        os.remove("reports/test.txt")
+        os.remove("pyautoml_reports/test.txt")
 
         self.assertTrue(validate)
 

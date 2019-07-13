@@ -5,16 +5,21 @@ class Report():
 
     def __init__(self, report_name):
         self.report_name = report_name
-        self.filename = f"reports/{report_name}.txt"
+        self.filename = f"pyautoml_reports/{report_name}.txt"
 
         #TODO: Move making the directory on first time run to some config file
-        if not os.path.exists("reports/"):
-            os.makedirs("reports")        
+        if not os.path.exists("pyautoml_reports/"):
+            os.makedirs("pyautoml_reports")        
 
     def WriteHeader(self, header):
-
-        with open(self.filename, 'a+') as f:
-            f.write(header + "\n\n")
+        
+        if os.path.exists(self.filename):
+            with open(self.filename, 'a+') as f:
+                f.write("\n" + header + "\n\n")
+        
+        else:
+            with open(self.filename, 'a+') as f:
+                f.write(header + "\n\n")
 
     def WriteContents(self, content):
 
