@@ -31,3 +31,33 @@ clean:
       Replaced missing values in column column_name_placeholder with the constant.
 
   text:
+
+preprocess:
+  general:
+  
+  categorical:
+
+  numeric:
+    standardize: >
+      Standardized the values in column column_name_placeholder between 0 and 1 so all values in every column are in the same 
+      domain and range does not effect model weights.
+
+  text:
+
+feature:
+  general:
+
+  categorical:
+    onehotencode: >
+      Converted the categories in column column_name_placeholder into its own feature where the value is 1 if category exists 
+      in the record, 0 otherwise.
+
+  numeric:
+
+  text:
+    tfidf: >
+      Converted text to a numeric representation where each number represents how important a word(s) is to a corpus. The higher the number, 
+      the more important words is to the corpus.
+
+    bow: >
+      Converted text to a numeric representation where each number represents how many times a word occurs in a sample.
