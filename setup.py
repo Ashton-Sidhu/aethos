@@ -14,5 +14,6 @@ setup(
     license='MIT',
     description='A library of data science and machine learning techniques to help automate workflow.',
     long_description=long_description,
-    long_description_content_type="text/markdown"
+    long_description_content_type="text/markdown",
+    include_package_data=True
 )
