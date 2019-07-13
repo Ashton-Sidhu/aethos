@@ -54,7 +54,7 @@ For Web App:
     - [x] Data Cleaning V1
     - [x] Feature Engineering V1
   - [ ]	Code Generation
-  - [ ]	Reporting V1
+  - [x]	Reporting V1
 
 #### Phase 2
   - [ ]	Data visualizations
