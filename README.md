@@ -1,12 +1,15 @@
 # py-automl
 
+<i>"Analytics shouldn't be about the code, but the analysis itself."</i>
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Development Phases](#development-timeline)
+- [Installation](#installation)
+- [Development Phases](#development-phases)
 - [Feedback](#feedback)
 - [Contributors](#contributors)
 - [Sponsors](#sponsors)
@@ -36,6 +39,16 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
 - On prem deployment
 - 3rd Party application integration (Azure, AWS, GC)
 
+## Installation
+
+For package use (no GUI): 
+
+`pip install py-automl`
+
+For Web App:
+
+`TBD`
+
 ## Development Phases
 #### Phase 1
   - [ ]	UI framework
@@ -43,7 +56,7 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
     - [x] Data Cleaning V1
     - [x] Feature Engineering V1
   - [ ]	Code Generation
-  - [ ]	Reporting V1
+  - [x]	Reporting V1
 
 #### Phase 2
   - [ ]	Data visualizations
@@ -71,16 +84,6 @@ I appreciate any feedback so if you have any feature requests or issues make an 
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification and is brought to you by these [awesome contributors](./CONTRIBUTORS.md).
 
-## Build Process
-
-For package use (no GUI): 
-
-`pip install py-automl`
-
-For Web App:
-
-`TBD`
-
 ## Sponsors
 
 N/A
@@ -90,9 +93,5 @@ N/A
 N/A
 
 ## For Developers
-
-To generate requirements file install `pipreqs`: `pip install pipreqs`.
-
-Navigate to py-automl root directory and run `pipreqs .`
 
 To install packages `python setup.py install`

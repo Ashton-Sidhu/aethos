@@ -47,7 +47,7 @@ def PreprocessNormalize(list_of_cols=[], data=None, train_data=None, test_data=N
         scaled_train_df = pd.DataFrame(scaled_train_data, columns=list_of_cols)
         train_data = DropAndReplaceColumns(train_data, list_of_cols, scaled_train_df)
 
-        scaled_test_data = scaler.transform(self.data_properties.test_data)
+        scaled_test_data = scaler.transform(test_data)
         scaled_test_df = pd.DataFrame(scaled_test_data, columns=list_of_cols)
         test_data = DropAndReplaceColumns(test_data, list_of_cols, scaled_test_df)
 
