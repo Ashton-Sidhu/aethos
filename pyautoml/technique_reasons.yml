@@ -61,3 +61,6 @@ feature:
 
     bow: >
       Converted text to a numeric representation where each number represents how many times a word occurs in a sample.
+
+    postag: >
+      Tagged each word with its Part of Speech tag where the tag represents whether a word is a Noun, Verb, Adjective, etc.
