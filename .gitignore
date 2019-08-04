@@ -8,13 +8,13 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+pyautoml/build/
 develop-eggs/
 pyautoml/dist/
 downloads/
 eggs/
 .eggs/
-lib/
+pyautoml/lib/
 lib64/
 parts/
 sdist/
