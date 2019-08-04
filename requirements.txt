@@ -2,4 +2,5 @@ pandas_validation==0.5.0
 pandas==0.23.3
 numpy==1.16.2
 setuptools==39.0.1
-scikit_learn==0.21.2
+scikit_learn[alldeps]
+django

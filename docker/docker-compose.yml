@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  py_automl:
+    image: py_automl
+    build: .
+    ports:
+      - 3000:3000

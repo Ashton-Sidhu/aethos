@@ -125,3 +125,6 @@ pyautoml_reports/
 #github
 .github/
 upload.bat
+
+.devcontainer.json
+.dockerignore
