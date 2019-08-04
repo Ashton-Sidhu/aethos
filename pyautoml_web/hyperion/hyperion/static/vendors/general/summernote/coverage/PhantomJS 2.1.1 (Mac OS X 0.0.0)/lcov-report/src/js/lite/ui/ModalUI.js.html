@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/js/lite/ui/ModalUI.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">all files</a> / <a href="index.html">src/js/lite/ui/</a> ModalUI.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">12.5% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>3/24</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/4</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">16.67% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.7% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>2/23</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(global){global.wrappers['/Users/lqez/Dev/summernote/src/js/lite/ui/ModalUI.js']=[<span class="fstat-no" title="function not covered" >function(require,module,exports,__dirname,__filename){</span> "use strict";
+<span class="cstat-no" title="statement not covered" >exports.__esModule = true;</span>
+<span class="cstat-no" title="statement not covered" >var ModalUI = /** @class */ (<span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="fstat-no" title="function not covered" >    function ModalUI($node, options) {</span>
+<span class="cstat-no" title="statement not covered" >        this.options = $.extend({}, {</span>
+            target: options.container || 'body'
+        }, options);
+<span class="cstat-no" title="statement not covered" >        this.$modal = $node;</span>
+<span class="cstat-no" title="statement not covered" >        this.$backdrop = $('&lt;div class="note-modal-backdrop" /&gt;');</span>
+    }
+<span class="cstat-no" title="statement not covered" >    ModalUI.prototype.show = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        if (this.options.target === 'body') {</span>
+<span class="cstat-no" title="statement not covered" >            this.$backdrop.css('position', 'fixed');</span>
+<span class="cstat-no" title="statement not covered" >            this.$modal.css('position', 'fixed');</span>
+        }
+        else {
+<span class="cstat-no" title="statement not covered" >            this.$backdrop.css('position', 'absolute');</span>
+<span class="cstat-no" title="statement not covered" >            this.$modal.css('position', 'absolute');</span>
+        }
+<span class="cstat-no" title="statement not covered" >        this.$backdrop.appendTo(this.options.target).show();</span>
+<span class="cstat-no" title="statement not covered" >        this.$modal.appendTo(this.options.target).addClass('open').show();</span>
+<span class="cstat-no" title="statement not covered" >        this.$modal.trigger('note.modal.show');</span>
+<span class="cstat-no" title="statement not covered" >        this.$modal.off('click', '.close').on('click', '.close', this.hide.bind(this));</span>
+    };
+<span class="cstat-no" title="statement not covered" >    ModalUI.prototype.hide = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        this.$modal.removeClass('open').hide();</span>
+<span class="cstat-no" title="statement not covered" >        this.$backdrop.hide();</span>
+<span class="cstat-no" title="statement not covered" >        this.$modal.trigger('note.modal.hide');</span>
+    };
+<span class="cstat-no" title="statement not covered" >    return ModalUI;</span>
+}());
+<span class="cstat-no" title="statement not covered" >exports["default"] = ModalUI;</span>
+&nbsp;
+},'src/js/lite/ui/ModalUI.js',{}];})(this);
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiTW9kYWxVSS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIk1vZGFsVUkuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQTtJQUNFLGlCQUFZLEtBQUssRUFBRSxPQUFPO1FBQ3hCLElBQUksQ0FBQyxPQUFPLEdBQUcsQ0FBQyxDQUFDLE1BQU0sQ0FBQyxFQUFFLEVBQUU7WUFDMUIsTUFBTSxFQUFFLE9BQU8sQ0FBQyxTQUFTLElBQUksTUFBTTtTQUNwQyxFQUFFLE9BQU8sQ0FBQyxDQUFDO1FBRVosSUFBSSxDQUFDLE1BQU0sR0FBRyxLQUFLLENBQUM7UUFDcEIsSUFBSSxDQUFDLFNBQVMsR0FBRyxDQUFDLENBQUMscUNBQXFDLENBQUMsQ0FBQztJQUM1RCxDQUFDO0lBRUQsc0JBQUksR0FBSjtRQUNFLElBQUksSUFBSSxDQUFDLE9BQU8sQ0FBQyxNQUFNLEtBQUssTUFBTSxFQUFFO1lBQ2xDLElBQUksQ0FBQyxTQUFTLENBQUMsR0FBRyxDQUFDLFVBQVUsRUFBRSxPQUFPLENBQUMsQ0FBQztZQUN4QyxJQUFJLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxVQUFVLEVBQUUsT0FBTyxDQUFDLENBQUM7U0FDdEM7YUFBTTtZQUNMLElBQUksQ0FBQyxTQUFTLENBQUMsR0FBRyxDQUFDLFVBQVUsRUFBRSxVQUFVLENBQUMsQ0FBQztZQUMzQyxJQUFJLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxVQUFVLEVBQUUsVUFBVSxDQUFDLENBQUM7U0FDekM7UUFFRCxJQUFJLENBQUMsU0FBUyxDQUFDLFFBQVEsQ0FBQyxJQUFJLENBQUMsT0FBTyxDQUFDLE1BQU0sQ0FBQyxDQUFDLElBQUksRUFBRSxDQUFDO1FBQ3BELElBQUksQ0FBQyxNQUFNLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLENBQUMsUUFBUSxDQUFDLE1BQU0sQ0FBQyxDQUFDLElBQUksRUFBRSxDQUFDO1FBRWxFLElBQUksQ0FBQyxNQUFNLENBQUMsT0FBTyxDQUFDLGlCQUFpQixDQUFDLENBQUM7UUFDdkMsSUFBSSxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsT0FBTyxFQUFFLFFBQVEsQ0FBQyxDQUFDLEVBQUUsQ0FBQyxPQUFPLEVBQUUsUUFBUSxFQUFFLElBQUksQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDLENBQUM7SUFDakYsQ0FBQztJQUVELHNCQUFJLEdBQUo7UUFDRSxJQUFJLENBQUMsTUFBTSxDQUFDLFdBQVcsQ0FBQyxNQUFNLENBQUMsQ0FBQyxJQUFJLEVBQUUsQ0FBQztRQUN2QyxJQUFJLENBQUMsU0FBUyxDQUFDLElBQUksRUFBRSxDQUFDO1FBQ3RCLElBQUksQ0FBQyxNQUFNLENBQUMsT0FBTyxDQUFDLGlCQUFpQixDQUFDLENBQUM7SUFDekMsQ0FBQztJQUNILGNBQUM7QUFBRCxDQUFDLEFBL0JELElBK0JDO0FBRUQscUJBQWUsT0FBTyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiY2xhc3MgTW9kYWxVSSB7XG4gIGNvbnN0cnVjdG9yKCRub2RlLCBvcHRpb25zKSB7XG4gICAgdGhpcy5vcHRpb25zID0gJC5leHRlbmQoe30sIHtcbiAgICAgIHRhcmdldDogb3B0aW9ucy5jb250YWluZXIgfHwgJ2JvZHknLFxuICAgIH0sIG9wdGlvbnMpO1xuXG4gICAgdGhpcy4kbW9kYWwgPSAkbm9kZTtcbiAgICB0aGlzLiRiYWNrZHJvcCA9ICQoJzxkaXYgY2xhc3M9XCJub3RlLW1vZGFsLWJhY2tkcm9wXCIgLz4nKTtcbiAgfVxuXG4gIHNob3coKSB7XG4gICAgaWYgKHRoaXMub3B0aW9ucy50YXJnZXQgPT09ICdib2R5Jykge1xuICAgICAgdGhpcy4kYmFja2Ryb3AuY3NzKCdwb3NpdGlvbicsICdmaXhlZCcpO1xuICAgICAgdGhpcy4kbW9kYWwuY3NzKCdwb3NpdGlvbicsICdmaXhlZCcpO1xuICAgIH0gZWxzZSB7XG4gICAgICB0aGlzLiRiYWNrZHJvcC5jc3MoJ3Bvc2l0aW9uJywgJ2Fic29sdXRlJyk7XG4gICAgICB0aGlzLiRtb2RhbC5jc3MoJ3Bvc2l0aW9uJywgJ2Fic29sdXRlJyk7XG4gICAgfVxuXG4gICAgdGhpcy4kYmFja2Ryb3AuYXBwZW5kVG8odGhpcy5vcHRpb25zLnRhcmdldCkuc2hvdygpO1xuICAgIHRoaXMuJG1vZGFsLmFwcGVuZFRvKHRoaXMub3B0aW9ucy50YXJnZXQpLmFkZENsYXNzKCdvcGVuJykuc2hvdygpO1xuXG4gICAgdGhpcy4kbW9kYWwudHJpZ2dlcignbm90ZS5tb2RhbC5zaG93Jyk7XG4gICAgdGhpcy4kbW9kYWwub2ZmKCdjbGljaycsICcuY2xvc2UnKS5vbignY2xpY2snLCAnLmNsb3NlJywgdGhpcy5oaWRlLmJpbmQodGhpcykpO1xuICB9XG5cbiAgaGlkZSgpIHtcbiAgICB0aGlzLiRtb2RhbC5yZW1vdmVDbGFzcygnb3BlbicpLmhpZGUoKTtcbiAgICB0aGlzLiRiYWNrZHJvcC5oaWRlKCk7XG4gICAgdGhpcy4kbW9kYWwudHJpZ2dlcignbm90ZS5tb2RhbC5oaWRlJyk7XG4gIH1cbn1cblxuZXhwb3J0IGRlZmF1bHQgTW9kYWxVSTtcbiJdfQ==
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 06 2019 21:30:46 GMT+0900 (Korean Standard Time)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

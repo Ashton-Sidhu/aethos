@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/js/lite/ui/DropdownUI.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">all files</a> / <a href="index.html">src/js/lite/ui/</a> DropdownUI.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">6.82% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>3/44</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.33% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">4.65% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>2/43</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(global){global.wrappers['/Users/lqez/Dev/summernote/src/js/lite/ui/DropdownUI.js']=[<span class="fstat-no" title="function not covered" >function(require,module,exports,__dirname,__filename){</span> "use strict";
+<span class="cstat-no" title="statement not covered" >exports.__esModule = true;</span>
+<span class="cstat-no" title="statement not covered" >var DropdownUI = /** @class */ (<span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="fstat-no" title="function not covered" >    function DropdownUI($node, options) {</span>
+<span class="cstat-no" title="statement not covered" >        this.$button = $node;</span>
+<span class="cstat-no" title="statement not covered" >        this.options = $.extend({}, {</span>
+            target: options.container
+        }, options);
+<span class="cstat-no" title="statement not covered" >        this.setEvent();</span>
+    }
+<span class="cstat-no" title="statement not covered" >    DropdownUI.prototype.setEvent = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        var _this = this;</span>
+<span class="cstat-no" title="statement not covered" >        this.$button.on('click', <span class="fstat-no" title="function not covered" >function (e) {</span></span>
+<span class="cstat-no" title="statement not covered" >            _this.toggle();</span>
+<span class="cstat-no" title="statement not covered" >            e.stopImmediatePropagation();</span>
+        });
+    };
+<span class="cstat-no" title="statement not covered" >    DropdownUI.prototype.clear = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        var $parent = $('.note-btn-group.open');</span>
+<span class="cstat-no" title="statement not covered" >        $parent.find('.note-btn.active').removeClass('active');</span>
+<span class="cstat-no" title="statement not covered" >        $parent.removeClass('open');</span>
+    };
+<span class="cstat-no" title="statement not covered" >    DropdownUI.prototype.show = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        this.$button.addClass('active');</span>
+<span class="cstat-no" title="statement not covered" >        this.$button.parent().addClass('open');</span>
+<span class="cstat-no" title="statement not covered" >        var $dropdown = this.$button.next();</span>
+<span class="cstat-no" title="statement not covered" >        var offset = $dropdown.offset();</span>
+<span class="cstat-no" title="statement not covered" >        var width = $dropdown.outerWidth();</span>
+<span class="cstat-no" title="statement not covered" >        var windowWidth = $(window).width();</span>
+<span class="cstat-no" title="statement not covered" >        var targetMarginRight = parseFloat($(this.options.target).css('margin-right'));</span>
+<span class="cstat-no" title="statement not covered" >        if (offset.left + width &gt; windowWidth - targetMarginRight) {</span>
+<span class="cstat-no" title="statement not covered" >            $dropdown.css('margin-left', windowWidth - targetMarginRight - (offset.left + width));</span>
+        }
+        else {
+<span class="cstat-no" title="statement not covered" >            $dropdown.css('margin-left', '');</span>
+        }
+    };
+<span class="cstat-no" title="statement not covered" >    DropdownUI.prototype.hide = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        this.$button.removeClass('active');</span>
+<span class="cstat-no" title="statement not covered" >        this.$button.parent().removeClass('open');</span>
+    };
+<span class="cstat-no" title="statement not covered" >    DropdownUI.prototype.toggle = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        var isOpened = this.$button.parent().hasClass('open');</span>
+<span class="cstat-no" title="statement not covered" >        this.clear();</span>
+<span class="cstat-no" title="statement not covered" >        if (isOpened) {</span>
+<span class="cstat-no" title="statement not covered" >            this.hide();</span>
+        }
+        else {
+<span class="cstat-no" title="statement not covered" >            this.show();</span>
+        }
+    };
+<span class="cstat-no" title="statement not covered" >    return DropdownUI;</span>
+}());
+<span class="cstat-no" title="statement not covered" >$(document).on('click', <span class="fstat-no" title="function not covered" >function (e) {</span></span>
+<span class="cstat-no" title="statement not covered" >    if (!$(e.target).closest('.note-btn-group').length) {</span>
+<span class="cstat-no" title="statement not covered" >        $('.note-btn-group.open').removeClass('open');</span>
+    }
+});
+<span class="cstat-no" title="statement not covered" >$(document).on('click.note-dropdown-menu', <span class="fstat-no" title="function not covered" >function (e) {</span></span>
+<span class="cstat-no" title="statement not covered" >    $(e.target).closest('.note-dropdown-menu').parent().removeClass('open');</span>
+});
+<span class="cstat-no" title="statement not covered" >exports["default"] = DropdownUI;</span>
+&nbsp;
+},'src/js/lite/ui/DropdownUI.js',{}];})(this);
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRHJvcGRvd25VSS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIkRyb3Bkb3duVUkuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQTtJQUNFLG9CQUFZLEtBQUssRUFBRSxPQUFPO1FBQ3hCLElBQUksQ0FBQyxPQUFPLEdBQUcsS0FBSyxDQUFDO1FBQ3JCLElBQUksQ0FBQyxPQUFPLEdBQUcsQ0FBQyxDQUFDLE1BQU0sQ0FBQyxFQUFFLEVBQUU7WUFDMUIsTUFBTSxFQUFFLE9BQU8sQ0FBQyxTQUFTO1NBQzFCLEVBQUUsT0FBTyxDQUFDLENBQUM7UUFDWixJQUFJLENBQUMsUUFBUSxFQUFFLENBQUM7SUFDbEIsQ0FBQztJQUVELDZCQUFRLEdBQVI7UUFBQSxpQkFLQztRQUpDLElBQUksQ0FBQyxPQUFPLENBQUMsRUFBRSxDQUFDLE9BQU8sRUFBRSxVQUFDLENBQUM7WUFDekIsS0FBSSxDQUFDLE1BQU0sRUFBRSxDQUFDO1lBQ2QsQ0FBQyxDQUFDLHdCQUF3QixFQUFFLENBQUM7UUFDL0IsQ0FBQyxDQUFDLENBQUM7SUFDTCxDQUFDO0lBRUQsMEJBQUssR0FBTDtRQUNFLElBQUksT0FBTyxHQUFHLENBQUMsQ0FBQyxzQkFBc0IsQ0FBQyxDQUFDO1FBQ3hDLE9BQU8sQ0FBQyxJQUFJLENBQUMsa0JBQWtCLENBQUMsQ0FBQyxXQUFXLENBQUMsUUFBUSxDQUFDLENBQUM7UUFDdkQsT0FBTyxDQUFDLFdBQVcsQ0FBQyxNQUFNLENBQUMsQ0FBQztJQUM5QixDQUFDO0lBRUQseUJBQUksR0FBSjtRQUNFLElBQUksQ0FBQyxPQUFPLENBQUMsUUFBUSxDQUFDLFFBQVEsQ0FBQyxDQUFDO1FBQ2hDLElBQUksQ0FBQyxPQUFPLENBQUMsTUFBTSxFQUFFLENBQUMsUUFBUSxDQUFDLE1BQU0sQ0FBQyxDQUFDO1FBRXZDLElBQUksU0FBUyxHQUFHLElBQUksQ0FBQyxPQUFPLENBQUMsSUFBSSxFQUFFLENBQUM7UUFDcEMsSUFBSSxNQUFNLEdBQUcsU0FBUyxDQUFDLE1BQU0sRUFBRSxDQUFDO1FBQ2hDLElBQUksS0FBSyxHQUFHLFNBQVMsQ0FBQyxVQUFVLEVBQUUsQ0FBQztRQUNuQyxJQUFJLFdBQVcsR0FBRyxDQUFDLENBQUMsTUFBTSxDQUFDLENBQUMsS0FBSyxFQUFFLENBQUM7UUFDcEMsSUFBSSxpQkFBaUIsR0FBRyxVQUFVLENBQUMsQ0FBQyxDQUFDLElBQUksQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLENBQUMsR0FBRyxDQUFDLGNBQWMsQ0FBQyxDQUFDLENBQUM7UUFFL0UsSUFBSSxNQUFNLENBQUMsSUFBSSxHQUFHLEtBQUssR0FBRyxXQUFXLEdBQUcsaUJBQWlCLEVBQUU7WUFDekQsU0FBUyxDQUFDLEdBQUcsQ0FBQyxhQUFhLEVBQUUsV0FBVyxHQUFHLGlCQUFpQixHQUFHLENBQUMsTUFBTSxDQUFDLElBQUksR0FBRyxLQUFLLENBQUMsQ0FBQyxDQUFDO1NBQ3ZGO2FBQU07WUFDTCxTQUFTLENBQUMsR0FBRyxDQUFDLGFBQWEsRUFBRSxFQUFFLENBQUMsQ0FBQztTQUNsQztJQUNILENBQUM7SUFFRCx5QkFBSSxHQUFKO1FBQ0UsSUFBSSxDQUFDLE9BQU8sQ0FBQyxXQUFXLENBQUMsUUFBUSxDQUFDLENBQUM7UUFDbkMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxNQUFNLEVBQUUsQ0FBQyxXQUFXLENBQUMsTUFBTSxDQUFDLENBQUM7SUFDNUMsQ0FBQztJQUVELDJCQUFNLEdBQU47UUFDRSxJQUFJLFFBQVEsR0FBRyxJQUFJLENBQUMsT0FBTyxDQUFDLE1BQU0sRUFBRSxDQUFDLFFBQVEsQ0FBQyxNQUFNLENBQUMsQ0FBQztRQUV0RCxJQUFJLENBQUMsS0FBSyxFQUFFLENBQUM7UUFFYixJQUFJLFFBQVEsRUFBRTtZQUNaLElBQUksQ0FBQyxJQUFJLEVBQUUsQ0FBQztTQUNiO2FBQU07WUFDTCxJQUFJLENBQUMsSUFBSSxFQUFFLENBQUM7U0FDYjtJQUNILENBQUM7SUFDSCxpQkFBQztBQUFELENBQUMsQUF2REQsSUF1REM7QUFFRCxDQUFDLENBQUMsUUFBUSxDQUFDLENBQUMsRUFBRSxDQUFDLE9BQU8sRUFBRSxVQUFTLENBQUM7SUFDaEMsSUFBSSxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsTUFBTSxDQUFDLENBQUMsT0FBTyxDQUFDLGlCQUFpQixDQUFDLENBQUMsTUFBTSxFQUFFO1FBQ2xELENBQUMsQ0FBQyxzQkFBc0IsQ0FBQyxDQUFDLFdBQVcsQ0FBQyxNQUFNLENBQUMsQ0FBQztLQUMvQztBQUNILENBQUMsQ0FBQyxDQUFDO0FBRUgsQ0FBQyxDQUFDLFFBQVEsQ0FBQyxDQUFDLEVBQUUsQ0FBQywwQkFBMEIsRUFBRSxVQUFTLENBQUM7SUFDbkQsQ0FBQyxDQUFDLENBQUMsQ0FBQyxNQUFNLENBQUMsQ0FBQyxPQUFPLENBQUMscUJBQXFCLENBQUMsQ0FBQyxNQUFNLEVBQUUsQ0FBQyxXQUFXLENBQUMsTUFBTSxDQUFDLENBQUM7QUFDMUUsQ0FBQyxDQUFDLENBQUM7QUFFSCxxQkFBZSxVQUFVLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJjbGFzcyBEcm9wZG93blVJIHtcbiAgY29uc3RydWN0b3IoJG5vZGUsIG9wdGlvbnMpIHtcbiAgICB0aGlzLiRidXR0b24gPSAkbm9kZTtcbiAgICB0aGlzLm9wdGlvbnMgPSAkLmV4dGVuZCh7fSwge1xuICAgICAgdGFyZ2V0OiBvcHRpb25zLmNvbnRhaW5lcixcbiAgICB9LCBvcHRpb25zKTtcbiAgICB0aGlzLnNldEV2ZW50KCk7XG4gIH1cblxuICBzZXRFdmVudCgpIHtcbiAgICB0aGlzLiRidXR0b24ub24oJ2NsaWNrJywgKGUpID0+IHtcbiAgICAgIHRoaXMudG9nZ2xlKCk7XG4gICAgICBlLnN0b3BJbW1lZGlhdGVQcm9wYWdhdGlvbigpO1xuICAgIH0pO1xuICB9XG5cbiAgY2xlYXIoKSB7XG4gICAgdmFyICRwYXJlbnQgPSAkKCcubm90ZS1idG4tZ3JvdXAub3BlbicpO1xuICAgICRwYXJlbnQuZmluZCgnLm5vdGUtYnRuLmFjdGl2ZScpLnJlbW92ZUNsYXNzKCdhY3RpdmUnKTtcbiAgICAkcGFyZW50LnJlbW92ZUNsYXNzKCdvcGVuJyk7XG4gIH1cblxuICBzaG93KCkge1xuICAgIHRoaXMuJGJ1dHRvbi5hZGRDbGFzcygnYWN0aXZlJyk7XG4gICAgdGhpcy4kYnV0dG9uLnBhcmVudCgpLmFkZENsYXNzKCdvcGVuJyk7XG5cbiAgICB2YXIgJGRyb3Bkb3duID0gdGhpcy4kYnV0dG9uLm5leHQoKTtcbiAgICB2YXIgb2Zmc2V0ID0gJGRyb3Bkb3duLm9mZnNldCgpO1xuICAgIHZhciB3aWR0aCA9ICRkcm9wZG93bi5vdXRlcldpZHRoKCk7XG4gICAgdmFyIHdpbmRvd1dpZHRoID0gJCh3aW5kb3cpLndpZHRoKCk7XG4gICAgdmFyIHRhcmdldE1hcmdpblJpZ2h0ID0gcGFyc2VGbG9hdCgkKHRoaXMub3B0aW9ucy50YXJnZXQpLmNzcygnbWFyZ2luLXJpZ2h0JykpO1xuXG4gICAgaWYgKG9mZnNldC5sZWZ0ICsgd2lkdGggPiB3aW5kb3dXaWR0aCAtIHRhcmdldE1hcmdpblJpZ2h0KSB7XG4gICAgICAkZHJvcGRvd24uY3NzKCdtYXJnaW4tbGVmdCcsIHdpbmRvd1dpZHRoIC0gdGFyZ2V0TWFyZ2luUmlnaHQgLSAob2Zmc2V0LmxlZnQgKyB3aWR0aCkpO1xuICAgIH0gZWxzZSB7XG4gICAgICAkZHJvcGRvd24uY3NzKCdtYXJnaW4tbGVmdCcsICcnKTtcbiAgICB9XG4gIH1cblxuICBoaWRlKCkge1xuICAgIHRoaXMuJGJ1dHRvbi5yZW1vdmVDbGFzcygnYWN0aXZlJyk7XG4gICAgdGhpcy4kYnV0dG9uLnBhcmVudCgpLnJlbW92ZUNsYXNzKCdvcGVuJyk7XG4gIH1cblxuICB0b2dnbGUoKSB7XG4gICAgdmFyIGlzT3BlbmVkID0gdGhpcy4kYnV0dG9uLnBhcmVudCgpLmhhc0NsYXNzKCdvcGVuJyk7XG5cbiAgICB0aGlzLmNsZWFyKCk7XG5cbiAgICBpZiAoaXNPcGVuZWQpIHtcbiAgICAgIHRoaXMuaGlkZSgpO1xuICAgIH0gZWxzZSB7XG4gICAgICB0aGlzLnNob3coKTtcbiAgICB9XG4gIH1cbn1cblxuJChkb2N1bWVudCkub24oJ2NsaWNrJywgZnVuY3Rpb24oZSkge1xuICBpZiAoISQoZS50YXJnZXQpLmNsb3Nlc3QoJy5ub3RlLWJ0bi1ncm91cCcpLmxlbmd0aCkge1xuICAgICQoJy5ub3RlLWJ0bi1ncm91cC5vcGVuJykucmVtb3ZlQ2xhc3MoJ29wZW4nKTtcbiAgfVxufSk7XG5cbiQoZG9jdW1lbnQpLm9uKCdjbGljay5ub3RlLWRyb3Bkb3duLW1lbnUnLCBmdW5jdGlvbihlKSB7XG4gICQoZS50YXJnZXQpLmNsb3Nlc3QoJy5ub3RlLWRyb3Bkb3duLW1lbnUnKS5wYXJlbnQoKS5yZW1vdmVDbGFzcygnb3BlbicpO1xufSk7XG5cbmV4cG9ydCBkZWZhdWx0IERyb3Bkb3duVUk7XG4iXX0=
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 06 2019 21:30:46 GMT+0900 (Korean Standard Time)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

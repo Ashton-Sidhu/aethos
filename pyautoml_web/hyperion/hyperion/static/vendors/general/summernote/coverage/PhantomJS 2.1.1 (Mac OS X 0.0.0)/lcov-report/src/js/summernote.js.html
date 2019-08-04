@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/js/summernote.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">src/js/</a> summernote.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">27.59% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>8/29</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">50% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>2/4</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">25% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>7/28</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(global){global.wrappers['/Users/lqez/Dev/summernote/src/js/summernote.js']=[function(require,module,exports,__dirname,__filename){ "use strict";
+exports.__esModule = true;
+var jquery_1 = require("jquery");
+var env_1 = require("./base/core/env");
+var lists_1 = require("./base/core/lists");
+var Context_1 = require("./base/Context");
+jquery_1["default"].fn.extend({
+    /**
+     * Summernote API
+     *
+     * @param {Object|String}
+     * @return {this}
+     */
+    summernote: <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >        var type = jquery_1["default"].type(lists_1["default"].head(arguments));</span>
+<span class="cstat-no" title="statement not covered" >        var isExternalAPICalled = type === 'string';</span>
+<span class="cstat-no" title="statement not covered" >        var hasInitOptions = type === 'object';</span>
+<span class="cstat-no" title="statement not covered" >        var options = jquery_1["default"].extend({}, jquery_1["default"].summernote.options, hasInitOptions ? lists_1["default"].head(arguments) : {});</span>
+        // Update options
+<span class="cstat-no" title="statement not covered" >        options.langInfo = jquery_1["default"].extend(true, {}, jquery_1["default"].summernote.lang['en-US'], jquery_1["default"].summernote.lang[options.lang]);</span>
+<span class="cstat-no" title="statement not covered" >        options.icons = jquery_1["default"].extend(true, {}, jquery_1["default"].summernote.options.icons, options.icons);</span>
+<span class="cstat-no" title="statement not covered" >        options.tooltip = options.tooltip === 'auto' ? !env_1["default"].isSupportTouch : options.tooltip;</span>
+<span class="cstat-no" title="statement not covered" >        this.each(<span class="fstat-no" title="function not covered" >function (idx, note) {</span></span>
+<span class="cstat-no" title="statement not covered" >            var $note = jquery_1["default"](note);</span>
+<span class="cstat-no" title="statement not covered" >            if (!$note.data('summernote')) {</span>
+<span class="cstat-no" title="statement not covered" >                var context = new Context_1["default"]($note, options);</span>
+<span class="cstat-no" title="statement not covered" >                $note.data('summernote', context);</span>
+<span class="cstat-no" title="statement not covered" >                $note.data('summernote').triggerEvent('init', context.layoutInfo);</span>
+            }
+        });
+<span class="cstat-no" title="statement not covered" >        var $note = this.first();</span>
+<span class="cstat-no" title="statement not covered" >        if ($note.length) {</span>
+<span class="cstat-no" title="statement not covered" >            var context = $note.data('summernote');</span>
+<span class="cstat-no" title="statement not covered" >            if (isExternalAPICalled) {</span>
+<span class="cstat-no" title="statement not covered" >                return context.invoke.apply(context, lists_1["default"].from(arguments));</span>
+            }
+            else <span class="cstat-no" title="statement not covered" >if (options.focus) {</span>
+<span class="cstat-no" title="statement not covered" >                context.invoke('editor.focus');</span>
+            }
+        }
+<span class="cstat-no" title="statement not covered" >        return this;</span>
+    }
+});
+&nbsp;
+},'src/js/summernote.js',{"jquery":"/Users/lqez/Dev/summernote/node_modules/jquery/dist/jquery.js","./base/core/env":"/Users/lqez/Dev/summernote/src/js/base/core/env.js","./base/core/lists":"/Users/lqez/Dev/summernote/src/js/base/core/lists.js","./base/Context":"/Users/lqez/Dev/summernote/src/js/base/Context.js"}];})(this);
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3VtbWVybm90ZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInN1bW1lcm5vdGUuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxpQ0FBdUI7QUFDdkIsdUNBQWtDO0FBQ2xDLDJDQUFzQztBQUN0QywwQ0FBcUM7QUFFckMsbUJBQUMsQ0FBQyxFQUFFLENBQUMsTUFBTSxDQUFDO0lBQ1Y7Ozs7O09BS0c7SUFDSCxVQUFVLEVBQUU7UUFDVixJQUFNLElBQUksR0FBRyxtQkFBQyxDQUFDLElBQUksQ0FBQyxrQkFBSyxDQUFDLElBQUksQ0FBQyxTQUFTLENBQUMsQ0FBQyxDQUFDO1FBQzNDLElBQU0sbUJBQW1CLEdBQUcsSUFBSSxLQUFLLFFBQVEsQ0FBQztRQUM5QyxJQUFNLGNBQWMsR0FBRyxJQUFJLEtBQUssUUFBUSxDQUFDO1FBRXpDLElBQU0sT0FBTyxHQUFHLG1CQUFDLENBQUMsTUFBTSxDQUFDLEVBQUUsRUFBRSxtQkFBQyxDQUFDLFVBQVUsQ0FBQyxPQUFPLEVBQUUsY0FBYyxDQUFDLENBQUMsQ0FBQyxrQkFBSyxDQUFDLElBQUksQ0FBQyxTQUFTLENBQUMsQ0FBQyxDQUFDLENBQUMsRUFBRSxDQUFDLENBQUM7UUFFaEcsaUJBQWlCO1FBQ2pCLE9BQU8sQ0FBQyxRQUFRLEdBQUcsbUJBQUMsQ0FBQyxNQUFNLENBQUMsSUFBSSxFQUFFLEVBQUUsRUFBRSxtQkFBQyxDQUFDLFVBQVUsQ0FBQyxJQUFJLENBQUMsT0FBTyxDQUFDLEVBQUUsbUJBQUMsQ0FBQyxVQUFVLENBQUMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFDO1FBQ25HLE9BQU8sQ0FBQyxLQUFLLEdBQUcsbUJBQUMsQ0FBQyxNQUFNLENBQUMsSUFBSSxFQUFFLEVBQUUsRUFBRSxtQkFBQyxDQUFDLFVBQVUsQ0FBQyxPQUFPLENBQUMsS0FBSyxFQUFFLE9BQU8sQ0FBQyxLQUFLLENBQUMsQ0FBQztRQUM5RSxPQUFPLENBQUMsT0FBTyxHQUFHLE9BQU8sQ0FBQyxPQUFPLEtBQUssTUFBTSxDQUFDLENBQUMsQ0FBQyxDQUFDLGdCQUFHLENBQUMsY0FBYyxDQUFDLENBQUMsQ0FBQyxPQUFPLENBQUMsT0FBTyxDQUFDO1FBRXJGLElBQUksQ0FBQyxJQUFJLENBQUMsVUFBQyxHQUFHLEVBQUUsSUFBSTtZQUNsQixJQUFNLEtBQUssR0FBRyxtQkFBQyxDQUFDLElBQUksQ0FBQyxDQUFDO1lBQ3RCLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSSxDQUFDLFlBQVksQ0FBQyxFQUFFO2dCQUM3QixJQUFNLE9BQU8sR0FBRyxJQUFJLG9CQUFPLENBQUMsS0FBSyxFQUFFLE9BQU8sQ0FBQyxDQUFDO2dCQUM1QyxLQUFLLENBQUMsSUFBSSxDQUFDLFlBQVksRUFBRSxPQUFPLENBQUMsQ0FBQztnQkFDbEMsS0FBSyxDQUFDLElBQUksQ0FBQyxZQUFZLENBQUMsQ0FBQyxZQUFZLENBQUMsTUFBTSxFQUFFLE9BQU8sQ0FBQyxVQUFVLENBQUMsQ0FBQzthQUNuRTtRQUNILENBQUMsQ0FBQyxDQUFDO1FBRUgsSUFBTSxLQUFLLEdBQUcsSUFBSSxDQUFDLEtBQUssRUFBRSxDQUFDO1FBQzNCLElBQUksS0FBSyxDQUFDLE1BQU0sRUFBRTtZQUNoQixJQUFNLE9BQU8sR0FBRyxLQUFLLENBQUMsSUFBSSxDQUFDLFlBQVksQ0FBQyxDQUFDO1lBQ3pDLElBQUksbUJBQW1CLEVBQUU7Z0JBQ3ZCLE9BQU8sT0FBTyxDQUFDLE1BQU0sQ0FBQyxLQUFLLENBQUMsT0FBTyxFQUFFLGtCQUFLLENBQUMsSUFBSSxDQUFDLFNBQVMsQ0FBQyxDQUFDLENBQUM7YUFDN0Q7aUJBQU0sSUFBSSxPQUFPLENBQUMsS0FBSyxFQUFFO2dCQUN4QixPQUFPLENBQUMsTUFBTSxDQUFDLGNBQWMsQ0FBQyxDQUFDO2FBQ2hDO1NBQ0Y7UUFFRCxPQUFPLElBQUksQ0FBQztJQUNkLENBQUM7Q0FDRixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgJCBmcm9tICdqcXVlcnknO1xuaW1wb3J0IGVudiBmcm9tICcuL2Jhc2UvY29yZS9lbnYnO1xuaW1wb3J0IGxpc3RzIGZyb20gJy4vYmFzZS9jb3JlL2xpc3RzJztcbmltcG9ydCBDb250ZXh0IGZyb20gJy4vYmFzZS9Db250ZXh0JztcblxuJC5mbi5leHRlbmQoe1xuICAvKipcbiAgICogU3VtbWVybm90ZSBBUElcbiAgICpcbiAgICogQHBhcmFtIHtPYmplY3R8U3RyaW5nfVxuICAgKiBAcmV0dXJuIHt0aGlzfVxuICAgKi9cbiAgc3VtbWVybm90ZTogZnVuY3Rpb24oKSB7XG4gICAgY29uc3QgdHlwZSA9ICQudHlwZShsaXN0cy5oZWFkKGFyZ3VtZW50cykpO1xuICAgIGNvbnN0IGlzRXh0ZXJuYWxBUElDYWxsZWQgPSB0eXBlID09PSAnc3RyaW5nJztcbiAgICBjb25zdCBoYXNJbml0T3B0aW9ucyA9IHR5cGUgPT09ICdvYmplY3QnO1xuXG4gICAgY29uc3Qgb3B0aW9ucyA9ICQuZXh0ZW5kKHt9LCAkLnN1bW1lcm5vdGUub3B0aW9ucywgaGFzSW5pdE9wdGlvbnMgPyBsaXN0cy5oZWFkKGFyZ3VtZW50cykgOiB7fSk7XG5cbiAgICAvLyBVcGRhdGUgb3B0aW9uc1xuICAgIG9wdGlvbnMubGFuZ0luZm8gPSAkLmV4dGVuZCh0cnVlLCB7fSwgJC5zdW1tZXJub3RlLmxhbmdbJ2VuLVVTJ10sICQuc3VtbWVybm90ZS5sYW5nW29wdGlvbnMubGFuZ10pO1xuICAgIG9wdGlvbnMuaWNvbnMgPSAkLmV4dGVuZCh0cnVlLCB7fSwgJC5zdW1tZXJub3RlLm9wdGlvbnMuaWNvbnMsIG9wdGlvbnMuaWNvbnMpO1xuICAgIG9wdGlvbnMudG9vbHRpcCA9IG9wdGlvbnMudG9vbHRpcCA9PT0gJ2F1dG8nID8gIWVudi5pc1N1cHBvcnRUb3VjaCA6IG9wdGlvbnMudG9vbHRpcDtcblxuICAgIHRoaXMuZWFjaCgoaWR4LCBub3RlKSA9PiB7XG4gICAgICBjb25zdCAkbm90ZSA9ICQobm90ZSk7XG4gICAgICBpZiAoISRub3RlLmRhdGEoJ3N1bW1lcm5vdGUnKSkge1xuICAgICAgICBjb25zdCBjb250ZXh0ID0gbmV3IENvbnRleHQoJG5vdGUsIG9wdGlvbnMpO1xuICAgICAgICAkbm90ZS5kYXRhKCdzdW1tZXJub3RlJywgY29udGV4dCk7XG4gICAgICAgICRub3RlLmRhdGEoJ3N1bW1lcm5vdGUnKS50cmlnZ2VyRXZlbnQoJ2luaXQnLCBjb250ZXh0LmxheW91dEluZm8pO1xuICAgICAgfVxuICAgIH0pO1xuXG4gICAgY29uc3QgJG5vdGUgPSB0aGlzLmZpcnN0KCk7XG4gICAgaWYgKCRub3RlLmxlbmd0aCkge1xuICAgICAgY29uc3QgY29udGV4dCA9ICRub3RlLmRhdGEoJ3N1bW1lcm5vdGUnKTtcbiAgICAgIGlmIChpc0V4dGVybmFsQVBJQ2FsbGVkKSB7XG4gICAgICAgIHJldHVybiBjb250ZXh0Lmludm9rZS5hcHBseShjb250ZXh0LCBsaXN0cy5mcm9tKGFyZ3VtZW50cykpO1xuICAgICAgfSBlbHNlIGlmIChvcHRpb25zLmZvY3VzKSB7XG4gICAgICAgIGNvbnRleHQuaW52b2tlKCdlZGl0b3IuZm9jdXMnKTtcbiAgICAgIH1cbiAgICB9XG5cbiAgICByZXR1cm4gdGhpcztcbiAgfSxcbn0pO1xuIl19
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 06 2019 21:30:46 GMT+0900 (Korean Standard Time)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

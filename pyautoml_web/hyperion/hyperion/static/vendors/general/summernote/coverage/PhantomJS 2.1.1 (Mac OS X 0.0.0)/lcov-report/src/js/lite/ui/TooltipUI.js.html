@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/js/lite/ui/TooltipUI.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">all files</a> / <a href="index.html">src/js/lite/ui/</a> TooltipUI.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">5.88% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>3/51</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/23</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">12.5% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/8</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">4% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>2/50</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(global){global.wrappers['/Users/lqez/Dev/summernote/src/js/lite/ui/TooltipUI.js']=[<span class="fstat-no" title="function not covered" >function(require,module,exports,__dirname,__filename){</span> "use strict";
+<span class="cstat-no" title="statement not covered" >exports.__esModule = true;</span>
+<span class="cstat-no" title="statement not covered" >var TooltipUI = /** @class */ (<span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="fstat-no" title="function not covered" >    function TooltipUI($node, options) {</span>
+<span class="cstat-no" title="statement not covered" >        this.$node = $node;</span>
+<span class="cstat-no" title="statement not covered" >        this.options = $.extend({}, {</span>
+            title: '',
+            target: options.container,
+            trigger: 'hover focus',
+            placement: 'bottom'
+        }, options);
+        // create tooltip node
+<span class="cstat-no" title="statement not covered" >        this.$tooltip = $([</span>
+            '&lt;div class="note-tooltip in"&gt;',
+            '  &lt;div class="note-tooltip-arrow"/&gt;',
+            '  &lt;div class="note-tooltip-content"/&gt;',
+            '&lt;/div&gt;',
+        ].join(''));
+        // define event
+<span class="cstat-no" title="statement not covered" >        if (this.options.trigger !== 'manual') {</span>
+<span class="cstat-no" title="statement not covered" >            var showCallback_1 = this.show.bind(this);</span>
+<span class="cstat-no" title="statement not covered" >            var hideCallback_1 = this.hide.bind(this);</span>
+<span class="cstat-no" title="statement not covered" >            var toggleCallback_1 = this.toggle.bind(this);</span>
+<span class="cstat-no" title="statement not covered" >            this.options.trigger.split(' ').forEach(<span class="fstat-no" title="function not covered" >function (eventName) {</span></span>
+<span class="cstat-no" title="statement not covered" >                if (eventName === 'hover') {</span>
+<span class="cstat-no" title="statement not covered" >                    $node.off('mouseenter mouseleave');</span>
+<span class="cstat-no" title="statement not covered" >                    $node.on('mouseenter', showCallback_1).on('mouseleave', hideCallback_1);</span>
+                }
+                else <span class="cstat-no" title="statement not covered" >if (eventName === 'click') {</span>
+<span class="cstat-no" title="statement not covered" >                    $node.on('click', toggleCallback_1);</span>
+                }
+                else <span class="cstat-no" title="statement not covered" >if (eventName === 'focus') {</span>
+<span class="cstat-no" title="statement not covered" >                    $node.on('focus', showCallback_1).on('blur', hideCallback_1);</span>
+                }
+            });
+        }
+    }
+<span class="cstat-no" title="statement not covered" >    TooltipUI.prototype.show = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        var $node = this.$node;</span>
+<span class="cstat-no" title="statement not covered" >        var offset = $node.offset();</span>
+<span class="cstat-no" title="statement not covered" >        var $tooltip = this.$tooltip;</span>
+<span class="cstat-no" title="statement not covered" >        var title = this.options.title || $node.attr('title') || $node.data('title');</span>
+<span class="cstat-no" title="statement not covered" >        var placement = this.options.placement || $node.data('placement');</span>
+<span class="cstat-no" title="statement not covered" >        $tooltip.addClass(placement);</span>
+<span class="cstat-no" title="statement not covered" >        $tooltip.addClass('in');</span>
+<span class="cstat-no" title="statement not covered" >        $tooltip.find('.note-tooltip-content').text(title);</span>
+<span class="cstat-no" title="statement not covered" >        $tooltip.appendTo(this.options.target);</span>
+<span class="cstat-no" title="statement not covered" >        var nodeWidth = $node.outerWidth();</span>
+<span class="cstat-no" title="statement not covered" >        var nodeHeight = $node.outerHeight();</span>
+<span class="cstat-no" title="statement not covered" >        var tooltipWidth = $tooltip.outerWidth();</span>
+<span class="cstat-no" title="statement not covered" >        var tooltipHeight = $tooltip.outerHeight();</span>
+<span class="cstat-no" title="statement not covered" >        if (placement === 'bottom') {</span>
+<span class="cstat-no" title="statement not covered" >            $tooltip.css({</span>
+                top: offset.top + nodeHeight,
+                left: offset.left + (nodeWidth / 2 - tooltipWidth / 2)
+            });
+        }
+        else <span class="cstat-no" title="statement not covered" >if (placement === 'top') {</span>
+<span class="cstat-no" title="statement not covered" >            $tooltip.css({</span>
+                top: offset.top - tooltipHeight,
+                left: offset.left + (nodeWidth / 2 - tooltipWidth / 2)
+            });
+        }
+        else <span class="cstat-no" title="statement not covered" >if (placement === 'left') {</span>
+<span class="cstat-no" title="statement not covered" >            $tooltip.css({</span>
+                top: offset.top + (nodeHeight / 2 - tooltipHeight / 2),
+                left: offset.left - tooltipWidth
+            });
+        }
+        else <span class="cstat-no" title="statement not covered" >if (placement === 'right') {</span>
+<span class="cstat-no" title="statement not covered" >            $tooltip.css({</span>
+                top: offset.top + (nodeHeight / 2 - tooltipHeight / 2),
+                left: offset.left + nodeWidth
+            });
+        }
+    };
+<span class="cstat-no" title="statement not covered" >    TooltipUI.prototype.hide = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        this.$tooltip.removeClass('in');</span>
+<span class="cstat-no" title="statement not covered" >        this.$tooltip.remove();</span>
+    };
+<span class="cstat-no" title="statement not covered" >    TooltipUI.prototype.toggle = <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >        if (this.$tooltip.hasClass('in')) {</span>
+<span class="cstat-no" title="statement not covered" >            this.hide();</span>
+        }
+        else {
+<span class="cstat-no" title="statement not covered" >            this.show();</span>
+        }
+    };
+<span class="cstat-no" title="statement not covered" >    return TooltipUI;</span>
+}());
+<span class="cstat-no" title="statement not covered" >exports["default"] = TooltipUI;</span>
+&nbsp;
+},'src/js/lite/ui/TooltipUI.js',{}];})(this);
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiVG9vbHRpcFVJLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiVG9vbHRpcFVJLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUE7SUFDRSxtQkFBWSxLQUFLLEVBQUUsT0FBTztRQUN4QixJQUFJLENBQUMsS0FBSyxHQUFHLEtBQUssQ0FBQztRQUNuQixJQUFJLENBQUMsT0FBTyxHQUFHLENBQUMsQ0FBQyxNQUFNLENBQUMsRUFBRSxFQUFFO1lBQzFCLEtBQUssRUFBRSxFQUFFO1lBQ1QsTUFBTSxFQUFFLE9BQU8sQ0FBQyxTQUFTO1lBQ3pCLE9BQU8sRUFBRSxhQUFhO1lBQ3RCLFNBQVMsRUFBRSxRQUFRO1NBQ3BCLEVBQUUsT0FBTyxDQUFDLENBQUM7UUFFWixzQkFBc0I7UUFDdEIsSUFBSSxDQUFDLFFBQVEsR0FBRyxDQUFDLENBQUM7WUFDaEIsK0JBQStCO1lBQy9CLHFDQUFxQztZQUNyQyx1Q0FBdUM7WUFDdkMsUUFBUTtTQUNULENBQUMsSUFBSSxDQUFDLEVBQUUsQ0FBQyxDQUFDLENBQUM7UUFFWixlQUFlO1FBQ2YsSUFBSSxJQUFJLENBQUMsT0FBTyxDQUFDLE9BQU8sS0FBSyxRQUFRLEVBQUU7WUFDckMsSUFBTSxjQUFZLEdBQUcsSUFBSSxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUM7WUFDMUMsSUFBTSxjQUFZLEdBQUcsSUFBSSxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUM7WUFDMUMsSUFBTSxnQkFBYyxHQUFHLElBQUksQ0FBQyxNQUFNLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDO1lBRTlDLElBQUksQ0FBQyxPQUFPLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsQ0FBQyxPQUFPLENBQUMsVUFBUyxTQUFTO2dCQUN4RCxJQUFJLFNBQVMsS0FBSyxPQUFPLEVBQUU7b0JBQ3pCLEtBQUssQ0FBQyxHQUFHLENBQUMsdUJBQXVCLENBQUMsQ0FBQztv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QyxHQUFHLGFBQWEsR0FBRyxDQUFDLENBQUM7Z0JBQ3RELElBQUksRUFBRSxNQUFNLENBQUMsSUFBSSxHQUFHLFNBQVM7YUFDOUIsQ0FBQyxDQUFDO1NBQ0o7SUFDSCxDQUFDO0lBRUQsd0JBQUksR0FBSjtRQUNFLElBQUksQ0FBQyxRQUFRLENBQUMsV0FBVyxDQUFDLElBQUksQ0FBQyxDQUFDO1FBQ2hDLElBQUksQ0FBQyxRQUFRLENBQUMsTUFBTSxFQUFFLENBQUM7SUFDekIsQ0FBQztJQUVELDBCQUFNLEdBQU47UUFDRSxJQUFJLElBQUksQ0FBQyxRQUFRLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBQyxFQUFFO1lBQ2hDLElBQUksQ0FBQyxJQUFJLEVBQUUsQ0FBQztTQUNiO2FBQU07WUFDTCxJQUFJLENBQUMsSUFBSSxFQUFFLENBQUM7U0FDYjtJQUNILENBQUM7SUFDSCxnQkFBQztBQUFELENBQUMsQUExRkQsSUEwRkM7QUFFRCxxQkFBZSxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJjbGFzcyBUb29sdGlwVUkge1xuICBjb25zdHJ1Y3Rvcigkbm9kZSwgb3B0aW9ucykge1xuICAgIHRoaXMuJG5vZGUgPSAkbm9kZTtcbiAgICB0aGlzLm9wdGlvbnMgPSAkLmV4dGVuZCh7fSwge1xuICAgICAgdGl0bGU6ICcnLFxuICAgICAgdGFyZ2V0OiBvcHRpb25zLmNvbnRhaW5lcixcbiAgICAgIHRyaWdnZXI6ICdob3ZlciBmb2N1cycsXG4gICAgICBwbGFjZW1lbnQ6ICdib3R0b20nLFxuICAgIH0sIG9wdGlvbnMpO1xuXG4gICAgLy8gY3JlYXRlIHRvb2x0aXAgbm9kZVxuICAgIHRoaXMuJHRvb2x0aXAgPSAkKFtcbiAgICAgICc8ZGl2IGNsYXNzPVwibm90ZS10b29sdGlwIGluXCI+JyxcbiAgICAgICcgIDxkaXYgY2xhc3M9XCJub3RlLXRvb2x0aXAtYXJyb3dcIi8+JyxcbiAgICAgICcgIDxkaXYgY2xhc3M9XCJub3RlLXRvb2x0aXAtY29udGVudFwiLz4nLFxuICAgICAgJzwvZGl2PicsXG4gICAgXS5qb2luKCcnKSk7XG5cbiAgICAvLyBkZWZpbmUgZXZlbnRcbiAgICBpZiAodGhpcy5vcHRpb25zLnRyaWdnZXIgIT09ICdtYW51YWwnKSB7XG4gICAgICBjb25zdCBzaG93Q2FsbGJhY2sgPSB0aGlzLnNob3cuYmluZCh0aGlzKTtcbiAgICAgIGNvbnN0IGhpZGVDYWxsYmFjayA9IHRoaXMuaGlkZS5iaW5kKHRoaXMpO1xuICAgICAgY29uc3QgdG9nZ2xlQ2FsbGJhY2sgPSB0aGlzLnRvZ2dsZS5iaW5kKHRoaXMpO1xuXG4gICAgICB0aGlzLm9wdGlvbnMudHJpZ2dlci5zcGxpdCgnICcpLmZvckVhY2goZnVuY3Rpb24oZXZlbnROYW1lKSB7XG4gICAgICAgIGlmIChldmVudE5hbWUgPT09ICdob3ZlcicpIHtcbiAgICAgICAgICAkbm9kZS5vZmYoJ21vdXNlZW50ZXIgbW91c2VsZWF2ZScpO1xuICAgICAgICAgICRub2RlLm9uKCdtb3VzZWVudGVyJywgc2hvd0NhbGxiYWNrKS5vbignbW91c2VsZWF2ZScsIGhpZGVDYWxsYmFjayk7XG4gICAgICAgIH0gZWxzZSBpZiAoZXZlbnROYW1lID09PSAnY2xpY2snKSB7XG4gICAgICAgICAgJG5vZGUub24oJ2NsaWNrJywgdG9nZ2xlQ2FsbGJhY2spO1xuICAgICAgICB9IGVsc2UgaWYgKGV2ZW50TmFtZSA9PT0gJ2ZvY3VzJykge1xuICAgICAgICAgICRub2RlLm9uKCdmb2N1cycsIHNob3dDYWxsYmFjaykub24oJ2JsdXInLCBoaWRlQ2FsbGJhY2spO1xuICAgICAgICB9XG4gICAgICB9KTtcbiAgICB9XG4gIH1cblxuICBzaG93KCkge1xuICAgIGNvbnN0ICRub2RlID0gdGhpcy4kbm9kZTtcbiAgICBjb25zdCBvZmZzZXQgPSAkbm9kZS5vZmZzZXQoKTtcblxuICAgIGNvbnN0ICR0b29sdGlwID0gdGhpcy4kdG9vbHRpcDtcbiAgICBjb25zdCB0aXRsZSA9IHRoaXMub3B0aW9ucy50aXRsZSB8fCAkbm9kZS5hdHRyKCd0aXRsZScpIHx8ICRub2RlLmRhdGEoJ3RpdGxlJyk7XG4gICAgY29uc3QgcGxhY2VtZW50ID0gdGhpcy5vcHRpb25zLnBsYWNlbWVudCB8fCAkbm9kZS5kYXRhKCdwbGFjZW1lbnQnKTtcblxuICAgICR0b29sdGlwLmFkZENsYXNzKHBsYWNlbWVudCk7XG4gICAgJHRvb2x0aXAuYWRkQ2xhc3MoJ2luJyk7XG4gICAgJHRvb2x0aXAuZmluZCgnLm5vdGUtdG9vbHRpcC1jb250ZW50JykudGV4dCh0aXRsZSk7XG4gICAgJHRvb2x0aXAuYXBwZW5kVG8odGhpcy5vcHRpb25zLnRhcmdldCk7XG5cbiAgICBjb25zdCBub2RlV2lkdGggPSAkbm9kZS5vdXRlcldpZHRoKCk7XG4gICAgY29uc3Qgbm9kZUhlaWdodCA9ICRub2RlLm91dGVySGVpZ2h0KCk7XG4gICAgY29uc3QgdG9vbHRpcFdpZHRoID0gJHRvb2x0aXAub3V0ZXJXaWR0aCgpO1xuICAgIGNvbnN0IHRvb2x0aXBIZWlnaHQgPSAkdG9vbHRpcC5vdXRlckhlaWdodCgpO1xuXG4gICAgaWYgKHBsYWNlbWVudCA9PT0gJ2JvdHRvbScpIHtcbiAgICAgICR0b29sdGlwLmNzcyh7XG4gICAgICAgIHRvcDogb2Zmc2V0LnRvcCArIG5vZGVIZWlnaHQsXG4gICAgICAgIGxlZnQ6IG9mZnNldC5sZWZ0ICsgKG5vZGVXaWR0aCAvIDIgLSB0b29sdGlwV2lkdGggLyAyKSxcbiAgICAgIH0pO1xuICAgIH0gZWxzZSBpZiAocGxhY2VtZW50ID09PSAndG9wJykge1xuICAgICAgJHRvb2x0aXAuY3NzKHtcbiAgICAgICAgdG9wOiBvZmZzZXQudG9wIC0gdG9vbHRpcEhlaWdodCxcbiAgICAgICAgbGVmdDogb2Zmc2V0LmxlZnQgKyAobm9kZVdpZHRoIC8gMiAtIHRvb2x0aXBXaWR0aCAvIDIpLFxuICAgICAgfSk7XG4gICAgfSBlbHNlIGlmIChwbGFjZW1lbnQgPT09ICdsZWZ0Jykge1xuICAgICAgJHRvb2x0aXAuY3NzKHtcbiAgICAgICAgdG9wOiBvZmZzZXQudG9wICsgKG5vZGVIZWlnaHQgLyAyIC0gdG9vbHRpcEhlaWdodCAvIDIpLFxuICAgICAgICBsZWZ0OiBvZmZzZXQubGVmdCAtIHRvb2x0aXBXaWR0aCxcbiAgICAgIH0pO1xuICAgIH0gZWxzZSBpZiAocGxhY2VtZW50ID09PSAncmlnaHQnKSB7XG4gICAgICAkdG9vbHRpcC5jc3Moe1xuICAgICAgICB0b3A6IG9mZnNldC50b3AgKyAobm9kZUhlaWdodCAvIDIgLSB0b29sdGlwSGVpZ2h0IC8gMiksXG4gICAgICAgIGxlZnQ6IG9mZnNldC5sZWZ0ICsgbm9kZVdpZHRoLFxuICAgICAgfSk7XG4gICAgfVxuICB9XG5cbiAgaGlkZSgpIHtcbiAgICB0aGlzLiR0b29sdGlwLnJlbW92ZUNsYXNzKCdpbicpO1xuICAgIHRoaXMuJHRvb2x0aXAucmVtb3ZlKCk7XG4gIH1cblxuICB0b2dnbGUoKSB7XG4gICAgaWYgKHRoaXMuJHRvb2x0aXAuaGFzQ2xhc3MoJ2luJykpIHtcbiAgICAgIHRoaXMuaGlkZSgpO1xuICAgIH0gZWxzZSB7XG4gICAgICB0aGlzLnNob3coKTtcbiAgICB9XG4gIH1cbn1cblxuZXhwb3J0IGRlZmF1bHQgVG9vbHRpcFVJO1xuIl19
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 06 2019 21:30:46 GMT+0900 (Korean Standard Time)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

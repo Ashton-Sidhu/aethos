@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/js/base/module/AutoLink.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">all files</a> / <a href="index.html">src/js/base/module/</a> AutoLink.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">64.29% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>27/42</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">17.65% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>3/17</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">90.91% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>10/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">63.41% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>26/41</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">97×</span>
+<span class="cline-any cline-yes">97×</span>
+<span class="cline-any cline-yes">97×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">97×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(global){global.wrappers['/Users/lqez/Dev/summernote/src/js/base/module/AutoLink.js']=[function(require,module,exports,__dirname,__filename){ "use strict";
+exports.__esModule = true;
+var jquery_1 = require("jquery");
+var lists_1 = require("../core/lists");
+var key_1 = require("../core/key");
+var defaultScheme = 'http://';
+var linkPattern = /^([A-Za-z][A-Za-z0-9+-.]*\:[\/]{2}|mailto:[A-Z0-9._%+-]+@)?(www\.)?(.+)$/i;
+var AutoLink = /** @class */ (function () {
+    function AutoLink(context) {
+        var _this = this;
+        this.context = context;
+        this.events = {
+            'summernote.keyup': function (we, e) {
+                <span class="missing-if-branch" title="else path not taken" >E</span>if (!e.isDefaultPrevented()) {
+                    _this.handleKeyup(e);
+                }
+            },
+            'summernote.keydown': function (we, e) {
+                _this.handleKeydown(e);
+            }
+        };
+    }
+    AutoLink.prototype.initialize = function () {
+        this.lastWordRange = null;
+    };
+    AutoLink.prototype.destroy = function () {
+        this.lastWordRange = null;
+    };
+    AutoLink.prototype.replace = <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >        if (!this.lastWordRange) {</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+<span class="cstat-no" title="statement not covered" >        var keyword = this.lastWordRange.toString();</span>
+<span class="cstat-no" title="statement not covered" >        var match = keyword.match(linkPattern);</span>
+<span class="cstat-no" title="statement not covered" >        if (match &amp;&amp; (match[1] || match[2])) {</span>
+<span class="cstat-no" title="statement not covered" >            var link = match[1] ? keyword : defaultScheme + keyword;</span>
+<span class="cstat-no" title="statement not covered" >            var node = jquery_1["default"]('&lt;a /&gt;').html(keyword).attr('href', link)[0];</span>
+<span class="cstat-no" title="statement not covered" >            if (this.context.options.linkTargetBlank) {</span>
+<span class="cstat-no" title="statement not covered" >                jquery_1["default"](node).attr('target', '_blank');</span>
+            }
+<span class="cstat-no" title="statement not covered" >            this.lastWordRange.insertNode(node);</span>
+<span class="cstat-no" title="statement not covered" >            this.lastWordRange = null;</span>
+<span class="cstat-no" title="statement not covered" >            this.context.invoke('editor.focus');</span>
+        }
+    };
+    AutoLink.prototype.handleKeydown = function (e) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (lists_1["default"].contains([key_1["default"].code.ENTER, key_1["default"].code.SPACE], e.keyCode)) {
+<span class="cstat-no" title="statement not covered" >            var wordRange = this.context.invoke('editor.createRange').getWordRange();</span>
+<span class="cstat-no" title="statement not covered" >            this.lastWordRange = wordRange;</span>
+        }
+    };
+    AutoLink.prototype.handleKeyup = function (e) {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (lists_1["default"].contains([key_1["default"].code.ENTER, key_1["default"].code.SPACE], e.keyCode)) {
+<span class="cstat-no" title="statement not covered" >            this.replace();</span>
+        }
+    };
+    return AutoLink;
+}());
+exports["default"] = AutoLink;
+&nbsp;
+},'src/js/base/module/AutoLink.js',{"jquery":"/Users/lqez/Dev/summernote/node_modules/jquery/dist/jquery.js","../core/lists":"/Users/lqez/Dev/summernote/src/js/base/core/lists.js","../core/key":"/Users/lqez/Dev/summernote/src/js/base/core/key.js"}];})(this);
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiQXV0b0xpbmsuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJBdXRvTGluay5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLGlDQUF1QjtBQUN2Qix1Q0FBa0M7QUFDbEMsbUNBQThCO0FBRTlCLElBQU0sYUFBYSxHQUFHLFNBQVMsQ0FBQztBQUNoQyxJQUFNLFdBQVcsR0FBRywyRUFBMkUsQ0FBQztBQUVoRztJQUNFLGtCQUFZLE9BQU87UUFBbkIsaUJBWUM7UUFYQyxJQUFJLENBQUMsT0FBTyxHQUFHLE9BQU8sQ0FBQztRQUN2QixJQUFJLENBQUMsTUFBTSxHQUFHO1lBQ1osa0JBQWtCLEVBQUUsVUFBQyxFQUFFLEVBQUUsQ0FBQztnQkFDeEIsSUFBSSxDQUFDLENBQUMsQ0FBQyxrQkFBa0IsRUFBRSxFQUFFO29CQUMzQixLQUFJLENBQUMsV0FBVyxDQUFDLENBQUMsQ0FBQyxDQUFDO2lCQUNyQjtZQUNILENBQUM7WUFDRCxvQkFBb0IsRUFBRSxVQUFDLEVBQUUsRUFBRSxDQUFDO2dCQUMxQixLQUFJLENBQUMsYUFBYSxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQ3hCLENBQUM7U0FDRixDQUFDO0lBQ0osQ0FBQztJQUVELDZCQUFVLEdBQVY7UUFDRSxJQUFJLENBQUMsYUFBYSxHQUFHLElBQUksQ0FBQztJQUM1QixDQUFDO0lBRUQsMEJBQU8sR0FBUDtRQUNFLElBQUksQ0FBQyxhQUFhLEdBQUcsSUFBSSxDQUFDO0lBQzVCLENBQUM7SUFFRCwwQkFBTyxHQUFQO1FBQ0UsSUFBSSxDQUFDLElBQUksQ0FBQyxhQUFhLEVBQUU7WUFDdkIsT0FBTztTQUNSO1FBRUQsSUFBTSxPQUFPLEdBQUcsSUFBSSxDQUFDLGFBQWEsQ0FBQyxRQUFRLEVBQUUsQ0FBQztRQUM5QyxJQUFNLEtBQUssR0FBRyxPQUFPLENBQUMsS0FBSyxDQUFDLFdBQVcsQ0FBQyxDQUFDO1FBRXpDLElBQUksS0FBSyxJQUFJLENBQUMsS0FBSyxDQUFDLENBQUMsQ0FBQyxJQUFJLEtBQUssQ0FBQyxDQUFDLENBQUMsQ0FBQyxFQUFFO1lBQ25DLElBQU0sSUFBSSxHQUFHLEtBQUssQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsT0FBTyxDQUFDLENBQUMsQ0FBQyxhQUFhLEdBQUcsT0FBTyxDQUFDO1lBQzFELElBQU0sSUFBSSxHQUFHLG1CQUFDLENBQUMsT0FBTyxDQUFDLENBQUMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxDQUFDLElBQUksQ0FBQyxNQUFNLEVBQUUsSUFBSSxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUM7WUFDNUQsSUFBSSxJQUFJLENBQUMsT0FBTyxDQUFDLE9BQU8sQ0FBQyxlQUFlLEVBQUU7Z0JBQ3hDLG1CQUFDLENBQUMsSUFBSSxDQUFDLENBQUMsSUFBSSxDQUFDLFFBQVEsRUFBRSxRQUFRLENBQUMsQ0FBQzthQUNsQztZQUVELElBQUksQ0FBQyxhQUFhLENBQUMsVUFBVSxDQUFDLElBQUksQ0FBQyxDQUFDO1lBQ3BDLElBQUksQ0FBQyxhQUFhLEdBQUcsSUFBSSxDQUFDO1lBQzFCLElBQUksQ0FBQyxPQUFPLENBQUMsTUFBTSxDQUFDLGNBQWMsQ0FBQyxDQUFDO1NBQ3JDO0lBQ0gsQ0FBQztJQUVELGdDQUFhLEdBQWIsVUFBYyxDQUFDO1FBQ2IsSUFBSSxrQkFBSyxDQUFDLFFBQVEsQ0FBQyxDQUFDLGdCQUFHLENBQUMsSUFBSSxDQUFDLEtBQUssRUFBRSxnQkFBRyxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUMsRUFBRSxDQUFDLENBQUMsT0FBTyxDQUFDLEVBQUU7WUFDL0QsSUFBTSxTQUFTLEdBQUcsSUFBSSxDQUFDLE9BQU8sQ0FBQyxNQUFNLENBQUMsb0JBQW9CLENBQUMsQ0FBQyxZQUFZLEVBQUUsQ0FBQztZQUMzRSxJQUFJLENBQUMsYUFBYSxHQUFHLFNBQVMsQ0FBQztTQUNoQztJQUNILENBQUM7SUFFRCw4QkFBVyxHQUFYLFVBQVksQ0FBQztRQUNYLElBQUksa0JBQUssQ0FBQyxRQUFRLENBQUMsQ0FBQyxnQkFBRyxDQUFDLElBQUksQ0FBQyxLQUFLLEVBQUUsZ0JBQUcsQ0FBQyxJQUFJLENBQUMsS0FBSyxDQUFDLEVBQUUsQ0FBQyxDQUFDLE9BQU8sQ0FBQyxFQUFFO1lBQy9ELElBQUksQ0FBQyxPQUFPLEVBQUUsQ0FBQztTQUNoQjtJQUNILENBQUM7SUFDSCxlQUFDO0FBQUQsQ0FBQyxBQXhERCxJQXdEQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAkIGZyb20gJ2pxdWVyeSc7XG5pbXBvcnQgbGlzdHMgZnJvbSAnLi4vY29yZS9saXN0cyc7XG5pbXBvcnQga2V5IGZyb20gJy4uL2NvcmUva2V5JztcblxuY29uc3QgZGVmYXVsdFNjaGVtZSA9ICdodHRwOi8vJztcbmNvbnN0IGxpbmtQYXR0ZXJuID0gL14oW0EtWmEtel1bQS1aYS16MC05Ky0uXSpcXDpbXFwvXXsyfXxtYWlsdG86W0EtWjAtOS5fJSstXStAKT8od3d3XFwuKT8oLispJC9pO1xuXG5leHBvcnQgZGVmYXVsdCBjbGFzcyBBdXRvTGluayB7XG4gIGNvbnN0cnVjdG9yKGNvbnRleHQpIHtcbiAgICB0aGlzLmNvbnRleHQgPSBjb250ZXh0O1xuICAgIHRoaXMuZXZlbnRzID0ge1xuICAgICAgJ3N1bW1lcm5vdGUua2V5dXAnOiAod2UsIGUpID0+IHtcbiAgICAgICAgaWYgKCFlLmlzRGVmYXVsdFByZXZlbnRlZCgpKSB7XG4gICAgICAgICAgdGhpcy5oYW5kbGVLZXl1cChlKTtcbiAgICAgICAgfVxuICAgICAgfSxcbiAgICAgICdzdW1tZXJub3RlLmtleWRvd24nOiAod2UsIGUpID0+IHtcbiAgICAgICAgdGhpcy5oYW5kbGVLZXlkb3duKGUpO1xuICAgICAgfSxcbiAgICB9O1xuICB9XG5cbiAgaW5pdGlhbGl6ZSgpIHtcbiAgICB0aGlzLmxhc3RXb3JkUmFuZ2UgPSBudWxsO1xuICB9XG5cbiAgZGVzdHJveSgpIHtcbiAgICB0aGlzLmxhc3RXb3JkUmFuZ2UgPSBudWxsO1xuICB9XG5cbiAgcmVwbGFjZSgpIHtcbiAgICBpZiAoIXRoaXMubGFzdFdvcmRSYW5nZSkge1xuICAgICAgcmV0dXJuO1xuICAgIH1cblxuICAgIGNvbnN0IGtleXdvcmQgPSB0aGlzLmxhc3RXb3JkUmFuZ2UudG9TdHJpbmcoKTtcbiAgICBjb25zdCBtYXRjaCA9IGtleXdvcmQubWF0Y2gobGlua1BhdHRlcm4pO1xuXG4gICAgaWYgKG1hdGNoICYmIChtYXRjaFsxXSB8fCBtYXRjaFsyXSkpIHtcbiAgICAgIGNvbnN0IGxpbmsgPSBtYXRjaFsxXSA/IGtleXdvcmQgOiBkZWZhdWx0U2NoZW1lICsga2V5d29yZDtcbiAgICAgIGNvbnN0IG5vZGUgPSAkKCc8YSAvPicpLmh0bWwoa2V5d29yZCkuYXR0cignaHJlZicsIGxpbmspWzBdO1xuICAgICAgaWYgKHRoaXMuY29udGV4dC5vcHRpb25zLmxpbmtUYXJnZXRCbGFuaykge1xuICAgICAgICAkKG5vZGUpLmF0dHIoJ3RhcmdldCcsICdfYmxhbmsnKTtcbiAgICAgIH1cblxuICAgICAgdGhpcy5sYXN0V29yZFJhbmdlLmluc2VydE5vZGUobm9kZSk7XG4gICAgICB0aGlzLmxhc3RXb3JkUmFuZ2UgPSBudWxsO1xuICAgICAgdGhpcy5jb250ZXh0Lmludm9rZSgnZWRpdG9yLmZvY3VzJyk7XG4gICAgfVxuICB9XG5cbiAgaGFuZGxlS2V5ZG93bihlKSB7XG4gICAgaWYgKGxpc3RzLmNvbnRhaW5zKFtrZXkuY29kZS5FTlRFUiwga2V5LmNvZGUuU1BBQ0VdLCBlLmtleUNvZGUpKSB7XG4gICAgICBjb25zdCB3b3JkUmFuZ2UgPSB0aGlzLmNvbnRleHQuaW52b2tlKCdlZGl0b3IuY3JlYXRlUmFuZ2UnKS5nZXRXb3JkUmFuZ2UoKTtcbiAgICAgIHRoaXMubGFzdFdvcmRSYW5nZSA9IHdvcmRSYW5nZTtcbiAgICB9XG4gIH1cblxuICBoYW5kbGVLZXl1cChlKSB7XG4gICAgaWYgKGxpc3RzLmNvbnRhaW5zKFtrZXkuY29kZS5FTlRFUiwga2V5LmNvZGUuU1BBQ0VdLCBlLmtleUNvZGUpKSB7XG4gICAgICB0aGlzLnJlcGxhY2UoKTtcbiAgICB9XG4gIH1cbn1cbiJdfQ==
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Mar 06 2019 21:30:46 GMT+0900 (Korean Standard Time)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>
