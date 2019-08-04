@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import platform
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = '9r+6-c%+owo-=!va0aj1r@ue+81+=6d*ma175fu2t=!1(tqqzy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 ROOT_URLCONF = 'hyperion.urls'
 
@@ -122,7 +123,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = "C:/static"
+
+if platform.system() == "Windows":
+    STATIC_ROOT = "C:/static"
+else:
+    STATIC_ROOT = "/var/www/static/"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "hyperion/static/"),
