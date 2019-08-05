@@ -9,13 +9,10 @@ import pandas as pd
 from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
                            _FunctionInputValidation)
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-
 from textblob import TextBlob
 
-#  TODO: Add customization to BoW and TF-IDF through the parameters of the constructor
 
-
-def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=None, params={}):
+def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=None, **params):
     """
     Creates a matrix of how many times a word appears in a document.
 
@@ -36,7 +33,7 @@ def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=Non
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
-    enc = CountVectorizer(**params)
+    enc = CountVectorizer(params)
 
     if isinstance(data, list):
 
@@ -67,7 +64,7 @@ def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=Non
         return train_data, test_data
 
 
-def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, params={}):
+def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, **params):
     """
     Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
@@ -88,7 +85,7 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, pa
     if not _FunctionInputValidation(data, train_data, test_data):
         return "Function input is incorrectly provided."
 
-    enc = TfidfVectorizer(**params)
+    enc = TfidfVectorizer(params)
 
     if isinstance(data, list):
         tfidf = enc.fit_transform(data)

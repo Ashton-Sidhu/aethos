@@ -171,7 +171,7 @@ class Feature():
         report_info = technique_reason_repo['feature']['text']['postag']
 
         if self.data_properties.use_full_data:
-            self.data = FeaturePoSTag(list_of_cols, data=self.data)
+            self.data = NLTKFeaturePoSTag(list_of_cols, data=self.data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
@@ -179,7 +179,7 @@ class Feature():
             return self.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = FeaturePoSTag(
+            self.data_properties.train_data, self.data_properties.test_data = NLTKFeaturePoSTag(
                 list_of_cols, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data)
 
             if self.report is not None:
