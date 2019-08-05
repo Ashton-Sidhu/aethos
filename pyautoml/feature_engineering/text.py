@@ -6,9 +6,10 @@ FeatureTFIDF
 """
 
 import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
 from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
                            _FunctionInputValidation)
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
 
 #  TODO: Add customization to BoW and TF-IDF through the parameters of the constructor
@@ -117,18 +118,21 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, pa
         return train_data, test_data
 
 
-def FeaturePoSTag(list_of_cols=[], data=None, train_data=None, test_data=None):
+def FeaturePoSTag(list_of_cols=[], data=None, train_data=None, test_data=None):    
     """
-    Part of Speech tag the text data provided.
+    Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
+    Verbs, etc.
 
-    :param list_of_cols:  A list of specific columns to apply this technique to., defaults to []
-    :type list_of_cols: list, optional
-    :param data: Full dataset, defaults to None
-    :type data: Dataframe, optional
-    :param train_data: Training dataset, defaults to None
-    :type train_data: Dataframe, optional
-    :param test_data: Test dataset, defaults to None
-    :type test_data: Dataframe, optional
+    Args:
+        list_of_cols (list, optional):  A list of specific columns to apply this technique to.. Defaults to [].
+        data (DataFrame, optional): Full dataset. Defaults to None.
+        train_data (Dataframe, optional): Training dataset. Defaults to None.
+        test_data (Dataframe, optional): Test dataset. Defaults to None.
+    
+    Returns:
+        Dataframe, *Dataframe: Transformed dataframe with new column of the text columns PoS tagged.
+
+        * Returns 2 Dataframes if Train and Test data is provided.
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
