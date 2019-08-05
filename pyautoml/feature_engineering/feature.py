@@ -17,24 +17,26 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
 
+
 class Feature():
 
-    
-    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):        
+    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):
 
         if not _FunctionInputValidation(data, train_data, test_data):
             print("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
         if data_properties is None:
-            self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+            self.data_properties = Data(
+                data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
             if data is not None:
                 self.data = data
-                self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data, test_split_percentage)
-                
+                self.data_properties.train_data, self.data_properties.test_data = SplitData(
+                    self.data, test_split_percentage)
+
         else:
             self.data = data
-            self.data_properties = data_properties            
+            self.data_properties = data_properties
 
         if self.data_properties.report is None:
             self.report = None
@@ -47,12 +49,12 @@ class Feature():
 
     def OneHotEncode(self, list_of_cols, data=None, train_data=None, test_data=None):
         """Creates a matrix of converted categorical columns into binary columns.
-    
-        Either data or train_data or test_data MUST be provided, not both. 
+
+        Either data or train_data or test_data MUST be provided, not both.  
 
         Arguments:
             list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
-        
+
         Keyword Arguments:            
             data {DataFrame} -- Full dataset (default: {None})
             train_data {DataFrame} -- Training dataset (default: {None})
@@ -62,7 +64,7 @@ class Feature():
         Returns:
             [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
             of both are returned.  
-        
+
         """
         report_info = technique_reason_repo['feature']['categorical']['onehotencode']
 
@@ -78,23 +80,22 @@ class Feature():
         else:
 
             self.data_properties.train_data, self.data_properties.test_data = FeatureOneHotEncode(list_of_cols,
-                                                                                                train_data=self.data_properties.train_data,
-                                                                                                test_data=self.data_properties.test_data)
+                                                                                                  train_data=self.data_properties.train_data,
+                                                                                                  test_data=self.data_properties.test_data)
             if self.report is not None:
                 self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-
     def TFIDF(self, list_of_cols=[], params={}):
         """Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
         This function exists in `feature-extraction/text.py`
-        
+
         Keyword Arguments:
             list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
             tfidf_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
-        
+
         Returns:
             [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
             of both are returned. 
@@ -103,7 +104,8 @@ class Feature():
 
         if self.data_properties.use_full_data:
 
-            self.data = FeatureTFIDF(list_of_cols=list_of_cols, data=self.data, params=params)
+            self.data = FeatureTFIDF(
+                list_of_cols=list_of_cols, data=self.data, params=params)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
@@ -113,9 +115,9 @@ class Feature():
         else:
 
             self.data_properties.train_data, self.data_properties.test_data = FeatureTFIDF(list_of_cols=list_of_cols,
-                                                                                            train_data=self.data_properties.train_data,
-                                                                                            test_data=self.data_properties.test_data,
-                                                                                            params=params)
+                                                                                           train_data=self.data_properties.train_data,
+                                                                                           test_data=self.data_properties.test_data,
+                                                                                           params=params)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
@@ -139,7 +141,8 @@ class Feature():
 
         if self.data_properties.use_full_data:
 
-            self.data = FeatureBagOfWords(list_of_cols, data=self.data, params=params)
+            self.data = FeatureBagOfWords(
+                list_of_cols, data=self.data, params=params)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
@@ -149,9 +152,35 @@ class Feature():
         else:
 
             self.data_properties.train_data, self.data_properties.test_data = FeatureBagOfWords(list_of_cols,
-                                                                                            train_data=self.data_properties.train_data,
-                                                                                            test_data=self.data_properties.test_data,
-                                                                                            params=params)
+                                                                                                train_data=self.data_properties.train_data,
+                                                                                                test_data=self.data_properties.test_data,
+                                                                                                params=params)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, [])
+
+            return self.data_properties.train_data, self.data_properties.test_data
+
+    def PoSTag(self, list_of_cols=[]):
+        """
+        [summary]
+
+        :param list_of_cols: [description], defaults to []
+        :type list_of_cols: list, optional
+        """
+        report_info = technique_reason_repo['feature']['text']['postag']
+
+        if self.data_properties.use_full_data:
+            self.data = FeaturePoSTag(list_of_cols, data=self.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, [])
+
+            return self.data
+
+        else:
+            self.data_properties.train_data, self.data_properties.test_data = FeaturePoSTag(
+                list_of_cols, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
