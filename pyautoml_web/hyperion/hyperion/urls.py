@@ -14,11 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 import hyperion.views as views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.load_home)
+    path('', views.load_home),
+    path('analysis/', include('analysis.urls'))
 ]
