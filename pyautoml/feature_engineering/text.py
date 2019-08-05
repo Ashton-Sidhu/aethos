@@ -6,10 +6,10 @@ FeatureTFIDF
 """
 
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-
 from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
                            _FunctionInputValidation)
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
 from textblob import TextBlob
 
 #  TODO: Add customization to BoW and TF-IDF through the parameters of the constructor
@@ -118,10 +118,12 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, pa
         return train_data, test_data
 
 
-def FeaturePoSTag(list_of_cols=[], data=None, train_data=None, test_data=None):    
+def NLTKFeaturePoSTag(list_of_cols=[], data=None, train_data=None, test_data=None):    
     """
     Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
     Verbs, etc.
+
+    This utilizes TextBlob which utlizes the NLTK tagger and is a wrapper for the tagging process.
 
     Args:
         list_of_cols (list, optional):  A list of specific columns to apply this technique to.. Defaults to [].
