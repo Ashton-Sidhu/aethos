@@ -3,7 +3,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml.cleaning.clean import Clean
 from pyautoml.feature_engineering.feature import Feature
 from pyautoml.preprocessing.preprocess import Preprocess
@@ -36,7 +35,7 @@ class TestReport(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
-        clean.RemoveColumns(0.5)
+        clean.remove_columns(0.5)
 
         with open("pyautoml_reports/test.txt") as f:
             content = f.read()
@@ -56,7 +55,7 @@ class TestReport(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
-        clean_data = clean.ReplaceMissingNewCategory()
+        clean_data = clean.replace_missing_new_category()
 
         with open("pyautoml_reports/test.txt") as f:
             content = f.read()
