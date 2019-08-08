@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml.cleaning.clean import Clean
 
 
@@ -17,7 +16,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean.RemoveColumns(0.5)
+        clean.remove_columns(0.5)
         validate = clean.data.columns.tolist()
 
         self.assertListEqual(validate, ["col1"])
@@ -31,7 +30,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean.RemoveRows(0.5)
+        clean.remove_rows(0.5)
         validate = clean.data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 0)]).tolist())
@@ -55,7 +54,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingMean()
+        clean_data = clean.replace_missing_mean()
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, [[1, 0, 2],
@@ -71,7 +70,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingMedian()
+        clean_data = clean.replace_missing_median()
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, [[1, 0, 2],
@@ -87,7 +86,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingMode()
+        clean_data = clean.replace_missing_mode()
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1., 0., 2.),
@@ -103,7 +102,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingConstant(10.5, ["col1", "col3"])
+        clean_data = clean.replace_missing_constant(10.5, ["col1", "col3"])
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 2),
@@ -120,7 +119,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingRemoveRow(["col1", "col2"])
+        clean_data = clean.replace_missing_remove_row(["col1", "col2"])
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 2)]).tolist())
@@ -136,7 +135,7 @@ class TestCleaning(unittest.TestCase):
         category_dict_mapping = {"col1": 2, "col2": "Blue"}
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingNewCategory(col_to_category=category_dict_mapping)
+        clean_data = clean.replace_missing_new_category(col_to_category=category_dict_mapping)
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, "Green", 2),
@@ -154,7 +153,7 @@ class TestCleaning(unittest.TestCase):
         list_col = ["col1", "col3"]
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingNewCategory(new_category=0, col_to_category=list_col)
+        clean_data = clean.replace_missing_new_category(new_category=0, col_to_category=list_col)
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, "Green", 2),
@@ -172,7 +171,7 @@ class TestCleaning(unittest.TestCase):
         list_col = ["col1", "col2"]
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingNewCategory(col_to_category=list_col)
+        clean_data = clean.replace_missing_new_category(col_to_category=list_col)
         #Replacing NaNs with strings for validations as regular assert does == and to compare NaNs you need `is`
         clean_data = clean_data.fillna("NaN was here")
         validate = clean_data.values.tolist()
@@ -191,7 +190,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingNewCategory(new_category=1)
+        clean_data = clean.replace_missing_new_category(new_category=1)
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, [[1.0, "Green", 2],
@@ -208,7 +207,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.ReplaceMissingNewCategory()
+        clean_data = clean.replace_missing_new_category()
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, [[1, "Green", 2],

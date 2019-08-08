@@ -13,7 +13,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(list_of_sentences,
                           test_split_percentage=0.5, use_full_data=True)
-        transform_data = feature.BagofWords()
+        transform_data = feature.bag_of_words()
         validate = transform_data.toarray().tolist()
 
         self.assertListEqual(validate, [[1, 1, 1, 1, 1],
@@ -26,7 +26,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(list_of_sentences,
                           test_split_percentage=0.5, use_full_data=True)
-        transform_data = feature.TFIDF(params={"lowercase": False})
+        transform_data = feature.tfidf(params={"lowercase": False})
         validate = transform_data.shape[1]
 
         self.assertEqual(validate, 5)
@@ -41,7 +41,7 @@ class TestFeatureExtraction(unittest.TestCase):
         data = pd.DataFrame(normal_data, columns=columns)
 
         feature = Feature(data, test_split_percentage=0.5, use_full_data=True)
-        transform_data = feature.OneHotEncode(["col1", "col3"], data=data)
+        transform_data = feature.onehot_encode(["col1", "col3"], data=data)
         validate = transform_data.values.tolist()
 
         self.assertListEqual(validate, [["Green", 0, 1, 1, 0],
@@ -57,7 +57,7 @@ class TestFeatureExtraction(unittest.TestCase):
         data = pd.DataFrame(normal_data, columns=columns)
 
         feature = Feature(data, test_split_percentage=0.5, use_full_data=True)
-        transform_data = feature.PoSTag()
+        transform_data = feature.nltk_postag()
         validate = len(transform_data.columns)
 
         self.assertTrue(validate, 2)

@@ -47,7 +47,7 @@ class Feature():
         self.train_data = self.data_properties.train_data
         self.test_data = self.data_properties.test_data
 
-    def OneHotEncode(self, list_of_cols, data=None, train_data=None, test_data=None):
+    def onehot_encode(self, list_of_cols, data=None, train_data=None, test_data=None):
         """Creates a matrix of converted categorical columns into binary columns.
 
         Either data or train_data or test_data MUST be provided, not both.  
@@ -87,7 +87,7 @@ class Feature():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def TFIDF(self, list_of_cols=[], params={}):
+    def tfidf(self, list_of_cols=[], params={}):
         """Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
         This function exists in `feature-extraction/text.py`
@@ -124,7 +124,7 @@ class Feature():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def BagofWords(self, list_of_cols=[], params={}):
+    def bag_of_words(self, list_of_cols=[], params={}):
         """Creates a matrix of how many times a word appears in a document.
 
         This function exists in `feature-extraction/text.py`
@@ -161,13 +161,22 @@ class Feature():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def PoSTag(self, list_of_cols=[]):
+    def nltk_postag(self, list_of_cols=[]):
         """
-        [summary]
+        Tag documents with their respective "Part of Speech" tag. These tags classify a word as a
+        noun, verb, adjective, etc. A full list and their meaning can be found here:
+        https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
 
-        :param list_of_cols: [description], defaults to []
-        :type list_of_cols: list, optional
+        
+        Args:
+            list_of_cols (list, optional): A list of specific columns to apply this technique to. Defaults to [].
+        
+        Returns:
+            Dataframe, *Dataframe: Transformed dataframe with new column of the text columns PoS tagged.
+
+            * Returns 2 Dataframes if Train and Test data is provided.
         """
+
         report_info = technique_reason_repo['feature']['text']['postag']
 
         if self.data_properties.use_full_data:
