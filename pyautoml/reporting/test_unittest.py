@@ -91,7 +91,7 @@ class TestReport(unittest.TestCase):
                             'Hi name pyml']
 
         feature = Feature(list_of_sentences, test_split_percentage=0.5, use_full_data=True, report_name="test")
-        transform_data = feature.BagofWords()
+        transform_data = feature.bag_of_words()
 
         with open("pyautoml_reports/test.txt") as f:
             content = f.read()
