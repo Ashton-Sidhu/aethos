@@ -2,28 +2,12 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml.data.data import Data
 from pyautoml.util import *
 
 
 class TestData(unittest.TestCase):
 
-    def test_data_getfieldtypes(self):
-
-        data = np.array([(1, 1, 0, "hi my name is pyautoml", "green", 532.1),
-                        (2, 0, None, "this is my story", "yellow", 213.5),
-                        (3, None, None, "its me", "yellow", 154.2)])
-        columns = ["pid","col1", "col2", "col3", "col4", "col5"]
-
-        dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
-        data.GetInputTypes(dataset)
-
-        self.assertDictEqual(data.field_types, {"col1": "numeric"
-                                                ,"col3": "text"
-                                                ,"col4": "str_categorical"
-                                                ,"col5": "numeric"})
 
     def test_data_normalizecolumnames_dfcolumnames(self):
 

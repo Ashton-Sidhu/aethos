@@ -75,8 +75,8 @@ class TestReport(unittest.TestCase):
         data = pd.DataFrame(unnormal_data, columns=columns)
 
         preprocess = Preprocess(data, test_split_percentage=0.5, use_full_data=False, report_name="test")
-        normal_data, test = preprocess.NormalizeNumeric()
-
+        normal_data, test = preprocess.normalize_numeric()
+        
         with open("pyautoml_reports/test.txt") as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
