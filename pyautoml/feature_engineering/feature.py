@@ -50,6 +50,12 @@ class Feature():
         self.train_data = self.data_properties.train_data
         self.test_data = self.data_properties.test_data
 
+    def __repr__(self):
+        if self.data_properties.use_full_data:
+            return self.data.__repr__()
+        else:
+            return self.data_properties.train_data.__repr__()
+
     def onehot_encode(self, list_of_cols, onehot_params={"handle_unknown": "ignore"}):
         """
         Creates a matrix of converted categorical columns into binary columns.

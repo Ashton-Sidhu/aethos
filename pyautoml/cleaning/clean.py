@@ -44,6 +44,14 @@ class Clean():
         self.train_data = self.data_properties.train_data
         self.test_data = self.data_properties.test_data
 
+        
+    def __repr__(self):
+         if self.data_properties.use_full_data:
+            return self.data.__repr__()
+         else:
+            return self.data_properties.train_data.__repr__()
+
+
     def remove_columns(self, threshold):
         """Remove columns from the dataframe that have more than the threshold value of missing columns.
         Example: Remove columns where > 50% of the data is missing.

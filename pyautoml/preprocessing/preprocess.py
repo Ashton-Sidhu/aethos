@@ -49,6 +49,12 @@ class Preprocess():
         self.train_data = self.data_properties.train_data
         self.test_data = self.data_properties.test_data
 
+    def __repr__(self):
+        if self.data_properties.use_full_data:
+            return self.data.__repr__()
+        else:
+            return self.data_properties.train_data.__repr__()
+        
     def normalize_numeric(self, list_of_cols=[]):
         """Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 
