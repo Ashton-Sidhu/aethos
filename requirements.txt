@@ -4,3 +4,4 @@ numpy==1.16.2
 setuptools==39.0.1
 scikit_learn[alldeps]
 django
+textblob==0.15.3

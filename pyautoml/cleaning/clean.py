@@ -7,7 +7,8 @@ from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
 from pyautoml.data.data import Data
-from pyautoml.util import (GetListOfCols, SplitData, _FunctionInputValidation,
+from pyautoml.util import (CheckMissingData, GetListOfCols, SplitData,
+                           _FunctionInputValidation,
                            _NumericFunctionInputConditions)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
@@ -24,15 +25,17 @@ class Clean():
     def __init__(self, data=None, train_data=None, test_data=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):
 
         if not _FunctionInputValidation(data, train_data, test_data):
-            print("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
+            raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
         self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data,
                                     target_field=target_field, report_name=report_name)
 
         if data is not None:
             self.data = data
-            self.data_properties.train_data, self.data_properties.test_data = SplitData(
-                self.data, test_split_percentage)
+            self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data, test_split_percentage)
+        else:
+            # Override user input for safety.
+            self.data_properties.use_full_data = False       
 
         if self.data_properties.report is None:
             self.report = None
@@ -43,9 +46,28 @@ class Clean():
         self.train_data = self.data_properties.train_data
         self.test_data = self.data_properties.test_data
 
-    def RemoveColumns(self, threshold):
+    @property
+    def missing_values(self):       
         """
-        Remove columns from the dataframe that have more than the threshold value of missing columns.
+        Property that displays every column and how many missing values it has along with percentage.
+        """
+        if self.data_properties.use_full_data:
+            missing_values = MissingData(self.data)
+        else:
+            missing_values = MissingData(self.data_properties.train_data, self.data_properties.test_data)
+        
+        for item in missing_values:
+            print(item.__repr__())
+        
+    def __repr__(self):
+         if self.data_properties.use_full_data:
+            return self.data.__repr__()
+         else:
+            return self.data_properties.train_data.__repr__()
+
+
+    def remove_columns(self, threshold):
+        """Remove columns from the dataframe that have more than the threshold value of missing columns.
         Example: Remove columns where > 50% of the data is missing.
 
         Args:
@@ -85,7 +107,8 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def RemoveRows(self, threshold):
+
+    def remove_rows(self, threshold):
         """Remove rows from the dataframe that have more than the threshold value of missing rows.
         Example: Remove rows where > 50% of the data is missing.
 
@@ -120,8 +143,8 @@ class Clean():
                 self.report.ReportTechnique(report_info, [])
 
             return self.data_properties.train_data, self.data_properties.test_data
-
-    def ReplaceMissingMean(self, list_of_cols=[]):
+    
+    def replace_missing_mean(self, list_of_cols=[]):
         """Replaces missing values in every numeric column with the mean of that column.
 
         Mean: Average value of the column. Effected by outliers.
@@ -134,7 +157,6 @@ class Clean():
                                     Example: if list_of_cols is provided and override is true, the technique will only be applied
                                     to the the columns in list_of_cols (default: {False})
         """
-        #list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
 
         report_info = technique_reason_repo['clean']['numeric']['mean']
 
@@ -169,7 +191,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingMedian(self, list_of_cols=[]):
+    def replace_missing_median(self, list_of_cols=[]):
         """Replaces missing values in every numeric column with the median of that column.
 
         Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
@@ -183,7 +205,6 @@ class Clean():
                                     to the the columns in list_of_cols (default: {False})                       
         """
 
-        #list_of_cols = GetListOfCols("numeric", list_of_cols, self.data_properties.field_types, override)
         report_info = technique_reason_repo['clean']['numeric']['median']
 
         if self.data_properties.use_full_data:
@@ -216,7 +237,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingMode(self, list_of_cols=[]):
+    def replace_missing_mode(self, list_of_cols=[]):
         """Replaces missing values in every numeric column with the mode of that column
 
         Mode: Most common number in a list of numbers.
@@ -229,9 +250,7 @@ class Clean():
                                     Example: if list_of_cols is provided and override is true, the technique will only be applied
                                     to the the columns in list_of_cols (default: {False})      
         """
-
-        #list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, override, list_of_cols)
-
+       
         report_info = technique_reason_repo['clean']['numeric']['mode']
 
         if self.data_properties.use_full_data:
@@ -263,7 +282,7 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingConstant(self, constant=0, col_to_constant=None):
+    def replace_missing_constant(self, constant=0, col_to_constant=None):
         """Replaces missing values in every numeric column with a constant.
 
         This function exists in `clean/numeric.py` as `ReplaceMissingConstant`.
@@ -275,9 +294,14 @@ class Clean():
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
                                     Example: if custom_cols is provided and override is true, the technique will only be applied
                                     to the the columns in custom_cols (default: {False})
+        
+        Examples:
+
+        >>>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
+        >>>> replace_missing_constant(1, ['a', 'b', 'c'])
+                    
         """
 
-        #list_of_cols = GetListOfCols("numeric", self.data_properties.field_types, custom_cols, override)
         report_info = technique_reason_repo['clean']['numeric']['constant']
 
         if self.data_properties.use_full_data:
@@ -309,8 +333,9 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingNewCategory(self, new_category=None, col_to_category=None):
-        """Replaces missing values in categorical column with its own category. The categories can be autochosen
+    def replace_missing_new_category(self, new_category=None, col_to_category=None):
+        """
+        Replaces missing values in categorical column with its own category. The categories can be autochosen
         from the defaults set.
 
         For numeric categorical columns default values are: -1, -999, -9999
@@ -325,14 +350,17 @@ class Clean():
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
                                     Example: if custom_cols is provided and override is true, the technique will only be applied
                                     to the the columns in custom_cols (default: {False})
-        """
 
-        #list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, custom_cols, override)
+        Examples:
+
+        >>>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
+        >>>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
+        """
+        
         report_info = technique_reason_repo['clean']['categorical']['new_category']
 
         if self.data_properties.use_full_data:
-            self.data = ReplaceMissingNewCategory(
-                col_to_category=col_to_category, constant=new_category, data=self.data)
+            self.data = ReplaceMissingNewCategory(constant=new_category, col_to_category=col_to_category, data=self.data)
 
             if self.report is not None:
                 if col_to_category is None:
@@ -344,8 +372,8 @@ class Clean():
             return self.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingNewCategory(col_to_category=col_to_category,
-                                                                                                        constant=new_category,
+            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingNewCategory(constant=new_category,
+                                                                                                        col_to_category=col_to_category,                                                                                                    
                                                                                                         train_data=self.data_properties.train_data,
                                                                                                         test_data=self.data_properties.test_data)
 
@@ -359,7 +387,8 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def ReplaceMissingRemoveRow(self, cols_to_remove):
+
+    def replace_missing_remove_row(self, cols_to_remove):
         """Remove rows where the value of a column for those rows is missing.
 
         This function exists in `clean/categorical.py` as `ReplaceMissingRemoveRow`.
@@ -370,8 +399,6 @@ class Clean():
                                     Example: if custom_cols is provided and override is true, the technique will only be applied
                                     to the the columns in custom_cols (default: {False})
         """
-
-        #list_of_cols = GetListOfCols("categorical", self.data_properties.field_types, cols_to_remove, override)
 
         report_info = technique_reason_repo['clean']['categorical']['remove_rows']
 
@@ -394,4 +421,5 @@ class Clean():
             return self.data_properties.train_data, self.data_properties.test_data
 
     def GenerateCode(self):
+        print("Not developed yet.")
         return
