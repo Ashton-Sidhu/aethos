@@ -24,7 +24,7 @@ class Preprocess():
     def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):        
 
         if not _FunctionInputValidation(data, train_data, test_data):
-            print("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
+            raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
         if data_properties is None:
             self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
@@ -32,6 +32,9 @@ class Preprocess():
             if data is not None:
                 self.data = data
                 self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data, test_split_percentage)
+            else:
+                ## Override user input for safety.
+                self.data_properties.use_full_data = False
                 
         else:
             self.data = data

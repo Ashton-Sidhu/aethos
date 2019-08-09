@@ -6,11 +6,10 @@ ReplaceMissingConstant
 '''
 
 import pandas as pd
-from sklearn.impute import SimpleImputer
-
 from pyautoml.cleaning.categorical import ReplaceMissingNewCategory
 from pyautoml.util import (DropAndReplaceColumns, _FunctionInputValidation,
                            _NumericFunctionInputConditions)
+from sklearn.impute import SimpleImputer
 
 #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
 
@@ -38,8 +37,8 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], data=None, train_dat
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
-
+        raise ValueError("Function input is incorrectly provided.")
+    
     list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data)
     imp = SimpleImputer(strategy=strategy)
     
@@ -81,7 +80,7 @@ def ReplaceMissingConstant(constant=0, col_to_constant=None, data=None, train_da
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
     if isinstance(col_to_constant, dict):
         if data is not None:
