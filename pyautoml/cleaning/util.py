@@ -93,13 +93,14 @@ def RemoveRows(threshold, **datasets):
 
         * Returns 2 Dataframes if Train and Test data is provided.
     """
+    
     data = datasets.pop('data', None)
     train_data = datasets.pop('train_data', None)
     test_data = datasets.pop('test_data', None)
 
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")
-    
+
     if not _FunctionInputValidation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
