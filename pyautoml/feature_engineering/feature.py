@@ -78,7 +78,7 @@ class Feature():
 
         if self.data_properties.use_full_data:
 
-            self.data = FeatureOneHotEncode(list_of_cols, data=self.data, onehot_params=onehot_params)
+            self.data = FeatureOneHotEncode(list_of_cols, data=self.data, params=onehot_params)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, list_of_cols)
@@ -90,7 +90,7 @@ class Feature():
             self.data_properties.train_data, self.data_properties.test_data = FeatureOneHotEncode(list_of_cols,
                                                                                                   train_data=self.data_properties.train_data,
                                                                                                   test_data=self.data_properties.test_data,
-                                                                                                  onehot_params=onehot_params)
+                                                                                                  params=onehot_params)
             if self.report is not None:
                 self.report.ReportTechnique(report_info, list_of_cols)
 
@@ -114,7 +114,7 @@ class Feature():
         if self.data_properties.use_full_data:
 
             self.data = FeatureTFIDF(
-                list_of_cols=list_of_cols, data=self.data, tfidf_params=tfidf_params)
+                list_of_cols=list_of_cols, params=tfidf_params, data=self.data,)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
@@ -124,9 +124,10 @@ class Feature():
         else:
 
             self.data_properties.train_data, self.data_properties.test_data = FeatureTFIDF(list_of_cols=list_of_cols,
+                                                                                           params=tfidf_params,
                                                                                            train_data=self.data_properties.train_data,
                                                                                            test_data=self.data_properties.test_data,
-                                                                                           tfidf_params=tfidf_params)
+                                                                                           )
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
@@ -151,7 +152,7 @@ class Feature():
         if self.data_properties.use_full_data:
 
             self.data = FeatureBagOfWords(
-                list_of_cols, data=self.data, bow_params=bow_params)
+                list_of_cols, params=bow_params, data=self.data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
@@ -161,9 +162,10 @@ class Feature():
         else:
 
             self.data_properties.train_data, self.data_properties.test_data = FeatureBagOfWords(list_of_cols,
+                                                                                                params=bow_params,
                                                                                                 train_data=self.data_properties.train_data,
                                                                                                 test_data=self.data_properties.test_data,
-                                                                                                bow_params=bow_params)
+                                                                                                )
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
