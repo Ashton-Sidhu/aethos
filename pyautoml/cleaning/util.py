@@ -9,17 +9,27 @@ import pandas as pd
 from pyautoml.util import _FunctionInputValidation
 
 
-def CheckMissingData(df):
-    """Utility function that checks if the data has any missing values.
-
-    Arguemnts:
-        df {Dataframe} -- Dataframe of the data
-            
-    Returns:
-        [Boolean] -- True if the data is missing values, False o/w.
+def MissingData(*dataframes):
     """
+    Utility function that shows how many values are missing in each column.
+
+    Arguments:
+        *dataframes : Sequence of dataframes
+    """
+    n_arrays = len(dataframes)
+    if n_arrays == 0:
+        raise ValueError("At least one dataframe required as input")
+
     
-    return df.isnull().values.any()
+    for dataframe in dataframes:
+        if not dataframe.isnull().values.any():            
+            yield
+        else:
+            total = dataframe.isnull().sum().sort_values(ascending=False)
+            percent = (dataframe.isnull().sum()/dataframe.isnull().count()).sort_values(ascending=False)
+            missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
+
+            yield missing_data
     
 def RemoveColumns(threshold, data=None, train_data=None, test_data=None):
     """Remove columns from the dataframe that have more than the threshold value of missing columns.

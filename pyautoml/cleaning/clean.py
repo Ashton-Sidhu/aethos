@@ -7,7 +7,8 @@ from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
 from pyautoml.data.data import Data
-from pyautoml.util import (GetListOfCols, SplitData, _FunctionInputValidation,
+from pyautoml.util import (CheckMissingData, GetListOfCols, SplitData,
+                           _FunctionInputValidation,
                            _NumericFunctionInputConditions)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
@@ -44,6 +45,18 @@ class Clean():
         self.train_data = self.data_properties.train_data
         self.test_data = self.data_properties.test_data
 
+    @property
+    def missing_values(self):       
+        """
+        Property that displays every column and how many missing values it has along with percentage.
+        """
+        if self.data_properties.use_full_data:
+            missing_values = MissingData(self.data)
+        else:
+            missing_values = MissingData(self.data_properties.train_data, self.data_properties.test_data)
+        
+        for item in missing_values:
+            print(item.__repr__())
         
     def __repr__(self):
          if self.data_properties.use_full_data:
