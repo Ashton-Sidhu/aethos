@@ -6,7 +6,6 @@ RemoveRows
 SplitData
 """
 import pandas as pd
-
 from pyautoml.util import _FunctionInputValidation
 
 
@@ -38,7 +37,7 @@ def RemoveColumns(threshold, data=None, train_data=None, test_data=None):
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
     if data is not None:
         criteria_meeting_columns = data.columns[data.isnull().mean() < threshold]
@@ -65,7 +64,7 @@ def RemoveRows(threshold, data=None, train_data=None, test_data=None):
         of both are returned.     
     """
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
     if data is not None:
 

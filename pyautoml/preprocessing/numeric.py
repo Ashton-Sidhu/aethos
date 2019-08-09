@@ -5,10 +5,9 @@ PreprocessNormalize
 """
 
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
-
 from pyautoml.util import (DropAndReplaceColumns, _FunctionInputValidation,
                            _NumericFunctionInputConditions)
+from sklearn.preprocessing import MinMaxScaler
 
 
 def PreprocessNormalize(list_of_cols=[], data=None, train_data=None, test_data=None):
@@ -30,7 +29,7 @@ def PreprocessNormalize(list_of_cols=[], data=None, train_data=None, test_data=N
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
     list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data)
     scaler = MinMaxScaler()

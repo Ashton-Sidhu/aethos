@@ -31,7 +31,7 @@ def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=Non
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
     enc = CountVectorizer(params)
 
@@ -83,7 +83,7 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, **
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
     enc = TfidfVectorizer(params)
 
@@ -135,7 +135,7 @@ def NLTKFeaturePoSTag(list_of_cols=[], data=None, train_data=None, test_data=Non
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
     if data is not None:
         for col in list_of_cols:
