@@ -5,13 +5,12 @@ FeatureOneHotEncode
 """
 
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
-
 from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
                            _FunctionInputValidation)
+from sklearn.preprocessing import OneHotEncoder
 
 
-def FeatureOneHotEncode(list_of_cols, data=None, train_data=None, test_data=None, **onehot_kwargs):
+def FeatureOneHotEncode(list_of_cols, data=None, train_data=None, test_data=None, onehot_params={"handle_unknown": "ignore"}):
     """Creates a matrix of converted categorical columns into binary columns.
     
     Either data or train_data or test_data MUST be provided, not both. 
@@ -21,7 +20,7 @@ def FeatureOneHotEncode(list_of_cols, data=None, train_data=None, test_data=None
         data {DataFrame} -- Full dataset (default: {None})
         train_data {DataFrame} -- Training dataset (default: {None})
         test_data {DataFrame} -- Testing dataset (default: {None})
-        **tfidf_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+        onehot_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
 
     Returns:
         [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
@@ -29,12 +28,9 @@ def FeatureOneHotEncode(list_of_cols, data=None, train_data=None, test_data=None
     """
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
-    if not onehot_kwargs:
-        onehot_kwargs = {"handle_unknown": "ignore"}
-
-    enc = OneHotEncoder(**onehot_kwargs)
+    enc = OneHotEncoder(**onehot_params)
 
     if data is not None:
         
