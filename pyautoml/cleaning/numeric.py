@@ -32,9 +32,9 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], **datasets):
         
         Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
 
     Returns:
         Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
@@ -85,9 +85,9 @@ def ReplaceMissingConstant(constant=0, col_to_constant=None, **datasets):
     
         Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
     
     Returns:
         Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing

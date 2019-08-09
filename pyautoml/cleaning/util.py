@@ -43,9 +43,9 @@ def RemoveColumns(threshold, **datasets):
     
         Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
     
     Returns:
         Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
@@ -84,16 +84,16 @@ def RemoveRows(threshold, **datasets):
     
         Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
     
     Returns:
         Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
 
         * Returns 2 Dataframes if Train and Test data is provided.
     """
-    
+
     data = datasets.pop('data', None)
     train_data = datasets.pop('train_data', None)
     test_data = datasets.pop('test_data', None)

@@ -55,7 +55,7 @@ class Preprocess():
         else:
             return self.data_properties.train_data.__repr__()
         
-    def normalize_numeric(self, list_of_cols=[]):
+    def normalize_numeric(self, list_of_cols=[], normalize_params={}):
         """Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 
        This function can be found in `preprocess/numeric.py`
@@ -64,6 +64,8 @@ class Preprocess():
         
         Keyword Arguments:
             list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
+            params (dict, optional): A dictionary of parmaters to pass into MinMaxScaler() constructor
+                                from Scikit-Learn. Defaults to {}
         
         Returns:
             [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
@@ -73,7 +75,7 @@ class Preprocess():
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
 
         if self.data_properties.use_full_data:
-            self.data = PreprocessNormalize(list_of_cols=list_of_cols, data=self.data)
+            self.data = PreprocessNormalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data)
 
             if self.report is not None:
                 if list_of_cols:
@@ -86,6 +88,7 @@ class Preprocess():
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = PreprocessNormalize(list_of_cols=list_of_cols,
+                                                                                                    params=normalize_params,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
 
