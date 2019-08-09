@@ -11,9 +11,10 @@ from pyautoml.util import DropAndReplaceColumns, _FunctionInputValidation
 
 #TODO: Implement KNN, and replacing with most common category 
 
-def ReplaceMissingNewCategory(col_to_category=None, constant=None, **datasets):
+def ReplaceMissingNewCategory(constant=None, col_to_category=None, **datasets):
     """
-    [summary]
+    Replaces missing values in categorical column with its own category. The categories can be autochosen
+    from the defaults set.
     
     Args:
         col_to_category (list or dict, optional): A dictionary mapping column name to the category name you want to replace 
@@ -30,6 +31,11 @@ def ReplaceMissingNewCategory(col_to_category=None, constant=None, **datasets):
         Dataframe, *Dataframe: Cleaned columns of the dataframe(s) provides with the provided constant.
 
         * Returns 2 Dataframes if Train and Test data is provided.
+
+    Examples:
+
+        >>>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
+        >>>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
     """
 
     data = datasets.pop('data', None)
@@ -40,7 +46,7 @@ def ReplaceMissingNewCategory(col_to_category=None, constant=None, **datasets):
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        raise TypeError("Please provide a full data or training and testing data.")
+        raise ValueError("Please provide a full data or training and testing data.")
     
     str_missing_categories = ["Other", "Unknown", "MissingDataCategory"]
     num_missing_categories = [-1, -999, -9999]
@@ -190,7 +196,7 @@ def ReplaceMissingRemoveRow(cols_to_remove, **datasets):
 
         * Returns 2 Dataframes if Train and Test data is provided.  
     """
-    
+
     data = datasets.pop('data', None)
     train_data = datasets.pop('train_data', None)
     test_data = datasets.pop('test_data', None)
@@ -199,7 +205,7 @@ def ReplaceMissingRemoveRow(cols_to_remove, **datasets):
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")  
 
     if not _FunctionInputValidation(data, train_data, test_data):
-        raise TypeError("Please provide a full data or training and testing data.")
+        raise ValueError("Please provide a full data or training and testing data.")
 
     if data is not None:
         data = data.dropna(axis=0, subset=cols_to_remove)
