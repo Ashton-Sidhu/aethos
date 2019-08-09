@@ -42,9 +42,18 @@ class Clean():
         self.train_data = self.data_properties.train_data
         self.test_data = self.data_properties.test_data
 
-    def check_missing_values(self):       
-
+    @property
+    def missing_values(self):       
+        """
+        Property that displays every column and how many missing values it has along with percentage.
+        """
+        if self.data_properties.use_full_data:
+            missing_values = MissingData(self.data)
+        else:
+            missing_values = MissingData(self.data_properties.train_data, self.data_properties.test_data)
         
+        for item in missing_values:
+            print(item.__repr__())
 
 
     def remove_columns(self, threshold):

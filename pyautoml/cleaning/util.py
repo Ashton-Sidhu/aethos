@@ -9,21 +9,21 @@ import pandas as pd
 from pyautoml.util import _FunctionInputValidation
 
 
-def CheckMissingData(*dataframes):
+def MissingData(*dataframes):
     """
     Utility function that shows how many values are missing in each column.
 
     Arguments:
         *dataframes : Sequence of dataframes
     """
-
     n_arrays = len(dataframes)
     if n_arrays == 0:
         raise ValueError("At least one dataframe required as input")
+
     
-    for dataframe in dataframes
-        if df.isnull().values.any():
-            yield None
+    for dataframe in dataframes:
+        if not dataframe.isnull().values.any():            
+            yield
         else:
             total = dataframe.isnull().sum().sort_values(ascending=False)
             percent = (dataframe.isnull().sum()/dataframe.isnull().count()).sort_values(ascending=False)
