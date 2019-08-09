@@ -1,6 +1,7 @@
 """
 This file contains the following methods:
 
+MissingData
 RemoveColumns
 RemoveRows
 SplitData
@@ -16,6 +17,7 @@ def MissingData(*dataframes):
     Arguments:
         *dataframes : Sequence of dataframes
     """
+
     n_arrays = len(dataframes)
     if n_arrays == 0:
         raise ValueError("At least one dataframe required as input")
@@ -31,20 +33,33 @@ def MissingData(*dataframes):
 
             yield missing_data
     
-def RemoveColumns(threshold, data=None, train_data=None, test_data=None):
-    """Remove columns from the dataframe that have more than the threshold value of missing columns.
-    Example: Remove columns where > 50% of the data is missing
-        
-    Arguments:
-        threshold {[float]} -- Value between 0 and 1 that describes what percentage of a column can be missing values.
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
-
-    Returns:
-        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-        of both are returned.     
+def RemoveColumns(threshold, **datasets):
     """
+    Remove columns from the dataframe that have more than the threshold value of missing rows.
+    Example: Remove columns where > 50% of the data is missing
+    
+    Args:
+        threshold (int or float, optional): Threshold value between 0 and 1 that if the column
+        has more than the specified threshold of missing values, it is removed. 
+    
+        Either the full data or training data plus testing data MUST be provided, not both.
+
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
+    
+    Returns:
+        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided.
+    """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f"Invalid parameters passed: {str(datasets)}")
 
     if not _FunctionInputValidation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
@@ -59,20 +74,34 @@ def RemoveColumns(threshold, data=None, train_data=None, test_data=None):
 
         return train_data[criteria_meeting_columns], test_data[criteria_meeting_columns]
 
-def RemoveRows(threshold, data=None, train_data=None, test_data=None):
-    """Remove rows from the dataframe that have more than the threshold value of missing rows.
+def RemoveRows(threshold, **datasets):
+    """
+    Remove rows from the dataframe that have more than the threshold value of missing rows.
     Example: Remove rows where > 50% of the data is missing
     
-    Arguments:
-        threshold {[float]} -- Value between 0 and 1 that describes what percentage of a row can be missing values.
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
-        
+    Args:
+        threshold (int or float, optional): Threshold value between 0 and 1 that if the row
+        has more than the specified threshold of missing values, it is removed. 
+    
+        Either the full data or training data plus testing data MUST be provided, not both.
+
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
+    
     Returns:
-        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-        of both are returned.     
+        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided.
     """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f"Invalid parameters passed: {str(datasets)}")
+
     if not _FunctionInputValidation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 

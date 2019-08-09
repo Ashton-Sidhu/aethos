@@ -286,6 +286,12 @@ class Clean():
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
                                     Example: if custom_cols is provided and override is true, the technique will only be applied
                                     to the the columns in custom_cols (default: {False})
+        
+        Examples:
+
+        >>>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
+        >>>> replace_missing_constant(1, ['a', 'b', 'c'])
+                    
         """
 
         report_info = technique_reason_repo['clean']['numeric']['constant']
@@ -316,7 +322,8 @@ class Clean():
             return self.data_properties.train_data, self.data_properties.test_data
 
     def replace_missing_new_category(self, new_category=None, col_to_category=None):
-        """Replaces missing values in categorical column with its own category. The categories can be autochosen
+        """
+        Replaces missing values in categorical column with its own category. The categories can be autochosen
         from the defaults set.
 
         For numeric categorical columns default values are: -1, -999, -9999
@@ -331,12 +338,17 @@ class Clean():
             override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
                                     Example: if custom_cols is provided and override is true, the technique will only be applied
                                     to the the columns in custom_cols (default: {False})
+
+        Examples:
+
+        >>>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
+        >>>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
         """
         
         report_info = technique_reason_repo['clean']['categorical']['new_category']
 
         if self.data_properties.use_full_data:
-            self.data = ReplaceMissingNewCategory(col_to_category=col_to_category, constant=new_category, data=self.data)
+            self.data = ReplaceMissingNewCategory(constant=new_category, col_to_category=col_to_category, data=self.data)
 
             if self.report is not None:
                 if col_to_category is None:
@@ -347,10 +359,10 @@ class Clean():
             return self.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingNewCategory(col_to_category=col_to_category,
-                                                                                                    constant=new_category,
-                                                                                                    train_data=self.data_properties.train_data,
-                                                                                                    test_data=self.data_properties.test_data)
+            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingNewCategory(constant=new_category,
+                                                                                                        col_to_category=col_to_category,                                                                                                    
+                                                                                                        train_data=self.data_properties.train_data,
+                                                                                                        test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 if col_to_category is None:

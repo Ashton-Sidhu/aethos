@@ -3,6 +3,7 @@ This file contains the following methods:
 
 FeatureBagOfWords
 FeatureTFIDF
+NLTKFeaturePoSTag
 """
 
 import pandas as pd
@@ -12,28 +13,38 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
 
 
-def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=None, bow_params={}):
+def FeatureBagOfWords(list_of_cols=[],  params={}, **datasets):
     """
     Creates a matrix of how many times a word appears in a document.
+    
+    Args:
+        list_of_cols (list, optional): A list of specific columns to apply this technique to. Defaults to [].
+        params (dict, optional): Parameters you would pass into Bag of Words constructor as a dictionary.
+                                    Defaults to {}.
+    
+        Either the full data or training data plus testing data MUST be provided, not both.
 
-    Either data or train_data or test_data MUST be provided, not both.
-
-    Keyword Arguments:
-        list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
-        data {DataFrame} or {[list]} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
-        bow_params {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
 
     Returns:
-        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version
-        of both are returned.
+        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided.  
     """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
 
     if not _FunctionInputValidation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
-    enc = CountVectorizer(**bow_params)
+    enc = CountVectorizer(**params)
 
     if isinstance(data, list):
 
@@ -64,28 +75,37 @@ def FeatureBagOfWords(list_of_cols=[], data=None, train_data=None, test_data=Non
         return train_data, test_data
 
 
-def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, tfidf_params={}):
+def FeatureTFIDF(list_of_cols=[], params={}, **datasets):
     """
     Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
-    Either data or train_data or test_data MUST be provided, not both.
+    Args:
+        list_of_cols (list, optional): A list of specific columns to apply this technique to. Defaults to [].
+        params (dict, optional): Parameters you would pass into TFIDF constructor as a dictionary. Defaults to {}.
+    
+        Either the full data or training data plus testing data MUST be provided, not both.
 
-    Keyword Arguments:
-        list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
-        tfidf_params {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
 
     Returns:
-        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version
-        of both are returned.
+        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided.  
     """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
 
     if not _FunctionInputValidation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
-    enc = TfidfVectorizer(tfidf_params)
+    enc = TfidfVectorizer(**params)
 
     if isinstance(data, list):
         tfidf = enc.fit_transform(data)
@@ -115,7 +135,7 @@ def FeatureTFIDF(list_of_cols=[], data=None, train_data=None, test_data=None, tf
         return train_data, test_data
 
 
-def NLTKFeaturePoSTag(list_of_cols=[], data=None, train_data=None, test_data=None):    
+def NLTKFeaturePoSTag(list_of_cols=[], **datasets):    
     """
     Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
     Verbs, etc.
@@ -123,16 +143,26 @@ def NLTKFeaturePoSTag(list_of_cols=[], data=None, train_data=None, test_data=Non
     This utilizes TextBlob which utlizes the NLTK tagger and is a wrapper for the tagging process.
 
     Args:
-        list_of_cols (list, optional):  A list of specific columns to apply this technique to.. Defaults to [].
-        data (DataFrame, optional): Full dataset. Defaults to None.
-        train_data (Dataframe, optional): Training dataset. Defaults to None.
-        test_data (Dataframe, optional): Test dataset. Defaults to None.
-    
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with new column of the text columns PoS tagged.
+        list_of_cols (list, optional):  A list of specific columns to apply this technique to. Defaults to [].
 
-        * Returns 2 Dataframes if Train and Test data is provided.
+        Either the full data or training data plus testing data MUST be provided, not both.
+
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
+
+    Returns:
+        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided.  
     """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
 
     if not _FunctionInputValidation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
