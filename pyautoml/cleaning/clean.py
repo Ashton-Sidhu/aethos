@@ -7,7 +7,8 @@ from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
 from pyautoml.data.data import Data
-from pyautoml.util import (GetListOfCols, SplitData, _FunctionInputValidation,
+from pyautoml.util import (CheckMissingData, GetListOfCols, SplitData,
+                           _FunctionInputValidation,
                            _NumericFunctionInputConditions)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
@@ -40,6 +41,11 @@ class Clean():
 
         self.train_data = self.data_properties.train_data
         self.test_data = self.data_properties.test_data
+
+    def check_missing_values(self):       
+
+        
+
 
     def remove_columns(self, threshold):
         """Remove columns from the dataframe that have more than the threshold value of missing columns.
