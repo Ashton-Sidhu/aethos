@@ -214,5 +214,54 @@ class TestCleaning(unittest.TestCase):
                                         [1, "Other", 1],
                                         [-1, "Unknown", -1]])
 
+    def test_cleanutil_removeduplicaterows(self):
+
+        data = [[1, 0, 2],
+                [0, 2, 1],
+                [1, 0, 2]]
+
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(data, columns=columns)
+
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
+        clean_data = clean.remove_duplicate_rows()
+        validate = clean_data.values.tolist()
+
+        self.assertListEqual(validate, [[1, 0, 2],
+                                        [0, 2, 1]])
+
+    def test_cleanutil_removeduplicaterows(self):
+
+        data = [[1, 0, 2],
+                [0, 2, 1],
+                [1, 0, 2]]
+
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(data, columns=columns)
+
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
+        clean_data = clean.remove_duplicate_rows(list_of_cols=columns)
+        validate = clean_data.values.tolist()
+
+        self.assertListEqual(validate, [[1, 0, 2],
+                                        [0, 2, 1]])
+
+    def test_cleanutil_removeduplicatecolumns(self):
+
+        data = [[1, 0, 1],
+                [0, 2, 0],
+                [1, 0, 1]]
+
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(data, columns=columns)
+
+        clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
+        clean_data = clean.remove_duplicate_columns()
+        validate = clean_data.values.tolist()
+
+        self.assertListEqual(validate, [[1, 0],
+                                        [0, 2],
+                                        [1, 0]])
+
 if __name__ == "__main__":
     unittest.main()

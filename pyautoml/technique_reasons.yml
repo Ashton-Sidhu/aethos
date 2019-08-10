@@ -8,6 +8,12 @@ clean:
       Removed column column_name_placeholder because it had too many missing values and didn't 
       contain enough information.
 
+    remove_duplicate_rows: >
+      Removed rows that are exact duplicates of each other and keep only 1 to increase computational performance.
+    
+    remove_duplicate_columns: >
+      Removed columns of which whos values are exact duplicates of each other to reduce redundancy.
+
   categorical:
     new_category: >
       Replaced missing values in column column_name_placeholder with its own category name because 
