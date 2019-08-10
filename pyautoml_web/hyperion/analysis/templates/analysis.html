@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="kt-subheader   kt-grid__item" id="kt_subheader">
+<div class="kt-subheader kt-grid__item" id="kt_subheader">
 	<div class="kt-container  kt-container--fluid ">
 		<div class="kt-subheader__main">
 			<h3 class="kt-subheader__title">
@@ -24,12 +24,12 @@
 			<div class="kt-subheader__wrapper">
 				<ul class="nav nav-tabs" role="tablist">
 					<li class="nav-item">
-						<a class="nav-link active" data-toggle="tab" href="#kt_tabs_1_1">
+						<a class="nav-link active" data-toggle="tab" href="#overview">
 							<i class="la la-exclamation-triangle"></i> Overview
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" data-toggle="tab" href="#kt_tabs_1_2">
+						<a class="nav-link" data-toggle="tab" href="#analysis">
 							<i class="la la-cloud-download"></i> Analysis
 						</a>
 					</li>
@@ -42,13 +42,46 @@
 <!-- end:: Subheader -->
 
 <!-- begin:: Content -->
-<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
+<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid" style="padding-left: 0; padding-right: 0">
 	<div class="tab-content">
-		<div class="tab-pane active" id="kt_tabs_1_1" role="tabpanel">
-			Analysis1 goes here...
+		<div class="tab-pane active" id="overview" role="tabpanel">
+			<div class="row">
+
+			
+				<div class="col-8 order-lg-1 order-xl-1">
+					<div class="kt-portlet kt-portlet--height-fluid">
+						<div class="kt-portlet__head">
+							<div class="kt-portlet__head-label">
+								<h3 class="kt-portlet__head-label">Data</h3>
+							</div>
+							<div class="kt-portlet__head-toolbar">
+								<!-- Data or train and test data tabs go here -->
+							</div>
+						</div>
+						<div class="kt-portlet__body">
+							<!-- Data goes here-->
+							Data
+						</div>
+					</div>
+				</div>
+
+				<div class="col-4 order-lg-1 order-xl-1">
+					<div class="kt-portlet kt-portlet--height-fluid">
+						<div class="kt-portlet__head">
+							<div class="kt-portlet__head-label">
+								<h3 class="kt-portlet__head-label">Properties</h3>
+							</div>						
+						</div>
+						<div class="kt-portlet__body">
+							<!-- Data goes here-->
+							Properties
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div class="tab-pane" id="kt_tabs_1_2" role="tabpanel">
+		<div class="tab-pane" id="analysis" role="tabpanel">
 			Analysis2 goes here...
 		</div>
 	</div>
