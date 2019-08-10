@@ -44,9 +44,9 @@ def RemoveColumns(threshold, **datasets):
     
         Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame} -- Full dataset. Defaults to None.
-        train_data {DataFrame} -- Training dataset. Defaults to None.
-        test_data {DataFrame} -- Testing dataset. Defaults to None.
+        data {DataFrame}: Full dataset. Defaults to None.
+        train_data {DataFrame}: Training dataset. Defaults to None.
+        test_data {DataFrame}: Testing dataset. Defaults to None.
     
     Returns:
         Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
@@ -85,9 +85,9 @@ def RemoveRows(threshold, **datasets):
     
         Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame} -- Full dataset. Defaults to None.
-        train_data {DataFrame} -- Training dataset. Defaults to None.
-        test_data {DataFrame} -- Testing dataset. Defaults to None.
+        data {DataFrame}: Full dataset. Defaults to None.
+        train_data {DataFrame}: Training dataset. Defaults to None.
+        test_data {DataFrame}: Testing dataset. Defaults to None.
     
     Returns:
         Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
@@ -113,5 +113,79 @@ def RemoveRows(threshold, **datasets):
 
         train_data = train_data.dropna(thresh=round(train_data.shape[1] * threshold), axis=0)
         test_data = test_data.dropna(thresh=round(test_data.shape[1] * threshold), axis=0)
+
+        return train_data, test_data
+
+def RemoveDuplicateRows(list_of_cols=[], **datasets):
+    """
+    Removes rows that are exact duplicates of each other.
+    
+    Args:
+        list_of_cols (list, optional): Columns to check if their values are duplicated. Defaults to [].
+    
+        Either the full data or training data plus testing data MUST be provided, not both.
+
+        data {DataFrame}: Full dataset. Defaults to None.
+        train_data {DataFrame}: Training dataset. Defaults to None.
+        test_data {DataFrame}: Testing dataset. Defaults to None.
+    
+    Returns:
+        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided.
+    """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
+
+    if not _FunctionInputValidation(data, train_data, test_data):
+        raise ValueError('Function input is incorrectly provided.')
+
+    if data is not None:        
+        return data.drop_duplicates(list_of_cols)
+
+    else:
+        train_data = train_data.drop_duplicates(list_of_cols)
+        test_data = test_data.drop_duplicates(list_of_cols)
+
+        return train_data, test_data
+
+def RemoveDuplicateColumns(**datasets):
+    """
+    Removes columns whose values are exact duplicates of each other.
+    
+    Args:    
+        Either the full data or training data plus testing data MUST be provided, not both.
+
+        data {DataFrame}: Full dataset. Defaults to None.
+        train_data {DataFrame}: Training dataset. Defaults to None.
+        test_data {DataFrame}: Testing dataset. Defaults to None.
+    
+    Returns:
+        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided.
+    """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
+
+    if not _FunctionInputValidation(data, train_data, test_data):
+        raise ValueError('Function input is incorrectly provided.')
+
+    if data is not None:
+        return data.T.drop_duplicates().T
+
+    else:
+        train_data = train_data.T.drop_duplicates().T
+        test_data = test_data.T.drop_duplicates().T
 
         return train_data, test_data

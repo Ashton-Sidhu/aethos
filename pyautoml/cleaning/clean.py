@@ -405,6 +405,62 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
+    def remove_duplicate_rows(self, list_of_cols=[]):
+        """
+        Remove rows from the data that are exact duplicates of each other and leave only 1.
+        This can be used to reduce processing time or performance for algorithms where
+        duplicates have no effect on the outcome (i.e DBSCAN)
+        
+        This function exists in `clean/util.py` as `RemoveDuplicateRows`.
+        
+        Args:
+            list_of_cols (list, optional): A list of specific columns to apply this technique to. Defaults to [].
+        
+        Returns:
+            Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    
+            * Returns 2 Dataframes if Train and Test data is provided.
+        """
+    
+        report_info = technique_reason_repo['clean']['general']['remove_duplicate_rows']
+    
+        if self.data_properties.use_full_data:
+            self.data = RemoveDuplicateRows(list_of_cols=list_of_cols, data=self.data)
+    
+            return self.data
+    
+        else:
+            self.data_properties.train_data, self.data_properties.test_data = RemoveDuplicateRows(list_of_cols=[],
+                                                                                                train_data=self.data_properties.train_data,
+                                                                                                test_data=self.data_properties.test_data)
+
+            return self.data_properties.train_data, self.data_properties.test_data
+
+    def remove_duplicate_columns(self):
+        """
+        Remove columns from the data that are exact duplicates of each other and leave only 1.
+        
+        This function exists in `clean/util.py` as `RemoveDuplicateColumns`.
+                
+        Returns:
+            Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    
+            * Returns 2 Dataframes if Train and Test data is provided.
+        """
+    
+        report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
+    
+        if self.data_properties.use_full_data:
+            self.data = RemoveDuplicateColumns(data=self.data)
+    
+            return self.data
+    
+        else:
+            self.data_properties.train_data, self.data_properties.test_data = RemoveDuplicateColumns(train_data=self.data_properties.train_data,
+                                                                                                test_data=self.data_properties.test_data)
+
+            return self.data_properties.train_data, self.data_properties.test_data
+
     def GenerateCode(self):
         print("Not developed yet.")
         return
