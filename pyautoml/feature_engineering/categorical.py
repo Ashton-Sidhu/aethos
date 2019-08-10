@@ -5,36 +5,43 @@ FeatureOneHotEncode
 """
 
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
-
 from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
                            _FunctionInputValidation)
+from sklearn.preprocessing import OneHotEncoder
 
 
-def FeatureOneHotEncode(list_of_cols, data=None, train_data=None, test_data=None, **onehot_kwargs):
-    """Creates a matrix of converted categorical columns into binary columns.
+def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **datasets):
+    """ 
+    Creates a matrix of converted categorical columns into binary columns.
+
+    Args:
+        list_of_cols (list): A list of specific columns to apply this technique to.
+        params (dict, optional): Parameters you would pass into Bag of Words constructor as a dictionary. 
+                            Defaults to {"handle_unknown": "ignore"}.
     
-    Either data or train_data or test_data MUST be provided, not both. 
-    
-    Keyword Arguments:
-        list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
-        **tfidf_kwargs {dictionary} - Parameters you would pass into Bag of Words constructor as a dictionary
+        Either the full data or training data plus testing data MUST be provided, not both.
+
+        data {DataFrame} -- Full dataset. Defaults to None.
+        train_data {DataFrame} -- Training dataset. Defaults to None.
+        test_data {DataFrame} -- Testing dataset. Defaults to None.
 
     Returns:
-        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-        of both are returned. 
+        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided.  
     """
 
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
+
     if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+        raise ValueError("Function input is incorrectly provided.")
 
-    if not onehot_kwargs:
-        onehot_kwargs = {"handle_unknown": "ignore"}
-
-    enc = OneHotEncoder(**onehot_kwargs)
+    enc = OneHotEncoder(**params)
 
     if data is not None:
         
