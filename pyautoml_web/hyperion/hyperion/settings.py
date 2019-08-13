@@ -137,3 +137,5 @@ else:
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "hyperion/static/"),
 ]
+
+SOURCE_DATA = os.path.join(BASE_DIR, "sources/")

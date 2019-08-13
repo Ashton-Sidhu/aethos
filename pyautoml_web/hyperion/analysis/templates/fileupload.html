@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
+    <!--begin::Portlet-->
+    <div class="kt-portlet">
+        <div class="kt-portlet__head">
+            <div class="kt-portlet__head-label">
+                <h3 class="kt-portlet__head-title">
+                    Upload data for analysis
+                </h3>
+            </div>
+        </div>
+
+        <!--begin::Form-->
+        <form class="kt-form kt-form--label-right" method="post">
+        {% csrf_token %}
+            <div class="kt-portlet__body">
+                <div class="form-group row">
+                    <label class="col-form-label col-lg-3 col-sm-12"></label>
+                    <div class="col-lg-4 col-md-9 col-sm-12">
+                        <div class="kt-dropzone dropzone m-dropzone--primary dz-clickable" action="{% url 'upload' %}" id="m-dropzone-two">
+                            <div class="kt-dropzone__msg dz-message needsclick">
+                                <h3 class="kt-dropzone__msg-title">Drop files here or click to upload.</h3>
+                                <span class="kt-dropzone__msg-desc">Upload up to 10 files</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="kt-portlet__foot">
+                <div class="kt-form__actions">
+                    <div class="row">
+                        <div class="col-lg-9 ml-lg-auto">
+                            <button type="reset" class="btn btn-brand">Submit</button>
+                            <button type="reset" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!--end::Form-->
+    </div>
+
+    <!--end::Portlet-->
+</div>
+
+{% endblock %}
