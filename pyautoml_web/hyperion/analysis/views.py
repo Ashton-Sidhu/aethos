@@ -11,9 +11,9 @@ def load_analysis(request):
 
     return render(request, 'analysis.html')
 
-@csrf_protect
 def file_upload(request):
-    form_class = UploadFilesForm
+
+    #FILES IS A DICT
     files = request.FILES.getlist('file_field')
     if request.method == 'POST':
         form = UploadFilesForm(request.POST, request.FILES)

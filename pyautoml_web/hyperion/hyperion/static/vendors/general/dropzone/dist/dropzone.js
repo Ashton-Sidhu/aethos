@@ -183,7 +183,7 @@ var Dropzone = function (_Emitter) {
          * also trigger additional events (like `processingmultiple`). See the events
          * documentation section for more information.
          */
-        uploadMultiple: false,
+        uploadMultiple: true,
 
         /**
          * Whether you want files to be uploaded in chunks to your server. This can't be
@@ -310,7 +310,7 @@ var Dropzone = function (_Emitter) {
          * An optional object to send additional headers to the server. Eg:
          * `{ "My-Awesome-Header": "header value" }`
          */
-        headers: null,
+        headers: {"X-CSRFToken": Cookies.get('csrftoken')},
 
         /**
          * If `true`, the dropzone element itself will be clickable, if `false`
