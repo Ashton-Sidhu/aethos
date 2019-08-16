@@ -50,12 +50,12 @@ For Web App:
 `TBD`
 
 ## Development Phases
+
+### Library
 #### Phase 1
-  - [ ]	UI framework
   - [x]	Data Processing techniques
     - [x] Data Cleaning V1
     - [x] Feature Engineering V1
-  - [ ]	Code Generation
   - [x]	Reporting V1
 
 #### Phase 2
@@ -73,6 +73,20 @@ For Web App:
 #### Phase 5
   - [ ]	Cloud computing
   - [ ]	Deep learning integration
+  
+### Web App
+
+#### Phase 1
+  - [x] Base Framework
+  - [ ] File Upload - IPR
+  - [ ] Detect column type (categorical (numeric/string), numeric, string, text, etc.)
+  - [ ] Display Data
+  - [ ] Modify and Display data with technique choosing
+  - [ ] Export final Result
+  
+### Code Generation
+
+TBD
 
 These are subject to change.
 
