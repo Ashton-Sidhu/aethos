@@ -3,9 +3,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from pyautoml.cleaning.clean import Clean
-from pyautoml.feature_engineering.feature import Feature
-from pyautoml.preprocessing.preprocess import Preprocess
+from pyautoml import Clean, Feature, Preprocess
 from pyautoml.reporting.report import Report
 
 
