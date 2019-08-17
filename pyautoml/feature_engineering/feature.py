@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import pyautoml
 import yaml
+from IPython.display import display
 from pyautoml.data.data import Data
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
