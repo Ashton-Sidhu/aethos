@@ -232,10 +232,10 @@ class Clean():
 
             return self.data_properties.train_data, self.data_properties.test_data
 
-    def replace_missing_mode(self, list_of_cols=[]):
-        """Replaces missing values in every numeric column with the mode of that column
+    def replace_missing_mostcommon(self, list_of_cols=[]):
+        """Replaces missing values in every numeric column with the most common value of that column
 
-        Mode: Most common number in a list of numbers.
+        Mode: Most common value.
 
         This function exists in `clean/numeric.py` as `ReplaceMissingMeanMedianMode`.
         

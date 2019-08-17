@@ -4,7 +4,8 @@ This file contains the following methods:
 MissingData
 RemoveColumns
 RemoveRows
-SplitData
+Remove Duplicate Rows
+Remove Duplicate Columns
 """
 import pandas as pd
 from pyautoml.util import _FunctionInputValidation

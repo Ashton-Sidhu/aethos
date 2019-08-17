@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-
 import pandas as pd
 from pyautoml import Clean
 
@@ -87,7 +86,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.replace_missing_mode()
+        clean_data = clean.replace_missing_mostcommon()
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1., 0., 2.),
