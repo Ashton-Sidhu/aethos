@@ -47,9 +47,9 @@ class Clean():
 
     def __repr__(self):
         if self.data_properties.use_full_data:
-            return self.data.__repr__()
+            return self.data
         else:
-            return self.data_properties.train_data.__repr__()
+            return self.data_properties.train_data
 
     @property
     def missing_values(self):       
@@ -62,7 +62,7 @@ class Clean():
             missing_values = MissingData(self.data_properties.train_data, self.data_properties.test_data)
         
         for item in missing_values:
-            print(item.__repr__())    
+            item.__repr__()
 
 
     def remove_columns(self, threshold):
