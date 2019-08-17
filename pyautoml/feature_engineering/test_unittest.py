@@ -1,7 +1,7 @@
 import unittest
 
 import pandas as pd
-from pyautoml.feature_engineering.feature import Feature
+from pyautoml import Feature
 
 
 class TestFeatureExtraction(unittest.TestCase):

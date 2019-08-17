@@ -1,8 +1,9 @@
 import unittest
 
 import numpy as np
+
 import pandas as pd
-from pyautoml.cleaning.clean import Clean
+from pyautoml import Clean
 
 
 class TestCleaning(unittest.TestCase):    

@@ -52,9 +52,9 @@ class TestData(unittest.TestCase):
 
     def test_data_standardizedata(self):
 
-        data = np.array([(1, 1, 0, "hi my name is pyautoml", "green", 532.1),
-                        (2, 0, None, "this is my story", "yellow", 213.5),
-                        (3, None, None, "its me", "yellow", 154.2)])
+        data = [[1, 1, 0, "hi my name is pyautoml", "green", 532.1],
+                [2, 0, None, "this is my story", "yellow", 213.5],
+                [3, None, None, "its me", "yellow", 154.2]]
         columns = ["pid","col1", "col2", "col3", "col4", "col5"]
 
         dataset = pd.DataFrame(data, columns=columns)
