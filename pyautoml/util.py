@@ -118,3 +118,33 @@ def _NumericFunctionInputConditions(list_of_cols, data, train_data):
             list_of_cols = train_data.select_dtypes([np.number]).columns.tolist()
 
     return list_of_cols
+
+def _ColumnInput(list_of_cols, data, train_data):
+    """
+    If the list of columns are optional and no columns are provided, the columns are set
+    to all the columns in the data.
+    
+    Parameters
+    ----------
+    list_of_cols : list
+        List of columns to apply method to.
+    data : Dataframe or array like - 2d
+        Full dataset
+    train_data : Dataframe or array like - 2d
+        Training Dataset
+    
+    Returns
+    -------
+    list
+        List of columns to apply technique to
+    """
+
+    if list_of_cols:
+        list_of_cols = list_of_cols
+    else:
+        if data is not None:
+            list_of_cols = data.columns.tolist()
+        else:
+            list_of_cols = train_data.columns.tolist()
+
+    return list_of_cols
