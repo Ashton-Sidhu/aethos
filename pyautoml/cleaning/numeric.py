@@ -76,7 +76,7 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], **datasets):
         return data
     else:
         fit_train_data = imp.fit_transform(train_data[list_of_cols])
-        fit_train_df = pd.DataFrame(fit_data, columns=list_of_cols)            
+        fit_train_df = pd.DataFrame(fit_train_data, columns=list_of_cols)            
         train_data = DropAndReplaceColumns(train_data, list_of_cols, fit_train_df)
         
         fit_test_data = imp.transform(test_data[list_of_cols])
