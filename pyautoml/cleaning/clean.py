@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import pyautoml
 import yaml
+from IPython.display import display
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
@@ -47,9 +48,9 @@ class Clean():
 
     def __repr__(self):
         if self.data_properties.use_full_data:
-            return self.data.__repr__()
+            return display(self.data)
         else:
-            return self.data_properties.train_data.__repr__()
+            return display(self.data_properties.train_data)
 
     @property
     def missing_values(self):       
@@ -62,7 +63,8 @@ class Clean():
             missing_values = MissingData(self.data_properties.train_data, self.data_properties.test_data)
         
         for item in missing_values:
-            print(item.__repr__())    
+            display(item)
+            print("\n=======================================\n")
 
 
     def remove_columns(self, threshold):

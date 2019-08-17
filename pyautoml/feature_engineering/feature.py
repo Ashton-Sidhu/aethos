@@ -52,9 +52,9 @@ class Feature():
 
     def __repr__(self):
         if self.data_properties.use_full_data:
-            return self.data.__repr__()
+            return display(self.data)
         else:
-            return self.data_properties.train_data.__repr__()
+            return display(self.data_properties.train_data)
 
     def onehot_encode(self, list_of_cols, onehot_params={"handle_unknown": "ignore"}):
         """
