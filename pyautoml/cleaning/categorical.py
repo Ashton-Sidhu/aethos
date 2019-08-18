@@ -8,7 +8,7 @@ replace_missing_remove_row
 import numpy as np
 import pandas as pd
 
-from pyautoml.util import _FunctionInputValidation
+from pyautoml.util import _function_input_validation
 
 #TODO: Implement KNN, and replacing with most common category 
 
@@ -46,7 +46,7 @@ def replace_missing_new_category(constant=None, col_to_category=None, **datasets
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Please provide a full data or training and testing data.")
     
     str_missing_categories = ["Other", "Unknown", "MissingDataCategory"]
@@ -205,7 +205,7 @@ def replace_missing_remove_row(cols_to_remove, **datasets):
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")  
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Please provide a full data or training and testing data.")
 
     if data is not None:

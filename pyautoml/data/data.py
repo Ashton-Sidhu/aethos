@@ -156,18 +156,3 @@ class Data():
         self.standardized = True
 
         return df
-
-    def split_data(self, test_split_percentage):
-        """Splits data into train and test set.
-        
-        Arguments:
-            test_split_percentage {[float]} -- Percentage of data in your test set.
-        
-        Returns:
-            [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-            of both are returned. 
-        """
-
-        self.train_data, self.test_data = train_test_split(self.orig_data, test_size=test_split_percentage)
-
-        return self.train_data, self.test_data

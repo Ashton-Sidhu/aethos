@@ -71,7 +71,7 @@ class TestData(unittest.TestCase):
         columns = ["pid","col1", "col2", "col3", "col4", "col5"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        has_null = CheckMissingData(dataset)
+        has_null = check_missing_data(dataset)
 
         self.assertTrue(has_null)
 
@@ -81,7 +81,7 @@ class TestData(unittest.TestCase):
                 "sparrow": "bird",
                 "mosquito": "insect"}
         
-        list_of_keys = GetKeysByValues(data, "bird")
+        list_of_keys = get_keys_by_values(data, "bird")
 
         self.assertListEqual(list_of_keys, ["eagle", "sparrow"])
 
@@ -90,7 +90,7 @@ class TestData(unittest.TestCase):
                 "sparrow": "bird",
                 "mosquito": "insect"}
 
-        list_of_cols = GetListOfCols("bird", data, False, custom_cols=["eagle"])
+        list_of_cols = get_list_of_cols("bird", data, False, custom_cols=["eagle"])
 
         self.assertListEqual(list_of_cols, ["eagle", "sparrow"])
 
@@ -99,7 +99,7 @@ class TestData(unittest.TestCase):
                 "sparrow": "bird",
                 "mosquito": "insect"}
 
-        list_of_cols = GetListOfCols("bird", data, False, custom_cols=["frog"])
+        list_of_cols = get_list_of_cols("bird", data, False, custom_cols=["frog"])
 
         self.assertListEqual(list_of_cols, ["eagle", "sparrow", "frog"])
 
@@ -108,7 +108,7 @@ class TestData(unittest.TestCase):
                 "sparrow": "bird",
                 "mosquito": "insect"}
 
-        list_of_cols = GetListOfCols("bird", data, True, custom_cols=["frog"])
+        list_of_cols = get_list_of_cols("bird", data, True, custom_cols=["frog"])
 
         self.assertListEqual(list_of_cols, ["frog"])
 
@@ -120,7 +120,7 @@ class TestData(unittest.TestCase):
 
         dataset_zeros = pd.DataFrame(data_zeros, columns=columns_zeros)
         dataset_ones = pd.DataFrame(data_ones, columns=columns_ones)
-        df_new = DropAndReplaceColumns(dataset_zeros, "col2", dataset_ones)
+        df_new = drop_replace_columns(dataset_zeros, "col2", dataset_ones)
 
         self.assertListEqual(df_new.columns.tolist(), ["col1", "col3"])
 

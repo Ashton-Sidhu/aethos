@@ -132,7 +132,7 @@ class Clean(MethodBase):
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
@@ -147,7 +147,7 @@ class Clean(MethodBase):
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
@@ -175,7 +175,7 @@ class Clean(MethodBase):
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
@@ -190,7 +190,7 @@ class Clean(MethodBase):
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
@@ -218,7 +218,7 @@ class Clean(MethodBase):
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
@@ -232,7 +232,7 @@ class Clean(MethodBase):
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data

@@ -7,7 +7,7 @@ remove_duplicate_rows
 remove_duplicate_columns
 """
 import pandas as pd
-from pyautoml.util import _FunctionInputValidation
+from pyautoml.util import _function_input_validation
 
 
 def remove_columns_threshold(threshold, **datasets):
@@ -38,7 +38,7 @@ def remove_columns_threshold(threshold, **datasets):
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
     if data is not None:
@@ -79,7 +79,7 @@ def remove_rows_threshold(threshold, **datasets):
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
     if data is not None:
@@ -119,7 +119,7 @@ def remove_duplicate_rows(list_of_cols=[], **datasets):
     if datasets:
         raise TypeError(f'Invalid parameters passed: {str(datasets)}')
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:        
@@ -155,7 +155,7 @@ def remove_duplicate_columns(**datasets):
     if datasets:
         raise TypeError(f'Invalid parameters passed: {str(datasets)}')
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:
