@@ -104,7 +104,7 @@ N/A
 
 ## Acknowledgments
 
-N/A
+[@mouradmourafiq](https://github.com/mouradmourafiq) for his [pandas-summary](https://github.com/mouradmourafiq/pandas-summary) library.
 
 ## For Developers
 
