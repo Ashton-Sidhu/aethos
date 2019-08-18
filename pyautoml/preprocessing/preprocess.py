@@ -4,6 +4,7 @@ import pandas as pd
 import pyautoml
 import yaml
 from IPython.display import display
+from pyautoml.base import MethodBase
 from pyautoml.data.data import Data
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -19,7 +20,7 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
 
-class Preprocess():
+class Preprocess(MethodBase):
 
     
     def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):        
@@ -31,14 +32,14 @@ class Preprocess():
             self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
             if data is not None:
-                self.data = data
-                self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data, test_split_percentage)
+                self.data_properties.data = data
+                self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data_properties.data, test_split_percentage)
             else:
                 ## Override user input for safety.
                 self.data_properties.use_full_data = False
                 
         else:
-            self.data = data
+            self.data_properties.data = data
             self.data_properties = data_properties            
 
         if self.data_properties.report is None:
@@ -52,7 +53,7 @@ class Preprocess():
 
     def __repr__(self):
         if self.data_properties.use_full_data:
-            return display(self.data)
+            return display(self.data_properties.data)
         else:
             return display(self.data_properties.train_data)
         
@@ -76,16 +77,16 @@ class Preprocess():
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
 
         if self.data_properties.use_full_data:
-            self.data = PreprocessNormalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data)
+            self.data_properties.data = PreprocessNormalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data_properties.data)
 
             if self.report is not None:
                 if list_of_cols:
                     self.report.ReportTechnique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data, None)
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
                     self.report.ReportTechnique(report_info, list_of_cols)
             
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = PreprocessNormalize(list_of_cols=list_of_cols,

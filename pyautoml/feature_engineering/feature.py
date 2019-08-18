@@ -1,9 +1,9 @@
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
 from IPython.display import display
+from pyautoml.base import MethodBase
 from pyautoml.data.data import Data
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
@@ -19,7 +19,7 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
         print("Could not load yaml file.")
 
 
-class Feature():
+class Feature(MethodBase):
 
     def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):
 
@@ -31,15 +31,15 @@ class Feature():
                 data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
             if data is not None:
-                self.data = data
+                self.data_properties.data = data
                 self.data_properties.train_data, self.data_properties.test_data = SplitData(
-                    self.data, test_split_percentage)
+                    self.data_properties.data, test_split_percentage)
             else:
                 # Override user input for safety.
                 self.data_properties.use_full_data = False
 
         else:
-            self.data = data
+            self.data_properties.data = data
             self.data_properties = data_properties
 
         if self.data_properties.report is None:
@@ -53,7 +53,7 @@ class Feature():
 
     def __repr__(self):
         if self.data_properties.use_full_data:
-            return display(self.data)
+            return display(self.data_properties.data)
         else:
             return display(self.data_properties.train_data)
 
@@ -79,12 +79,12 @@ class Feature():
 
         if self.data_properties.use_full_data:
 
-            self.data = FeatureOneHotEncode(list_of_cols, data=self.data, params=onehot_params)
+            self.data_properties.data = FeatureOneHotEncode(list_of_cols, data=self.data_properties.data, params=onehot_params)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, list_of_cols)
 
-            return self.data
+            return self.data_properties.data
 
         else:
 
@@ -114,13 +114,13 @@ class Feature():
 
         if self.data_properties.use_full_data:
 
-            self.data = FeatureTFIDF(
-                list_of_cols=list_of_cols, params=tfidf_params, data=self.data,)
+            self.data_properties.data = FeatureTFIDF(
+                list_of_cols=list_of_cols, params=tfidf_params, data=self.data_properties.data,)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
 
-            return self.data
+            return self.data_properties.data
 
         else:
 
@@ -152,13 +152,13 @@ class Feature():
 
         if self.data_properties.use_full_data:
 
-            self.data = FeatureBagOfWords(
-                list_of_cols, params=bow_params, data=self.data)
+            self.data_properties.data = FeatureBagOfWords(
+                list_of_cols, params=bow_params, data=self.data_properties.data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
 
-            return self.data
+            return self.data_properties.data
 
         else:
 
@@ -192,12 +192,12 @@ class Feature():
         report_info = technique_reason_repo['feature']['text']['postag']
 
         if self.data_properties.use_full_data:
-            self.data = NLTKFeaturePoSTag(list_of_cols, data=self.data)
+            self.data_properties.data = NLTKFeaturePoSTag(list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
 
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = NLTKFeaturePoSTag(

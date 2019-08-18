@@ -9,7 +9,7 @@ class Data():
 
     def __init__(self, data, train_data, test_data, use_full_data, target_field, report_name):
 
-        self.orig_data = data
+        self.data_properties.data = data
         self.field_types = {}
         self.colMapping = {}
         self.target_field = target_field
