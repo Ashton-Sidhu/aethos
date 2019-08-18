@@ -38,13 +38,12 @@ class MethodBase():
         shell = get_ipython().__class__.__name__
 
         if shell == 'ZMQInteractiveShell':
-            # Hack for jupyter notebooks
             if self.data_properties.use_full_data:
-                display(self.data_properties.data)
+                display(self.data_properties.data) # Hack for jupyter notebooks
                 
                 return ''
             else:
-                display(self.data_properties.train_data)
+                display(self.data_properties.train_data) # Hack for jupyter notebooks
 
                 return ''
         
@@ -96,4 +95,4 @@ class MethodBase():
                 percent = (dataframe.isnull().sum()/dataframe.isnull().count()).sort_values(ascending=False)
                 missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
 
-                display(missing_data)
+                display(missing_data.T)
