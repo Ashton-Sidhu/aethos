@@ -1,6 +1,8 @@
-pandas_validation==0.5.0
-pandas==0.23.3
-numpy==1.16.2
-setuptools==39.0.1
-scikit_learn==0.21.2
+pandas_summary==0.0.7
+numpy==1.17.0
+setuptools==40.8.0
+ipython==7.7.0
+pandas==0.25.0
+scikit_learn==0.21.3
 textblob==0.15.3
+PyYAML==5.1.2
