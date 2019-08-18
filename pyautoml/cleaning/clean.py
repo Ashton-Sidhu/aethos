@@ -47,10 +47,12 @@ class Clean():
         self.test_data = self.data_properties.test_data
 
     def __repr__(self):
+
         if self.data_properties.use_full_data:
             return display(self.data)
         else:
             return display(self.data_properties.train_data)
+
 
     @property
     def missing_values(self):       
@@ -64,7 +66,6 @@ class Clean():
         
         for item in missing_values:
             display(item)
-            print("\n=======================================\n")
 
 
     def remove_columns(self, threshold):
@@ -462,7 +463,3 @@ class Clean():
                                                                                                 test_data=self.data_properties.test_data)
 
             return self.data_properties.train_data, self.data_properties.test_data
-
-    def GenerateCode(self):
-        print("Not developed yet.")
-        return
