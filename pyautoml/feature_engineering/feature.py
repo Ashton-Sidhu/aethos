@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import pyautoml
 import yaml
 from IPython.display import display
 from pyautoml.base import MethodBase

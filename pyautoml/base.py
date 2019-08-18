@@ -1,11 +1,20 @@
 import pandas as pd
 from IPython.display import display
 from pyautoml.data.data import Data
+from pyautoml.util import SplitData, _FunctionInputValidation
 
 
 class MethodBase():
 
-    def __init__(self, **datasets):
+    def __init__(self, **kwargs):
+
+        data = kwargs.pop('data')
+        train_data = kwargs.pop('train_data')
+        test_data = kwargs.pop('test_data')
+        use_full_data = kwargs.pop('use_full_data')
+        target_field = kwargs.pop('target_field')
+        report_name = kwargs.pop('report_name')
+        test_split_percentage = kwargs.pop('test_split_percentange')
 
         if not _FunctionInputValidation(data, train_data, test_data):
             raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
@@ -24,7 +33,6 @@ class MethodBase():
         else:
             self.report = self.data_properties.report
             self.report.WriteHeader("Cleaning")
-
     
     def __repr__(self):
 
@@ -35,17 +43,39 @@ class MethodBase():
 
 
     @property
-    def MissingData():
+    def data(self):
         """
-        Utility function that shows how many values are missing in each column.
-
-        Arguments:
-            *dataframes : Sequence of dataframes
+        Property function for the entire dataset.
         """
 
-        dataframes = [self.data_properties.data, self.data_properties.train_data, self.data_properties.test_data]
+        return self.data_properties.data
+
+    @property
+    def train_data(self):
+        """
+        Property function for the training dataset.
+        """
+
+        return self.data_properties.train_data
+
         
-        for dataframe in dataframes.map(yield x: if x is not None):
+    @property
+    def test_data(self):
+        """
+        Property function for the entire dataset.
+        """
+
+        return self.data_properties.test_data
+
+    @property
+    def missing_data():
+        """
+        Property function that shows how many values are missing in each column.
+        """
+
+        dataframes = list(filter(lambda x: x is not None, [self.data_properties.data, self.data_properties.train_data, self.data_properties.test_data]))
+        
+        for dataframe in dataframes:
             if not dataframe.isnull().values.any():            
                 print("No missing values!")
             else:

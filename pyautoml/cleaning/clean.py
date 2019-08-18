@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import pyautoml
 import yaml
 from pyautoml.base import MethodBase
 from pyautoml.cleaning.categorical import *
@@ -20,7 +21,8 @@ class Clean(MethodBase):
     
     def __init__(self, data=None, train_data=None, test_data=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):   
 
-        super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage, use_full_data=use_full_data, report_name=report_name)
+        super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
+                         use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
 
     def remove_columns(self, threshold):
