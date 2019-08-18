@@ -1,19 +1,20 @@
 """
 This file contains the following methods:
 
-FeatureBagOfWords
-FeatureTFIDF
-NLTKFeaturePoSTag
+feature_bag_of_words
+feature_tfidf
+nltk_feature_postag
 """
 
 import pandas as pd
-from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
-                           _FunctionInputValidation)
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
 
+from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
+                           _FunctionInputValidation)
 
-def FeatureBagOfWords(list_of_cols=[],  params={}, **datasets):
+
+def feature_bag_of_words(list_of_cols=[],  params={}, **datasets):
     """
     Creates a matrix of how many times a word appears in a document.
     
@@ -75,7 +76,7 @@ def FeatureBagOfWords(list_of_cols=[],  params={}, **datasets):
         return train_data, test_data
 
 
-def FeatureTFIDF(list_of_cols=[], params={}, **datasets):
+def feature_tfidf(list_of_cols=[], params={}, **datasets):
     """
     Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
@@ -135,7 +136,7 @@ def FeatureTFIDF(list_of_cols=[], params={}, **datasets):
         return train_data, test_data
 
 
-def NLTKFeaturePoSTag(list_of_cols=[], **datasets):    
+def nltk_feature_postag(list_of_cols=[], **datasets):    
     """
     Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
     Verbs, etc.

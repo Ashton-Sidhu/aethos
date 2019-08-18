@@ -1,16 +1,17 @@
 """
 This file contains the following methods:
 
-FeatureOneHotEncode
+feature_one_hot_encode
 """
 
 import pandas as pd
-from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
-                           _FunctionInputValidation)
 from sklearn.preprocessing import OneHotEncoder
 
+from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
+                           _FunctionInputValidation)
 
-def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **datasets):
+
+def feature_one_hot_encode(list_of_cols, params={"handle_unknown": "ignore"}, **datasets):
     """ 
     Creates a matrix of converted categorical columns into binary columns.
 

@@ -49,7 +49,7 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['categorical']['onehotencode']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = FeatureOneHotEncode(list_of_cols, data=self.data_properties.data, params=onehot_params)
+            self.data_properties.data = feature_one_hot_encode(list_of_cols, data=self.data_properties.data, params=onehot_params)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, list_of_cols)
@@ -57,7 +57,7 @@ class Feature(MethodBase):
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = FeatureOneHotEncode(list_of_cols,
+            self.data_properties.train_data, self.data_properties.test_data = feature_one_hot_encode(list_of_cols,
                                                                                                   train_data=self.data_properties.train_data,
                                                                                                   test_data=self.data_properties.test_data,
                                                                                                   params=onehot_params)
@@ -83,7 +83,7 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['text']['tfidf']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = FeatureTFIDF(
+            self.data_properties.data = feature_tfidf(
                 list_of_cols=list_of_cols, params=tfidf_params, data=self.data_properties.data,)
 
             if self.report is not None:
@@ -92,7 +92,7 @@ class Feature(MethodBase):
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = FeatureTFIDF(list_of_cols=list_of_cols,
+            self.data_properties.train_data, self.data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
                                                                                            params=tfidf_params,
                                                                                            train_data=self.data_properties.train_data,
                                                                                            test_data=self.data_properties.test_data,
@@ -120,7 +120,7 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['text']['bow']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = FeatureBagOfWords(
+            self.data_properties.data = feature_bag_of_words(
                 list_of_cols, params=bow_params, data=self.data_properties.data)
 
             if self.report is not None:
@@ -129,7 +129,7 @@ class Feature(MethodBase):
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = FeatureBagOfWords(list_of_cols,
+            self.data_properties.train_data, self.data_properties.test_data = feature_bag_of_words(list_of_cols,
                                                                                                 params=bow_params,
                                                                                                 train_data=self.data_properties.train_data,
                                                                                                 test_data=self.data_properties.test_data,
@@ -160,7 +160,7 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['text']['postag']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = NLTKFeaturePoSTag(list_of_cols, data=self.data_properties.data)
+            self.data_properties.data = nltk_feature_postag(list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, [])
@@ -168,7 +168,7 @@ class Feature(MethodBase):
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = NLTKFeaturePoSTag(
+            self.data_properties.train_data, self.data_properties.test_data = nltk_feature_postag(
                 list_of_cols, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data)
 
             if self.report is not None:
