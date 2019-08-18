@@ -67,7 +67,7 @@ class MethodBase():
         return self.data_properties.test_data
 
     @property
-    def missing_data():
+    def missing_data(self):
         """
         Property function that shows how many values are missing in each column.
         """
