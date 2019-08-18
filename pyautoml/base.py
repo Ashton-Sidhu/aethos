@@ -120,6 +120,8 @@ class MethodBase(object):
         """
         Describes your dataset using the DataFrameSummary library with basic descriptive info.
         Extends the DataFrame.describe() method to give more info.
+
+        Credits go to @mouradmourafiq for his pandas-summary library.
         
         Parameters
         ----------
@@ -153,6 +155,8 @@ class MethodBase(object):
     def column_info(self, dataset='train'):
         """
         Describes your columns using the DataFrameSummary library with basic descriptive info.
+
+        Credits go to @mouradmourafiq for his pandas-summary library.
 
         Info
         ----
@@ -193,6 +197,8 @@ class MethodBase(object):
     def describe_column(self, column, dataset='train'):
         """
         Analyzes a column and reports descriptive statistics about the columns.
+
+        Credits go to @mouradmourafiq for his pandas-summary library.
 
         Statistics
         ---------
