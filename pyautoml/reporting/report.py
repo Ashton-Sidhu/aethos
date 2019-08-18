@@ -11,7 +11,7 @@ class Report():
         if not os.path.exists("pyautoml_reports/"):
             os.makedirs("pyautoml_reports")        
 
-    def WriteHeader(self, header):
+    def write_header(self, header):
         
         if os.path.exists(self.filename):
             with open(self.filename, 'a+') as f:
@@ -21,18 +21,18 @@ class Report():
             with open(self.filename, 'a+') as f:
                 f.write(header + "\n\n")
 
-    def WriteContents(self, content):
+    def write_contents(self, content):
 
         with open(self.filename, 'a+') as f:
             f.write(content)
 
-    def ReportTechnique(self, technique, list_of_cols):
+    def report_technique(self, technique, list_of_cols):
 
         if list(list_of_cols) != []:        
             for col in list_of_cols:
                 log = technique.replace("column_name_placeholder", col)
 
-                self.WriteContents(log)
+                self.write_contents(log)
 
         else:
-            self.WriteContents(technique)
+            self.write_contents(technique)

@@ -25,7 +25,7 @@ class Clean(MethodBase):
                          use_full_data=use_full_data, target_field=target_field, report_name=report_name)
         
         if self.data_properties.report is not None:
-            self.report.WriteHeader("Feature Engineering")
+            self.report.write_header("Feature Engineering")
 
 
     def remove_columns(self, threshold):
@@ -48,12 +48,12 @@ class Clean(MethodBase):
             #Gather original data information
             original_columns = set(list(self.data_properties.data.columns))
 
-            self.data_properties.data = RemoveColumns(threshold, data=self.data_properties.data)
+            self.data_properties.data = remove_columns_threshold(threshold, data=self.data_properties.data)
 
             #Write to report
             if self.report is not None:
                 new_columns = original_columns.difference(self.data_properties.data.columns)
-                self.report.ReportTechnique(report_info, new_columns)
+                self.report.report_technique(report_info, new_columns)
 
             return self.data_properties.data
 
@@ -61,13 +61,13 @@ class Clean(MethodBase):
             #Gather original data information
             original_columns = set(list(self.data_properties.train_data.columns))
 
-            self.data_properties.train_data, self.data_properties.test_data = RemoveColumns(threshold,
+            self.data_properties.train_data, self.data_properties.test_data = remove_columns_threshold(threshold,
                                                                                             train_data=self.data_properties.train_data,
                                                                                             test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 new_columns = original_columns.difference(self.data_properties.train_data.columns)
-                self.report.ReportTechnique(report_info, new_columns)
+                self.report.report_technique(report_info, new_columns)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -89,22 +89,22 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['general']['remove_rows']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = RemoveRows(threshold, data=self.data_properties.data)
+            self.data_properties.data = remove_rows_threshold(threshold, data=self.data_properties.data)
 
             #Write to report
             if self.report is not None:            
-                self.report.ReportTechnique(report_info, [])
+                self.report.report_technique(report_info, [])
 
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = RemoveRows(threshold,
+            self.data_properties.train_data, self.data_properties.test_data = remove_rows_threshold(threshold,
                                                                                         train_data=self.data_properties.train_data,
                                                                                         test_data=self.data_properties.test_data)
 
             #Write to report
             if self.report is not None:            
-                self.report.ReportTechnique(report_info, [])                                                                                    
+                self.report.report_technique(report_info, [])                                                                                    
 
             return self.data_properties.train_data, self.data_properties.test_data
     
@@ -113,7 +113,7 @@ class Clean(MethodBase):
 
         Mean: Average value of the column. Effected by outliers.
 
-        This function exists in `clean/numeric.py` as `ReplaceMissingMeanMedianMode`.
+        This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
        
         Keyword Arguments:
             list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
@@ -125,30 +125,30 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['numeric']['mean']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = ReplaceMissingMeanMedianMode("mean", list_of_cols, data=self.data_properties.data)
+            self.data_properties.data = replace_missing_mean_median_mode("mean", list_of_cols, data=self.data_properties.data)
 
             #Write to report
             if self.report is not None:            
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingMeanMedianMode("mean",
+            self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode("mean",
                                                                                                             list_of_cols=list_of_cols,
                                                                                                             train_data=self.data_properties.train_data,
                                                                                                             test_data=self.data_properties.test_data)
             
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -157,7 +157,7 @@ class Clean(MethodBase):
 
         Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
 
-        This function exists in `clean/numeric.py` as `ReplaceMissingMeanMedianMode`.
+        This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
         
         Keyword Arguments:
             list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
@@ -169,29 +169,29 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['numeric']['median']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = ReplaceMissingMeanMedianMode("median", list_of_cols, data=self.data_properties.data)
+            self.data_properties.data = replace_missing_mean_median_mode("median", list_of_cols, data=self.data_properties.data)
             
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingMeanMedianMode("median",
+            self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode("median",
                                                                                                             list_of_cols=list_of_cols,
                                                                                                             train_data=self.data_properties.train_data,
                                                                                                             test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -200,7 +200,7 @@ class Clean(MethodBase):
 
         Mode: Most common value.
 
-        This function exists in `clean/numeric.py` as `ReplaceMissingMeanMedianMode`.
+        This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
         
         Keyword Arguments:
             list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
@@ -212,35 +212,35 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['numeric']['mode']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = ReplaceMissingMeanMedianMode("most_frequent", list_of_cols, data=self.data_properties.data)
+            self.data_properties.data = replace_missing_mean_median_mode("most_frequent", list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingMeanMedianMode("most_frequent",
+            self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode("most_frequent",
                                                                                                             list_of_cols=list_of_cols,
                                                                                                             train_data=self.data_properties.train_data,
                                                                                                             test_data=self.data_properties.test_data)
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
     def replace_missing_constant(self, constant=0, col_to_constant=None):
         """Replaces missing values in every numeric column with a constant.
 
-        This function exists in `clean/numeric.py` as `ReplaceMissingConstant`.
+        This function exists in `clean/numeric.py` as `replace_missing_constant`.
         
         Keyword Arguments:
             constant {int or float} -- Numeric value to replace all missing values with (default: {0})
@@ -260,27 +260,27 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['numeric']['constant']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = ReplaceMissingConstant(constant, col_to_constant, data=self.data_properties.data)
+            self.data_properties.data = replace_missing_constant(constant, col_to_constant, data=self.data_properties.data)
 
             if self.report is not None:
                 if col_to_constant is None:
-                    self.report.ReportTechnique(report_info, self.data_properties.data.columns)
+                    self.report.report_technique(report_info, self.data_properties.data.columns)
                 else:
-                    self.report.ReportTechnique(report_info, list(col_to_constant))
+                    self.report.report_technique(report_info, list(col_to_constant))
 
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingConstant(constant,
+            self.data_properties.train_data, self.data_properties.test_data = replace_missing_constant(constant,
                                                                                                     col_to_constant,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 if col_to_constant is None:
-                    self.report.ReportTechnique(report_info, self.data_properties.train_data.columns)
+                    self.report.report_technique(report_info, self.data_properties.train_data.columns)
                 else:
-                    self.report.ReportTechnique(report_info, list(col_to_constant))
+                    self.report.report_technique(report_info, list(col_to_constant))
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -292,7 +292,7 @@ class Clean(MethodBase):
         For numeric categorical columns default values are: -1, -999, -9999
         For string categorical columns default values are: "Other", "Unknown", "MissingDataCategory"
 
-        This function exists in `clean/categorical.py` as `ReplaceMissingNewCategory`.
+        This function exists in `clean/categorical.py` as `replace_missing_new_category`.
         
         Keyword Arguments:
             new_category {str} or  {int} or {float} -- Category to replace missing values with (default: {None})
@@ -311,27 +311,27 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['categorical']['new_category']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = ReplaceMissingNewCategory(constant=new_category, col_to_category=col_to_category, data=self.data_properties.data)
+            self.data_properties.data = replace_missing_new_category(constant=new_category, col_to_category=col_to_category, data=self.data_properties.data)
 
             if self.report is not None:
                 if col_to_category is None:
-                    self.report.ReportTechnique(report_info, self.data_properties.data.columns)
+                    self.report.report_technique(report_info, self.data_properties.data.columns)
                 else:
-                    self.report.ReportTechnique(report_info, list(col_to_category))
+                    self.report.report_technique(report_info, list(col_to_category))
 
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingNewCategory(constant=new_category,
+            self.data_properties.train_data, self.data_properties.test_data = replace_missing_new_category(constant=new_category,
                                                                                                         col_to_category=col_to_category,                                                                                                    
                                                                                                         train_data=self.data_properties.train_data,
                                                                                                         test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 if col_to_category is None:
-                    self.report.ReportTechnique(report_info, self.data_properties.train_data.columns)
+                    self.report.report_technique(report_info, self.data_properties.train_data.columns)
                 else:
-                    self.report.ReportTechnique(report_info, list(col_to_category))                                                                                                   
+                    self.report.report_technique(report_info, list(col_to_category))                                                                                                   
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -339,7 +339,7 @@ class Clean(MethodBase):
     def replace_missing_remove_row(self, cols_to_remove):
         """Remove rows where the value of a column for those rows is missing.
 
-        This function exists in `clean/categorical.py` as `ReplaceMissingRemoveRow`.
+        This function exists in `clean/categorical.py` as `replace_missing_remove_row`.
         
         Keyword Arguments:
             cols_to_remove {list} -- A list of specific columns to remove. (default: {[]})
@@ -351,20 +351,20 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['categorical']['remove_rows']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = ReplaceMissingRemoveRow(cols_to_remove, data=self.data_properties.data)
+            self.data_properties.data = replace_missing_remove_row(cols_to_remove, data=self.data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, cols_to_remove)
+                self.report.report_technique(report_info, cols_to_remove)
 
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingRemoveRow(cols_to_remove,                                                                                                    
+            self.data_properties.train_data, self.data_properties.test_data = replace_missing_remove_row(cols_to_remove,                                                                                                    
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)                                                                                        
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, list(cols_to_remove))
+                self.report.report_technique(report_info, list(cols_to_remove))
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -374,7 +374,7 @@ class Clean(MethodBase):
         This can be used to reduce processing time or performance for algorithms where
         duplicates have no effect on the outcome (i.e DBSCAN)
         
-        This function exists in `clean/util.py` as `RemoveDuplicateRows`.
+        This function exists in `clean/util.py` as `remove_duplicate_rows`.
         
         Args:
             list_of_cols (list, optional): A list of specific columns to apply this technique to. Defaults to [].
@@ -388,12 +388,12 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_rows']
     
         if self.data_properties.use_full_data:
-            self.data_properties.data = RemoveDuplicateRows(list_of_cols=list_of_cols, data=self.data_properties.data)
+            self.data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self.data_properties.data)
     
             return self.data_properties.data
     
         else:
-            self.data_properties.train_data, self.data_properties.test_data = RemoveDuplicateRows(list_of_cols=[],
+            self.data_properties.train_data, self.data_properties.test_data = remove_duplicate_rows(list_of_cols=[],
                                                                                                 train_data=self.data_properties.train_data,
                                                                                                 test_data=self.data_properties.test_data)
 
@@ -403,7 +403,7 @@ class Clean(MethodBase):
         """
         Remove columns from the data that are exact duplicates of each other and leave only 1.
         
-        This function exists in `clean/util.py` as `RemoveDuplicateColumns`.
+        This function exists in `clean/util.py` as `remove_duplicate_columns`.
                 
         Returns:
             Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
@@ -414,12 +414,12 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
     
         if self.data_properties.use_full_data:
-            self.data_properties.data = RemoveDuplicateColumns(data=self.data_properties.data)
+            self.data_properties.data = remove_duplicate_columns(data=self.data_properties.data)
     
             return self.data_properties.data
     
         else:
-            self.data_properties.train_data, self.data_properties.test_data = RemoveDuplicateColumns(train_data=self.data_properties.train_data,
+            self.data_properties.train_data, self.data_properties.test_data = remove_duplicate_columns(train_data=self.data_properties.train_data,
                                                                                                 test_data=self.data_properties.test_data)
 
             return self.data_properties.train_data, self.data_properties.test_data

@@ -1,16 +1,17 @@
 """
 This file contains the following methods:
 
-FeatureOneHotEncode
+feature_one_hot_encode
 """
 
 import pandas as pd
-from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
-                           _FunctionInputValidation)
 from sklearn.preprocessing import OneHotEncoder
 
+from pyautoml.util import (drop_replace_columns, get_list_of_cols,
+                           _function_input_validation)
 
-def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **datasets):
+
+def feature_one_hot_encode(list_of_cols, params={"handle_unknown": "ignore"}, **datasets):
     """ 
     Creates a matrix of converted categorical columns into binary columns.
 
@@ -38,7 +39,7 @@ def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **dat
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
     enc = OneHotEncoder(**params)
@@ -47,7 +48,7 @@ def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **dat
         
         enc_data = enc.fit_transform(data[list_of_cols]).toarray()
         enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names().tolist())
-        data = DropAndReplaceColumns(data, list_of_cols, enc_df)
+        data = drop_replace_columns(data, list_of_cols, enc_df)
 
         return data
 
@@ -55,10 +56,10 @@ def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **dat
 
         enc_train_data = enc.fit_transform(train_data[list_of_cols]).toarray()
         enc_train_df = pd.DataFrame(enc_train_data, columns=enc_data.get_feature_names().tolist())
-        train_data = DropAndReplaceColumns(train_data, list_of_cols, enc_train_df)
+        train_data = drop_replace_columns(train_data, list_of_cols, enc_train_df)
 
         enc_test_data = enc.transform(test_data[list_of_cols]).toarray()
         enc_test_df = pd.DataFrame(enc_test_data, columns=enc.get_features_names().tolist())
-        test_data = DropAndReplaceColumns(test_data, list_of_cols, enc_test_df)
+        test_data = drop_replace_columns(test_data, list_of_cols, enc_test_df)
 
         return train_data, test_data

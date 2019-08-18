@@ -1,16 +1,17 @@
 """
 This function has the following methods:
 
-PreprocessNormalize
+preprocess_normalize
 """
 
 import pandas as pd
-from pyautoml.util import (DropAndReplaceColumns, _FunctionInputValidation,
-                           _NumericFunctionInputConditions)
 from sklearn.preprocessing import MinMaxScaler
 
+from pyautoml.util import (drop_replace_columns, _function_input_validation,
+                           _numeric_input_conditions)
 
-def PreprocessNormalize(list_of_cols=[], params={}, **datasets):
+
+def preprocess_normalize(list_of_cols=[], params={}, **datasets):
     """
     Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 
@@ -41,26 +42,26 @@ def PreprocessNormalize(list_of_cols=[], params={}, **datasets):
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
-    list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data)
+    list_of_cols = _numeric_input_conditions(list_of_cols, data, train_data)
     scaler = MinMaxScaler(**params)
 
     if data is not None:
         scaled_data = scaler.fit_transform(data[list_of_cols])
         scaled_df = pd.DataFrame(scaled_data, columns=list_of_cols)
-        data = DropAndReplaceColumns(data, list_of_cols, scaled_df)
+        data = drop_replace_columns(data, list_of_cols, scaled_df)
         
         return data
     
     else:
         scaled_train_data = scaler.fit_transform(train_data)
         scaled_train_df = pd.DataFrame(scaled_train_data, columns=list_of_cols)
-        train_data = DropAndReplaceColumns(train_data, list_of_cols, scaled_train_df)
+        train_data = drop_replace_columns(train_data, list_of_cols, scaled_train_df)
 
         scaled_test_data = scaler.transform(test_data)
         scaled_test_df = pd.DataFrame(scaled_test_data, columns=list_of_cols)
-        test_data = DropAndReplaceColumns(test_data, list_of_cols, scaled_test_df)
+        test_data = drop_replace_columns(test_data, list_of_cols, scaled_test_df)
 
         return train_data, test_data

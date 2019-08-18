@@ -14,8 +14,8 @@ class TestReport(unittest.TestCase):
         contents = "This is a test."
 
         report = Report("test")
-        report.WriteHeader(header)
-        report.WriteContents(contents)
+        report.write_header(header)
+        report.write_contents(contents)
 
         with open("pyautoml_reports/test.txt") as f:
             content = f.read()

@@ -2,7 +2,7 @@ import pandas as pd
 from IPython.display import display
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
-from pyautoml.util import SplitData, _FunctionInputValidation
+from pyautoml.util import split_data, _function_input_validation
 
 
 class MethodBase(object):
@@ -17,14 +17,14 @@ class MethodBase(object):
         report_name = kwargs.pop('report_name')
         test_split_percentage = kwargs.pop('test_split_percentange')
 
-        if not _FunctionInputValidation(data, train_data, test_data):
+        if not _function_input_validation(data, train_data, test_data):
             raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
         self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
         if data is not None:
             # Generate train set and test set.
-            self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data_properties.data, test_split_percentage)
+            self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
         else:
             # Override user input for safety.
             self.data_properties.use_full_data = False       

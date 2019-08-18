@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-def CheckMissingData(df):
+def check_missing_data(df):
     """Utility function that checks if the data has any missing values.
 
     Arguemnts:
@@ -17,7 +17,7 @@ def CheckMissingData(df):
     
     return df.isnull().values.any()
 
-def GetKeysByValues(dict_of_elements, item):
+def get_keys_by_values(dict_of_elements, item):
     """Utility function that returns the list of keys whos value matches a criteria defined
     by the param `value`.
     
@@ -30,7 +30,7 @@ def GetKeysByValues(dict_of_elements, item):
     """
     return [key for (key, value) in dict_of_elements.items() if value == item]
 
-def GetListOfCols(column_type, dict_of_values, override, custom_cols):
+def get_list_of_cols(column_type, dict_of_values, override, custom_cols):
     """Utility function to get the list of columns based off their column type (numeric, str_categorical, num_categorical, text, etc.).
     If `custom_cols` is provided and override is True, then `custom_cols` will only be returned. If override is False then the filtered columns
     and the custom columns provided will be returned.
@@ -51,11 +51,11 @@ def GetListOfCols(column_type, dict_of_values, override, custom_cols):
     if override:
         list_of_cols = custom_cols
     else:
-        list_of_cols = collections.OrderedDict.fromkeys(GetKeysByValues(dict_of_values, column_type) + custom_cols).keys()
+        list_of_cols = collections.OrderedDict.fromkeys(get_keys_by_values(dict_of_values, column_type) + custom_cols).keys()
 
     return list(list_of_cols)
 
-def DropAndReplaceColumns(df, drop_cols, new_data):
+def drop_replace_columns(df, drop_cols, new_data):
     """Utility function that drops a column that has been processed and replaces it with the new columns that have been derived from it.
     
     Arguments:
@@ -72,7 +72,7 @@ def DropAndReplaceColumns(df, drop_cols, new_data):
 
     return df
 
-def SplitData(df, split_percentage):
+def split_data(df, split_percentage):
     """Function that splits the data into a training and testing set. Split percentage is passed in through
     the split_percentage variable.
 
@@ -85,7 +85,7 @@ def SplitData(df, split_percentage):
 
     return train_data, test_data
 
-def _FunctionInputValidation(data, train_data, test_data):
+def _function_input_validation(data, train_data, test_data):
     """
     Helper function to help determine if input is valid.
     """
@@ -104,7 +104,7 @@ def _FunctionInputValidation(data, train_data, test_data):
 
     return True
 
-def _NumericFunctionInputConditions(list_of_cols, data, train_data):
+def _numeric_input_conditions(list_of_cols, data, train_data):
     """
     Helper function to help set variable values of numeric cleaning method functions.
     """
@@ -119,7 +119,7 @@ def _NumericFunctionInputConditions(list_of_cols, data, train_data):
 
     return list_of_cols
 
-def _ColumnInput(list_of_cols, data, train_data):
+def _column_input(list_of_cols, data, train_data):
     """
     If the list of columns are optional and no columns are provided, the columns are set
     to all the columns in the data.

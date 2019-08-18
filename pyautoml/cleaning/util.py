@@ -1,16 +1,16 @@
 """
 This file contains the following methods:
 
-RemoveColumns
-RemoveRows
-Remove Duplicate Rows
-Remove Duplicate Columns
+remove_columns_threshold
+remove_rows_threshold
+remove_duplicate_rows
+remove_duplicate_columns
 """
 import pandas as pd
-from pyautoml.util import _FunctionInputValidation
+from pyautoml.util import _function_input_validation
 
 
-def RemoveColumns(threshold, **datasets):
+def remove_columns_threshold(threshold, **datasets):
     """
     Remove columns from the dataframe that have more than the threshold value of missing rows.
     Example: Remove columns where > 50% of the data is missing
@@ -38,7 +38,7 @@ def RemoveColumns(threshold, **datasets):
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
     if data is not None:
@@ -51,7 +51,7 @@ def RemoveColumns(threshold, **datasets):
 
         return train_data[criteria_meeting_columns], test_data[criteria_meeting_columns]
 
-def RemoveRows(threshold, **datasets):
+def remove_rows_threshold(threshold, **datasets):
     """
     Remove rows from the dataframe that have more than the threshold value of missing rows.
     Example: Remove rows where > 50% of the data is missing
@@ -79,7 +79,7 @@ def RemoveRows(threshold, **datasets):
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
     if data is not None:
@@ -93,7 +93,7 @@ def RemoveRows(threshold, **datasets):
 
         return train_data, test_data
 
-def RemoveDuplicateRows(list_of_cols=[], **datasets):
+def remove_duplicate_rows(list_of_cols=[], **datasets):
     """
     Removes rows that are exact duplicates of each other.
     
@@ -119,7 +119,7 @@ def RemoveDuplicateRows(list_of_cols=[], **datasets):
     if datasets:
         raise TypeError(f'Invalid parameters passed: {str(datasets)}')
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:        
@@ -131,7 +131,7 @@ def RemoveDuplicateRows(list_of_cols=[], **datasets):
 
         return train_data, test_data
 
-def RemoveDuplicateColumns(**datasets):
+def remove_duplicate_columns(**datasets):
     """
     Removes columns whose values are exact duplicates of each other.
     
@@ -155,7 +155,7 @@ def RemoveDuplicateColumns(**datasets):
     if datasets:
         raise TypeError(f'Invalid parameters passed: {str(datasets)}')
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:

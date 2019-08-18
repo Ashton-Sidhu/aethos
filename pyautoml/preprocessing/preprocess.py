@@ -7,7 +7,7 @@ from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import _NumericFunctionInputConditions
+from pyautoml.util import _numeric_input_conditions
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -26,7 +26,7 @@ class Preprocess(MethodBase):
                     use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
         if self.data_properties.report is not None:
-            self.report.WriteHeader("Preprocessing")
+            self.report.write_header("Preprocessing")
 
         
     def normalize_numeric(self, list_of_cols=[], normalize_params={}):
@@ -49,28 +49,28 @@ class Preprocess(MethodBase):
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = PreprocessNormalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data_properties.data)
+            self.data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data_properties.data)
 
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
+                    self.report.report_technique(report_info, list_of_cols)
             
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = PreprocessNormalize(list_of_cols=list_of_cols,
+            self.data_properties.train_data, self.data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
                                                                                                     params=normalize_params,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
