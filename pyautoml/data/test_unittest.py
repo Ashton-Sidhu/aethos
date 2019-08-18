@@ -16,7 +16,7 @@ class TestData(unittest.TestCase):
 
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
-        new_df = data.NormalizeColNames(dataset)
+        new_df = data.normalize_column_names(dataset)
 
         self.assertListEqual(new_df.columns.tolist(), ["pid", "capslock", "space_column_name", "caps_space"])
         self.assertDictEqual(data.colMapping, {"PID": "pid"
@@ -31,7 +31,7 @@ class TestData(unittest.TestCase):
 
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
-        new_df = data.NormalizeColNames(dataset)
+        new_df = data.normalize_column_names(dataset)
 
         self.assertDictEqual(data.colMapping, {"PID": "pid"
                                                 ,"CapsLock": "capslock"
@@ -46,7 +46,7 @@ class TestData(unittest.TestCase):
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
         data.field_types = {"col1": 0, "col3": 0}
-        new_df = data.ReduceData(dataset)
+        new_df = data.reduce_data(dataset)
 
         self.assertListEqual(new_df.columns.tolist(), ["col1", "col3"])
 
@@ -59,7 +59,7 @@ class TestData(unittest.TestCase):
 
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
-        new_df = data.StandardizeData(dataset)
+        new_df = data.standardize_data(dataset)
 
         self.assertIsNotNone(new_df)
 

@@ -1,8 +1,9 @@
 import re
 
 import pandas as pd
-from pyautoml.reporting.report import Report
 from sklearn.model_selection import train_test_split
+
+from pyautoml.reporting.report import Report
 
 
 class Data():    
@@ -22,7 +23,7 @@ class Data():
         else:
             self.report = None
 
-    def GetInputTypes(self, df, custom_cols={}):
+    def get_input_types(self, df, custom_cols={}):
         """
         Credit: https://github.com/minimaxir/automl-gs/
 
@@ -101,7 +102,7 @@ class Data():
         self.field_types = {k: v for k, v in self.field_types.items() if v != 'ignore'}
 
 
-    def NormalizeColNames(self, df):
+    def normalize_column_names(self, df):
         """
         Utility function that fixes unusual column names (e.g. Caps, Spaces)
         to make them suitable printing into code templates.
@@ -122,7 +123,7 @@ class Data():
         
         return df.rename(index=str, columns=new_column_names)
 
-    def ReduceData(self, df):
+    def reduce_data(self, df):
         """
         Utility function that selects a subset of the data that has been categorized as a column worth feature engineering on.
 
@@ -135,7 +136,7 @@ class Data():
         return df[list(self.field_types.keys())]
 
     
-    def StandardizeData(self, df, custom_cols={}):
+    def standardize_data(self, df, custom_cols={}):
         """Standarizes the properties of the dataset: column names and removes unimportant columns.
         Initializes the types of each column (categorical, numeric, etc.)
         
@@ -149,14 +150,14 @@ class Data():
             [Dataframe] -- Standardized version of the dataframe
         """
 
-        df = self.NormalizeColNames(df)
-        self.GetInputTypes(df, custom_cols)
-        df = self.ReduceData(df)
+        df = self.normalize_column_names(df)
+        self.get_input_types(df, custom_cols)
+        df = self.reduce_data(df)
         self.standardized = True
 
         return df
 
-    def SplitData(self, test_split_percentage):
+    def split_data(self, test_split_percentage):
         """Splits data into train and test set.
         
         Arguments:

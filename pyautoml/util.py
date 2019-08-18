@@ -72,7 +72,7 @@ def DropAndReplaceColumns(df, drop_cols, new_data):
 
     return df
 
-def SplitData(df, split_percentage):
+def split_data(df, split_percentage):
     """Function that splits the data into a training and testing set. Split percentage is passed in through
     the split_percentage variable.
 

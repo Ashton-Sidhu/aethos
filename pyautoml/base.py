@@ -2,7 +2,7 @@ import pandas as pd
 from IPython.display import display
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
-from pyautoml.util import SplitData, _FunctionInputValidation
+from pyautoml.util import split_data, _FunctionInputValidation
 
 
 class MethodBase(object):
@@ -24,7 +24,7 @@ class MethodBase(object):
 
         if data is not None:
             # Generate train set and test set.
-            self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data_properties.data, test_split_percentage)
+            self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
         else:
             # Override user input for safety.
             self.data_properties.use_full_data = False       
