@@ -149,6 +149,47 @@ class MethodBase(object):
 
                 return test_data_summary.summary()
 
+
+    def column_stats(self, dataset='train'):
+        """
+        Describes your columns using the DataFrameSummary library with basic descriptive info.
+
+        Info
+        ----
+        counts
+        uniques
+        missing
+        missing_perc
+        types
+        
+        Parameters
+        ----------
+        dataset : str, optional
+            Type of dataset to describe. Can either be `train` or `test`.
+            If you are using the full dataset it will automatically describe
+            your full dataset no matter the input, 
+            by default 'train'
+        
+        Returns
+        -------
+        DataFrame
+            Dataframe describing your columns with basic descriptive info
+        """
+
+        if self.data_properties.use_full_data:
+            data_summary = DataFrameSummary(self.data)
+
+            return data_summary.column_stats()
+        else:
+            if dataset == 'train':            
+                train_data_summary = DataFrameSummary(self.train_data)
+
+                return train_data_summary.column_stats()
+            else:
+                test_data_summary = DataFrameSummary(self.test_data)
+
+                return test_data_summary.column_stats()
+
     def describe_column(self, column, dataset='train'):
         """
         Analyzes a column and reports descriptive statistics about the columns.
