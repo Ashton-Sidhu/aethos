@@ -150,7 +150,7 @@ class MethodBase(object):
                 return test_data_summary.summary()
 
 
-    def column_stats(self, dataset='train'):
+    def column_info(self, dataset='train'):
         """
         Describes your columns using the DataFrameSummary library with basic descriptive info.
 
@@ -179,16 +179,16 @@ class MethodBase(object):
         if self.data_properties.use_full_data:
             data_summary = DataFrameSummary(self.data)
 
-            return data_summary.column_stats()
+            return data_summary.columns_stats
         else:
             if dataset == 'train':            
                 train_data_summary = DataFrameSummary(self.train_data)
 
-                return train_data_summary.column_stats()
+                return train_data_summary.columns_stats
             else:
                 test_data_summary = DataFrameSummary(self.test_data)
 
-                return test_data_summary.column_stats()
+                return test_data_summary.columns_stats
 
     def describe_column(self, column, dataset='train'):
         """
