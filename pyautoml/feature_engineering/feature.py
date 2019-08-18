@@ -25,7 +25,7 @@ class Feature(MethodBase):
                     use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
         if self.data_properties.report is not None:
-            self.report.WriteHeader("Feature Engineering")
+            self.report.write_header("Feature Engineering")
 
 
     def onehot_encode(self, list_of_cols, onehot_params={"handle_unknown": "ignore"}):
@@ -52,7 +52,7 @@ class Feature(MethodBase):
             self.data_properties.data = feature_one_hot_encode(list_of_cols, data=self.data_properties.data, params=onehot_params)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
+                self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
 
@@ -62,7 +62,7 @@ class Feature(MethodBase):
                                                                                                   test_data=self.data_properties.test_data,
                                                                                                   params=onehot_params)
             if self.report is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
+                self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -87,7 +87,7 @@ class Feature(MethodBase):
                 list_of_cols=list_of_cols, params=tfidf_params, data=self.data_properties.data,)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, [])
+                self.report.report_technique(report_info, [])
 
             return self.data_properties.data
 
@@ -99,7 +99,7 @@ class Feature(MethodBase):
                                                                                            )
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, [])
+                self.report.report_technique(report_info, [])
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -124,7 +124,7 @@ class Feature(MethodBase):
                 list_of_cols, params=bow_params, data=self.data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, [])
+                self.report.report_technique(report_info, [])
 
             return self.data_properties.data
 
@@ -136,7 +136,7 @@ class Feature(MethodBase):
                                                                                                 )
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, [])
+                self.report.report_technique(report_info, [])
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -163,7 +163,7 @@ class Feature(MethodBase):
             self.data_properties.data = nltk_feature_postag(list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, [])
+                self.report.report_technique(report_info, [])
 
             return self.data_properties.data
 
@@ -172,6 +172,6 @@ class Feature(MethodBase):
                 list_of_cols, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, [])
+                self.report.report_technique(report_info, [])
 
             return self.data_properties.train_data, self.data_properties.test_data

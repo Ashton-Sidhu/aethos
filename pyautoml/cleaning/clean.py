@@ -25,7 +25,7 @@ class Clean(MethodBase):
                          use_full_data=use_full_data, target_field=target_field, report_name=report_name)
         
         if self.data_properties.report is not None:
-            self.report.WriteHeader("Feature Engineering")
+            self.report.write_header("Feature Engineering")
 
 
     def remove_columns(self, threshold):
@@ -53,7 +53,7 @@ class Clean(MethodBase):
             #Write to report
             if self.report is not None:
                 new_columns = original_columns.difference(self.data_properties.data.columns)
-                self.report.ReportTechnique(report_info, new_columns)
+                self.report.report_technique(report_info, new_columns)
 
             return self.data_properties.data
 
@@ -67,7 +67,7 @@ class Clean(MethodBase):
 
             if self.report is not None:
                 new_columns = original_columns.difference(self.data_properties.train_data.columns)
-                self.report.ReportTechnique(report_info, new_columns)
+                self.report.report_technique(report_info, new_columns)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -93,7 +93,7 @@ class Clean(MethodBase):
 
             #Write to report
             if self.report is not None:            
-                self.report.ReportTechnique(report_info, [])
+                self.report.report_technique(report_info, [])
 
             return self.data_properties.data
 
@@ -104,7 +104,7 @@ class Clean(MethodBase):
 
             #Write to report
             if self.report is not None:            
-                self.report.ReportTechnique(report_info, [])                                                                                    
+                self.report.report_technique(report_info, [])                                                                                    
 
             return self.data_properties.train_data, self.data_properties.test_data
     
@@ -130,10 +130,10 @@ class Clean(MethodBase):
             #Write to report
             if self.report is not None:            
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
                     list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
 
@@ -145,10 +145,10 @@ class Clean(MethodBase):
             
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
                     list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -173,10 +173,10 @@ class Clean(MethodBase):
             
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
                     list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
 
@@ -188,10 +188,10 @@ class Clean(MethodBase):
 
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
                     list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -216,10 +216,10 @@ class Clean(MethodBase):
 
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
                     list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.data
 
@@ -230,10 +230,10 @@ class Clean(MethodBase):
                                                                                                             test_data=self.data_properties.test_data)
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
                     list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -264,9 +264,9 @@ class Clean(MethodBase):
 
             if self.report is not None:
                 if col_to_constant is None:
-                    self.report.ReportTechnique(report_info, self.data_properties.data.columns)
+                    self.report.report_technique(report_info, self.data_properties.data.columns)
                 else:
-                    self.report.ReportTechnique(report_info, list(col_to_constant))
+                    self.report.report_technique(report_info, list(col_to_constant))
 
             return self.data_properties.data
 
@@ -278,9 +278,9 @@ class Clean(MethodBase):
 
             if self.report is not None:
                 if col_to_constant is None:
-                    self.report.ReportTechnique(report_info, self.data_properties.train_data.columns)
+                    self.report.report_technique(report_info, self.data_properties.train_data.columns)
                 else:
-                    self.report.ReportTechnique(report_info, list(col_to_constant))
+                    self.report.report_technique(report_info, list(col_to_constant))
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -315,9 +315,9 @@ class Clean(MethodBase):
 
             if self.report is not None:
                 if col_to_category is None:
-                    self.report.ReportTechnique(report_info, self.data_properties.data.columns)
+                    self.report.report_technique(report_info, self.data_properties.data.columns)
                 else:
-                    self.report.ReportTechnique(report_info, list(col_to_category))
+                    self.report.report_technique(report_info, list(col_to_category))
 
             return self.data_properties.data
 
@@ -329,9 +329,9 @@ class Clean(MethodBase):
 
             if self.report is not None:
                 if col_to_category is None:
-                    self.report.ReportTechnique(report_info, self.data_properties.train_data.columns)
+                    self.report.report_technique(report_info, self.data_properties.train_data.columns)
                 else:
-                    self.report.ReportTechnique(report_info, list(col_to_category))                                                                                                   
+                    self.report.report_technique(report_info, list(col_to_category))                                                                                                   
 
             return self.data_properties.train_data, self.data_properties.test_data
 
@@ -354,7 +354,7 @@ class Clean(MethodBase):
             self.data_properties.data = replace_missing_remove_row(cols_to_remove, data=self.data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, cols_to_remove)
+                self.report.report_technique(report_info, cols_to_remove)
 
             return self.data_properties.data
 
@@ -364,7 +364,7 @@ class Clean(MethodBase):
                                                                                                     test_data=self.data_properties.test_data)                                                                                        
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info, list(cols_to_remove))
+                self.report.report_technique(report_info, list(cols_to_remove))
 
             return self.data_properties.train_data, self.data_properties.test_data
 

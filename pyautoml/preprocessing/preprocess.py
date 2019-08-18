@@ -26,7 +26,7 @@ class Preprocess(MethodBase):
                     use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
         if self.data_properties.report is not None:
-            self.report.WriteHeader("Preprocessing")
+            self.report.write_header("Preprocessing")
 
         
     def normalize_numeric(self, list_of_cols=[], normalize_params={}):
@@ -53,10 +53,10 @@ class Preprocess(MethodBase):
 
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
                     list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
             
             return self.data_properties.data
 
@@ -68,9 +68,9 @@ class Preprocess(MethodBase):
 
             if self.report is not None:
                 if list_of_cols:
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
                 else:
                     list_of_cols = _NumericFunctionInputConditions(list_of_cols, None, self.data_properties.train_data)
-                    self.report.ReportTechnique(report_info, list_of_cols)
+                    self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
