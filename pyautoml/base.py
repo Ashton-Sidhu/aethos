@@ -22,7 +22,7 @@ class MethodBase():
         self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
         if data is not None:
-            self.data_properties.data = data
+            # Generate train set and test set.
             self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data_properties.data, test_split_percentage)
         else:
             # Override user input for safety.
@@ -33,13 +33,26 @@ class MethodBase():
         else:
             self.report = self.data_properties.report
             
-    
     def __repr__(self):
 
-        if self.data_properties.data is not None:
-            return display(self.data_properties.data)
+        shell = get_ipython().__class__.__name__
+
+        if shell == 'ZMQInteractiveShell':
+            # Hack for jupyter notebooks
+            if self.data_properties.use_full_data:
+                display(self.data_properties.data)
+                
+                return ''
+            else:
+                display(self.data_properties.train_data)
+
+                return ''
+        
         else:
-            return display(self.train_data)
+            if self.data_properties.use_full_data:
+                return self.data_properties.data.to_string()
+            else:
+                return self.data_properties.train_data.to_string()
 
 
     @property

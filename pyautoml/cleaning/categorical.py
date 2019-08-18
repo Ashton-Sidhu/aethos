@@ -7,6 +7,7 @@ ReplaceMissingRemoveRow
 
 import numpy as np
 import pandas as pd
+
 from pyautoml.util import DropAndReplaceColumns, _FunctionInputValidation
 
 #TODO: Implement KNN, and replacing with most common category 
