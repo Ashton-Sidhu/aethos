@@ -8,6 +8,8 @@ replace_missing_remove_row
 import numpy as np
 import pandas as pd
 
+from pyautoml.util import _FunctionInputValidation
+
 #TODO: Implement KNN, and replacing with most common category 
 
 def replace_missing_new_category(constant=None, col_to_category=None, **datasets):
