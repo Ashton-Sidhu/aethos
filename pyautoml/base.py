@@ -32,6 +32,7 @@ class MethodBase():
             self.report = None
         else:
             self.report = self.data_properties.report
+            
     
     def __repr__(self):
 
@@ -67,7 +68,7 @@ class MethodBase():
         return self.data_properties.test_data
 
     @property
-    def missing_data(self):
+    def missing_values(self):
         """
         Property function that shows how many values are missing in each column.
         """
