@@ -1,16 +1,17 @@
 """
 This function has the following methods:
 
-PreprocessNormalize
+preprocess_normalize
 """
 
 import pandas as pd
-from pyautoml.util import (DropAndReplaceColumns, _FunctionInputValidation,
-                           _NumericFunctionInputConditions)
 from sklearn.preprocessing import MinMaxScaler
 
+from pyautoml.util import (DropAndReplaceColumns, _FunctionInputValidation,
+                           _NumericFunctionInputConditions)
 
-def PreprocessNormalize(list_of_cols=[], params={}, **datasets):
+
+def preprocess_normalize(list_of_cols=[], params={}, **datasets):
     """
     Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 

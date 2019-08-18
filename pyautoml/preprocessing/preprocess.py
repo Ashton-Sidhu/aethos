@@ -49,7 +49,7 @@ class Preprocess(MethodBase):
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = PreprocessNormalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data_properties.data)
+            self.data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data_properties.data)
 
             if self.report is not None:
                 if list_of_cols:
@@ -61,7 +61,7 @@ class Preprocess(MethodBase):
             return self.data_properties.data
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = PreprocessNormalize(list_of_cols=list_of_cols,
+            self.data_properties.train_data, self.data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
                                                                                                     params=normalize_params,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
