@@ -23,6 +23,9 @@ class Clean(MethodBase):
 
         super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
                          use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+        
+        if self.data_properties.report is not None:
+            self.report.WriteHeader("Feature Engineering")
 
 
     def remove_columns(self, threshold):

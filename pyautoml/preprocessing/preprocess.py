@@ -3,14 +3,11 @@ import os
 import pandas as pd
 import pyautoml
 import yaml
-from IPython.display import display
 from pyautoml.base import MethodBase
-from pyautoml.data.data import Data
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import (GetListOfCols, SplitData, _FunctionInputValidation,
-                           _NumericFunctionInputConditions)
+from pyautoml.util import _NumericFunctionInputConditions
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -25,37 +22,12 @@ class Preprocess(MethodBase):
     
     def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):        
 
-        if not _FunctionInputValidation(data, train_data, test_data):
-            raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
+        super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
+                    use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
-        if data_properties is None:
-            self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
-
-            if data is not None:
-                self.data_properties.data = data
-                self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data_properties.data, test_split_percentage)
-            else:
-                ## Override user input for safety.
-                self.data_properties.use_full_data = False
-                
-        else:
-            self.data_properties.data = data
-            self.data_properties = data_properties            
-
-        if self.data_properties.report is None:
-            self.report = None
-        else:
-            self.report = self.data_properties.report
+        if self.data_properties.report is not None:
             self.report.WriteHeader("Preprocessing")
 
-        self.train_data = self.data_properties.train_data
-        self.test_data = self.data_properties.test_data
-
-    def __repr__(self):
-        if self.data_properties.use_full_data:
-            return display(self.data_properties.data)
-        else:
-            return display(self.data_properties.train_data)
         
     def normalize_numeric(self, list_of_cols=[], normalize_params={}):
         """Function that normalizes all numeric values between 0 and 1 to bring features into same domain.

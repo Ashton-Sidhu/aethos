@@ -3,13 +3,10 @@ import os
 import pandas as pd
 import pyautoml
 import yaml
-from IPython.display import display
 from pyautoml.base import MethodBase
-from pyautoml.data.data import Data
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
-from pyautoml.util import GetListOfCols, SplitData, _FunctionInputValidation
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -24,39 +21,12 @@ class Feature(MethodBase):
 
     def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):
 
-        if not _FunctionInputValidation(data, train_data, test_data):
-            raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
+        super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
+                    use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
-        if data_properties is None:
-            self.data_properties = Data(
-                data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
-
-            if data is not None:
-                self.data_properties.data = data
-                self.data_properties.train_data, self.data_properties.test_data = SplitData(
-                    self.data_properties.data, test_split_percentage)
-            else:
-                # Override user input for safety.
-                self.data_properties.use_full_data = False
-
-        else:
-            self.data_properties.data = data
-            self.data_properties = data_properties
-
-        if self.data_properties.report is None:
-            self.report = None
-        else:
-            self.report = self.data_properties.report
+        if self.data_properties.report is not None:
             self.report.WriteHeader("Feature Engineering")
 
-        self.train_data = self.data_properties.train_data
-        self.test_data = self.data_properties.test_data
-
-    def __repr__(self):
-        if self.data_properties.use_full_data:
-            return display(self.data_properties.data)
-        else:
-            return display(self.data_properties.train_data)
 
     def onehot_encode(self, list_of_cols, onehot_params={"handle_unknown": "ignore"}):
         """
@@ -79,7 +49,6 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['categorical']['onehotencode']
 
         if self.data_properties.use_full_data:
-
             self.data_properties.data = FeatureOneHotEncode(list_of_cols, data=self.data_properties.data, params=onehot_params)
 
             if self.report is not None:
@@ -88,7 +57,6 @@ class Feature(MethodBase):
             return self.data_properties.data
 
         else:
-
             self.data_properties.train_data, self.data_properties.test_data = FeatureOneHotEncode(list_of_cols,
                                                                                                   train_data=self.data_properties.train_data,
                                                                                                   test_data=self.data_properties.test_data,
@@ -97,6 +65,7 @@ class Feature(MethodBase):
                 self.report.ReportTechnique(report_info, list_of_cols)
 
             return self.data_properties.train_data, self.data_properties.test_data
+
 
     def tfidf(self, list_of_cols=[], tfidf_params={}):
         """Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
@@ -114,7 +83,6 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['text']['tfidf']
 
         if self.data_properties.use_full_data:
-
             self.data_properties.data = FeatureTFIDF(
                 list_of_cols=list_of_cols, params=tfidf_params, data=self.data_properties.data,)
 
@@ -124,7 +92,6 @@ class Feature(MethodBase):
             return self.data_properties.data
 
         else:
-
             self.data_properties.train_data, self.data_properties.test_data = FeatureTFIDF(list_of_cols=list_of_cols,
                                                                                            params=tfidf_params,
                                                                                            train_data=self.data_properties.train_data,
@@ -135,6 +102,7 @@ class Feature(MethodBase):
                 self.report.ReportTechnique(report_info, [])
 
             return self.data_properties.train_data, self.data_properties.test_data
+
 
     def bag_of_words(self, list_of_cols=[], bow_params={}):
         """Creates a matrix of how many times a word appears in a document.
@@ -152,7 +120,6 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['text']['bow']
 
         if self.data_properties.use_full_data:
-
             self.data_properties.data = FeatureBagOfWords(
                 list_of_cols, params=bow_params, data=self.data_properties.data)
 
@@ -162,7 +129,6 @@ class Feature(MethodBase):
             return self.data_properties.data
 
         else:
-
             self.data_properties.train_data, self.data_properties.test_data = FeatureBagOfWords(list_of_cols,
                                                                                                 params=bow_params,
                                                                                                 train_data=self.data_properties.train_data,
@@ -173,6 +139,7 @@ class Feature(MethodBase):
                 self.report.ReportTechnique(report_info, [])
 
             return self.data_properties.train_data, self.data_properties.test_data
+
 
     def nltk_postag(self, list_of_cols=[]):
         """

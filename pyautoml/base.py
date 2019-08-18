@@ -32,7 +32,6 @@ class MethodBase():
             self.report = None
         else:
             self.report = self.data_properties.report
-            self.report.WriteHeader("Cleaning")
     
     def __repr__(self):
 
