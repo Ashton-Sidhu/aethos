@@ -1,7 +1,6 @@
 import pandas as pd
 from IPython.display import display
 from pandas_summary import DataFrameSummary
-
 from pyautoml.data.data import Data
 from pyautoml.util import SplitData, _FunctionInputValidation
 
@@ -149,3 +148,69 @@ class MethodBase(object):
                 test_data_summary = DataFrameSummary(self.test_data)
 
                 return test_data_summary.summary()
+
+    def describe_column(self, column, dataset='train'):
+        """
+        Analyzes a column and reports descriptive statistics about the columns.
+
+        Statistics
+        ---------
+        std                                      
+        max                                      
+        min                                      
+        variance                                 
+        mean
+        mode                                     
+        5%                                       
+        25%                                      
+        50%                                      
+        75%                                      
+        95%                                      
+        iqr                                      
+        kurtosis                                 
+        skewness                                 
+        sum                                      
+        mad                                      
+        cv                                       
+        zeros_num                                
+        zeros_perc                               
+        deviating_of_mean                        
+        deviating_of_mean_perc                   
+        deviating_of_median                      
+        deviating_of_median_perc                 
+        top_correlations                         
+        counts                                   
+        uniques                                  
+        missing                                  
+        missing_perc                             
+        types                            
+        
+        Parameters
+        ----------
+        column : str
+            Column in your dataset you want to analze.
+        dataset : str, optional
+            Type of dataset to describe. Can either be `train` or `test`.
+            If you are using the full dataset it will automatically describe
+            your full dataset no matter the input, 
+            by default 'train'
+        
+        Returns
+        -------
+        dict
+            Dictionary mapping a statistic and its value for a specific column
+        """
+
+        if self.data_properties.use_full_data:
+            data_summary = DataFrameSummary(self.data)
+
+            return data_summary[column]
+        else:
+            if dataset == 'train':            
+                train_data_summary = DataFrameSummary(self.train_data)
+
+                return train_data_summary[column]
+            else:
+                test_data_summary = DataFrameSummary(self.test_data)
+
+                return test_data_summary[column]
