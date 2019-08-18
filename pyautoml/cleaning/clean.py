@@ -3,14 +3,10 @@ import os
 import pandas as pd
 import pyautoml
 import yaml
-from IPython.display import display
+from pyautoml.base import MethodBase
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
-from pyautoml.data.data import Data
-from pyautoml.util import (CheckMissingData, GetListOfCols, SplitData,
-                           _FunctionInputValidation,
-                           _NumericFunctionInputConditions)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -20,52 +16,16 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
 
-class Clean():
+class Clean(MethodBase):
 
     
-    def __init__(self, data=None, train_data=None, test_data=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):        
+    def __init__(self, data=None, train_data=None, test_data=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):   
 
-        if not _FunctionInputValidation(data, train_data, test_data):
-            raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
-
-        self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
-
-        if data is not None:
-            self.data = data
-            self.data_properties.train_data, self.data_properties.test_data = SplitData(self.data, test_split_percentage)
-        else:
-            # Override user input for safety.
-            self.data_properties.use_full_data = False       
-
-        if self.data_properties.report is None:
-            self.report = None
-        else:
-            self.report = self.data_properties.report
-            self.report.WriteHeader("Cleaning")
-
-        self.train_data = self.data_properties.train_data
-        self.test_data = self.data_properties.test_data
-
-    def __repr__(self):
-
-        if self.data_properties.use_full_data:
-            return display(self.data)
-        else:
-            return display(self.data_properties.train_data)
-
-
-    @property
-    def missing_values(self):       
-        """
-        Property that displays every column and how many missing values it has along with percentage.
-        """
-        if self.data_properties.use_full_data:
-            missing_values = MissingData(self.data)
-        else:
-            missing_values = MissingData(self.data_properties.train_data, self.data_properties.test_data)
+        super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
+                         use_full_data=use_full_data, target_field=target_field, report_name=report_name)
         
-        for item in missing_values:
-            display(item)
+        if self.data_properties.report is not None:
+            self.report.WriteHeader("Feature Engineering")
 
 
     def remove_columns(self, threshold):
@@ -86,20 +46,20 @@ class Clean():
 
         if self.data_properties.use_full_data:            
             #Gather original data information
-            original_columns = set(list(self.data.columns))
+            original_columns = set(list(self.data_properties.data.columns))
 
-            self.data = RemoveColumns(threshold, data=self.data)
+            self.data_properties.data = RemoveColumns(threshold, data=self.data_properties.data)
 
             #Write to report
             if self.report is not None:
-                new_columns = original_columns.difference(self.data.columns)
+                new_columns = original_columns.difference(self.data_properties.data.columns)
                 self.report.ReportTechnique(report_info, new_columns)
 
-            return self.data
+            return self.data_properties.data
 
         else:
             #Gather original data information
-            original_columns = set(list(self.train_data.columns))
+            original_columns = set(list(self.data_properties.train_data.columns))
 
             self.data_properties.train_data, self.data_properties.test_data = RemoveColumns(threshold,
                                                                                             train_data=self.data_properties.train_data,
@@ -129,13 +89,13 @@ class Clean():
         report_info = technique_reason_repo['clean']['general']['remove_rows']
 
         if self.data_properties.use_full_data:
-            self.data = RemoveRows(threshold, data=self.data)
+            self.data_properties.data = RemoveRows(threshold, data=self.data_properties.data)
 
             #Write to report
             if self.report is not None:            
                 self.report.ReportTechnique(report_info, [])
 
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = RemoveRows(threshold,
@@ -165,17 +125,17 @@ class Clean():
         report_info = technique_reason_repo['clean']['numeric']['mean']
 
         if self.data_properties.use_full_data:
-            self.data = ReplaceMissingMeanMedianMode("mean", list_of_cols, data=self.data)
+            self.data_properties.data = ReplaceMissingMeanMedianMode("mean", list_of_cols, data=self.data_properties.data)
 
             #Write to report
             if self.report is not None:            
                 if list_of_cols:
                     self.report.ReportTechnique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data, None)
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
                     self.report.ReportTechnique(report_info, list_of_cols)
 
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingMeanMedianMode("mean",
@@ -209,16 +169,16 @@ class Clean():
         report_info = technique_reason_repo['clean']['numeric']['median']
 
         if self.data_properties.use_full_data:
-            self.data = ReplaceMissingMeanMedianMode("median", list_of_cols, data=self.data)
+            self.data_properties.data = ReplaceMissingMeanMedianMode("median", list_of_cols, data=self.data_properties.data)
             
             if self.report is not None:
                 if list_of_cols:
                     self.report.ReportTechnique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data, None)
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
                     self.report.ReportTechnique(report_info, list_of_cols)
 
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingMeanMedianMode("median",
@@ -252,16 +212,16 @@ class Clean():
         report_info = technique_reason_repo['clean']['numeric']['mode']
 
         if self.data_properties.use_full_data:
-            self.data = ReplaceMissingMeanMedianMode("most_frequent", list_of_cols, data=self.data)
+            self.data_properties.data = ReplaceMissingMeanMedianMode("most_frequent", list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
                 if list_of_cols:
                     self.report.ReportTechnique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data, None)
+                    list_of_cols = _NumericFunctionInputConditions(list_of_cols, self.data_properties.data, None)
                     self.report.ReportTechnique(report_info, list_of_cols)
 
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingMeanMedianMode("most_frequent",
@@ -300,15 +260,15 @@ class Clean():
         report_info = technique_reason_repo['clean']['numeric']['constant']
 
         if self.data_properties.use_full_data:
-            self.data = ReplaceMissingConstant(constant, col_to_constant, data=self.data)
+            self.data_properties.data = ReplaceMissingConstant(constant, col_to_constant, data=self.data_properties.data)
 
             if self.report is not None:
                 if col_to_constant is None:
-                    self.report.ReportTechnique(report_info, self.data.columns)
+                    self.report.ReportTechnique(report_info, self.data_properties.data.columns)
                 else:
                     self.report.ReportTechnique(report_info, list(col_to_constant))
 
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingConstant(constant,
@@ -351,15 +311,15 @@ class Clean():
         report_info = technique_reason_repo['clean']['categorical']['new_category']
 
         if self.data_properties.use_full_data:
-            self.data = ReplaceMissingNewCategory(constant=new_category, col_to_category=col_to_category, data=self.data)
+            self.data_properties.data = ReplaceMissingNewCategory(constant=new_category, col_to_category=col_to_category, data=self.data_properties.data)
 
             if self.report is not None:
                 if col_to_category is None:
-                    self.report.ReportTechnique(report_info, self.data.columns)
+                    self.report.ReportTechnique(report_info, self.data_properties.data.columns)
                 else:
                     self.report.ReportTechnique(report_info, list(col_to_category))
 
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingNewCategory(constant=new_category,
@@ -391,12 +351,12 @@ class Clean():
         report_info = technique_reason_repo['clean']['categorical']['remove_rows']
 
         if self.data_properties.use_full_data:
-            self.data = ReplaceMissingRemoveRow(cols_to_remove, data=self.data)
+            self.data_properties.data = ReplaceMissingRemoveRow(cols_to_remove, data=self.data_properties.data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info, cols_to_remove)
 
-            return self.data
+            return self.data_properties.data
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = ReplaceMissingRemoveRow(cols_to_remove,                                                                                                    
@@ -428,9 +388,9 @@ class Clean():
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_rows']
     
         if self.data_properties.use_full_data:
-            self.data = RemoveDuplicateRows(list_of_cols=list_of_cols, data=self.data)
+            self.data_properties.data = RemoveDuplicateRows(list_of_cols=list_of_cols, data=self.data_properties.data)
     
-            return self.data
+            return self.data_properties.data
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = RemoveDuplicateRows(list_of_cols=[],
@@ -454,9 +414,9 @@ class Clean():
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
     
         if self.data_properties.use_full_data:
-            self.data = RemoveDuplicateColumns(data=self.data)
+            self.data_properties.data = RemoveDuplicateColumns(data=self.data_properties.data)
     
-            return self.data
+            return self.data_properties.data
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = RemoveDuplicateColumns(train_data=self.data_properties.train_data,

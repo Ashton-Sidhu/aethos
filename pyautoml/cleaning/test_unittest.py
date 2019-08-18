@@ -9,9 +9,9 @@ class TestCleaning(unittest.TestCase):
     
     def test_cleanutil_removecolumns(self):
 
-        int_missing_data = np.array([(1, 0, 0),
-                                 (0, None, None),
-                                 (None, None, None)])
+        int_missing_data = [[1, 0, 0],
+                            [0, None, None],
+                            [None, None, None]]
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
