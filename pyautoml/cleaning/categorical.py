@@ -1,18 +1,16 @@
 '''
 This file contains the following methods:
 
-ReplaceMissingNewCategory
-ReplaceMissingRemoveRow
+replace_missing_new_category
+replace_missing_remove_row
 '''
 
 import numpy as np
 import pandas as pd
 
-from pyautoml.util import DropAndReplaceColumns, _FunctionInputValidation
-
 #TODO: Implement KNN, and replacing with most common category 
 
-def ReplaceMissingNewCategory(constant=None, col_to_category=None, **datasets):
+def replace_missing_new_category(constant=None, col_to_category=None, **datasets):
     """
     Replaces missing values in categorical column with its own category. The categories can be autochosen
     from the defaults set.
@@ -179,7 +177,7 @@ def ReplaceMissingNewCategory(constant=None, col_to_category=None, **datasets):
 
             return train_data, test_data   
 
-def ReplaceMissingRemoveRow(cols_to_remove, **datasets):
+def replace_missing_remove_row(cols_to_remove, **datasets):
     """
     Remove rows where the value of a column for those rows is missing.
     

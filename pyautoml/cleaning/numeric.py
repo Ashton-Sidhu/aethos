@@ -1,12 +1,12 @@
 '''
 This file contains the following methods:
 
-ReplaceMissingMeanMedianMode
-ReplaceMissingConstant
+replace_missing_mean_median_mode
+replace_missing_constant
 '''
 
 import pandas as pd
-from pyautoml.cleaning.categorical import ReplaceMissingNewCategory
+from pyautoml.cleaning.categorical import replace_missing_new_category
 from pyautoml.util import (DropAndReplaceColumns, _ColumnInput,
                            _FunctionInputValidation,
                            _NumericFunctionInputConditions)
@@ -16,7 +16,7 @@ from sklearn.impute import SimpleImputer
 
 
 
-def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], **datasets):
+def replace_missing_mean_median_mode(strategy, list_of_cols=[], **datasets):
     """
     Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
 
@@ -85,7 +85,7 @@ def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], **datasets):
 
         return train_data, test_data
 
-def ReplaceMissingConstant(constant=0, col_to_constant=None, **datasets):
+def replace_missing_constant(constant=0, col_to_constant=None, **datasets):
     """
     Replaces missing values in every numeric column with a constant. If `col_to_constant` is not provided,
     all the missing values in the data will be replaced with `constant`
@@ -116,8 +116,8 @@ def ReplaceMissingConstant(constant=0, col_to_constant=None, **datasets):
     
     Examples
     ------
-    >>>> ReplaceMissingConstant({'a': 1, 'b': 2, 'c': 3})
-    >>>> ReplaceMissingConstant(1, ['a', 'b', 'c'])
+    >>>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
+    >>>> replace_missing_constant(1, ['a', 'b', 'c'])
     """   
 
     data = datasets.pop('data', None)
@@ -132,35 +132,35 @@ def ReplaceMissingConstant(constant=0, col_to_constant=None, **datasets):
 
     if isinstance(col_to_constant, dict):
         if data is not None:
-            data = ReplaceMissingNewCategory(col_to_category=col_to_constant, data=data)
+            data = replace_missing_new_category(col_to_category=col_to_constant, data=data)
 
             return data
         
         else:
-            train_data, test_data = ReplaceMissingNewCategory(col_to_cateogory=col_to_constant, train_data=train_data, test_data=test_data)
+            train_data, test_data = replace_missing_new_category(col_to_cateogory=col_to_constant, train_data=train_data, test_data=test_data)
 
             return train_data, test_data
 
     elif isinstance(col_to_constant, list):
 
         if data is not None:
-            data = ReplaceMissingNewCategory(constant=constant, col_to_category=col_to_constant, data=data)
+            data = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, data=data)
 
             return data
         
         else:
-            train_data, test_data = ReplaceMissingNewCategory(constant=constant, col_to_category=col_to_constant, train_data=train_data, test_data=test_data)
+            train_data, test_data = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, train_data=train_data, test_data=test_data)
 
             return train_data, test_data
 
     else:
 
         if data is not None:
-            data = ReplaceMissingNewCategory(constant=constant, data=data)
+            data = replace_missing_new_category(constant=constant, data=data)
 
             return data
         
         else:
-            train_data, test_data = ReplaceMissingNewCategory(constant=constant, train_data=train_data, test_data=test_data)
+            train_data, test_data = replace_missing_new_category(constant=constant, train_data=train_data, test_data=test_data)
 
             return train_data, test_data
