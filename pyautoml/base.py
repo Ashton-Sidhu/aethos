@@ -4,7 +4,7 @@ from pyautoml.data.data import Data
 from pyautoml.util import SplitData, _FunctionInputValidation
 
 
-class MethodBase():
+class MethodBase(object):
 
     def __init__(self, **kwargs):
 
@@ -43,15 +43,33 @@ class MethodBase():
                 
                 return ''
             else:
-                display(self.data_properties.train_data) # Hack for jupyter notebooks
+                 # Hack for jupyter notebooks
 
-                return ''
+                return self.data_properties.train_data.__repr__()
         
         else:
             if self.data_properties.use_full_data:
                 return self.data_properties.data.to_string()
             else:
                 return self.data_properties.train_data.to_string()
+
+    def __getitem__(self, column):
+
+        if self.data_properties.use_full_data:
+            return self.data_properties.data[column]
+        else:
+            return self.data_properties.train_data[column]
+
+    def __setitem__(self, column, value):
+
+        if self.data_properties.use_full_data:
+            return self.data_properties.data[column]
+        else:
+
+            self.data_properties.train_data[column] = value
+            self.data_properties.test_data[column] = value
+
+            return self.data_properties.train_data[column]
 
 
     @property
