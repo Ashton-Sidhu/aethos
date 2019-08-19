@@ -32,7 +32,7 @@ It is Py-automls's goal that Data Scientists and Machine Learning Engineers will
 - Report generation detailing exact steps how you transformed your dataset
 - If automating workflow through the GUI, the application will generate the code that was ran on your data.
   - If you are doing a PoC or experimenting the code will output in a `.ipynb` and a `.py` format.
-  - While if the plan is to create a full pipeline the code will out a `.py` containing the full pipeline.
+  - If the plan is to create a full pipeline the code will out a `.py` containing the full pipeline.
 - Model Evaluation
 - Spark Integration
 - Data visualizations
