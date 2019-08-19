@@ -5,34 +5,40 @@ preprocess_normalize
 """
 
 import pandas as pd
+from pyautoml.util import (_function_input_validation,
+                           _numeric_input_conditions, drop_replace_columns)
 from sklearn.preprocessing import MinMaxScaler
-
-from pyautoml.util import (drop_replace_columns, _function_input_validation,
-                           _numeric_input_conditions)
 
 
 def preprocess_normalize(list_of_cols=[], params={}, **datasets):
     """
     Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
+    
+    Parameters
+    ----------
+    list_of_cols : list, optional
+        A list of specific columns to apply this technique to
+        If `list_of_cols` is not provided, the strategy will be
+        applied to all numeric columns, by default []
+    params : dict, optional
+        A dictionary of parmaters to pass into MinMaxScaler() constructor
+        from Scikit-Learn, by default {}
 
-    Args:
-        list_of_cols (list, optional): A list of specific columns to apply this technique to
-                                    If `list_of_cols` is not provided, the strategy will be
-                                    applied to all numeric columns. Defaults to [].
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-        params (dict, optional): A dictionary of parmaters to pass into MinMaxScaler() constructor
-                                from Scikit-Learn. Defaults to {}
+    data : DataFrame
+        Full dataset, by default None
+    train_data : DataFrame
+        Training dataset, by default None
+    test_data : DataFrame
+        Testing dataset, by default None
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
 
-        Either the full data or training data plus testing data MUST be provided, not both.
-
-        data {DataFrame} -- Full dataset. Defaults to None.
-        train_data {DataFrame} -- Training dataset. Defaults to None.
-        test_data {DataFrame} -- Testing dataset. Defaults to None.
-
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
-
-        * Returns 2 Dataframes if Train and Test data is provided.  
+    * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = datasets.pop('data', None)

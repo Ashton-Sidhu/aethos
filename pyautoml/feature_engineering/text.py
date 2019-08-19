@@ -13,7 +13,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
 
 
-def feature_bag_of_words(list_of_cols=[],  params={}, **datasets):
+def feature_bag_of_words(list_of_cols=[], params={}, **datasets):
     """
     Creates a matrix of how many times a word appears in a document.
     

@@ -30,20 +30,27 @@ class Preprocess(MethodBase):
 
         
     def normalize_numeric(self, list_of_cols=[], normalize_params={}):
-        """Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
+        """
+        Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 
-       This function can be found in `preprocess/numeric.py`
+        This function can be found in `preprocess/numeric.py`
         
-        If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
+        If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.        
         
-        Keyword Arguments:
-            list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
-            params (dict, optional): A dictionary of parmaters to pass into MinMaxScaler() constructor
-                                from Scikit-Learn. Defaults to {}
+        Parameters
+        ----------
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to, by default []
+        normalize_params : dict, optional
+            A dictionary of parmaters to pass into MinMaxScaler() constructor
+            from Scikit-Learn, by default {}
         
-        Returns:
-            [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-            of both are returned. 
+        Returns
+        -------
+        Dataframe, *Dataframe
+            Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided. 
         """
 
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
