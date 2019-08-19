@@ -294,8 +294,9 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
-        >>>> replace_missing_constant(1, ['a', 'b', 'c'])
+        >>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
+
+        >>> replace_missing_constant(1, ['a', 'b', 'c'])
         """
 
         report_info = technique_reason_repo['clean']['numeric']['constant']
@@ -352,9 +353,9 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
-        >>>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
+        >>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
 
+        >>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
         """
 
         report_info = technique_reason_repo['clean']['categorical']['new_category']
