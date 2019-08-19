@@ -10,30 +10,40 @@ import pandas as pd
 from pyautoml.util import _function_input_validation
 
 
-def remove_columns_threshold(threshold, **datasets):
+def remove_columns_threshold(threshold: float, **datasets):
     """
     Remove columns from the dataframe that have more than the threshold value of missing rows.
     Example: Remove columns where > 50% of the data is missing
-    
-    Args:
-        threshold (int or float, optional): Threshold value between 0 and 1 that if the column
+
+    Parameters
+    ----------
+    threshold : float
+        Threshold value between 0 and 1 that if the column
         has more than the specified threshold of missing values, it is removed. 
-    
-        Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame}: Full dataset. Defaults to None.
-        train_data {DataFrame}: Training dataset. Defaults to None.
-        test_data {DataFrame}: Testing dataset. Defaults to None.
-    
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-        * Returns 2 Dataframes if Train and Test data is provided.
+    data: Dataframe or array like - 2d
+        Full dataset, by default None.
+    train_data: Dataframe or array like - 2d
+        Training dataset, by default None.
+    test_data: Dataframe or array like - 2d
+        Testing dataset, by default None.
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
+
+    * Returns 2 Dataframes if Train and Test data is provided.
     """
 
     data = datasets.pop('data', None)
     train_data = datasets.pop('train_data', None)
     test_data = datasets.pop('test_data', None)
+
+    if threshold > 1 or threshold < 0:
+        raise ValueError("Threshold cannot be greater than 1 or less than 0.")
 
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")
@@ -51,26 +61,36 @@ def remove_columns_threshold(threshold, **datasets):
 
         return train_data[criteria_meeting_columns], test_data[criteria_meeting_columns]
 
-def remove_rows_threshold(threshold, **datasets):
+def remove_rows_threshold(threshold: float, **datasets):
     """
     Remove rows from the dataframe that have more than the threshold value of missing rows.
     Example: Remove rows where > 50% of the data is missing
     
-    Args:
-        threshold (int or float, optional): Threshold value between 0 and 1 that if the row
+    Parameters
+    ----------
+    threshold : float
+        Threshold value between 0 and 1 that if the row
         has more than the specified threshold of missing values, it is removed. 
-    
-        Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame}: Full dataset. Defaults to None.
-        train_data {DataFrame}: Training dataset. Defaults to None.
-        test_data {DataFrame}: Testing dataset. Defaults to None.
-    
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-        * Returns 2 Dataframes if Train and Test data is provided.
+    data: Dataframe or array like - 2d
+        Full dataset, by default None.
+    train_data: Dataframe or array like - 2d
+        Training dataset, by default None.
+    test_data: Dataframe or array like - 2d
+        Testing dataset, by default None.
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
+
+    * Returns 2 Dataframes if Train and Test data is provided.
     """
+
+    if threshold > 1 or threshold < 0:
+        raise ValueError("Threshold cannot be greater than 1 or less than 0.")
 
     data = datasets.pop('data', None)
     train_data = datasets.pop('train_data', None)
@@ -83,11 +103,9 @@ def remove_rows_threshold(threshold, **datasets):
         raise ValueError("Function input is incorrectly provided.")
 
     if data is not None:
-
         return data.dropna(thresh=round(data.shape[1] * threshold), axis=0)
 
     else:
-
         train_data = train_data.dropna(thresh=round(train_data.shape[1] * threshold), axis=0)
         test_data = test_data.dropna(thresh=round(test_data.shape[1] * threshold), axis=0)
 
@@ -97,19 +115,26 @@ def remove_duplicate_rows(list_of_cols=[], **datasets):
     """
     Removes rows that are exact duplicates of each other.
     
-    Args:
-        list_of_cols (list, optional): Columns to check if their values are duplicated. Defaults to [].
+    Parameters
+    ----------
+    list_of_cols: list, optional
+        Columns to check if their values are duplicated, by default []
     
-        Either the full data or training data plus testing data MUST be provided, not both.
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame}: Full dataset. Defaults to None.
-        train_data {DataFrame}: Training dataset. Defaults to None.
-        test_data {DataFrame}: Testing dataset. Defaults to None.
+    data: Dataframe or array like - 2d
+        Full dataset, by default None.
+    train_data: Dataframe or array like - 2d
+        Training dataset, by default None.
+    test_data: Dataframe or array like - 2d
+        Testing dataset, by default None.
     
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
 
-        * Returns 2 Dataframes if Train and Test data is provided.
+    * Returns 2 Dataframes if Train and Test data is provided.
     """
 
     data = datasets.pop('data', None)
@@ -135,17 +160,23 @@ def remove_duplicate_columns(**datasets):
     """
     Removes columns whose values are exact duplicates of each other.
     
-    Args:    
-        Either the full data or training data plus testing data MUST be provided, not both.
+    Parameters
+    ----------
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-        data {DataFrame}: Full dataset. Defaults to None.
-        train_data {DataFrame}: Training dataset. Defaults to None.
-        test_data {DataFrame}: Testing dataset. Defaults to None.
+    data: Dataframe or array like - 2d
+        Full dataset, by default None.
+    train_data: Dataframe or array like - 2d
+        Training dataset, by default None.
+    test_data: Dataframe or array like - 2d
+        Testing dataset, by default None.
     
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
 
-        * Returns 2 Dataframes if Train and Test data is provided.
+    * Returns 2 Dataframes if Train and Test data is provided.
     """
 
     data = datasets.pop('data', None)

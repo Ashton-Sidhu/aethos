@@ -25,21 +25,27 @@ class Clean(MethodBase):
                          use_full_data=use_full_data, target_field=target_field, report_name=report_name)
         
         if self.data_properties.report is not None:
-            self.report.write_header("Feature Engineering")
+            self.report.write_header("Cleaning")
 
 
-    def remove_columns(self, threshold):
-        """Remove columns from the dataframe that have more than the threshold value of missing columns.
+    def remove_columns(self, threshold: float):
+        """
+        Remove columns from the dataframe that have more than the threshold value of missing columns.
         Example: Remove columns where > 50% of the data is missing.
 
-        This function exists in `clean/utils.py`.
+        This function exists in `clean/utils.py`
         
-        Arguments:
-            threshold {[float]} -- Value between 0 and 1 that describes what percentage of a column can be missing values.
-
-        Returns:
-            [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-            of both are returned. 
+        Parameters
+        ----------
+        threshold : float
+            Value between 0 and 1 that describes what percentage of a column can be missing values.
+        
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
         """
 
         report_info = technique_reason_repo['clean']['general']['remove_columns']
@@ -62,8 +68,8 @@ class Clean(MethodBase):
             original_columns = set(list(self.data_properties.train_data.columns))
 
             self.data_properties.train_data, self.data_properties.test_data = remove_columns_threshold(threshold,
-                                                                                            train_data=self.data_properties.train_data,
-                                                                                            test_data=self.data_properties.test_data)
+                                                                                                        train_data=self.data_properties.train_data,
+                                                                                                        test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 new_columns = original_columns.difference(self.data_properties.train_data.columns)
@@ -72,20 +78,26 @@ class Clean(MethodBase):
             return self.data_properties.train_data, self.data_properties.test_data
 
 
-    def remove_rows(self, threshold):
-        """Remove rows from the dataframe that have more than the threshold value of missing rows.
+    def remove_rows(self, threshold: float):
+        """
+        Remove rows from the dataframe that have more than the threshold value of missing rows.
         Example: Remove rows where > 50% of the data is missing.
 
         This function exists in `clean/utils.py`.
-        
-        Arguments:
-            threshold {[float]} -- Value between 0 and 1 that describes what percentage of a row can be missing values.
 
-        Returns:
-            [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-            of both are returned. 
-        """
+        Parameters
+        ----------
+        threshold : float
+            Value between 0 and 1 that describes what percentage of a row can be missing values.
         
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
+        """
+
         report_info = technique_reason_repo['clean']['general']['remove_rows']
 
         if self.data_properties.use_full_data:
@@ -99,8 +111,8 @@ class Clean(MethodBase):
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = remove_rows_threshold(threshold,
-                                                                                        train_data=self.data_properties.train_data,
-                                                                                        test_data=self.data_properties.test_data)
+                                                                                                    train_data=self.data_properties.train_data,
+                                                                                                    test_data=self.data_properties.test_data)
 
             #Write to report
             if self.report is not None:            
@@ -109,17 +121,24 @@ class Clean(MethodBase):
             return self.data_properties.train_data, self.data_properties.test_data
     
     def replace_missing_mean(self, list_of_cols=[]):
-        """Replaces missing values in every numeric column with the mean of that column.
+        """
+        Replaces missing values in every numeric column with the mean of that column.
 
         Mean: Average value of the column. Effected by outliers.
 
         This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
-       
-        Keyword Arguments:
-            list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
-            override {boolean} -- True or False depending on whether the list_of_cols overrides the columns in field_types
-                                    Example: if list_of_cols is provided and override is true, the technique will only be applied
-                                    to the the columns in list_of_cols (default: {False})
+        
+        Parameters
+        ----------
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to, by default []
+        
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
         """
 
         report_info = technique_reason_repo['clean']['numeric']['mean']
@@ -153,17 +172,24 @@ class Clean(MethodBase):
             return self.data_properties.train_data, self.data_properties.test_data
 
     def replace_missing_median(self, list_of_cols=[]):
-        """Replaces missing values in every numeric column with the median of that column.
+        """
+        Replaces missing values in every numeric column with the median of that column.
 
         Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
 
         This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
         
-        Keyword Arguments:
-            list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
-            override {boolean} -- True or False depending on whether the list_of_cols overrides the columns in field_types
-                                    Example: if list_of_cols is provided and override is true, the technique will only be applied
-                                    to the the columns in list_of_cols (default: {False})                       
+        Parameters
+        ----------
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
         """
 
         report_info = technique_reason_repo['clean']['numeric']['median']
@@ -196,17 +222,24 @@ class Clean(MethodBase):
             return self.data_properties.train_data, self.data_properties.test_data
 
     def replace_missing_mostcommon(self, list_of_cols=[]):
-        """Replaces missing values in every numeric column with the most common value of that column
+        """
+        Replaces missing values in every numeric column with the most common value of that column
 
         Mode: Most common value.
 
         This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
         
-        Keyword Arguments:
-            list_of_cols {list} -- A list of specific columns to apply this technique to. (default: {[]})
-            override {boolean} -- True or False depending on whether the list_of_cols overrides the columns in field_types
-                                    Example: if list_of_cols is provided and override is true, the technique will only be applied
-                                    to the the columns in list_of_cols (default: {False})      
+        Parameters
+        ----------
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+            * Returns 2 Dataframes if Train and Test data is provided. 
         """
        
         report_info = technique_reason_repo['clean']['numeric']['mode']
@@ -238,23 +271,31 @@ class Clean(MethodBase):
             return self.data_properties.train_data, self.data_properties.test_data
 
     def replace_missing_constant(self, constant=0, col_to_constant=None):
-        """Replaces missing values in every numeric column with a constant.
+        """
+        Replaces missing values in every numeric column with a constant.
 
         This function exists in `clean/numeric.py` as `replace_missing_constant`.
         
-        Keyword Arguments:
-            constant {int or float} -- Numeric value to replace all missing values with (default: {0})
-            col_to_constant {list} or {dict} -- A list of specific columns to apply this technique to or a dictionary
-            mapping {Column Name: `constant`}. (default: {[]})
-            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
-                                    Example: if custom_cols is provided and override is true, the technique will only be applied
-                                    to the the columns in custom_cols (default: {False})
         
-        Examples:
+        Parameters
+        ----------
+        constant : int or float, optional
+            Numeric value to replace all missing values with , by default 0
+        col_to_constant : list or dict, optional
+            A list of specific columns to apply this technique to or a dictionary
+            mapping {'ColumnName': `constant`}, by default None
+        
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
 
+        Examples
+        --------
         >>>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
         >>>> replace_missing_constant(1, ['a', 'b', 'c'])
-                    
         """
 
         report_info = technique_reason_repo['clean']['numeric']['constant']
@@ -294,20 +335,28 @@ class Clean(MethodBase):
 
         This function exists in `clean/categorical.py` as `replace_missing_new_category`.
         
-        Keyword Arguments:
-            new_category {str} or  {int} or {float} -- Category to replace missing values with (default: {None})
-            col_to_category {list} or {dict} -- A list of specific columns to apply this technique to or a dictionary
-                                                mapping {Column Name: `constant`}. (default: {[]})
-            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
-                                    Example: if custom_cols is provided and override is true, the technique will only be applied
-                                    to the the columns in custom_cols (default: {False})
+        Parameters
+        ----------
+        new_category : str, int, or float, optional
+            Category to replace missing values with, by default None
+        col_to_category : list or dict, optional
+            A list of specific columns to apply this technique to or a dictionary
+            mapping {'ColumnName': `constant`}, by default None
+        
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
 
-        Examples:
-
+        Examples
+        --------
         >>>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
         >>>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
+
         """
-        
+
         report_info = technique_reason_repo['clean']['categorical']['new_category']
 
         if self.data_properties.use_full_data:
@@ -336,16 +385,23 @@ class Clean(MethodBase):
             return self.data_properties.train_data, self.data_properties.test_data
 
 
-    def replace_missing_remove_row(self, cols_to_remove):
-        """Remove rows where the value of a column for those rows is missing.
+    def replace_missing_remove_row(self, cols_to_remove: list):
+        """
+        Remove rows where the value of a column for those rows is missing.
 
         This function exists in `clean/categorical.py` as `replace_missing_remove_row`.
         
-        Keyword Arguments:
-            cols_to_remove {list} -- A list of specific columns to remove. (default: {[]})
-            override {boolean} -- True or False depending on whether the custom_cols overrides the columns in field_types
-                                    Example: if custom_cols is provided and override is true, the technique will only be applied
-                                    to the the columns in custom_cols (default: {False})
+        Parameters
+        ----------
+        cols_to_remove : list
+            A list of specific columns to remove.
+
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
         """
 
         report_info = technique_reason_repo['clean']['categorical']['remove_rows']
@@ -373,16 +429,20 @@ class Clean(MethodBase):
         Remove rows from the data that are exact duplicates of each other and leave only 1.
         This can be used to reduce processing time or performance for algorithms where
         duplicates have no effect on the outcome (i.e DBSCAN)
-        
+
         This function exists in `clean/util.py` as `remove_duplicate_rows`.
-        
-        Args:
-            list_of_cols (list, optional): A list of specific columns to apply this technique to. Defaults to [].
-        
-        Returns:
-            Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
-    
-            * Returns 2 Dataframes if Train and Test data is provided.
+       
+        Parameters
+        ----------
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to, by default []
+       
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
         """
     
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_rows']
@@ -403,12 +463,12 @@ class Clean(MethodBase):
         """
         Remove columns from the data that are exact duplicates of each other and leave only 1.
         
-        This function exists in `clean/util.py` as `remove_duplicate_columns`.
-                
-        Returns:
-            Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
-    
-            * Returns 2 Dataframes if Train and Test data is provided.
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided. 
         """
     
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
