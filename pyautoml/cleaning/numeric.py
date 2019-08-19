@@ -1,125 +1,165 @@
 '''
 This file contains the following methods:
 
-ReplaceMissingMeanMedianMode
-ReplaceMissingConstant
+replace_missing_mean_median_mode
+replace_missing_constant
 '''
 
 import pandas as pd
+from pyautoml.cleaning.categorical import replace_missing_new_category
+from pyautoml.util import (_column_input, _function_input_validation,
+                           _numeric_input_conditions, drop_replace_columns)
 from sklearn.impute import SimpleImputer
-
-from pyautoml.cleaning.categorical import ReplaceMissingNewCategory
-from pyautoml.util import (DropAndReplaceColumns, _FunctionInputValidation,
-                           _NumericFunctionInputConditions)
 
 #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
 
-def ReplaceMissingMeanMedianMode(strategy, list_of_cols=[], data=None, train_data=None, test_data=None):
-    """Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
 
-    Either data or train_data or test_data MUST be provided, not both. 
-    
-    If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
+
+def replace_missing_mean_median_mode(strategy: str, list_of_cols=[], **datasets):
+    """
+    Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
 
     Mean: Average value of the column. Effected by outliers.
     Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
     Mode: Most common number in a list of numbers.
     
-    Keyword Arguments:
-        strategy {boolean} -- Can be either "mean", "median" or "most_frequent"
-        list_of_cols {list} -- A list of specific columns to apply this technique to. (default: []])
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
+    Parameters
+    ----------
+    strategy : str
+        Strategy for replacing missing values.
+        Can be either "mean", "median" or "most_frequent"
+    list_of_cols : list, optional
+        A list of specific columns to apply this technique to
+        If `list_of_cols` is not provided, the strategy will be
+        applied to all numeric columns., by default []
 
-    Returns:
-        [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-        of both are returned.              
+    Either the full data or training data plus testing data MUST be provided, not both.
+
+    data: Dataframe or array like - 2d
+        Full dataset, by default None.
+    train_data: Dataframe or array like - 2d
+        Training dataset, by default None.
+    test_data: Dataframe or array like - 2d
+        Testing dataset, by default None.
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
+
+    * Returns 2 Dataframes if Train and Test data is provided.  
     """
 
-    if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
 
-    list_of_cols = _NumericFunctionInputConditions(list_of_cols, data, train_data)
+    if datasets:
+        raise TypeError(f"Invalid parameters passed: {str(datasets)}")
+
+    if not _function_input_validation(data, train_data, test_data):
+        raise ValueError("Function input is incorrectly provided.")
+    
+    if strategy != 'most_frequent':    
+        list_of_cols = _numeric_input_conditions(list_of_cols, data, train_data)
+    else:
+        list_of_cols = _column_input(list_of_cols, data, train_data)
+    
     imp = SimpleImputer(strategy=strategy)
     
     if data is not None:                
         fit_data = imp.fit_transform(data[list_of_cols])
         fit_df = pd.DataFrame(fit_data, columns=list_of_cols)
-        data = DropAndReplaceColumns(data, list_of_cols, fit_df)
+        data = drop_replace_columns(data, list_of_cols, fit_df)
 
         return data
     else:
         fit_train_data = imp.fit_transform(train_data[list_of_cols])
-        fit_train_df = pd.DataFrame(fit_data, columns=list_of_cols)            
-        train_data = DropAndReplaceColumns(train_data, list_of_cols, fit_train_df)
+        fit_train_df = pd.DataFrame(fit_train_data, columns=list_of_cols)            
+        train_data = drop_replace_columns(train_data, list_of_cols, fit_train_df)
         
         fit_test_data = imp.transform(test_data[list_of_cols])
         fit_test_df = pd.DataFrame(fit_test_data, columns=list_of_cols)      
-        test_data = DropAndReplaceColumns(test_data, list_of_cols, fit_test_df)
+        test_data = drop_replace_columns(test_data, list_of_cols, fit_test_df)
 
         return train_data, test_data
 
-def ReplaceMissingConstant(constant=0, col_to_constant=None, data=None, train_data=None, test_data=None):
-    """Replaces missing values in every numeric column with a constant. If `col_to_constant` is not provided,
-    all the missing values in the data will be replaced with `constant`
-
-    Either data or train_data or test_data MUST be provided, not both. 
-
-    The underlying function resides in `clean/categorical.py`
-    
-    Keyword Arguments:
-        col_to_constant {list} or {dict}  -- A list of specific columns to apply this technique to.        
-        constant {int or float} -- Numeric value to replace all missing values with (default: 0)
-        data {DataFrame} -- Full dataset (default: {None})
-        train_data {DataFrame} -- Training dataset (default: {None})
-        test_data {DataFrame} -- Testing dataset (default: {None})
-
-     Returns:
-        [DataFrame], DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-        of both are returned.     
+def replace_missing_constant(constant=0, col_to_constant=None, **datasets):
     """
+    Replaces missing values in every numeric column with a constant. If `col_to_constant` is not provided,
+    all the missing values in the data will be replaced with `constant`
+    
+    Parameters
+    ----------
+    constant : int, float, optional
+        Value to replace missing values with, by default 0
+    col_to_constant : list, dict, optional
+        Either a list of columns to replace missing values or a `column`: `value` dictionary mapping,
+        by default None
+    
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-    if not _FunctionInputValidation(data, train_data, test_data):
-        return "Function input is incorrectly provided."
+    data: Dataframe or array like - 2d
+        Full dataset, by default None.
+    train_data: Dataframe or array like - 2d
+        Training dataset, by default None.
+    test_data: Dataframe or array like - 2d
+        Testing dataset, by default None.
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
+
+    * Returns 2 Dataframes if Train and Test data is provided.  
+    
+    Examples
+    ------
+    >>>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
+    >>>> replace_missing_constant(1, ['a', 'b', 'c'])
+    """   
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f"Invalid parameters passed: {str(datasets)}")
+
+    if not _function_input_validation(data, train_data, test_data):
+        raise ValueError("Function input is incorrectly provided.")
 
     if isinstance(col_to_constant, dict):
         if data is not None:
-
-            data = ReplaceMissingNewCategory(col_to_constant, data=data)
+            data = replace_missing_new_category(col_to_category=col_to_constant, data=data)
 
             return data
         
         else:
-
-            train_data, test_data = ReplaceMissingNewCategory(col_to_constant, train_data=train_data, test_data=test_data)
+            train_data, test_data = replace_missing_new_category(col_to_cateogory=col_to_constant, train_data=train_data, test_data=test_data)
 
             return train_data, test_data
 
     elif isinstance(col_to_constant, list):
 
         if data is not None:
-
-            data = ReplaceMissingNewCategory(col_to_constant, constant=constant, data=data)
+            data = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, data=data)
 
             return data
         
         else:
-
-            train_data, test_data = ReplaceMissingNewCategory(col_to_constant, constant=constant, train_data=train_data, test_data=test_data)
+            train_data, test_data = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, train_data=train_data, test_data=test_data)
 
             return train_data, test_data
 
     else:
 
         if data is not None:
-
-            data = ReplaceMissingNewCategory(constant=constant, data=data)
+            data = replace_missing_new_category(constant=constant, data=data)
 
             return data
         
         else:
-
-            train_data, test_data = ReplaceMissingNewCategory(constant=constant, train_data=train_data, test_data=test_data)
+            train_data, test_data = replace_missing_new_category(constant=constant, train_data=train_data, test_data=test_data)
 
             return train_data, test_data
