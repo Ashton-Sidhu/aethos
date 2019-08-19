@@ -108,4 +108,4 @@ N/A
 
 ## For Developers
 
-To install packages `python setup.py install`
+To install packages `pip3 install -r requirements.txt`
