@@ -1,34 +1,41 @@
 """
 This file contains the following methods:
 
-FeatureOneHotEncode
+feature_one_hot_encode
 """
 
 import pandas as pd
-from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
-                           _FunctionInputValidation)
+from pyautoml.util import (_function_input_validation, drop_replace_columns,
+                           get_list_of_cols)
 from sklearn.preprocessing import OneHotEncoder
 
 
-def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **datasets):
-    """ 
-    Creates a matrix of converted categorical columns into binary columns.
-
-    Args:
-        list_of_cols (list): A list of specific columns to apply this technique to.
-        params (dict, optional): Parameters you would pass into Bag of Words constructor as a dictionary. 
-                            Defaults to {"handle_unknown": "ignore"}.
+def feature_one_hot_encode(list_of_cols: list, params={"handle_unknown": "ignore"}, **datasets):
+    """
+    Creates a matrix of converted categorical columns into binary columns of ones and zeros.
     
-        Either the full data or training data plus testing data MUST be provided, not both.
+    Parameters
+    ----------
+    list_of_cols : list
+         A list of specific columns to apply this technique to.
+    params : dict, optional
+        Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
 
-        data {DataFrame} -- Full dataset. Defaults to None.
-        train_data {DataFrame} -- Training dataset. Defaults to None.
-        test_data {DataFrame} -- Testing dataset. Defaults to None.
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    data : DataFrame
+        Full dataset, by default None
+    train_data : DataFrame
+        Training dataset, by default None
+    test_data : DataFrame
+        Testing dataset, by default None
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
 
-        * Returns 2 Dataframes if Train and Test data is provided.  
+    * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = datasets.pop('data', None)
@@ -38,7 +45,7 @@ def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **dat
     if datasets:
         raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
 
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
     enc = OneHotEncoder(**params)
@@ -47,7 +54,7 @@ def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **dat
         
         enc_data = enc.fit_transform(data[list_of_cols]).toarray()
         enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names().tolist())
-        data = DropAndReplaceColumns(data, list_of_cols, enc_df)
+        data = drop_replace_columns(data, list_of_cols, enc_df)
 
         return data
 
@@ -55,10 +62,10 @@ def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **dat
 
         enc_train_data = enc.fit_transform(train_data[list_of_cols]).toarray()
         enc_train_df = pd.DataFrame(enc_train_data, columns=enc_data.get_feature_names().tolist())
-        train_data = DropAndReplaceColumns(train_data, list_of_cols, enc_train_df)
+        train_data = drop_replace_columns(train_data, list_of_cols, enc_train_df)
 
         enc_test_data = enc.transform(test_data[list_of_cols]).toarray()
         enc_test_df = pd.DataFrame(enc_test_data, columns=enc.get_features_names().tolist())
-        test_data = DropAndReplaceColumns(test_data, list_of_cols, enc_test_df)
+        test_data = drop_replace_columns(test_data, list_of_cols, enc_test_df)
 
         return train_data, test_data

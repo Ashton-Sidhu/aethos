@@ -2,16 +2,16 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from pyautoml.cleaning.clean import Clean
+from pyautoml import Clean
 
 
 class TestCleaning(unittest.TestCase):    
     
     def test_cleanutil_removecolumns(self):
 
-        int_missing_data = np.array([(1, 0, 0),
-                                 (0, None, None),
-                                 (None, None, None)])
+        int_missing_data = [[1, 0, 0],
+                            [0, None, None],
+                            [None, None, None]]
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
@@ -86,7 +86,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.replace_missing_mode()
+        clean_data = clean.replace_missing_mostcommon()
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1., 0., 2.),

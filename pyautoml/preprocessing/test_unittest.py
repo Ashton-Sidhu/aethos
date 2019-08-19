@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from pyautoml.preprocessing.preprocess import Preprocess
+from pyautoml import Preprocess
 
 
 class TestPreprocessing(unittest.TestCase):

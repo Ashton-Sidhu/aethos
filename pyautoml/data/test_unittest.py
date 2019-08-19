@@ -16,7 +16,7 @@ class TestData(unittest.TestCase):
 
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
-        new_df = data.NormalizeColNames(dataset)
+        new_df = data.normalize_column_names(dataset)
 
         self.assertListEqual(new_df.columns.tolist(), ["pid", "capslock", "space_column_name", "caps_space"])
         self.assertDictEqual(data.colMapping, {"PID": "pid"
@@ -31,7 +31,7 @@ class TestData(unittest.TestCase):
 
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
-        new_df = data.NormalizeColNames(dataset)
+        new_df = data.normalize_column_names(dataset)
 
         self.assertDictEqual(data.colMapping, {"PID": "pid"
                                                 ,"CapsLock": "capslock"
@@ -46,20 +46,20 @@ class TestData(unittest.TestCase):
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
         data.field_types = {"col1": 0, "col3": 0}
-        new_df = data.ReduceData(dataset)
+        new_df = data.reduce_data(dataset)
 
         self.assertListEqual(new_df.columns.tolist(), ["col1", "col3"])
 
     def test_data_standardizedata(self):
 
-        data = np.array([(1, 1, 0, "hi my name is pyautoml", "green", 532.1),
-                        (2, 0, None, "this is my story", "yellow", 213.5),
-                        (3, None, None, "its me", "yellow", 154.2)])
+        data = [[1, 1, 0, "hi my name is pyautoml", "green", 532.1],
+                [2, 0, None, "this is my story", "yellow", 213.5],
+                [3, None, None, "its me", "yellow", 154.2]]
         columns = ["pid","col1", "col2", "col3", "col4", "col5"]
 
         dataset = pd.DataFrame(data, columns=columns)
         data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
-        new_df = data.StandardizeData(dataset)
+        new_df = data.standardize_data(dataset)
 
         self.assertIsNotNone(new_df)
 
@@ -71,16 +71,17 @@ class TestData(unittest.TestCase):
         columns = ["pid","col1", "col2", "col3", "col4", "col5"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        has_null = CheckMissingData(dataset)
+        has_null = check_missing_data(dataset)
 
         self.assertTrue(has_null)
 
     def test_datautil_getkeysbyvalue(self):
+        
         data = {"eagle": "bird",
                 "sparrow": "bird",
                 "mosquito": "insect"}
         
-        list_of_keys = GetKeysByValues(data, "bird")
+        list_of_keys = get_keys_by_values(data, "bird")
 
         self.assertListEqual(list_of_keys, ["eagle", "sparrow"])
 
@@ -89,7 +90,7 @@ class TestData(unittest.TestCase):
                 "sparrow": "bird",
                 "mosquito": "insect"}
 
-        list_of_cols = GetListOfCols("bird", data, False, custom_cols=["eagle"])
+        list_of_cols = get_list_of_cols("bird", data, False, custom_cols=["eagle"])
 
         self.assertListEqual(list_of_cols, ["eagle", "sparrow"])
 
@@ -98,7 +99,7 @@ class TestData(unittest.TestCase):
                 "sparrow": "bird",
                 "mosquito": "insect"}
 
-        list_of_cols = GetListOfCols("bird", data, False, custom_cols=["frog"])
+        list_of_cols = get_list_of_cols("bird", data, False, custom_cols=["frog"])
 
         self.assertListEqual(list_of_cols, ["eagle", "sparrow", "frog"])
 
@@ -107,7 +108,7 @@ class TestData(unittest.TestCase):
                 "sparrow": "bird",
                 "mosquito": "insect"}
 
-        list_of_cols = GetListOfCols("bird", data, True, custom_cols=["frog"])
+        list_of_cols = get_list_of_cols("bird", data, True, custom_cols=["frog"])
 
         self.assertListEqual(list_of_cols, ["frog"])
 
@@ -119,7 +120,7 @@ class TestData(unittest.TestCase):
 
         dataset_zeros = pd.DataFrame(data_zeros, columns=columns_zeros)
         dataset_ones = pd.DataFrame(data_ones, columns=columns_ones)
-        df_new = DropAndReplaceColumns(dataset_zeros, "col2", dataset_ones)
+        df_new = drop_replace_columns(dataset_zeros, "col2", dataset_ones)
 
         self.assertListEqual(df_new.columns.tolist(), ["col1", "col3"])
 

@@ -3,9 +3,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from pyautoml.cleaning.clean import Clean
-from pyautoml.feature_engineering.feature import Feature
-from pyautoml.preprocessing.preprocess import Preprocess
+from pyautoml import Clean, Feature, Preprocess
 from pyautoml.reporting.report import Report
 
 
@@ -16,8 +14,8 @@ class TestReport(unittest.TestCase):
         contents = "This is a test."
 
         report = Report("test")
-        report.WriteHeader(header)
-        report.WriteContents(contents)
+        report.write_header(header)
+        report.write_contents(contents)
 
         with open("pyautoml_reports/test.txt") as f:
             content = f.read()
