@@ -7,16 +7,15 @@ replace_missing_constant
 
 import pandas as pd
 from pyautoml.cleaning.categorical import replace_missing_new_category
-from pyautoml.util import (drop_replace_columns, _column_input,
-                           _function_input_validation,
-                           _numeric_input_conditions)
+from pyautoml.util import (_column_input, _function_input_validation,
+                           _numeric_input_conditions, drop_replace_columns)
 from sklearn.impute import SimpleImputer
 
 #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
 
 
 
-def replace_missing_mean_median_mode(strategy, list_of_cols=[], **datasets):
+def replace_missing_mean_median_mode(strategy: str, list_of_cols=[], **datasets):
     """
     Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
 
