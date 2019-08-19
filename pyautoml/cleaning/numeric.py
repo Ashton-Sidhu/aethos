@@ -115,8 +115,9 @@ def replace_missing_constant(constant=0, col_to_constant=None, **datasets):
     
     Examples
     ------
-    >>>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
-    >>>> replace_missing_constant(1, ['a', 'b', 'c'])
+    >>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
+
+    >>> replace_missing_constant(1, ['a', 'b', 'c'])
     """   
 
     data = datasets.pop('data', None)

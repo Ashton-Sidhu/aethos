@@ -2,7 +2,7 @@ import pandas as pd
 from IPython.display import display
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
-from pyautoml.util import split_data, _function_input_validation
+from pyautoml.util import _function_input_validation, split_data
 
 
 class MethodBase(object):
@@ -201,7 +201,7 @@ class MethodBase(object):
         Credits go to @mouradmourafiq for his pandas-summary library.
 
         Statistics
-        ---------
+        ----------
         std                                      
         max                                      
         min                                      

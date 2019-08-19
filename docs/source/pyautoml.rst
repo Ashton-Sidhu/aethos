@@ -15,6 +15,14 @@ Subpackages
 Submodules
 ----------
 
+pyautoml.base module
+--------------------
+
+.. automodule:: pyautoml.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pyautoml.util module
 --------------------
 

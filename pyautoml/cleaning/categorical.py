@@ -41,8 +41,9 @@ def replace_missing_new_category(constant=None, col_to_category=None, **datasets
 
     Examples
     --------
-        >>>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
-        >>>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
+    >>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
+    
+    >>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
     """
 
     data = datasets.pop('data', None)
