@@ -5,31 +5,37 @@ feature_one_hot_encode
 """
 
 import pandas as pd
+from pyautoml.util import (_function_input_validation, drop_replace_columns,
+                           get_list_of_cols)
 from sklearn.preprocessing import OneHotEncoder
 
-from pyautoml.util import (drop_replace_columns, get_list_of_cols,
-                           _function_input_validation)
 
-
-def feature_one_hot_encode(list_of_cols, params={"handle_unknown": "ignore"}, **datasets):
-    """ 
-    Creates a matrix of converted categorical columns into binary columns.
-
-    Args:
-        list_of_cols (list): A list of specific columns to apply this technique to.
-        params (dict, optional): Parameters you would pass into Bag of Words constructor as a dictionary. 
-                            Defaults to {"handle_unknown": "ignore"}.
+def feature_one_hot_encode(list_of_cols: list, params={"handle_unknown": "ignore"}, **datasets):
+    """
+    Creates a matrix of converted categorical columns into binary columns of ones and zeros.
     
-        Either the full data or training data plus testing data MUST be provided, not both.
+    Parameters
+    ----------
+    list_of_cols : list
+         A list of specific columns to apply this technique to.
+    params : dict, optional
+        Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
 
-        data {DataFrame} -- Full dataset. Defaults to None.
-        train_data {DataFrame} -- Training dataset. Defaults to None.
-        test_data {DataFrame} -- Testing dataset. Defaults to None.
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    data : DataFrame
+        Full dataset, by default None
+    train_data : DataFrame
+        Training dataset, by default None
+    test_data : DataFrame
+        Testing dataset, by default None
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
 
-        * Returns 2 Dataframes if Train and Test data is provided.  
+    * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = datasets.pop('data', None)
