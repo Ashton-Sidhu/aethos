@@ -1,9 +1,8 @@
 import re
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
-
 from pyautoml.reporting.report import Report
+from sklearn.model_selection import train_test_split
 
 
 class Data():    
@@ -25,6 +24,8 @@ class Data():
 
     def get_input_types(self, df, custom_cols={}):
         """
+        ============= UNUSED ===================
+
         Credit: https://github.com/minimaxir/automl-gs/
 
         Get the input types for each field in the DataFrame that corresponds
@@ -106,13 +107,18 @@ class Data():
         """
         Utility function that fixes unusual column names (e.g. Caps, Spaces)
         to make them suitable printing into code templates.
-
-        Arguemnts:
-            df {Dataframe} -- Dataframe of the data
-
-        Returns:
-            [Dataframe] -- Dataframe whos column names have been normalized.       
+        
+        Parameters
+        ----------
+        df : Dataframe
+            Pandas Dataframe of the data.
+        
+        Returns
+        -------
+        Dataframe
+            Dataframe whos column names have been normalized.
         """
+
         new_column_names = {}
         pattern = re.compile('\W+')
 
@@ -125,6 +131,8 @@ class Data():
 
     def reduce_data(self, df):
         """
+        ============= UNUSED ===================
+
         Utility function that selects a subset of the data that has been categorized as a column worth feature engineering on.
 
         Arguments:
@@ -137,7 +145,10 @@ class Data():
 
     
     def standardize_data(self, df, custom_cols={}):
-        """Standarizes the properties of the dataset: column names and removes unimportant columns.
+        """
+        ============= UNUSED ===================
+
+        Standarizes the properties of the dataset: column names and removes unimportant columns.
         Initializes the types of each column (categorical, numeric, etc.)
         
         Arguments:
