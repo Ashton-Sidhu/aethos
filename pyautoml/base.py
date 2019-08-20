@@ -68,8 +68,30 @@ class MethodBase(object):
 
             return self.data_properties.data
         else:
-            self.data_properties.train_data[column] = value
-            self.data_properties.test_data[column] = value
+            if isinstance(value, list):                
+                train_data_length = self.data_properties.train_data.shape[0]
+                test_data_length = self.data_properties.test_data.shape[0]
+
+                ## If the number of entries in the list does not match the number of rows in the training or testing
+                ## set raise a value error
+                if len(value) != train_data_length and len(value) != test_data_length:
+                    raise ValueError("Length of list does not equal the number rows as the training set or test set.")
+
+                ## If the training data and testing data have the same number of rows, apply the value to both
+                ## train and test data set
+                if len(value) == train_data_length and len(value) == test_data_length:
+                    self.data_properties.train_data[column] = value
+                    self.data_properties.test_data[column] = value
+
+                elif len(value) == train_data_length:
+                    self.data_properties.train_data[column] = value
+
+                else:
+                    self.data_properties.test_data[column] = value
+
+            else:
+                self.data_properties.train_data[column] = value
+                self.data_properties.test_data[column] = value
 
             return self.data_properties.train_data
 
