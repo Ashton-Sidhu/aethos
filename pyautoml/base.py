@@ -70,26 +70,23 @@ class MethodBase(object):
 
             return self.data_properties.data
         else:
-            if isinstance(value, list):                
-                train_data_length = self.data_properties.train_data.shape[0]
-                test_data_length = self.data_properties.test_data.shape[0]
+            train_data_length = self.data_properties.train_data.shape[0]
+            test_data_length = self.data_properties.test_data.shape[0]
 
+            if isinstance(value, list):
                 ## If the number of entries in the list does not match the number of rows in the training or testing
                 ## set raise a value error
                 if len(value) != train_data_length and len(value) != test_data_length:
-                    raise ValueError("Length of list does not equal the number rows as the training set or test set.")
+                    raise ValueError(f"Length of list: {len(value)} does not equal the number rows as the training set or test set.")
 
-                ## If the training data and testing data have the same number of rows, apply the value to both
-                ## train and test data set
-                if len(value) == train_data_length and len(value) == test_data_length:
-                    self.data_properties.train_data[column] = value
-                    self.data_properties.test_data[column] = value
+                self._set_item(column, value, train_data_length, test_data_length)
 
-                elif len(value) == train_data_length:
-                    self.data_properties.train_data[column] = value
+            elif isinstance(value, tuple):
+                for data in value:
+                    if len(data) != train_data_length and len(data) != test_data_length:
+                        raise ValueError(f"Length of list: {len(data)} does not equal the number rows as the training set or test set.")
 
-                else:
-                    self.data_properties.test_data[column] = value
+                    self._set_item(column, data, train_data_length, test_data_length)
 
             else:
                 self.data_properties.train_data[column] = value
@@ -128,15 +125,18 @@ class MethodBase(object):
         Property function that shows how many values are missing in each column.
         """
 
-        dataframes = list(filter(lambda x: x is not None, [self.data_properties.data, self.data_properties.train_data, self.data_properties.test_data]))
-        
+        dataframes = list(filter(lambda x: x is not None, [
+                          self.data_properties.data, self.data_properties.train_data, self.data_properties.test_data]))
+
         for dataframe in dataframes:
             if not dataframe.isnull().values.any():            
                 print("No missing values!")
             else:
                 total = dataframe.isnull().sum().sort_values(ascending=False)
-                percent = (dataframe.isnull().sum()/dataframe.isnull().count()).sort_values(ascending=False)
-                missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
+                percent = (dataframe.isnull().sum() /
+                           dataframe.isnull().count()).sort_values(ascending=False)
+                missing_data = pd.concat(
+                    [total, percent], axis=1, keys=['Total', 'Percent'])
 
                 display(missing_data.T)
 
@@ -334,3 +334,32 @@ class MethodBase(object):
                 self.report.log(f'Dropped columns {", ".join(drop_columns)} in both train and test set. {reason}')
 
             return self.train_data
+
+    def _set_item(self, column: str, value: list, train_length: int, test_length: int):
+        """
+        Utility function for __setitem__ for determining which input is for which dataset
+        and then sets the input to the new column for the correct dataset.
+        
+        Parameters
+        ----------
+        column : str
+            New column name
+        value : list
+            List of values for new column
+        train_length : int
+            Length of training data
+        test_length : int
+            Length of training data
+        """
+
+        ## If the training data and testing data have the same number of rows, apply the value to both
+        ## train and test data set
+        if len(value) == train_length and len(value) == test_length:
+            self.data_properties.train_data[column] = value
+            self.data_properties.test_data[column] = value
+
+        elif len(value) == train_length:
+            self.data_properties.train_data[column] = value
+
+        else:
+            self.data_properties.test_data[column] = value
