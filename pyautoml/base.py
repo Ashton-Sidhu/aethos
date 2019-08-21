@@ -1,4 +1,5 @@
 import pandas as pd
+from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
 
