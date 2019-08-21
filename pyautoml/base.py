@@ -1,6 +1,7 @@
 import pandas as pd
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 
@@ -283,3 +284,52 @@ class MethodBase(object):
                 test_data_summary = DataFrameSummary(self.test_data)
 
                 return test_data_summary[column]
+
+    def drop(self, *drop_columns, reason=''):
+        """
+        Drops columns from the dataframe.
+        
+        Parameters
+        ----------
+        reason : str, optional
+            Reasoning for dropping columns, by default ''
+
+        Column names must be provided as strings that exist in the data.
+        
+        Raises
+        ------
+        ValueError
+            If all columns provided don't exist in Dataframe
+
+        Examples
+        --------
+        >>> clean.drop('A', 'B', reason="Columns were unimportant")
+        >>> feature.drop('A', 'B', reason="SME deemed columns were unnecessary")
+        >>> preprocess.drop('A', 'B')        
+        """
+
+        try:
+            data_columns = self.data.columns
+        except:
+            data_columns = self.train_data.columns
+
+        drop_columns = list(drop_columns)
+
+        if  not all(elem in data_columns for elem in drop_columns):
+            raise ValueError("Not all columns exist in Dataframe")
+
+        if self.data_properties.use_full_data:
+            self.data_properties.data = self.data.drop(drop_columns, axis=1)
+
+            if self.report is not None:
+                self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
+
+            return self.data
+        else:
+            self.data_properties.train_data = self.train_data.drop(drop_columns, axis=1)
+            self.data_properties.test_data = self.test_data.drop(drop_columns, axis=1)
+
+            if self.report is not None:
+                self.report.log(f'Dropped columns {", ".join(drop_columns)} in both train and test set. {reason}')
+
+            return self.train_data
