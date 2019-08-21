@@ -8,6 +8,7 @@ from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
+from pyautoml.feature_engineering.util import *
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -204,21 +205,36 @@ class Feature(MethodBase):
 
     def apply(self, func, output_col: str, description=''):
         """
-        [summary]
+        Calls pandas apply function. Will apply the function to your dataset, or
+        both your training and testing dataset.
         
         Parameters
         ----------
-        func : [type]
-            [description]
+        func : Function pointer
+            Function describing the transformation for the new column
         output_col : str
-            [description]
+            New column name
         description : str, optional
-            [description], by default ''
+            Description of the new column to be logged into the report, by default ''
         
         Returns
         -------
-        [type]
-            [description]
+        Dataframe, *Dataframe
+            Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided. 
+
+        Examples
+        --------
+        >>>     col1  col2  col3 
+            0     1     0     1       
+            1     0     2     0       
+            2     1     0     1
+        >>> feature.apply(lambda x: x['col1'] > 0, 'col4')
+        >>>     col1  col2  col3  col4 
+            0     1     0     1     1       
+            1     0     2     0     0  
+            2     1     0     1     1
         """
         
         if self.data_properties.use_full_data:

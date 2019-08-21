@@ -1,6 +1,8 @@
 import pandas as pd
+from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 

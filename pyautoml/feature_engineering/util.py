@@ -4,22 +4,36 @@ This file contains the following functions:
 apply
 """
 
+from pyautoml.util import _function_input_validation
+
 
 def apply(func, output_col: str, **datasets):
     """
-    [summary]
-    
+    Wrapper for pandas apply function to be used in this library. Applies `func` to the entire data
+    or just the trianing and testing data
+
     Parameters
     ----------
-    func : [type]
-        [description]
+    func : Function pointer
+            Function describing the transformation for the new column
     output_col : str
-        [description]
+        New column name
+        
+    Either the full data or training data plus testing data MUST be provided, not both.
+
+    data : DataFrame
+        Full dataset, by default None
+    train_data : DataFrame
+        Training dataset, by default None
+    test_data : DataFrame
+        Testing dataset, by default None
     
     Returns
     -------
-    [type]
-        [description]
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
+
+    * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = datasets.pop('data', None)
