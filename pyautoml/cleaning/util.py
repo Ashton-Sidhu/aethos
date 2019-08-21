@@ -5,7 +5,9 @@ remove_columns_threshold
 remove_rows_threshold
 remove_duplicate_rows
 remove_duplicate_columns
+replace_missing_random_discrete
 """
+import numpy as np
 import pandas as pd
 from pyautoml.util import _function_input_validation
 
@@ -195,5 +197,63 @@ def remove_duplicate_columns(**datasets):
     else:
         train_data = train_data.T.drop_duplicates().T
         test_data = test_data.T.drop_duplicates().T
+
+        return train_data, test_data
+
+def replace_missing_random_discrete(list_of_cols: list, **datasets):
+    """
+    Replace missing values in with a random number based off the distribution (number of occurences) 
+    of the data.
+
+    Parameters
+    ----------
+    list_of_cols : list
+        A list of specific columns to apply this technique to, by default []
+
+    Either the full data or training data plus testing data MUST be provided, not both.
+
+    data: Dataframe or array like - 2d
+        Full dataset, by default None.
+    train_data: Dataframe or array like - 2d
+        Training dataset, by default None.
+    test_data: Dataframe or array like - 2d
+        Testing dataset, by default None.
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
+
+    * Returns 2 Dataframes if Train and Test data is provided.
+    """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
+
+    if not _function_input_validation(data, train_data, test_data):
+        raise ValueError('Function input is incorrectly provided.')
+
+    if data is not None:
+        for col in list_of_cols:
+            probabilities = data[col].value_counts(normalize=True)
+            missing_data = data[col].isnull()
+            data.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(data[missing_data]), replace=True, p=probabilities.values)
+
+        return data
+
+    else:
+
+        for col in list_of_cols:
+            probabilities = train_data[col].value_counts(normalize=True)
+
+            missing_data = train_data[col].isnull()
+            train_data.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(train_data[missing_data]), replace=True, p=probabilities.values)
+
+            missing_data = test_data[col].isnull()
+            test_data.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(test_data[missing_data]), replace=True, p=probabilities.values)            
 
         return train_data, test_data
