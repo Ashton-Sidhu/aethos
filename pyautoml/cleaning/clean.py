@@ -476,11 +476,61 @@ class Clean(MethodBase):
     
         if self.data_properties.use_full_data:
             self.data_properties.data = remove_duplicate_columns(data=self.data_properties.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
     
             return self.data_properties.data
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = remove_duplicate_columns(train_data=self.data_properties.train_data,
-                                                                                                test_data=self.data_properties.test_data)
+                                                                                                        test_data=self.data_properties.test_data)
 
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.data_properties.train_data, self.data_properties.test_data
+
+    def replace_missing_random_discrete(self, list_of_cols: list):
+        """
+        Replace missing values in with a random number based off the distribution (number of occurences) 
+        of the data.
+        
+        Parameters
+        ----------
+        list_of_cols : list
+            A list of specific columns to apply this technique to, by default []
+        
+        Returns
+        -------
+        Dataframe, *Dataframe:
+            Cleaned columns of the dataframe(s) provides with the provided constant.
+            
+        * Returns 2 Dataframes if Train and Test data is provided.
+
+        Examples
+        --------
+        >>> For example if your data was [5, 5, NaN, 1, 2]
+        >>> There would be a 50% chance that the NaN would be replaced with a 5, a 25% chance for 1 and a 25% chance for 2.
+
+        """
+    
+        report_info = technique_reason_repo['clean']['general']['random_discrete']
+    
+        if self.data_properties.use_full_data:   
+            self.data_properties.data = replace_missing_random_discrete(list_of_cols, data=self.data_properties.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+    
+            return self.data_properties.data
+    
+        else:
+            self.data_properties.train_data, self.data_properties.test_data = replace_missing_random_discrete(list_of_cols,
+                                                                                                            train_data=self.data_properties.train_data,
+                                                                                                            test_data=self.data_properties.test_data)
+    
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+    
             return self.data_properties.train_data, self.data_properties.test_data

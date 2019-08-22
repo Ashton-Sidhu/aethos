@@ -1,6 +1,8 @@
 import pandas as pd
+from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 
@@ -68,8 +70,27 @@ class MethodBase(object):
 
             return self.data_properties.data
         else:
-            self.data_properties.train_data[column] = value
-            self.data_properties.test_data[column] = value
+            train_data_length = self.data_properties.train_data.shape[0]
+            test_data_length = self.data_properties.test_data.shape[0]
+
+            if isinstance(value, list):
+                ## If the number of entries in the list does not match the number of rows in the training or testing
+                ## set raise a value error
+                if len(value) != train_data_length and len(value) != test_data_length:
+                    raise ValueError(f"Length of list: {len(value)} does not equal the number rows as the training set or test set.")
+
+                self._set_item(column, value, train_data_length, test_data_length)
+
+            elif isinstance(value, tuple):
+                for data in value:
+                    if len(data) != train_data_length and len(data) != test_data_length:
+                        raise ValueError(f"Length of list: {len(data)} does not equal the number rows as the training set or test set.")
+
+                    self._set_item(column, data, train_data_length, test_data_length)
+
+            else:
+                self.data_properties.train_data[column] = value
+                self.data_properties.test_data[column] = value
 
             return self.data_properties.train_data
 
@@ -104,15 +125,18 @@ class MethodBase(object):
         Property function that shows how many values are missing in each column.
         """
 
-        dataframes = list(filter(lambda x: x is not None, [self.data_properties.data, self.data_properties.train_data, self.data_properties.test_data]))
-        
+        dataframes = list(filter(lambda x: x is not None, [
+                          self.data_properties.data, self.data_properties.train_data, self.data_properties.test_data]))
+
         for dataframe in dataframes:
             if not dataframe.isnull().values.any():            
                 print("No missing values!")
             else:
                 total = dataframe.isnull().sum().sort_values(ascending=False)
-                percent = (dataframe.isnull().sum()/dataframe.isnull().count()).sort_values(ascending=False)
-                missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
+                percent = (dataframe.isnull().sum() /
+                           dataframe.isnull().count()).sort_values(ascending=False)
+                missing_data = pd.concat(
+                    [total, percent], axis=1, keys=['Total', 'Percent'])
 
                 display(missing_data.T)
 
@@ -261,3 +285,81 @@ class MethodBase(object):
                 test_data_summary = DataFrameSummary(self.test_data)
 
                 return test_data_summary[column]
+
+    def drop(self, *drop_columns, reason=''):
+        """
+        Drops columns from the dataframe.
+        
+        Parameters
+        ----------
+        reason : str, optional
+            Reasoning for dropping columns, by default ''
+
+        Column names must be provided as strings that exist in the data.
+        
+        Raises
+        ------
+        ValueError
+            If all columns provided don't exist in Dataframe
+
+        Examples
+        --------
+        >>> clean.drop('A', 'B', reason="Columns were unimportant")
+        >>> feature.drop('A', 'B', reason="SME deemed columns were unnecessary")
+        >>> preprocess.drop('A', 'B')        
+        """
+
+        try:
+            data_columns = self.data.columns
+        except:
+            data_columns = self.train_data.columns
+
+        drop_columns = list(drop_columns)
+
+        if  not all(elem in data_columns for elem in drop_columns):
+            raise ValueError("Not all columns exist in Dataframe")
+
+        if self.data_properties.use_full_data:
+            self.data_properties.data = self.data.drop(drop_columns, axis=1)
+
+            if self.report is not None:
+                self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
+
+            return self.data
+        else:
+            self.data_properties.train_data = self.train_data.drop(drop_columns, axis=1)
+            self.data_properties.test_data = self.test_data.drop(drop_columns, axis=1)
+
+            if self.report is not None:
+                self.report.log(f'Dropped columns {", ".join(drop_columns)} in both train and test set. {reason}')
+
+            return self.train_data
+
+    def _set_item(self, column: str, value: list, train_length: int, test_length: int):
+        """
+        Utility function for __setitem__ for determining which input is for which dataset
+        and then sets the input to the new column for the correct dataset.
+        
+        Parameters
+        ----------
+        column : str
+            New column name
+        value : list
+            List of values for new column
+        train_length : int
+            Length of training data
+        test_length : int
+            Length of training data
+        """
+
+        ## If the training data and testing data have the same number of rows, apply the value to both
+        ## train and test data set
+        if len(value) == train_length and len(value) == test_length:
+            self.data_properties.train_data[column] = value
+            self.data_properties.test_data[column] = value
+
+        elif len(value) == train_length:
+            self.data_properties.train_data[column] = value
+
+        else:
+            self.data_properties.test_data[column] = value

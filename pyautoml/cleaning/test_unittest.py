@@ -263,5 +263,29 @@ class TestCleaning(unittest.TestCase):
                                         [0, 2],
                                         [1, 0]])
 
+    def test_cleanutil_replacerandomdiscrete(self):
+
+        int_missing_data = [[1, 8, 1],
+                            [0, 9394, 2],
+                            [np.nan, np.nan, np.nan],
+                            [2, 4, 3]]
+
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        clean = Clean(data, test_split_percentage=0.5)
+        clean.replace_missing_random_discrete(["col1", "col2", "col3"])
+        validate = np.any(clean.data.isnull())
+
+        validate = np.any(clean.train_data.isnull()) and any(clean.test_data.isnull())
+
+        self.assertFalse(validate)
+
+
+
+
+
+
+
 if __name__ == "__main__":
     unittest.main()

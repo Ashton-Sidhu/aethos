@@ -14,6 +14,10 @@ clean:
     remove_duplicate_columns: >
       Removed columns of which whos values are exact duplicates of each other to reduce redundancy.
 
+    random_discrete: >
+      Replaced missing values with random values that follow the datas distribution, as observed in nature, to better simulate 
+      the missing data points
+
   categorical:
     new_category: >
       Replaced missing values in column column_name_placeholder with its own category name because 

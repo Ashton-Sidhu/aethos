@@ -46,6 +46,7 @@ class Report():
     def report_technique(self, technique: str, list_of_cols: list):
         """
         IN ALPHA V1
+        ============
 
         Writes analytic technique info to the report detailing what analysis was run
         and why it was ran.
@@ -66,3 +67,18 @@ class Report():
 
         else:
             self.write_contents(technique)
+
+    def log(self, log: str):
+        """
+        IN ALPHA V1
+        ============
+
+        Logs info to the report file.
+        
+        Parameters
+        ----------
+        log : str
+            Information to write to the report file
+        """
+
+        self.write_contents(log)

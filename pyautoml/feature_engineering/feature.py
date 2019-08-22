@@ -1,12 +1,14 @@
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
+from pyautoml.feature_engineering.util import *
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -198,4 +200,59 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
+            return self.data_properties.train_data, self.data_properties.test_data
+
+
+    def apply(self, func, output_col: str, description=''):
+        """
+        Calls pandas apply function. Will apply the function to your dataset, or
+        both your training and testing dataset.
+        
+        Parameters
+        ----------
+        func : Function pointer
+            Function describing the transformation for the new column
+        output_col : str
+            New column name
+        description : str, optional
+            Description of the new column to be logged into the report, by default ''
+        
+        Returns
+        -------
+        Dataframe, *Dataframe
+            Transformed dataframe with rows with a missing values in a specific column are missing
+
+        * Returns 2 Dataframes if Train and Test data is provided. 
+
+        Examples
+        --------
+        >>>     col1  col2  col3 
+            0     1     0     1       
+            1     0     2     0       
+            2     1     0     1
+        >>> feature.apply(lambda x: x['col1'] > 0, 'col4')
+        >>>     col1  col2  col3  col4 
+            0     1     0     1     1       
+            1     0     2     0     0  
+            2     1     0     1     1
+        """
+        
+        if self.data_properties.use_full_data:
+    
+            self.data_properties.data[output_col] = apply(func, output_col, data=self.data_properties.data)
+    
+            if self.report is not None:
+                self.report.log(f"Applied function to dataset. {description}")
+    
+            return self.data_properties.data
+    
+        else:
+            self.data_properties.train_data[output_col], self.data_properties.test_data[output_col] = apply(func,
+                                                                                                            output_col,
+                                                                                                            train_data=self.data_properties.train_data,
+                                                                                                            test_data=self.data_properties.test_data)
+    
+            if self.report is not None:
+                self.report.log(f"Applied function to train and test dataset. {description}")
+    
             return self.data_properties.train_data, self.data_properties.test_data
