@@ -49,6 +49,14 @@ For Web App:
 
 `TBD`
 
+## Usage
+
+Documentation can be viewed [here](https://py-automl.readthedocs.io/en/latest/py-modindex.html)
+
+Proper usage documentation coming soon.
+
+Examples can be viewed [here](https://github.com/Ashton-Sidhu/py-automl/tree/develop/examples)
+
 ## Development Phases
 
 ### Library
