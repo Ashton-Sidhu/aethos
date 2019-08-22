@@ -64,7 +64,7 @@ class TestFeatureExtraction(unittest.TestCase):
         self.assertTrue(validate, 2)
 
 
-    def test_feature_apply(self):
+    def test_feature_fulldata_apply(self):
 
         data = [[1, 0, 1],
                 [0, 2, 0],
@@ -76,6 +76,21 @@ class TestFeatureExtraction(unittest.TestCase):
         feature = Feature(data=data, use_full_data=True)
         feature.apply(lambda x: x['col1'] > 0, 'new_col')
         validate = 'new_col' in feature.data.columns
+
+        self.assertTrue(validate)
+
+    def test_feature_splitdata_apply(self):
+
+        data = [["py", 0, 1],
+                ["auto", 2, 0],
+                ["ml", 0, 1]]
+
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(data, columns=columns)
+
+        feature = Feature(data=data, test_split_percentage=0.33)
+        feature.apply(lambda x: x['col1'], 'new_col')
+        validate = 'new_col' in feature.train_data.columns and 'new_col' in feature.test_data.columns
 
         self.assertTrue(validate)
 

@@ -47,11 +47,11 @@ def apply(func, output_col: str, **datasets):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:
-        data[output_col] = data.apply(func, axis=1)
+        data.loc[:, output_col] = data.apply(func, axis=1)
 
         return data
     else:
-        train_data[col] = train_data.apply(func, axis=1)
-        test_data[col] = test_data.apply(func, axis=1)
+        train_data.loc[:, output_col] = train_data.apply(func, axis=1)
+        test_data.loc[:, output_col] = test_data.apply(func, axis=1)
 
         return train_data, test_data
