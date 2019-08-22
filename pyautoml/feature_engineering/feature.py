@@ -23,9 +23,13 @@ class Feature(MethodBase):
 
     def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):
 
-        super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
-                    use_full_data=use_full_data, target_field=target_field, report_name=report_name)
-
+        if data_properties is None:        
+            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
+                        use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+        else:
+            super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
+                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report)
+                        
         if self.data_properties.report is not None:
             self.report.write_header("Feature Engineering")
 
@@ -239,7 +243,7 @@ class Feature(MethodBase):
         
         if self.data_properties.use_full_data:
     
-            self.data_properties.data[output_col] = apply(func, output_col, data=self.data_properties.data)
+            self.data_properties.data.loc[:, output_col] = apply(func, output_col, data=self.data_properties.data)
     
             if self.report is not None:
                 self.report.log(f"Applied function to dataset. {description}")
@@ -247,10 +251,10 @@ class Feature(MethodBase):
             return self.data_properties.data
     
         else:
-            self.data_properties.train_data[output_col], self.data_properties.test_data[output_col] = apply(func,
-                                                                                                            output_col,
-                                                                                                            train_data=self.data_properties.train_data,
-                                                                                                            test_data=self.data_properties.test_data)
+            self.data_properties.train_data.loc[:, output_col], self.data_properties.test_data.loc[:, output_col] = apply(func,
+                                                                                                                    output_col,
+                                                                                                                    train_data=self.data_properties.train_data,
+                                                                                                                    test_data=self.data_properties.test_data)
     
             if self.report is not None:
                 self.report.log(f"Applied function to train and test dataset. {description}")

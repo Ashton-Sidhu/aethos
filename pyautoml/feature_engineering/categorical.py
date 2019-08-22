@@ -53,7 +53,7 @@ def feature_one_hot_encode(list_of_cols: list, params={"handle_unknown": "ignore
     if data is not None:
         
         enc_data = enc.fit_transform(data[list_of_cols]).toarray()
-        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names().tolist())
+        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols).tolist())
         data = drop_replace_columns(data, list_of_cols, enc_df)
 
         return data
@@ -61,11 +61,11 @@ def feature_one_hot_encode(list_of_cols: list, params={"handle_unknown": "ignore
     else:        
 
         enc_train_data = enc.fit_transform(train_data[list_of_cols]).toarray()
-        enc_train_df = pd.DataFrame(enc_train_data, columns=enc_data.get_feature_names().tolist())
+        enc_train_df = pd.DataFrame(enc_train_data, columns=enc.get_feature_names(list_of_cols).tolist())
         train_data = drop_replace_columns(train_data, list_of_cols, enc_train_df)
 
         enc_test_data = enc.transform(test_data[list_of_cols]).toarray()
-        enc_test_df = pd.DataFrame(enc_test_data, columns=enc.get_features_names().tolist())
+        enc_test_df = pd.DataFrame(enc_test_data, columns=enc.get_feature_names(list_of_cols).tolist())
         test_data = drop_replace_columns(test_data, list_of_cols, enc_test_df)
 
         return train_data, test_data
