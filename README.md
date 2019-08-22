@@ -9,6 +9,7 @@
 - [Introduction](#introduction)
 - [Features](#features)
 - [Installation](#installation)
+- [Usage](#usage)
 - [Development Phases](#development-phases)
 - [Feedback](#feedback)
 - [Contributors](#contributors)
