@@ -203,7 +203,7 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['numeric']['median']
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        list_of_cols = _input_cols(list_args, list_of_cols)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="median", data=self.data_properties.data)
