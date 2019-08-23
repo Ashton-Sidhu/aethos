@@ -17,8 +17,8 @@ class TestPreprocessing(unittest.TestCase):
         data = pd.DataFrame(unnormal_data, columns=columns)
 
         preprocess = Preprocess(data=data, test_split_percentage=0.5, use_full_data=True)
-        normal_data = preprocess.normalize_numeric()
-        validate = normal_data.values.tolist()
+        preprocess.normalize_numeric()
+        validate = preprocess.data.values.tolist()
 
         self.assertListEqual(validate, [[.375, 1.0, 0.0],
                                         [0, 0.5, 0.0],
@@ -39,9 +39,9 @@ class TestPreprocessing(unittest.TestCase):
         test_data = pd.DataFrame(unnormal_test_data, columns=columns)
 
         preprocess = Preprocess(train_data=train_data, test_data=test_data, test_split_percentage=0.5, use_full_data=False)
-        train_normal_data, test_normal_data = preprocess.normalize_numeric()
-        validate_train = train_normal_data.values.tolist()
-        validate_test = test_normal_data.values.tolist()
+        preprocess.normalize_numeric()
+        validate_train = preprocess.train_data.values.tolist()
+        validate_test = preprocess.test_data.values.tolist()
 
         self.assertListEqual(validate_train, validate_test)
 

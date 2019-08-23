@@ -129,7 +129,7 @@ class Clean(MethodBase):
         
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to
         list_of_cols : list, optional
             Specific columns to apply this technique to, by default []
@@ -188,7 +188,7 @@ class Clean(MethodBase):
         
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             Specific columns to apply this technique to., by default []
@@ -244,7 +244,7 @@ class Clean(MethodBase):
         
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
@@ -299,7 +299,7 @@ class Clean(MethodBase):
         
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
@@ -369,7 +369,7 @@ class Clean(MethodBase):
         
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
@@ -436,7 +436,7 @@ class Clean(MethodBase):
         
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
@@ -484,7 +484,7 @@ class Clean(MethodBase):
        
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
@@ -553,7 +553,7 @@ class Clean(MethodBase):
         
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []

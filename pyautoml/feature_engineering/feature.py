@@ -126,7 +126,7 @@ class Feature(MethodBase):
             return self.data_properties.train_data.head(10)
 
 
-    def bag_of_words(self, *list_of_cols, l bow_params={}):
+    def bag_of_words(self, *list_of_cols, bow_params={}):
         """
         Creates a matrix of how many times a word appears in a document.
 

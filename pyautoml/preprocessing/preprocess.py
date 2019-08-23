@@ -34,7 +34,7 @@ class Preprocess(MethodBase):
             self.report.write_header("Preprocessing")
 
         
-    def normalize_numeric(self, *list_args, list_of_cols=[] normalize_params={}):
+    def normalize_numeric(self, *list_args, list_of_cols=[], normalize_params={}):
         """
         Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 
@@ -44,7 +44,7 @@ class Preprocess(MethodBase):
         
         Parameters
         ----------
-        *list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
