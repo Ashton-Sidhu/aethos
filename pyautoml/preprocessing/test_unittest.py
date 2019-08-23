@@ -39,7 +39,7 @@ class TestPreprocessing(unittest.TestCase):
         test_data = pd.DataFrame(unnormal_test_data, columns=columns)
 
         preprocess = Preprocess(train_data=train_data, test_data=test_data, test_split_percentage=0.5, use_full_data=False)
-        preprocess.normalize_numeric()
+        preprocess.normalize_numeric("col1", "col2", "col3")
         validate_train = preprocess.train_data.values.tolist()
         validate_test = preprocess.test_data.values.tolist()
 

@@ -33,30 +33,35 @@ class Feature(MethodBase):
             self.report.write_header("Feature Engineering")
 
 
-    def onehot_encode(self, *list_of_cols, onehot_params={"handle_unknown": "ignore"}):
+    def onehot_encode(self, *list_args, list_of_cols=[], onehot_params={"handle_unknown": "ignore"}):
         """
         Creates a matrix of converted categorical columns into binary columns of ones and zeros.
     
         Parameters
         ----------
-        list_of_cols : str
-            Columns that exist in the data.
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
         params : dict, optional
             Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
         
-        Returns
+       Returns
         -------
-        Dataframe, *Dataframe
-            Transformed dataframe with rows with a missing values in a specific column are missing
-
-        * Returns 2 Dataframes if Train and Test data is provided.
+        Dataframe:
+            Top 10 rows of data or the training data to view analysis.
 
         Examples
         --------
         >>> feature.onehot_encode('col1', 'col2', 'col3')
         """
         report_info = technique_reason_repo['feature']['categorical']['onehotencode']
-        list_of_cols = list(list_of_cols)
+
+        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        if list_of_cols or (not list_of_cols and not list_args):
+            list_of_cols = list_of_cols
+        else:
+            list_of_cols = list(list_args)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = feature_one_hot_encode(list_of_cols, data=self.data_properties.data, params=onehot_params)
@@ -77,7 +82,7 @@ class Feature(MethodBase):
             return self.data_properties.train_data.head(10)
 
 
-    def tfidf(self, *list_of_cols, tfidf_params={}):
+    def tfidf(self, *list_args, list_of_cols=[], tfidf_params={}):
         """
         Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
@@ -88,21 +93,26 @@ class Feature(MethodBase):
         
         Parameters
         ----------
-        list_of_cols : str(s), optional
-            Specific columns to apply this technique to, by default []
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
         tfidf_params : dict, optional
             Parameters you would pass into TFIDF constructor as a dictionary, by default {}
         
-        Returns
+       Returns
         -------
-        Dataframe, *Dataframe
-            Transformed dataframe with rows with a missing values in a specific column are missing
-
-        * Returns 2 Dataframes if Train and Test data is provided. 
+        Dataframe:
+            Top 10 rows of data or the training data to view analysis.
         """
         
         report_info = technique_reason_repo['feature']['text']['tfidf']
-        list_of_cols = list(list_of_cols)
+
+        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        if list_of_cols or (not list_of_cols and not list_args):
+            list_of_cols = list_of_cols
+        else:
+            list_of_cols = list(list_args)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = feature_tfidf(
@@ -126,7 +136,7 @@ class Feature(MethodBase):
             return self.data_properties.train_data.head(10)
 
 
-    def bag_of_words(self, *list_of_cols, bow_params={}):
+    def bag_of_words(self, *list_args, list_of_cols=[], bow_params={}):
         """
         Creates a matrix of how many times a word appears in a document.
 
@@ -136,21 +146,26 @@ class Feature(MethodBase):
         
         Parameters
         ----------
-        list_of_cols : str(s), optional
-            Specific columns to apply this technique to, by default []
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
         bow_params : dict, optional
             Parameters you would pass into Bag of Words constructor as a dictionary, by default {}
         
         Returns
         -------
-        Dataframe, *Dataframe
-            Transformed dataframe with rows with a missing values in a specific column are missing
-
-        * Returns 2 Dataframes if Train and Test data is provided. 
+        Dataframe:
+            Top 10 rows of data or the training data to view analysis.
         """
 
         report_info = technique_reason_repo['feature']['text']['bow']
-        list_of_cols = list(list_of_cols)
+
+        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        if list_of_cols or (not list_of_cols and not list_args):
+            list_of_cols = list_of_cols
+        else:
+            list_of_cols = list(list_args)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = feature_bag_of_words(
@@ -174,7 +189,7 @@ class Feature(MethodBase):
             return self.data_properties.train_data.head(10)
 
 
-    def nltk_postag(self, *list_of_cols):
+    def nltk_postag(self, *list_args, list_of_cols=[]):
         """
         Tag documents with their respective "Part of Speech" tag. These tags classify a word as a
         noun, verb, adjective, etc. A full list and their meaning can be found here:
@@ -182,18 +197,24 @@ class Feature(MethodBase):
         
         Parameters
         ----------
-        list_of_cols : str(s), optional
-            Specific columns to apply this technique to, by default []
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
         
         Returns
         -------
-        Dataframe, *Dataframe
-            Transformed dataframe with rows with a missing values in a specific column are missing
-
-        * Returns 2 Dataframes if Train and Test data is provided. 
+        Dataframe:
+            Top 10 rows of data or the training data to view analysis.
         """
         
         report_info = technique_reason_repo['feature']['text']['postag']
+
+        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        if list_of_cols or (not list_of_cols and not list_args):
+            list_of_cols = list_of_cols
+        else:
+            list_of_cols = list(list_args)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = nltk_feature_postag(list_of_cols, data=self.data_properties.data)
@@ -247,8 +268,7 @@ class Feature(MethodBase):
             2     1     0     1     1
         """
         
-        if self.data_properties.use_full_data:
-    
+        if self.data_properties.use_full_data:    
             self.data_properties.data.loc[:, output_col] = apply(func, output_col, data=self.data_properties.data)
     
             if self.report is not None:

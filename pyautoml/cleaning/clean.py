@@ -400,13 +400,13 @@ class Clean(MethodBase):
             if list_of_cols or (not list_of_cols and not list_args):
                 col_to_category = list_of_cols
             else:
-                list_of_cols = list(list_args)  
+                col_to_category = list(list_args)  
 
         if self.data_properties.use_full_data:
             self.data_properties.data = replace_missing_new_category(col_to_category=col_to_category, constant=new_category, data=self.data_properties.data)
 
             if self.report is not None:
-                if col_to_category is None:
+                if not col_to_category:
                     self.report.report_technique(report_info, self.data_properties.data.columns)
                 else:
                     self.report.report_technique(report_info, list(col_to_category))

@@ -54,13 +54,13 @@ class Preprocess(MethodBase):
         
         Returns
         -------
-        Dataframe, *Dataframe
-            Transformed dataframe with rows with a missing values in a specific column are missing
-
-        * Returns 2 Dataframes if Train and Test data is provided. 
+        Dataframe:
+            Top 10 rows of data or the training data to view analysis.
         """
 
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
+        
+        ## If a list of columns is provided use the list, otherwise use arguemnts.
         if list_of_cols or (not list_of_cols and not list_args):
             list_of_cols = list_of_cols
         else:
