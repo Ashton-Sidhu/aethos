@@ -331,7 +331,7 @@ class Clean(MethodBase):
             self.data_properties.data = replace_missing_constant(col_to_constant=col_to_constant, constant=constant, data=self.data_properties.data)
 
             if self.report is not None:
-                if col_to_constant is None:
+                if not col_to_constant:
                     self.report.report_technique(report_info, self.data_properties.data.columns)
                 else:
                     self.report.report_technique(report_info, list(col_to_constant))
@@ -345,7 +345,7 @@ class Clean(MethodBase):
                                                                                                     test_data=self.data_properties.test_data)
 
             if self.report is not None:
-                if col_to_constant is None:
+                if not col_to_constant:
                     self.report.report_technique(report_info, self.data_properties.train_data.columns)
                 else:
                     self.report.report_technique(report_info, list(col_to_constant))
@@ -463,7 +463,7 @@ class Clean(MethodBase):
                                                                                                     test_data=self.data_properties.test_data)                                                                                        
 
             if self.report is not None:
-                self.report.report_technique(report_info, list(list_of_cols))
+                self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data.head(10)
 
@@ -498,6 +498,9 @@ class Clean(MethodBase):
    
         if self.data_properties.use_full_data:
             self.data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self.data_properties.data)
+
+            if self.report is not None:
+                self.report.report_technique(report_info, list_of_cols)
     
             return self.data_properties.data.head(10)
     
@@ -505,6 +508,9 @@ class Clean(MethodBase):
             self.data_properties.train_data, self.data_properties.test_data = remove_duplicate_rows(list_of_cols=list_of_cols,
                                                                                                 train_data=self.data_properties.train_data,
                                                                                                 test_data=self.data_properties.test_data)
+
+            if self.report is not None:
+                self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data.head(10)
 
@@ -525,7 +531,7 @@ class Clean(MethodBase):
             self.data_properties.data = remove_duplicate_columns(data=self.data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info, list_of_cols)
     
             return self.data_properties.data.head(10)
     
@@ -534,7 +540,7 @@ class Clean(MethodBase):
                                                                                                         test_data=self.data_properties.test_data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data.head(10)
 
@@ -574,7 +580,7 @@ class Clean(MethodBase):
             self.data_properties.data = replace_missing_random_discrete(list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info, list_of_cols)
     
             return self.data_properties.data.head(10)
     
@@ -584,6 +590,6 @@ class Clean(MethodBase):
                                                                                                             test_data=self.data_properties.test_data)
     
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info, list_of_cols)
     
             return self.data_properties.train_data.head(10)
