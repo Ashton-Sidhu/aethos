@@ -42,38 +42,6 @@ def get_keys_by_values(dict_of_elements: dict, item) -> list:
 
     return [key for (key, value) in dict_of_elements.items() if value == item]
 
-def get_list_of_cols(column_type: str, dict_of_values: dict, override: bool, custom_cols: list) -> list:
-    """
-    Utility function to get the list of columns based off their column type (numeric, str_categorical, num_categorical, text, etc.).
-    If `custom_cols` is provided and override is True, then `custom_cols` will only be returned. If override is False then the filtered columns
-    and the custom columns provided will be returned.
-    
-    Parameters
-    ----------
-    column_type : str
-        Type of the column - can be categorical, numeric, text or datetime
-    dict_of_values : dict
-        Dictionary of key-value pairs
-    override : bool
-        A list of specific columns to apply this technique to. (default: {[]})
-    custom_cols : list
-        True or False depending on whether the custom_cols overrides the columns in field_types
-        Example: if custom_cols is provided and override is true, the technique will only be applied
-        to the the columns in custom_cols (default: {False})
-    
-    Returns
-    -------
-    list
-        List of columns matching the column_type criteria plus any custom columns specified or
-        just the columns specified in custom_cols if override is True
-    """   
-    
-    if override:
-        list_of_cols = custom_cols
-    else:
-        list_of_cols = collections.OrderedDict.fromkeys(get_keys_by_values(dict_of_values, column_type) + custom_cols).keys()
-
-    return list(list_of_cols)
 
 def drop_replace_columns(df, drop_cols, new_data):
     """
@@ -148,7 +116,7 @@ def _function_input_validation(data, train_data, test_data):
 
     return True
 
-def _numeric_input_conditions(list_of_cols, data, train_data):
+def _numeric_input_conditions(list_of_cols: list, data, train_data) -> list:
     """
     Helper function to help set variable values of numeric cleaning method functions.
 
@@ -167,7 +135,7 @@ def _numeric_input_conditions(list_of_cols, data, train_data):
 
     return list_of_cols
 
-def _column_input(list_of_cols, data, train_data):
+def _get_columns(list_of_cols, data, train_data) -> list:
     """
     If the list of columns are optional and no columns are provided, the columns are set
     to all the columns in the data.
@@ -196,3 +164,28 @@ def _column_input(list_of_cols, data, train_data):
             list_of_cols = train_data.columns.tolist()
 
     return list_of_cols
+
+def _input_columns(list_args: list, list_of_cols: list):
+    """
+    Takes columns inputted as arguments vs. columns passed as a list
+    and returns a final column list.
+    
+    Parameters
+    ----------
+    list_args : list
+        Input columns passed as args
+    list_of_cols : list
+        Hardcoded provided list of input columns.
+    
+    Returns
+    -------
+    list
+        List of columns in a dataset
+    """
+
+    if list_of_cols or (not list_of_cols and not list_args):
+        column_list = list_of_cols
+    else:
+        column_list = list(list_args)  
+
+    return column_list

@@ -5,7 +5,7 @@ feature_one_hot_encode
 """
 
 import pandas as pd
-from pyautoml.util import (_column_input, _function_input_validation,
+from pyautoml.util import (_function_input_validation, _get_columns,
                            drop_replace_columns)
 from sklearn.preprocessing import OneHotEncoder
 
@@ -49,7 +49,7 @@ def feature_one_hot_encode(list_of_cols: list, params={"handle_unknown": "ignore
         raise ValueError("Function input is incorrectly provided.")
 
     enc = OneHotEncoder(**params)
-    list_of_cols = _column_input(list_of_cols, data, train_data)
+    list_of_cols = _get_columns(list_of_cols, data, train_data)
 
     if data is not None:
         

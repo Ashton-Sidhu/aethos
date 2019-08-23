@@ -7,7 +7,7 @@ nltk_feature_postag
 """
 
 import pandas as pd
-from pyautoml.util import (_column_input, _function_input_validation,
+from pyautoml.util import (_get_columns, _function_input_validation,
                            drop_replace_columns)
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
@@ -52,7 +52,7 @@ def feature_bag_of_words(list_of_cols=[], params={}, **datasets):
         raise ValueError("Function input is incorrectly provided.")
 
     enc = CountVectorizer(**params)
-    list_of_cols = _column_input(list_of_cols, data, train_data)
+    list_of_cols = _get_columns(list_of_cols, data, train_data)
 
     if data is not None:
         for col in list_of_cols:
@@ -116,7 +116,7 @@ def feature_tfidf(list_of_cols=[], params={}, **datasets):
         raise ValueError("Function input is incorrectly provided.")
 
     enc = TfidfVectorizer(**params)
-    list_of_cols = _column_input(list_of_cols, data, train_data)
+    list_of_cols = _get_columns(list_of_cols, data, train_data)
 
     if data is not None:
         for col in list_of_cols:
@@ -180,7 +180,7 @@ def nltk_feature_postag(list_of_cols=[], **datasets):
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
-    list_of_cols = _column_input(list_of_cols, data, train_data)
+    list_of_cols = _get_columns(list_of_cols, data, train_data)
 
     if data is not None:
         for col in list_of_cols:

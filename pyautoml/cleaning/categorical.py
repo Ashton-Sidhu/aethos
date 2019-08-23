@@ -7,7 +7,7 @@ replace_missing_remove_row
 
 import numpy as np
 import pandas as pd
-from pyautoml.util import _column_input, _function_input_validation
+from pyautoml.util import _get_columns, _function_input_validation
 
 #TODO: Implement KNN, and replacing with most common category 
 
@@ -57,7 +57,7 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
         raise ValueError("Please provide a full data or training and testing data.")
 
     if isinstance(col_to_category, list):
-        col_to_category = _column_input(col_to_category, data, train_data)
+        col_to_category = _get_columns(col_to_category, data, train_data)
     
     str_missing_categories = ["Other", "Unknown", "MissingDataCategory"]
     num_missing_categories = [-1, -999, -9999]

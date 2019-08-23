@@ -7,7 +7,7 @@ from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import _numeric_input_conditions
+from pyautoml.util import _input_columns, _numeric_input_conditions
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -37,10 +37,12 @@ class Preprocess(MethodBase):
     def normalize_numeric(self, *list_args, list_of_cols=[], normalize_params={}):
         """
         Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
-
-        This function can be found in `preprocess/numeric.py`
         
-        If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.        
+        If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
+
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
+        This function can be found in `preprocess/numeric.py`     
         
         Parameters
         ----------
@@ -61,10 +63,7 @@ class Preprocess(MethodBase):
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
         
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data_properties.data)

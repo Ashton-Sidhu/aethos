@@ -8,6 +8,7 @@ from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
 from pyautoml.feature_engineering.util import *
+from pyautoml.util import _input_columns
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -36,6 +37,8 @@ class Feature(MethodBase):
     def onehot_encode(self, *list_args, list_of_cols=[], onehot_params={"handle_unknown": "ignore"}):
         """
         Creates a matrix of converted categorical columns into binary columns of ones and zeros.
+
+        If a list of columns is provided use the list, otherwise use arguemnts.
     
         Parameters
         ----------
@@ -58,10 +61,7 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['categorical']['onehotencode']
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = feature_one_hot_encode(list_of_cols, data=self.data_properties.data, params=onehot_params)
@@ -89,6 +89,8 @@ class Feature(MethodBase):
         The higher the score the more important a word is to a document, the lower the score (relative to the other scores)
         the less important a word is to a document.
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `feature-extraction/text.py`
         
         Parameters
@@ -109,10 +111,7 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['text']['tfidf']
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = feature_tfidf(
@@ -142,6 +141,8 @@ class Feature(MethodBase):
 
         The premise is that the more times a word appears the more the word represents that document.
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `feature-extraction/text.py`
         
         Parameters
@@ -162,10 +163,7 @@ class Feature(MethodBase):
         report_info = technique_reason_repo['feature']['text']['bow']
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = feature_bag_of_words(
@@ -194,6 +192,8 @@ class Feature(MethodBase):
         Tag documents with their respective "Part of Speech" tag. These tags classify a word as a
         noun, verb, adjective, etc. A full list and their meaning can be found here:
         https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
+
+        If a list of columns is provided use the list, otherwise use arguemnts.
         
         Parameters
         ----------

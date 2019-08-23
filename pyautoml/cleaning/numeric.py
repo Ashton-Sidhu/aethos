@@ -7,7 +7,7 @@ replace_missing_constant
 
 import pandas as pd
 from pyautoml.cleaning.categorical import replace_missing_new_category
-from pyautoml.util import (_column_input, _function_input_validation,
+from pyautoml.util import (_get_columns, _function_input_validation,
                            _numeric_input_conditions, drop_replace_columns)
 from sklearn.impute import SimpleImputer
 
@@ -63,7 +63,7 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
     if strategy != 'most_frequent':    
         list_of_cols = _numeric_input_conditions(list_of_cols, data, train_data)
     else:
-        list_of_cols = _column_input(list_of_cols, data, train_data)
+        list_of_cols = _get_columns(list_of_cols, data, train_data)
     
     imp = SimpleImputer(strategy=strategy)
     

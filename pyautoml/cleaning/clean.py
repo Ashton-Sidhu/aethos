@@ -7,7 +7,7 @@ from pyautoml.base import MethodBase
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
-from pyautoml.util import _column_input
+from pyautoml.util import _input_columns
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -125,6 +125,8 @@ class Clean(MethodBase):
 
         Mean: Average value of the column. Effected by outliers.
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
         
         Parameters
@@ -143,10 +145,7 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['numeric']['mean']
         
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="mean", data=self.data_properties.data)
@@ -184,6 +183,8 @@ class Clean(MethodBase):
 
         Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
         
         Parameters
@@ -202,10 +203,7 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['numeric']['median']
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_cols(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="median", data=self.data_properties.data)
@@ -240,6 +238,8 @@ class Clean(MethodBase):
 
         Mode: Most common value.
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `clean/numeric.py` as `replace_missing_mean_median_mode`.
         
         Parameters
@@ -258,10 +258,7 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['numeric']['mode']
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="most_frequent", data=self.data_properties.data)
@@ -295,6 +292,8 @@ class Clean(MethodBase):
 
         If no columns are supplied, missing values will be replaced with the mean in every numeric column.
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `clean/numeric.py` as `replace_missing_constant`.
         
         Parameters
@@ -326,10 +325,7 @@ class Clean(MethodBase):
             col_to_constant = col_mapping
         else:
             ## If a list of columns is provided use the list, otherwise use arguemnts.
-            if list_of_cols or (not list_of_cols and not list_args):
-                col_to_constant = list_of_cols
-            else:
-                col_to_constant = list(list_args)
+            col_to_constant = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = replace_missing_constant(col_to_constant=col_to_constant, constant=constant, data=self.data_properties.data)
@@ -365,6 +361,8 @@ class Clean(MethodBase):
         For numeric categorical columns default values are: -1, -999, -9999
         For string categorical columns default values are: "Other", "Unknown", "MissingDataCategory"
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `clean/categorical.py` as `replace_missing_new_category`.
         
         Parameters
@@ -397,10 +395,7 @@ class Clean(MethodBase):
             col_to_category = col_mapping
         else:
             ## If a list of columns is provided use the list, otherwise use arguemnts.
-            if list_of_cols or (not list_of_cols and not list_args):
-                col_to_category = list_of_cols
-            else:
-                col_to_category = list(list_args)  
+            col_to_category = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = replace_missing_new_category(col_to_category=col_to_category, constant=new_category, data=self.data_properties.data)
@@ -432,6 +427,8 @@ class Clean(MethodBase):
         """
         Remove rows where the value of a column for those rows is missing.
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `clean/categorical.py` as `replace_missing_remove_row`.
         
         Parameters
@@ -450,10 +447,7 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['categorical']['remove_rows']
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = replace_missing_remove_row(list_of_cols, data=self.data_properties.data)
@@ -480,6 +474,8 @@ class Clean(MethodBase):
         This can be used to reduce processing time or performance for algorithms where
         duplicates have no effect on the outcome (i.e DBSCAN)
 
+        If a list of columns is provided use the list, otherwise use arguemnts.
+
         This function exists in `clean/util.py` as `remove_duplicate_rows`.
        
         Parameters
@@ -498,10 +494,7 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_rows']
         
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
    
         if self.data_properties.use_full_data:
             self.data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self.data_properties.data)
@@ -550,6 +543,8 @@ class Clean(MethodBase):
         """
         Replace missing values in with a random number based off the distribution (number of occurences) 
         of the data.
+
+        If a list of columns is provided use the list, otherwise use arguemnts.
         
         Parameters
         ----------
@@ -573,10 +568,7 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['general']['random_discrete']
         
         ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
         
         if self.data_properties.use_full_data:   
             self.data_properties.data = replace_missing_random_discrete(list_of_cols, data=self.data_properties.data)
