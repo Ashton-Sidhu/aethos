@@ -1,11 +1,11 @@
 clean:
   general:
     remove_rows: >
-      Removed rows because it had too many missing values and those records don't 
+      Removed rows because it had too many missing values and those records don't
       contain enough information.
 
     remove_columns: >
-      Removed column column_name_placeholder because it had too many missing values and didn't 
+      Removed column column_name_placeholder because it had too many missing values and didn't
       contain enough information.
 
     remove_duplicate_rows: >
@@ -15,16 +15,16 @@ clean:
       Removed columns of which whos values are exact duplicates of each other to reduce redundancy.
 
     random_discrete: >
-      Replaced missing values with random values that follow the datas distribution, as observed in nature, to better simulate 
-      the missing data points
+      Replaced missing values in column column_name_placeholder with random values that follow the datas distribution,
+      as observed in nature, to better simulate the missing data points
 
   categorical:
     new_category: >
-      Replaced missing values in column column_name_placeholder with its own category name because 
+      Replaced missing values in column column_name_placeholder with its own category name because
       the missing values have meaning that should be captured.
 
     remove_rows: >
-      Removed rows that have missing values in column_name_placeholder because column_name_placeholder 
+      Removed rows that have missing values in column_name_placeholder because column_name_placeholder
       is an important feature and data points with missing data in this column are inconsequential to this problem.
 
   numeric:
@@ -49,7 +49,7 @@ preprocess:
 
   numeric:
     standardize: >
-      Standardized the values in column column_name_placeholder between 0 and 1 so all values in every column are in the same 
+      Standardized the values in column column_name_placeholder between 0 and 1 so all values in every column are in the same
       domain and range does not effect model weights.
 
   text:
@@ -59,14 +59,14 @@ feature:
 
   categorical:
     onehotencode: >
-      Converted the categories in column column_name_placeholder into its own feature where the value is 1 if category exists 
+      Converted the categories in column column_name_placeholder into its own feature where the value is 1 if the category exists
       in the record, 0 otherwise.
 
   numeric:
 
   text:
     tfidf: >
-      Converted text to a numeric representation where each number represents how important a word(s) is to a corpus. The higher the number, 
+      Converted text to a numeric representation where each number represents how important a word(s) is to a corpus. The higher the number,
       the more important words is to the corpus.
 
     bow: >

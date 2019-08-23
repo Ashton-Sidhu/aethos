@@ -1,15 +1,20 @@
 import os
+from datetime import datetime
 
 
 class Report():
 
     def __init__(self, report_name):
         self.report_name = report_name
-        self.filename = f"pyautoml_reports/{report_name}.txt"
+
+        if os.path.exists(self.report_name):
+            self.filename = self.report_name
+        else:
+            self.filename = f'pyautoml_reports/{report_name}{datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")}.txt'
 
         #TODO: Move making the directory on first time run to some config file
         if not os.path.exists("pyautoml_reports/"):
-            os.makedirs("pyautoml_reports")        
+            os.makedirs("pyautoml_reports")
 
     def write_header(self, header: str):
         """
@@ -81,4 +86,4 @@ class Report():
             Information to write to the report file
         """
 
-        self.write_contents(log)
+        self.write_contents(log + "\n")

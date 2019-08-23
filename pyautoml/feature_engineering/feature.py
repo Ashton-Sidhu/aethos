@@ -28,7 +28,7 @@ class Feature(MethodBase):
                         use_full_data=use_full_data, target_field=target_field, report_name=report_name)
         else:
             super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report)
+                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report.filename)
                         
         if self.data_properties.report is not None:
             self.report.write_header("Feature Engineering")
@@ -283,6 +283,6 @@ class Feature(MethodBase):
                                                                                                                     test_data=self.data_properties.test_data)
     
             if self.report is not None:
-                self.report.log(f"Applied function to train and test dataset. {description}")
+                self.report.log(f"Added feature {output_col}. {description}")
     
             return self.data_properties.train_data.head(10)
