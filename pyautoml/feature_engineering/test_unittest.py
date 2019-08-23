@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from pyautoml import Feature
 
 
@@ -12,10 +11,13 @@ class TestFeatureExtraction(unittest.TestCase):
         list_of_sentences = ['Hi my name is pyml',
                              'Hi name pyml']
 
-        feature = Feature(list_of_sentences,
+        columns = ["text"]
+        data = pd.DataFrame(list_of_sentences, columns=columns)
+
+        feature = Feature(data=data,
                           test_split_percentage=0.5, use_full_data=True)
-        transform_data = feature.bag_of_words()
-        validate = transform_data.toarray().tolist()
+        feature.bag_of_words()
+        validate = feature.data.values.tolist()
 
         self.assertListEqual(validate, [[1, 1, 1, 1, 1],
                                         [1, 0, 0, 1, 1]])
@@ -24,11 +26,13 @@ class TestFeatureExtraction(unittest.TestCase):
 
         list_of_sentences = ['Hi my name is pyml',
                              'Hi name pyml']
+        columns = ["text"]
+        data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(list_of_sentences,
+        feature = Feature(data=data,
                           test_split_percentage=0.5, use_full_data=True)
-        transform_data = feature.tfidf(tfidf_params={"lowercase": False})
-        validate = transform_data.shape[1]
+        feature.tfidf(tfidf_params={"lowercase": False})
+        validate = feature.data.shape[1]
 
         self.assertEqual(validate, 5)
 
@@ -41,9 +45,9 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(data, test_split_percentage=0.5, use_full_data=True)
-        transform_data = feature.onehot_encode(["col1", "col3"])
-        validate = transform_data.values.tolist()
+        feature = Feature(data=data, test_split_percentage=0.5, use_full_data=True)
+        feature.onehot_encode(list_of_cols=["col1", "col3"])
+        validate = feature.data.values.tolist()
 
         self.assertListEqual(validate, [["Green", 0, 1, 1, 0],
                                         ["Other", 0, 1, 0, 1],
@@ -57,9 +61,9 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(data, test_split_percentage=0.5, use_full_data=True)
-        transform_data = feature.nltk_postag()
-        validate = len(transform_data.columns)
+        feature = Feature(data=data, test_split_percentage=0.5, use_full_data=True)
+        feature.nltk_postag()
+        validate = len(feature.data.columns)
 
         self.assertTrue(validate, 2)
 

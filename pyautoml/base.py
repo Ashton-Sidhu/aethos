@@ -51,14 +51,14 @@ class MethodBase(object):
         
         else:
             if self.data_properties.use_full_data:
-                return self.data_properties.data.to_string()
+                return self.data_properties.data.head(10).to_string()
             else:
                 return self.data_properties.train_data.to_string()
 
     def __getitem__(self, column):
 
         if self.data_properties.use_full_data:
-            return self.data_properties.data[column]
+            return self.data_properties.data.head(10)[column]
         else:
             return self.data_properties.train_data[column]
 
@@ -67,7 +67,7 @@ class MethodBase(object):
         if self.data_properties.use_full_data:
             self.data_properties.data[column] = value
 
-            return self.data_properties.data
+            return self.data_properties.data.head(10)
         else:
             train_data_length = self.data_properties.train_data.shape[0]
             test_data_length = self.data_properties.test_data.shape[0]
@@ -91,7 +91,8 @@ class MethodBase(object):
                 self.data_properties.train_data[column] = value
                 self.data_properties.test_data[column] = value
 
-            return self.data_properties.train_data
+            return self.data_properties.train_data.head(10)
+
 
     @property
     def data(self):
@@ -100,6 +101,7 @@ class MethodBase(object):
         """
 
         return self.data_properties.data
+
 
     @property
     def train_data(self):
@@ -117,6 +119,7 @@ class MethodBase(object):
         """
 
         return self.data_properties.test_data
+
 
     @property
     def missing_values(self):
@@ -138,6 +141,7 @@ class MethodBase(object):
                     [total, percent], axis=1, keys=['Total', 'Percent'])
 
                 display(missing_data.T)
+
 
     def describe(self, dataset='train'):
         """
@@ -217,6 +221,7 @@ class MethodBase(object):
 
                 return test_data_summary.columns_stats
 
+
     def describe_column(self, column, dataset='train'):
         """
         Analyzes a column and reports descriptive statistics about the columns.
@@ -284,6 +289,7 @@ class MethodBase(object):
                 test_data_summary = DataFrameSummary(self.test_data)
 
                 return test_data_summary[column]
+                
 
     def drop(self, *drop_columns, reason=''):
         """
@@ -324,7 +330,7 @@ class MethodBase(object):
             if self.report is not None:
                 self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
 
-            return self.data
+            return self.data.head(10)
         else:
             self.data_properties.train_data = self.train_data.drop(drop_columns, axis=1)
             self.data_properties.test_data = self.test_data.drop(drop_columns, axis=1)
@@ -332,7 +338,8 @@ class MethodBase(object):
             if self.report is not None:
                 self.report.log(f'Dropped columns {", ".join(drop_columns)} in both train and test set. {reason}')
 
-            return self.train_data
+            return self.train_data.head(10)
+
 
     def _set_item(self, column: str, value: list, train_length: int, test_length: int):
         """

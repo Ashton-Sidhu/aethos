@@ -85,33 +85,6 @@ class TestData(unittest.TestCase):
 
         self.assertListEqual(list_of_keys, ["eagle", "sparrow"])
 
-    def test_datautil_getlistofcols_duplicatecustomcols_overridefalse(self):
-        data = {"eagle": "bird",
-                "sparrow": "bird",
-                "mosquito": "insect"}
-
-        list_of_cols = get_list_of_cols("bird", data, False, custom_cols=["eagle"])
-
-        self.assertListEqual(list_of_cols, ["eagle", "sparrow"])
-
-    def test_datautil_getlistofcols_uniquecustomcols_overridefalse(self):
-        data = {"eagle": "bird",
-                "sparrow": "bird",
-                "mosquito": "insect"}
-
-        list_of_cols = get_list_of_cols("bird", data, False, custom_cols=["frog"])
-
-        self.assertListEqual(list_of_cols, ["eagle", "sparrow", "frog"])
-
-    def test_datautil_getlistofcols_overridetrue(self):
-        data = {"eagle": "bird",
-                "sparrow": "bird",
-                "mosquito": "insect"}
-
-        list_of_cols = get_list_of_cols("bird", data, True, custom_cols=["frog"])
-
-        self.assertListEqual(list_of_cols, ["frog"])
-
     def test_datautil_dropandreplacecolumns(self):
         data_zeros = np.zeros((2,2))
         columns_zeros = ["col1", "col2"]
