@@ -52,7 +52,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
+        clean = Clean(data=data, test_split_percentage=0.5, use_full_data=True, report_name="test")
         clean_data = clean.replace_missing_new_category()
 
         with open("pyautoml_reports/test.txt") as f:
@@ -73,7 +73,7 @@ class TestReport(unittest.TestCase):
         data = pd.DataFrame(unnormal_data, columns=columns)
 
         preprocess = Preprocess(data, test_split_percentage=0.5, use_full_data=False, report_name="test")
-        normal_data, test = preprocess.normalize_numeric()
+        preprocess.normalize_numeric()
         
         with open("pyautoml_reports/test.txt") as f:
             content = f.read()
@@ -86,10 +86,13 @@ class TestReport(unittest.TestCase):
     def test_report_feature_bow(self):
 
         list_of_sentences = ['Hi my name is pyml',
-                            'Hi name pyml']
+                             'Hi name pyml']
 
-        feature = Feature(list_of_sentences, test_split_percentage=0.5, use_full_data=True, report_name="test")
-        transform_data = feature.bag_of_words()
+        columns = ["text"]
+        data = pd.DataFrame(list_of_sentences, columns=columns)
+
+        feature = Feature(data=data, test_split_percentage=0.5, use_full_data=True, report_name="test")
+        feature.bag_of_words()
 
         with open("pyautoml_reports/test.txt") as f:
             content = f.read()
