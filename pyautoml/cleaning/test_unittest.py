@@ -102,7 +102,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.replace_missing_constant(10.5, ["col1", "col3"])
+        clean_data = clean.replace_missing_constant('col1', 'col3', constant=10.5)
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 2),
@@ -119,7 +119,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.replace_missing_remove_row(["col1", "col2"])
+        clean_data = clean.replace_missing_remove_row("col1", "col2")
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 2)]).tolist())
@@ -135,7 +135,7 @@ class TestCleaning(unittest.TestCase):
         category_dict_mapping = {"col1": 2, "col2": "Blue"}
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.replace_missing_new_category(col_to_category=category_dict_mapping)
+        clean_data = clean.replace_missing_new_category(col_mapping=category_dict_mapping)
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, "Green", 2),
@@ -153,7 +153,7 @@ class TestCleaning(unittest.TestCase):
         list_col = ["col1", "col3"]
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.replace_missing_new_category(new_category=0, col_to_category=list_col)
+        clean_data = clean.replace_missing_new_category(list_of_cols=list_col, new_category=0)
         validate = clean_data.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, "Green", 2),
@@ -171,7 +171,8 @@ class TestCleaning(unittest.TestCase):
         list_col = ["col1", "col2"]
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
-        clean_data = clean.replace_missing_new_category(col_to_category=list_col)
+        clean_data = clean.replace_missing_new_category(list_of_cols=list_col)
+        
         #Replacing NaNs with strings for validations as regular assert does == and to compare NaNs you need `is`
         clean_data = clean_data.fillna("NaN was here")
         validate = clean_data.values.tolist()
@@ -182,9 +183,9 @@ class TestCleaning(unittest.TestCase):
 
     def test_cleancategorical_replacemissingnewcategory_constantnotnone(self):
 
-        missing_data = np.array([(1.0, "Green", 2),
-                                 (1.0, "Other", 1),
-                                 (np.nan, None, np.nan)])
+        missing_data = [[1.0, "Green", 2],
+                        [1.0, "Other", 1],
+                        [np.nan, np.nan, np.nan]]
 
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
@@ -274,7 +275,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(data, test_split_percentage=0.5)
-        clean.replace_missing_random_discrete(["col1", "col2", "col3"])
+        clean.replace_missing_random_discrete("col1", "col2", "col3")
         validate = np.any(clean.data.isnull())
 
         validate = np.any(clean.train_data.isnull()) and any(clean.test_data.isnull())

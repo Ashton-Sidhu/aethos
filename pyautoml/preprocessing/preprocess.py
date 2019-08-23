@@ -34,7 +34,7 @@ class Preprocess(MethodBase):
             self.report.write_header("Preprocessing")
 
         
-    def normalize_numeric(self, list_of_cols=[], normalize_params={}):
+    def normalize_numeric(self, *list_args, list_of_cols=[] normalize_params={}):
         """
         Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
 
@@ -44,8 +44,10 @@ class Preprocess(MethodBase):
         
         Parameters
         ----------
+        *list_args : str(s), optional
+            Specific columns to apply this technique to.
         list_of_cols : list, optional
-            A list of specific columns to apply this technique to, by default []
+            A list of specific columns to apply this technique to., by default []
         normalize_params : dict, optional
             A dictionary of parmaters to pass into MinMaxScaler() constructor
             from Scikit-Learn, by default {}
@@ -59,6 +61,10 @@ class Preprocess(MethodBase):
         """
 
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
+        if list_of_cols or (not list_of_cols and not list_args):
+            list_of_cols = list_of_cols
+        else:
+            list_of_cols = list(list_args)
 
         if self.data_properties.use_full_data:
             self.data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data_properties.data)
@@ -70,7 +76,7 @@ class Preprocess(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
             
-            return self.data_properties.data
+            return self.data_properties.data.head(10)
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
@@ -85,4 +91,4 @@ class Preprocess(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data, self.data_properties.test_data
+            return self.data_properties.train_data.head(10)

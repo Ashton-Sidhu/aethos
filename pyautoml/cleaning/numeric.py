@@ -15,7 +15,7 @@ from sklearn.impute import SimpleImputer
 
 
 
-def replace_missing_mean_median_mode(strategy: str, list_of_cols=[], **datasets):
+def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
     """
     Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
 
@@ -25,13 +25,13 @@ def replace_missing_mean_median_mode(strategy: str, list_of_cols=[], **datasets)
     
     Parameters
     ----------
-    strategy : str
-        Strategy for replacing missing values.
-        Can be either "mean", "median" or "most_frequent"
     list_of_cols : list, optional
         A list of specific columns to apply this technique to
         If `list_of_cols` is not provided, the strategy will be
         applied to all numeric columns., by default []
+    strategy : str
+        Strategy for replacing missing values.
+        Can be either "mean", "median" or "most_frequent"
 
     Either the full data or training data plus testing data MUST be provided, not both.
 
@@ -84,18 +84,18 @@ def replace_missing_mean_median_mode(strategy: str, list_of_cols=[], **datasets)
 
         return train_data, test_data
 
-def replace_missing_constant(constant=0, col_to_constant=None, **datasets):
+def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
     """
     Replaces missing values in every numeric column with a constant. If `col_to_constant` is not provided,
     all the missing values in the data will be replaced with `constant`
     
     Parameters
     ----------
-    constant : int, float, optional
-        Value to replace missing values with, by default 0
     col_to_constant : list, dict, optional
         Either a list of columns to replace missing values or a `column`: `value` dictionary mapping,
         by default None
+    constant : int, float, optional
+        Value to replace missing values with, by default 0
     
     Either the full data or training data plus testing data MUST be provided, not both.
 
@@ -142,7 +142,6 @@ def replace_missing_constant(constant=0, col_to_constant=None, **datasets):
             return train_data, test_data
 
     elif isinstance(col_to_constant, list):
-
         if data is not None:
             data = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, data=data)
 
@@ -154,7 +153,6 @@ def replace_missing_constant(constant=0, col_to_constant=None, **datasets):
             return train_data, test_data
 
     else:
-
         if data is not None:
             data = replace_missing_new_category(constant=constant, data=data)
 
