@@ -8,9 +8,9 @@ def raincloud(col: str, target_col: str, data, params={}):
     Parameters
     ----------
     col : str
-        [description]
+        Column name of general data
     target_col : str
-        [description]
+        Column name of measurable data, numerical
     data : Dataframe
         Dataframe of the data
     params: dict
