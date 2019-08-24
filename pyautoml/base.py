@@ -58,12 +58,14 @@ class MethodBase(object):
             else:
                 return self.data_properties.train_data.to_string()
 
+
     def __getitem__(self, column):
 
         if self.data_properties.use_full_data:
-            return self.data_properties.data.head[column]
+            return self.data_properties.data[column]
         else:
             return self.data_properties.train_data[column]
+
 
     def __setitem__(self, column, value):
 
@@ -95,6 +97,21 @@ class MethodBase(object):
                 self.data_properties.test_data[column] = value
 
             return self.data_properties.train_data.head(10)
+
+
+    def __getattr__(self, column):
+
+        if self.data_properties.use_full_data:
+            return self.data_properties.data[column]
+        else:
+            return self.data_properties.train_data[column]
+
+    def __setattr__(self, item, value):
+        
+        if item not in self.__dict__:       # any normal attributes are handled normally
+            dict.__setattr__(self, item, value)
+        else:
+            self.__setitem__(item, value)
 
 
     @property
