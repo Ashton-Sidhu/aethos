@@ -118,3 +118,5 @@ N/A
 ## For Developers
 
 To install packages `pip3 install -r requirements.txt`
+
+To run tests `python3 -m unittest discover pyautoml/`
