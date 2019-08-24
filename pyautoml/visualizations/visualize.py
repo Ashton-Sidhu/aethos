@@ -1,4 +1,5 @@
 import ptitprince as pt
+from bokeh.plotting import figure
 
 
 def raincloud(col: str, target_col: str, data, params={}):
@@ -32,3 +33,7 @@ def raincloud(col: str, target_col: str, data, params={}):
         params = params
 
     ax = pt.RainCloud(**params)
+
+def barplot():
+
+    p = figure(x_range=[list], plot_height=[int], title=[str], toolbar_location=[str], tools=[str], tooltips=)

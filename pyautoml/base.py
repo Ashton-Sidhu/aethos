@@ -54,14 +54,14 @@ class MethodBase(object):
         
         else:
             if self.data_properties.use_full_data:
-                return self.data_properties.data.head(10).to_string()
+                return self.data_properties.data.head.to_string()
             else:
                 return self.data_properties.train_data.to_string()
 
     def __getitem__(self, column):
 
         if self.data_properties.use_full_data:
-            return self.data_properties.data.head(10)[column]
+            return self.data_properties.data.head[column]
         else:
             return self.data_properties.train_data[column]
 
