@@ -10,5 +10,6 @@ jobs:
           command: |  # use pipenv to install dependencies
             sudo pip install pipenv
             pipenv install
+            pipenv run python -m textblob.download_corpora
             pipenv run python -m unittest discover pyautoml/
        
