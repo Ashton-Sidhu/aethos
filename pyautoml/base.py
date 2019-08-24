@@ -4,6 +4,7 @@ from IPython.display import display
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
+from pyautoml.visualizations.visualize import *
 
 
 class MethodBase(object):
@@ -26,9 +27,13 @@ class MethodBase(object):
         if data is not None and (train_data is None and test_data is None):
             # Generate train set and test set.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
+            self.data_properties.data = self.data_properties.data.infer_objects()
         else:
             # Override user input for safety.
-            self.data_properties.use_full_data = False       
+            self.data_properties.use_full_data = False
+
+        self.data_properties.train_data = self.data_properties.train_data.infer_objects()
+        self.data_properties.test_data = self.data_properties.test_data.infer_objects()
 
         if self.data_properties.report is None:
             self.report = None
@@ -119,6 +124,14 @@ class MethodBase(object):
         """
 
         return self.data_properties.test_data
+
+    @property
+    def target_field(self):
+        """
+        Property function for the entire dataset.
+        """
+
+        return self.data_properties.target_field
 
 
     @property
@@ -369,3 +382,11 @@ class MethodBase(object):
 
         else:
             self.data_properties.test_data[column] = value
+
+
+    def visualize_raincloud(self, col: str):
+
+        if self.data_properties.use_full_data:
+            raincloud(col, self.target_field, self.data)
+        else:
+            raincloud(col, self.target_field, self.train_data)
