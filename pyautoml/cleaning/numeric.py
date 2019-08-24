@@ -7,7 +7,7 @@ replace_missing_constant
 
 import pandas as pd
 from pyautoml.cleaning.categorical import replace_missing_new_category
-from pyautoml.util import (_get_columns, _function_input_validation,
+from pyautoml.util import (_function_input_validation, _get_columns,
                            _numeric_input_conditions, drop_replace_columns)
 from sklearn.impute import SimpleImputer
 
