@@ -1,11 +1,11 @@
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
+
+from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 from pyautoml.visualizations.visualize import *
-
-from pandas_summary import DataFrameSummary
 
 
 class MethodBase(object):
@@ -28,13 +28,10 @@ class MethodBase(object):
         if data is not None and (train_data is None and test_data is None):
             # Generate train set and test set.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
-            self.data_properties.data = self.data_properties.data.infer_objects()
+            
         else:
             # Override user input for safety.
             self.data_properties.use_full_data = False
-
-        self.data_properties.train_data = self.data_properties.train_data.infer_objects()
-        self.data_properties.test_data = self.data_properties.test_data.infer_objects()
 
         if self.data_properties.report is None:
             self.report = None
@@ -385,7 +382,7 @@ class MethodBase(object):
             self.data_properties.test_data[column] = value
 
 
-    def visualize_raincloud(self, x_col: str, y_col=data_properties.target_field, params={}):
+    def visualize_raincloud(self, x_col: str, y_col=None, params={}):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.
         This is used to offer eyeballed statistical inference, assessment of data distributions (useful to check assumptions),
@@ -482,6 +479,9 @@ class MethodBase(object):
         >>> clean.visualize_raincloud('col1') # Will plot col1 values on the x axis and your target variable values on the y axis
         >>> clean.visualize_raincloud('col1', 'col2') # Will plot col1 on the x and col2 on the y axis
         """
+
+        if y_col is None:
+            y_col = self.target_field
 
         if self.data_properties.use_full_data:
             raincloud(y_col, x_col, self.data)
