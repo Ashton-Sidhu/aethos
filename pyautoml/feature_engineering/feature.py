@@ -269,7 +269,7 @@ class Feature(MethodBase):
         """
         
         if self.data_properties.use_full_data:    
-            self.data_properties.data.loc[:, output_col] = apply(func, output_col, data=self.data_properties.data)
+            self.data_properties.data = apply(func, output_col, data=self.data_properties.data)
     
             if self.report is not None:
                 self.report.log(f"Applied function to dataset. {description}")
@@ -277,7 +277,7 @@ class Feature(MethodBase):
             return self.data_properties.data.head(10)
     
         else:
-            self.data_properties.train_data.loc[:, output_col], self.data_properties.test_data.loc[:, output_col] = apply(func,
+            self.data_properties.train_data, self.data_properties.test_data = apply(func,
                                                                                                                     output_col,
                                                                                                                     train_data=self.data_properties.train_data,
                                                                                                                     test_data=self.data_properties.test_data)
