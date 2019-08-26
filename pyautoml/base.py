@@ -23,7 +23,7 @@ class MethodBase(object):
 
         self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
-        if data is not None and (train_data is None and test_data is None):
+        if data is not None and use_full_data = False:
             # Generate train set and test set.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
         else:
