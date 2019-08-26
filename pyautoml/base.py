@@ -1,7 +1,6 @@
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
-
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
@@ -52,7 +51,7 @@ class MethodBase(object):
         
         else:
             if self.data_properties.use_full_data:
-                return self.data_properties.data.head.to_string()
+                return self.data_properties.data.to_string()
             else:
                 return self.data_properties.train_data.to_string()
 
