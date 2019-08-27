@@ -1,7 +1,8 @@
+import copy
+
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
-
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 
@@ -27,7 +28,9 @@ class MethodBase(object):
 
         if data is not None and not use_full_data:
             # Generate train set and test set.
+            # NOTE: Test is setting data to `None` is a good idea.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
+            self.data = None
 
         if self.data_properties.report is None:
             self.report = None
@@ -40,11 +43,11 @@ class MethodBase(object):
 
         if shell == 'ZMQInteractiveShell':
             if self.data_properties.use_full_data:
-                display(self.data_properties.data) # Hack for jupyter notebooks
+                display(self.data_properties.data.head(10)) # Hack for jupyter notebooks
                 
                 return ''
             else:
-                display(self.data_properties.train_data) # Hack for jupyter notebooks
+                display(self.data_properties.train_data.head(10)) # Hack for jupyter notebooks
 
                 return ''
         
@@ -107,15 +110,17 @@ class MethodBase(object):
         if item not in self.__dict__:       # any normal attributes are handled normally
             dict.__setattr__(self, item, value)
         else:
-            self.__setitem__(item, value)
-
+            self.__setitem__(item, value)            
 
     @property
     def data(self):
         """
         Property function for the entire dataset.
         """
-
+        
+        if self.data_properties.data is None:
+            return "There seems to be nothing here. Try .train_data or .test_data"
+        
         return self.data_properties.data
 
     @data.setter
@@ -132,6 +137,9 @@ class MethodBase(object):
         """
         Property function for the training dataset.
         """
+        
+        if self.data_properties.train_data is None:
+            return "There seems to be nothing here. Try .data"
 
         return self.data_properties.train_data
 
@@ -140,6 +148,9 @@ class MethodBase(object):
         """
         Setter function for the training dataset.
         """
+
+        if self.data_properties.train_data is None:
+            return "There seems to be nothing here. Try .data"
 
         self.data_properties.train_data = value
         
@@ -377,6 +388,20 @@ class MethodBase(object):
                 self.report.log(f'Dropped columns {", ".join(drop_columns)} in both train and test set. {reason}')
 
             return self.train_data.head(10)
+
+    def copy(self):
+        """
+        Make a copy of this object's indices and data.
+        A new object will be created with a
+        copy of the calling object's data and indices. Modifications to
+        the data or indices of the copy will not be reflected in the
+        original object.
+        """
+        
+
+        data = self.data_properties
+
+        
 
 
     def _set_item(self, column: str, value: list, train_length: int, test_length: int):

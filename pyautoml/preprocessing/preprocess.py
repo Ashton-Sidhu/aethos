@@ -1,3 +1,4 @@
+import copy
 import os
 
 import pandas as pd
@@ -27,7 +28,7 @@ class Preprocess(MethodBase):
                         use_full_data=use_full_data, target_field=target_field, report_name=report_name)
         else:
             super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report.filename)
+                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report_name)
                         
 
         if self.data_properties.report is not None:
@@ -56,8 +57,8 @@ class Preprocess(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Preprocess Object:
+            Returns a deep copy of the Preprocess object.
         """
 
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
@@ -75,7 +76,7 @@ class Preprocess(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
             
-            return self.data_properties.data.head(10)
+            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
@@ -90,7 +91,7 @@ class Preprocess(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data.head(10)
+            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
 
     def sentence_split(self, col_name: str):
         """
@@ -103,8 +104,8 @@ class Preprocess(MethodBase):
 
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Preprocess Object:
+            Returns a deep copy of the Preprocess object.
         """
     
         report_info = technique_reason_repo['preprocess']['text']['split_sentence']
@@ -115,7 +116,7 @@ class Preprocess(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
-            return self.data_properties.data.head(10)
+            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = split_sentence(col_name, 
@@ -125,4 +126,4 @@ class Preprocess(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
-            return self.data_properties.train_data.head(10)
+            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
