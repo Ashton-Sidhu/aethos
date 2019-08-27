@@ -1,6 +1,7 @@
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
+
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 
@@ -117,6 +118,14 @@ class MethodBase(object):
 
         return self.data_properties.data
 
+    @data.setter
+    def data(self, value):
+        """
+        Setter function for the entire dataset.
+        """
+
+        self.data_properties.data = value
+
 
     @property
     def train_data(self):
@@ -126,6 +135,13 @@ class MethodBase(object):
 
         return self.data_properties.train_data
 
+    @train_data.setter
+    def train_data(self, value):
+        """
+        Setter function for the training dataset.
+        """
+
+        self.data_properties.train_data = value
         
     @property
     def test_data(self):
@@ -135,6 +151,13 @@ class MethodBase(object):
 
         return self.data_properties.test_data
 
+    @test_data.setter
+    def test_data(self, value):
+        """
+        Property function for the entire dataset.
+        """
+
+        self.data_properties.test_data = value
 
     @property
     def missing_values(self):
