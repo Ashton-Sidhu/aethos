@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop.svg?style=svg)](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop)
+
 # py-automl
 
 <i>"A collection of tools for Data Scientists and ML Engineers for them to focus less on how to do the analysis and instead worry about what are the best analytic tools that will help gain the most insights from their data."</i>
@@ -48,7 +50,7 @@ For package use (no GUI):
 
 For Web App:
 
-`TBD`
+`In progress`
 
 ## Usage
 
@@ -118,3 +120,5 @@ N/A
 ## For Developers
 
 To install packages `pip3 install -r requirements.txt`
+
+To run tests `python3 -m unittest discover pyautoml/`

@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/py-automl
+    docker:
+      - image: circleci/python:3.6.4
+    steps:
+      - checkout  # checkout source code to working directory
+      - run:
+          command: |  # use pipenv to install dependencies
+            sudo pip install pipenv
+            pipenv install
+            pipenv run python -m textblob.download_corpora
+            pipenv run python -m unittest discover pyautoml/
+       
