@@ -166,5 +166,23 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertEquals('col3', base.target_field)
 
+    def test_setter(self):
+
+        int_missing_data = [[1, 0, 0],
+                            [0, 2, 3],
+                            [0, 3, 4],
+                            [1, 2, 3]]
+
+        int_missing_data_rep = [[1, 0, 0],
+                            [0, 2, 3],
+                            [0, 3, 4],
+                            [1, 2, 3]]
+
+        base = MethodBase(data=int_missing_data, train_data=None, test_data=None, use_full_data=True, target_field='', report_name="test", test_split_percentange=0.5)
+
+        base.data = int_missing_data_rep
+
+        self.assertEquals(base.data, int_missing_data_rep)
+
 if __name__ == "__main__":
     unittest.main()

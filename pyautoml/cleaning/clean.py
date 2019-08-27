@@ -1,3 +1,4 @@
+import copy
 import os
 
 import pandas as pd
@@ -20,10 +21,14 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
 class Clean(MethodBase):
 
     
-    def __init__(self, data=None, train_data=None, test_data=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):   
+    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):   
 
-        super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
-                         use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+        if data_properties is None:        
+            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
+                        use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+        else:
+            super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
+                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report_name)
         
         if self.data_properties.report is not None:
             self.report.write_header("Cleaning")
@@ -43,8 +48,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
         """
 
         report_info = technique_reason_repo['clean']['general']['remove_columns']
@@ -60,7 +65,7 @@ class Clean(MethodBase):
                 new_columns = original_columns.difference(self.data_properties.data.columns)
                 self.report.report_technique(report_info, new_columns)
 
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             #Gather original data information
@@ -74,7 +79,7 @@ class Clean(MethodBase):
                 new_columns = original_columns.difference(self.data_properties.train_data.columns)
                 self.report.report_technique(report_info, new_columns)
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
 
     def remove_rows(self, threshold: float):
@@ -91,8 +96,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
         """
 
         report_info = technique_reason_repo['clean']['general']['remove_rows']
@@ -104,7 +109,7 @@ class Clean(MethodBase):
             if self.report is not None:            
                 self.report.report_technique(report_info, [])
 
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = remove_rows_threshold(threshold,
@@ -115,7 +120,7 @@ class Clean(MethodBase):
             if self.report is not None:            
                 self.report.report_technique(report_info, [])                                                                                    
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
     
     def replace_missing_mean(self, *list_args, list_of_cols=[]):
         """
@@ -138,8 +143,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
         """
 
         report_info = technique_reason_repo['clean']['numeric']['mean']
@@ -158,7 +163,7 @@ class Clean(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
@@ -173,7 +178,7 @@ class Clean(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
     def replace_missing_median(self, *list_args, list_of_cols=[]):
         """
@@ -196,8 +201,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
         """
 
         report_info = technique_reason_repo['clean']['numeric']['median']
@@ -215,7 +220,7 @@ class Clean(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
@@ -230,7 +235,7 @@ class Clean(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
     def replace_missing_mostcommon(self, *list_args, list_of_cols=[]):
         """
@@ -251,8 +256,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
         """
        
         report_info = technique_reason_repo['clean']['numeric']['mode']
@@ -270,7 +275,7 @@ class Clean(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
@@ -284,7 +289,7 @@ class Clean(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
     def replace_missing_constant(self, *list_args, list_of_cols=[], constant=0, col_mapping=None):
         """
@@ -309,8 +314,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
 
         Examples
         --------
@@ -336,7 +341,7 @@ class Clean(MethodBase):
                 else:
                     self.report.report_technique(report_info, list(col_to_constant))
 
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = replace_missing_constant(col_to_constant=col_to_constant,
@@ -350,7 +355,7 @@ class Clean(MethodBase):
                 else:
                     self.report.report_technique(report_info, list(col_to_constant))
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
 
     def replace_missing_new_category(self, *list_args, list_of_cols=[], new_category=None, col_mapping=None):
@@ -378,8 +383,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
 
         Examples
         --------
@@ -406,7 +411,7 @@ class Clean(MethodBase):
                 else:
                     self.report.report_technique(report_info, list(col_to_category))
 
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = replace_missing_new_category(col_to_category=col_to_category,
@@ -420,7 +425,7 @@ class Clean(MethodBase):
                 else:
                     self.report.report_technique(report_info, list(col_to_category))                                                                                                   
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
 
     def replace_missing_remove_row(self, *list_args, list_of_cols=[]):
@@ -440,8 +445,8 @@ class Clean(MethodBase):
 
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
         """
 
         report_info = technique_reason_repo['clean']['categorical']['remove_rows']
@@ -455,7 +460,7 @@ class Clean(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = replace_missing_remove_row(list_of_cols,                                                                                                    
@@ -465,7 +470,7 @@ class Clean(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
 
     def remove_duplicate_rows(self, *list_args, list_of_cols=[]):
@@ -487,8 +492,8 @@ class Clean(MethodBase):
        
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
         """
     
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_rows']
@@ -502,7 +507,7 @@ class Clean(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
     
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = remove_duplicate_rows(list_of_cols=list_of_cols,
@@ -512,7 +517,7 @@ class Clean(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
 
     def remove_duplicate_columns(self):
@@ -521,8 +526,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
         """
     
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
@@ -533,7 +538,7 @@ class Clean(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
     
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = remove_duplicate_columns(train_data=self.data_properties.train_data,
@@ -542,7 +547,7 @@ class Clean(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
 
 
     def replace_missing_random_discrete(self, *list_args, list_of_cols=[]):
@@ -561,8 +566,8 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Clean Object:
+            Returns a deep copy of the Clean object.
 
         Examples
         --------
@@ -582,7 +587,7 @@ class Clean(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
     
-            return self.data_properties.data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = replace_missing_random_discrete(list_of_cols,
@@ -592,4 +597,4 @@ class Clean(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
     
-            return self.data_properties.train_data.head(10)
+            return Clean(data_properties=copy.deepcopy(self.data_properties))

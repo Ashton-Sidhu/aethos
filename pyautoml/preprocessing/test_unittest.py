@@ -45,5 +45,20 @@ class TestPreprocessing(unittest.TestCase):
 
         self.assertListEqual(validate_train, validate_test)
 
+    def test_preprocess_splitsentences(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, use_full_data=True, test_split_percentage=0.5)
+        prep.sentence_split('data')
+        validate = prep.data['data_sentences'].values.tolist()
+
+        self.assertListEqual(validate, [["Hi my name is PyAutoML.", "Please split me."],
+                                        ["This function is going to split by sentence.", "Automation is great."]])
+
 if __name__ == "__main__":
     unittest.main()
