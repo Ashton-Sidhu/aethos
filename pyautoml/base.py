@@ -27,9 +27,6 @@ class MethodBase(object):
         if data is not None and not use_full_data:
             # Generate train set and test set.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
-        else:
-            # Override user input for safety.
-            self.data_properties.use_full_data = False       
 
         if self.data_properties.report is None:
             self.report = None
