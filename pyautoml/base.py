@@ -1,9 +1,10 @@
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
-from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
+
+from pandas_summary import DataFrameSummary
 
 
 class MethodBase(object):
@@ -23,7 +24,7 @@ class MethodBase(object):
 
         self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
 
-        if data is not None and use_full_data = False:
+        if data is not None and not use_full_data:
             # Generate train set and test set.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
         else:
