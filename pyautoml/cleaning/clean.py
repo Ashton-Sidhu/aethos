@@ -1,3 +1,4 @@
+import copy
 import os
 
 import pandas as pd
@@ -20,10 +21,14 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
 class Clean(MethodBase):
 
     
-    def __init__(self, data=None, train_data=None, test_data=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):   
+    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):   
 
-        super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
-                         use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+        if data_properties is None:        
+            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
+                        use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+        else:
+            super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
+                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report.filename)
         
         if self.data_properties.report is not None:
             self.report.write_header("Cleaning")
