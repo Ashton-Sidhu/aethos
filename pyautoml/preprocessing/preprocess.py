@@ -91,3 +91,38 @@ class Preprocess(MethodBase):
                     self.report.report_technique(report_info, list_of_cols)
 
             return self.data_properties.train_data.head(10)
+
+    def sentence_split(self, col_name: str):
+        """
+        Splits text data into sentences and saves it into another column for analysis
+        
+        Parameters
+        ----------
+        col_name : str
+            Column name of your text data
+
+        Returns
+        -------
+        Dataframe:
+            Top 10 rows of data or the training data to view analysis.
+        """
+    
+        report_info = technique_reason_repo['preprocess']['text']['split_sentence']
+    
+        if self.data_properties.use_full_data:    
+            self.data_properties.data = split_sentence(col_name, data=self.data_properties.data)
+    
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+    
+            return self.data_properties.data.head(10)
+    
+        else:
+            self.data_properties.train_data, self.data_properties.test_data = split_sentence(col_name, 
+                                                                                            train_data=self.data_properties.train_data, 
+                                                                                            test_data=self.data_properties.test_data)
+    
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+    
+            return self.data_properties.train_data.head(10)

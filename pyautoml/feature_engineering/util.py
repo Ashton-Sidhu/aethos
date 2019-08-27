@@ -30,10 +30,8 @@ def apply(func, output_col: str, **datasets):
     
     Returns
     -------
-    Dataframe, *Dataframe
-        Transformed dataframe with rows with a missing values in a specific column are missing
-
-    * Returns 2 Dataframes if Train and Test data is provided. 
+    Dataframe
+        Transformed dataframe with the new column
     """
 
     data = datasets.pop('data', None)

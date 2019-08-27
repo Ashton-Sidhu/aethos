@@ -53,6 +53,8 @@ preprocess:
       domain and range does not effect model weights.
 
   text:
+    split_sentence: >
+      Text data was split into sentences to be used for futher analysis.
 
 feature:
   general:
