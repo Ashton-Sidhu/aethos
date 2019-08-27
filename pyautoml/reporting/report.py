@@ -53,11 +53,14 @@ class Report():
             Report Content
         """
 
-        write = False; 
+        write = True; 
 
-        with open(self.filename, 'r') as f:
-            if content not in f.read():
-                write = True
+        if os.path.exists(self.filename):
+            write = False
+            
+            with open(self.filename, 'r') as f:
+                if content not in f.read():
+                    write = True
 
         if write:
             with open(self.filename, 'a+') as f:
