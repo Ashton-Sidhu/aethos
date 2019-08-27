@@ -28,8 +28,16 @@ class Report():
         """
         
         if os.path.exists(self.filename):
-            with open(self.filename, 'a+') as f:
-                f.write("\n" + header + "\n\n")
+
+            write = False; 
+
+            with open(self.filename, 'r') as f:
+                if header not in f.read():
+                    write = True
+            
+            if write:
+                with open(self.filename, 'a+') as f:
+                    f.write("\n" + header + "\n\n")
         
         else:
             with open(self.filename, 'a+') as f:
@@ -45,8 +53,15 @@ class Report():
             Report Content
         """
 
-        with open(self.filename, 'a+') as f:
-            f.write(content)
+        write = False; 
+
+        with open(self.filename, 'r') as f:
+            if content not in f.read():
+                write = True
+
+        if write:
+            with open(self.filename, 'a+') as f:
+                f.write(content)
 
     def report_technique(self, technique: str, list_of_cols: list):
         """
