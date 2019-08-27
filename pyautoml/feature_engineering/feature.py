@@ -1,3 +1,4 @@
+import copy
 import os
 
 import pandas as pd
@@ -28,7 +29,7 @@ class Feature(MethodBase):
                         use_full_data=use_full_data, target_field=target_field, report_name=report_name)
         else:
             super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report.filename)
+                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report_name)
                         
         if self.data_properties.report is not None:
             self.report.write_header("Feature Engineering")
@@ -49,10 +50,10 @@ class Feature(MethodBase):
         params : dict, optional
             Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
         
-       Returns
+        Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Feature Object:
+            Returns a deep copy of the Feature object.
 
         Examples
         --------
@@ -69,7 +70,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_one_hot_encode(list_of_cols,
@@ -79,7 +80,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return self.data_properties.train_data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
 
 
     def tfidf(self, *list_args, list_of_cols=[], tfidf_params={}):
@@ -102,10 +103,10 @@ class Feature(MethodBase):
         tfidf_params : dict, optional
             Parameters you would pass into TFIDF constructor as a dictionary, by default {}
         
-       Returns
+        Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Feature Object:
+            Returns a deep copy of the Feature object.
         """
         
         report_info = technique_reason_repo['feature']['text']['tfidf']
@@ -120,7 +121,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return self.data_properties.data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
@@ -132,7 +133,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return self.data_properties.train_data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
 
 
     def bag_of_words(self, *list_args, list_of_cols=[], bow_params={}):
@@ -156,8 +157,8 @@ class Feature(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Feature Object:
+            Returns a deep copy of the Feature object.
         """
 
         report_info = technique_reason_repo['feature']['text']['bow']
@@ -172,7 +173,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return self.data_properties.data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_bag_of_words(list_of_cols,
@@ -184,7 +185,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return self.data_properties.train_data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
 
 
     def nltk_postag(self, *list_args, list_of_cols=[]):
@@ -204,8 +205,8 @@ class Feature(MethodBase):
         
         Returns
         -------
-        Dataframe:
-            Top 10 rows of data or the training data to view analysis.
+        Feature Object:
+            Returns a deep copy of the Feature object.
         """
         
         report_info = technique_reason_repo['feature']['text']['postag']
@@ -222,7 +223,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return self.data_properties.data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = nltk_feature_postag(
@@ -231,7 +232,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return self.data_properties.train_data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
 
 
     def apply(self, func, output_col: str, description=''):
@@ -250,10 +251,8 @@ class Feature(MethodBase):
         
         Returns
         -------
-        Dataframe, *Dataframe
-            Transformed dataframe with rows with a missing values in a specific column are missing
-
-        * Returns 2 Dataframes if Train and Test data is provided. 
+        Feature Object:
+            Returns a deep copy of the Feature object.
 
         Examples
         --------
@@ -274,7 +273,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.log(f"Applied function to dataset. {description}")
     
-            return self.data_properties.data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = apply(func,
@@ -285,4 +284,4 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.log(f"Added feature {output_col}. {description}")
     
-            return self.data_properties.train_data.head(10)
+            return Feature(data_properties=copy.deepcopy(self.data_properties))

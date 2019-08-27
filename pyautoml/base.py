@@ -28,7 +28,9 @@ class MethodBase(object):
 
         if data is not None and not use_full_data:
             # Generate train set and test set.
+            # NOTE: Test is setting data to `None` is a good idea.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
+            self.data = None
 
         if self.data_properties.report is None:
             self.report = None

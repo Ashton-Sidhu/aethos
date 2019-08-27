@@ -16,9 +16,11 @@ class Data():
         self.train_data = train_data
         self.test_data = test_data
         self.use_full_data = use_full_data
+        self.report_name = report_name
         
         if report_name is not None:
             self.report = Report(report_name)
+            self.report_name = self.report.filename
         else:
             self.report = None
 
