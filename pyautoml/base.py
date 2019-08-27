@@ -1,11 +1,12 @@
 import pandas as pd
+import pandas_bokeh
 from IPython import get_ipython
 from IPython.display import display
-
-from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 from pyautoml.visualizations.visualize import *
+
+from pandas_summary import DataFrameSummary
 
 
 class MethodBase(object):
@@ -36,7 +37,7 @@ class MethodBase(object):
         if self.data_properties.report is None:
             self.report = None
         else:
-            self.report = self.data_properties.report
+            self.report = self.data_properties.report        
             
     def __repr__(self):
 
@@ -504,3 +505,10 @@ class MethodBase(object):
             raincloud(y_col, x_col, self.data)
         else:
             raincloud(y_col, x_col, self.train_data)
+
+    def visualize_barplot(self, x_col, y_col, groupby=None, method=None):
+
+        if self.data_properties.use_full_data:
+            barplot(x_col, y_col, self.data, groupby=groupby, method=method)
+        else:
+            barplot(x_col, y_col, self.train_data, groupby=groupby, method=method)

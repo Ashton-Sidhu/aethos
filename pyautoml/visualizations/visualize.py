@@ -1,5 +1,6 @@
+import pandas_bokeh
 import ptitprince as pt
-from bokeh.plotting import figure
+from IPython.display import display
 
 
 def raincloud(col: str, target_col: str, data, params={}):
@@ -34,6 +35,29 @@ def raincloud(col: str, target_col: str, data, params={}):
 
     ax = pt.RainCloud(**params)
 
-def barplot():
+def barplot(x, y, data, x_label='', y_label='', title='', groupby=None, method=None, orient='v'):
+        
+    data_copy = data[[x,y]].copy()
+    data_copy = data_copy.set_index(x)
 
-    p = figure(x_range=[list], plot_height=[int], title=[str], toolbar_location=[str], tools=[str], tooltips=)
+    if groupby is None:
+
+        p_bar = data_copy.plot_bokeh.bar(
+                                        xlabel=x_label,
+                                        ylabel=y_label,
+                                        title=title,
+                                        figsize=(1500,500)
+                                        )
+                        
+    else:
+
+        data_copy = data_copy.groupby(groupby, as_index=False)
+        
+        agg_func = getattr(data_copy, method)()
+
+        p_bar = agg_func.plot_bokeh.bar(
+                                        xlabel=x_label,
+                                        ylabel=y_label,
+                                        title=title,
+                                        figsize=(1500,500)                                        
+                                        )
