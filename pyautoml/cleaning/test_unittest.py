@@ -42,7 +42,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4", "col5"]
         dataset = pd.DataFrame(data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data=dataset)
 
         self.assertEqual(clean.train_data.shape[0], 4)
 
@@ -112,9 +112,9 @@ class TestCleaning(unittest.TestCase):
 
     def test_cleancategorical_removerow(self):
 
-        int_missing_data = np.array([(1, 0, 2),
-                                 (1, None, 1),
-                                 (None, None, None)])
+        int_missing_data = [[1, 0, 2],
+                            [1, np.nan, 1],
+                            [np.nan, np.nan, np.nan]]
 
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
@@ -127,21 +127,21 @@ class TestCleaning(unittest.TestCase):
 
     def test_cleancategorical_replacemissingnewcategory_dict(self):
 
-        missing_data = np.array([(1, "Green", 2),
-                                 (1, None, 1),
-                                 (None, None, None)])
+        missing_data = [[1, "Green", 2],
+                        [1, np.nan, 1],
+                        [np.nan, np.nan, np.nan]]
 
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
-        category_dict_mapping = {"col1": 2, "col2": "Blue"}
+        category_dict_mapping = {"col1": 2, "col2": "Blue", "col3": 4}
 
         clean = Clean(data, test_split_percentage=0.5, use_full_data=True)
         clean.replace_missing_new_category(col_mapping=category_dict_mapping)
         validate = clean.data.values.tolist()
 
-        self.assertListEqual(validate, np.array([(1, "Green", 2),
-                                                (1, "Blue", 1),
-                                                (2, "Blue", None)]).tolist())
+        self.assertListEqual(validate, [[1.0, "Green", 2.0],
+                                        [1.0, "Blue", 1.0],
+                                        [2.0, "Blue", 4.0]])
 
     def test_cleancategorical_replacemissingnewcategory_list_constantnotnone(self):
 

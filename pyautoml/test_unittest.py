@@ -164,7 +164,7 @@ class Test_TestBase(unittest.TestCase):
         base = MethodBase(data=data, train_data=None, test_data=None, use_full_data=True, target_field='', report_name="test", test_split_percentange=0.5)
         base.data_properties.target_field = "col3"
 
-        self.assertEquals('col3', base.data_properties.target_field)
+        self.assertEquals('col3', base.target_field)
 
     def test_setter(self):
 
