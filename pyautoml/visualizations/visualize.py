@@ -1,6 +1,6 @@
-import pandas_bokeh
 import ptitprince as pt
-from IPython.display import display
+
+import pandas_bokeh
 
 
 def raincloud(col: str, target_col: str, data, params={}):
@@ -35,29 +35,46 @@ def raincloud(col: str, target_col: str, data, params={}):
 
     ax = pt.RainCloud(**params)
 
-def barplot(x, y, data, x_label='', y_label='', title='', groupby=None, method=None, orient='v'):
+def barplot(x, y, data, groupby=None, method=None, orient='v', **kwargs):
+    """
+    Visualizes a bar plot.
+    
+    Parameters
+    ----------
+    x : str
+        Column name for the x axis.
+    y : str
+        Column for the y axis
+    data : Dataframe
+        [description]
+    groupby : str
+        Data to groupby - xaxis, optional, by default None
+    method : str
+        Method to aggregate groupy data
+        Examples: min, max, mean, etc., optional
+        by default None
+    orient : str, optional
+        Orientation of graph, 'h' for horizontal
+        'v' for vertical, by default 'v'
+    """
         
     data_copy = data[[x,y]].copy()
     data_copy = data_copy.set_index(x)
 
-    if groupby is None:
+    if groupby:
+        data_copy = data_copy.groupby(groupby, as_index=False)        
+        data_copy = getattr(data_copy, method)()
+
+    if orient == 'v':
 
         p_bar = data_copy.plot_bokeh.bar(
-                                        xlabel=x_label,
-                                        ylabel=y_label,
-                                        title=title,
-                                        figsize=(1500,500)
+                                        figsize=(1500,500), # For now until auto scale is implemented
+                                        **kwargs
                                         )
                         
-    else:
+    else:        
 
-        data_copy = data_copy.groupby(groupby, as_index=False)
-        
-        agg_func = getattr(data_copy, method)()
-
-        p_bar = agg_func.plot_bokeh.bar(
-                                        xlabel=x_label,
-                                        ylabel=y_label,
-                                        title=title,
-                                        figsize=(1500,500)                                        
+        p_bar = data_copy.plot_bokeh.barh(
+                                        figsize=(1500,500),
+                                        **kwargs                                        
                                         )
