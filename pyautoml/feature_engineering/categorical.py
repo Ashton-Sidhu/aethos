@@ -10,7 +10,7 @@ from pyautoml.util import (_function_input_validation, _get_columns,
 from sklearn.preprocessing import OneHotEncoder
 
 
-def feature_one_hot_encode(list_of_cols: list, params={"handle_unknown": "ignore"}, **datasets):
+def feature_one_hot_encode(list_of_cols: list, **algo_kwargs):
     """
     Creates a matrix of converted categorical columns into binary columns of ones and zeros.
     
@@ -18,7 +18,7 @@ def feature_one_hot_encode(list_of_cols: list, params={"handle_unknown": "ignore
     ----------
     list_of_cols : list
          A list of specific columns to apply this technique to.
-    params : dict, optional
+    algo_kwargs : optional
         Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
 
     Either the full data or training data plus testing data MUST be provided, not both.
@@ -38,17 +38,14 @@ def feature_one_hot_encode(list_of_cols: list, params={"handle_unknown": "ignore
     * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
+    data = algo_kwargs.pop('data', None)
+    train_data = algo_kwargs.pop('train_data', None)
+    test_data = algo_kwargs.pop('test_data', None)
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
-    enc = OneHotEncoder(**params)
+    enc = OneHotEncoder(handle_unknown='ignore', **algo_kwargs)
     list_of_cols = _get_columns(list_of_cols, data, train_data)
 
     if data is not None:

@@ -7,13 +7,13 @@ nltk_feature_postag
 """
 
 import pandas as pd
-from pyautoml.util import (_get_columns, _function_input_validation,
+from pyautoml.util import (_function_input_validation, _get_columns,
                            drop_replace_columns)
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
 
 
-def feature_bag_of_words(list_of_cols=[], params={}, **datasets):
+def feature_bag_of_words(list_of_cols=[], **algo_kwargs):
     """
     Creates a matrix of how many times a word appears in a document.
     
@@ -21,7 +21,7 @@ def feature_bag_of_words(list_of_cols=[], params={}, **datasets):
     ----------
     list_of_cols : list, optional
         A list of specific columns to apply this technique to., by default []
-    params : dict, optional
+    algo_kwargs : dict, optional
         Parameters you would pass into Bag of Words constructor as a dictionary., by default {}
 
     Either the full data or training data plus testing data MUST be provided, not both.
@@ -41,17 +41,14 @@ def feature_bag_of_words(list_of_cols=[], params={}, **datasets):
     * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
+    data = algo_kwargs.pop('data', None)
+    train_data = algo_kwargs.pop('train_data', None)
+    test_data = algo_kwargs.pop('test_data', None)
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
-    enc = CountVectorizer(**params)
+    enc = CountVectorizer(**algo_kwargs)
     list_of_cols = _get_columns(list_of_cols, data, train_data)
 
     if data is not None:
@@ -77,7 +74,7 @@ def feature_bag_of_words(list_of_cols=[], params={}, **datasets):
         return train_data, test_data
 
 
-def feature_tfidf(list_of_cols=[], params={}, **datasets):
+def feature_tfidf(list_of_cols=[], **algo_kwargs):
     """
     Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
     
@@ -85,8 +82,8 @@ def feature_tfidf(list_of_cols=[], params={}, **datasets):
     ----------
     list_of_cols : list, optional
         A list of specific columns to apply this technique to, by default []
-    params : dict, optional
-        Parameters you would pass into TFIDF constructor as a dictionary, by default {}
+    algo_kwargs :  optional
+        Parameters you would pass into TFIDF constructor, by default {}
 
     Either the full data or training data plus testing data MUST be provided, not both.
 
@@ -105,17 +102,14 @@ def feature_tfidf(list_of_cols=[], params={}, **datasets):
     * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
+    data = algo_kwargs.pop('data', None)
+    train_data = algo_kwargs.pop('train_data', None)
+    test_data = algo_kwargs.pop('test_data', None)
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
-    enc = TfidfVectorizer(**params)
+    enc = TfidfVectorizer(**algo_kwargs)
     list_of_cols = _get_columns(list_of_cols, data, train_data)
 
     if data is not None:

@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
@@ -35,7 +36,7 @@ class Feature(MethodBase):
             self.report.write_header("Feature Engineering")
 
 
-    def onehot_encode(self, *list_args, list_of_cols=[], onehot_params={"handle_unknown": "ignore"}):
+    def onehot_encode(self, *list_args, list_of_cols=[], **onehot_params):
         """
         Creates a matrix of converted categorical columns into binary columns of ones and zeros.
 
@@ -47,8 +48,8 @@ class Feature(MethodBase):
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
-        params : dict, optional
-            Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
+        params : optional
+            Parameters you would pass into Bag of Words constructor as a dictionary, by default handle_unknown=ignore}
         
         Returns
         -------
@@ -65,7 +66,7 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = feature_one_hot_encode(list_of_cols, data=self.data_properties.data, params=onehot_params)
+            self.data_properties.data = feature_one_hot_encode(list_of_cols, data=self.data_properties.data, **onehot_params)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
@@ -76,14 +77,14 @@ class Feature(MethodBase):
             self.data_properties.train_data, self.data_properties.test_data = feature_one_hot_encode(list_of_cols,
                                                                                                   train_data=self.data_properties.train_data,
                                                                                                   test_data=self.data_properties.test_data,
-                                                                                                  params=onehot_params)
+                                                                                                  **onehot_params)
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
             return Feature(data_properties=copy.deepcopy(self.data_properties))
 
 
-    def tfidf(self, *list_args, list_of_cols=[], tfidf_params={}):
+    def tfidf(self, *list_args, list_of_cols=[], **tfidf_params):
         """
         Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
@@ -100,7 +101,7 @@ class Feature(MethodBase):
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
-        tfidf_params : dict, optional
+        tfidf_params : optional
             Parameters you would pass into TFIDF constructor as a dictionary, by default {}
         
         Returns
@@ -116,7 +117,7 @@ class Feature(MethodBase):
 
         if self.data_properties.use_full_data:
             self.data_properties.data = feature_tfidf(
-                list_of_cols=list_of_cols, params=tfidf_params, data=self.data_properties.data,)
+                list_of_cols=list_of_cols, **tfidf_params, data=self.data_properties.data,)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
@@ -125,7 +126,7 @@ class Feature(MethodBase):
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
-                                                                                           params=tfidf_params,
+                                                                                           **tfidf_params,
                                                                                            train_data=self.data_properties.train_data,
                                                                                            test_data=self.data_properties.test_data,
                                                                                            )
@@ -136,7 +137,7 @@ class Feature(MethodBase):
             return Feature(data_properties=copy.deepcopy(self.data_properties))
 
 
-    def bag_of_words(self, *list_args, list_of_cols=[], bow_params={}):
+    def bag_of_words(self, *list_args, list_of_cols=[], **bow_params):
         """
         Creates a matrix of how many times a word appears in a document.
 
@@ -153,7 +154,7 @@ class Feature(MethodBase):
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
         bow_params : dict, optional
-            Parameters you would pass into Bag of Words constructor as a dictionary, by default {}
+            Parameters you would pass into Bag of Words constructor, by default {}
         
         Returns
         -------
@@ -168,7 +169,7 @@ class Feature(MethodBase):
 
         if self.data_properties.use_full_data:
             self.data_properties.data = feature_bag_of_words(
-                list_of_cols, params=bow_params, data=self.data_properties.data)
+                list_of_cols, **bow_params, data=self.data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
@@ -177,7 +178,7 @@ class Feature(MethodBase):
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_bag_of_words(list_of_cols,
-                                                                                                params=bow_params,
+                                                                                                **bow_params,
                                                                                                 train_data=self.data_properties.train_data,
                                                                                                 test_data=self.data_properties.test_data,
                                                                                                 )
