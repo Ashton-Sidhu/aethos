@@ -1,14 +1,13 @@
 import copy
 
 import pandas as pd
-import pandas_bokeh
 from IPython import get_ipython
 from IPython.display import display
+
+from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 from pyautoml.visualizations.visualize import *
-
-from pandas_summary import DataFrameSummary
 
 
 class MethodBase(object):
@@ -30,9 +29,11 @@ class MethodBase(object):
 
         if data is not None and not use_full_data:
             # Generate train set and test set.
-            # NOTE: Test is setting data to `None` is a good idea.
+            # NOTE: Test if setting data to `None` is a good idea.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
-            self.data = None
+            self.data_properties.data = None
+            self.data_properties.train_data.reset_index(drop=True, inplace=True)
+            self.data_properties.test_data.reset_index(drop=True, inplace=True)
 
         if self.data_properties.report is None:
             self.report = None
@@ -172,7 +173,7 @@ class MethodBase(object):
 
         self.data_properties.test_data = value
 
-     @property
+    @property
     def target_field(self):
 
         return self.data_properties.target_field
@@ -547,9 +548,28 @@ class MethodBase(object):
         else:
             raincloud(y_col, x_col, self.train_data)
 
-    def visualize_barplot(self, x_col, y_col, groupby=None, method=None):
+    def visualize_barplot(self, x_col, y_col, groupby=None, method=None, orient='v', **kwargs):
+        """
+        Plots a bar plot for the given columns provided.
+        
+        Parameters
+        ----------
+        x : str
+            Column name for the x axis.
+        y : str
+            Column for the y axis
+        groupby : str
+            Data to groupby - x-axis, optional, by default None
+        method : str
+            Method to aggregate groupy data
+            Examples: min, max, mean, etc., optional
+            by default None
+        orient : str, optional
+            Orientation of graph, 'h' for horizontal
+            'v' for vertical, by default 'v'
+        """
 
         if self.data_properties.use_full_data:
-            barplot(x_col, y_col, self.data, groupby=groupby, method=method)
+            barplot(x_col, y_col, self.data, groupby=groupby, method=method, orient=orient, **kwargs)
         else:
-            barplot(x_col, y_col, self.train_data, groupby=groupby, method=method)
+            barplot(x_col, y_col, self.train_data, groupby=groupby, method=method, orient=orient, **kwargs)

@@ -42,7 +42,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4", "col5"]
         dataset = pd.DataFrame(data, columns=columns)
 
-        clean = Clean(data)
+        clean = Clean(data=dataset)
 
         self.assertEqual(clean.train_data.shape[0], 4)
 
