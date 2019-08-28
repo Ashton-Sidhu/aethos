@@ -178,6 +178,11 @@ class MethodBase(object):
 
         return self.data_properties.target_field
 
+    @target_field.setter
+    def target_field(self, value):
+
+        self.data_properties.target_field = values
+        
     @property
     def missing_values(self):
         """
