@@ -1,6 +1,5 @@
-import ptitprince as pt
-
 import pandas_bokeh
+import ptitprince as pt
 
 
 def raincloud(col: str, target_col: str, data, params={}):
@@ -38,6 +37,8 @@ def raincloud(col: str, target_col: str, data, params={}):
 def barplot(x, y, data, groupby=None, method=None, orient='v', **kwargs):
     """
     Visualizes a bar plot.
+
+    Kwargs are bokeh plot, vbar, and hbar bokeh plots.
     
     Parameters
     ----------

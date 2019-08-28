@@ -3,8 +3,8 @@ import copy
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
-
 from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 from pyautoml.visualizations.visualize import *
@@ -397,21 +397,6 @@ class MethodBase(object):
 
             return self.train_data.head(10)
 
-    def copy(self):
-        """
-        Make a copy of this object's indices and data.
-        A new object will be created with a
-        copy of the calling object's data and indices. Modifications to
-        the data or indices of the copy will not be reflected in the
-        original object.
-        """
-        
-
-        data = self.data_properties
-
-        
-
-
     def _set_item(self, column: str, value: list, train_length: int, test_length: int):
         """
         Utility function for __setitem__ for determining which input is for which dataset
@@ -551,6 +536,17 @@ class MethodBase(object):
     def visualize_barplot(self, x_col, y_col, groupby=None, method=None, orient='v', **kwargs):
         """
         Plots a bar plot for the given columns provided.
+
+        If `groupby` is provided, method must be provided for example you may want to plot Age against survival rate,
+        so you would want to `groupby` Age and then find the `mean` as the method.
+
+        For a list of group by methods please checkout the following pandas link:
+        https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html#computations-descriptive-stats
+
+        For a list of possible arguments for the bar plot please checkout the following links:
+        https://github.com/PatrikHlobil/Pandas-Bokeh#barplot and
+        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.vbar or
+        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.hbar for horizontal
         
         Parameters
         ----------
