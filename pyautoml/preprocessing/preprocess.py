@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -35,7 +36,7 @@ class Preprocess(MethodBase):
             self.report.write_header("Preprocessing")
 
         
-    def normalize_numeric(self, *list_args, list_of_cols=[], normalize_params={}):
+    def normalize_numeric(self, *list_args, list_of_cols=[], **normalize_params):
         """
         Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
         
@@ -52,7 +53,7 @@ class Preprocess(MethodBase):
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
         normalize_params : dict, optional
-            A dictionary of parmaters to pass into MinMaxScaler() constructor
+            Parmaters to pass into MinMaxScaler() constructor
             from Scikit-Learn, by default {}
         
         Returns
@@ -67,7 +68,7 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if self.data_properties.use_full_data:
-            self.data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, params=normalize_params, data=self.data_properties.data)
+            self.data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, **normalize_params, data=self.data_properties.data)
 
             if self.report is not None:
                 if list_of_cols:
@@ -80,7 +81,7 @@ class Preprocess(MethodBase):
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
-                                                                                                    params=normalize_params,
+                                                                                                    **normalize_params,
                                                                                                     train_data=self.data_properties.train_data,
                                                                                                     test_data=self.data_properties.test_data)
 

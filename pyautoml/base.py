@@ -3,10 +3,11 @@ import copy
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
+from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
-
-from pandas_summary import DataFrameSummary
+from pyautoml.visualizations.visualize import *
 
 
 class MethodBase(object):
@@ -28,14 +29,16 @@ class MethodBase(object):
 
         if data is not None and not use_full_data:
             # Generate train set and test set.
-            # NOTE: Test is setting data to `None` is a good idea.
+            # NOTE: Test if setting data to `None` is a good idea.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
-            self.data = None
+            self.data_properties.data = None
+            self.data_properties.train_data.reset_index(drop=True, inplace=True)
+            self.data_properties.test_data.reset_index(drop=True, inplace=True)
 
         if self.data_properties.report is None:
             self.report = None
         else:
-            self.report = self.data_properties.report
+            self.report = self.data_properties.report        
             
     def __repr__(self):
 
@@ -170,6 +173,16 @@ class MethodBase(object):
 
         self.data_properties.test_data = value
 
+    @property
+    def target_field(self):
+
+        return self.data_properties.target_field
+
+    @target_field.setter
+    def target_field(self, value):
+
+        self.data_properties.target_field = values
+        
     @property
     def missing_values(self):
         """
@@ -389,21 +402,6 @@ class MethodBase(object):
 
             return self.train_data.head(10)
 
-    def copy(self):
-        """
-        Make a copy of this object's indices and data.
-        A new object will be created with a
-        copy of the calling object's data and indices. Modifications to
-        the data or indices of the copy will not be reflected in the
-        original object.
-        """
-        
-
-        data = self.data_properties
-
-        
-
-
     def _set_item(self, column: str, value: list, train_length: int, test_length: int):
         """
         Utility function for __setitem__ for determining which input is for which dataset
@@ -432,3 +430,147 @@ class MethodBase(object):
 
         else:
             self.data_properties.test_data[column] = value
+
+
+    def visualize_raincloud(self, x_col: str, y_col=None, params={}):
+        """
+        Combines the box plot, scatter plot and split violin plot into one data visualization.
+        This is used to offer eyeballed statistical inference, assessment of data distributions (useful to check assumptions),
+        and the raw data itself showing outliers and underlying patterns.
+
+        A raincloud is made of:
+        1) "Cloud", kernel desity estimate, the half of a violinplot.
+        2) "Rain", a stripplot below the cloud
+        3) "Umberella", a boxplot
+        4) "Thunder", a pointplot connecting the mean of the different categories (if `pointplot` is `True`)
+
+        Parameters
+        ----------
+        x_col : str
+            X axis data, reference by column name, any data
+        y_col : str
+            Y axis data, reference by column name, measurable data (numeric)
+            by default target_field
+        params : dict, optional
+            Parameters for the rain cloud plot, by default
+                { 'x'=target_col
+                'y'=col
+                'data'=data.infer_objects()
+                'pointplot'=True
+                'width_viol'=0.8
+                'width_box'=.4
+                'figsize'=(12,8)
+                'orient'='h'
+                'move'=0. }
+
+        Possible Params for Raincloud Plot
+        ----------------------------------
+        x : Iterable, np.array, or dataframe column name if 'data' is specified
+            Categorical data.
+        y : Iterable, np.array, or dataframe column name if 'data' is specified
+            Measure data (Numeric)
+        hue : Iterable, np.array, or dataframe column name if 'data' is specified
+            Second categorical data. Use it to obtain different clouds and rainpoints
+        data : Dataframe              
+            input pandas dataframe
+        orient : str                  
+            vertical if "v" (default), horizontal if "h"
+        width_viol : float            
+            width of the cloud
+        width_box : float             
+            width of the boxplot
+        palette : list or dict        
+            Colours to use for the different levels of categorical variables
+        bw : str or float
+            Either the name of a reference rule or the scale factor to use when computing the kernel bandwidth,
+            by default "scott"
+        linewidth : float             
+            width of the lines
+        cut : float
+            Distance, in units of bandwidth size, to extend the density past the extreme datapoints.
+            Set to 0 to limit the violin range within the range of the observed data,
+            by default 2
+        scale : str
+            The method used to scale the width of each violin.
+            If area, each violin will have the same area.
+            If count, the width of the violins will be scaled by the number of observations in that bin.
+            If width, each violin will have the same width.
+            By default "area"
+        jitter : float, True/1
+            Amount of jitter (only along the categorical axis) to apply.
+            This can be useful when you have many points and they overlap,
+            so that it is easier to see the distribution. You can specify the amount of jitter (half the width of the uniform random variable support),
+            or just use True for a good default.
+        move : float                  
+            adjust rain position to the x-axis (default value 0.)
+        offset : float                
+            adjust cloud position to the x-axis
+        color : matplotlib color
+            Color for all of the elements, or seed for a gradient palette.
+        ax : matplotlib axes
+            Axes object to draw the plot onto, otherwise uses the current Axes.
+        figsize : (int, int)    
+            size of the visualization, ex (12, 5)
+        pointplot : bool   
+            line that connects the means of all categories, by default False
+        dodge : bool 
+            When hue nesting is used, whether elements should be shifted along the categorical axis.
+
+        Source: https://micahallen.org/2018/03/15/introducing-raincloud-plots/
+
+        Useful parameter documentation
+        ------------------------------
+            https://seaborn.pydata.org/generated/seaborn.boxplot.html
+            https://seaborn.pydata.org/generated/seaborn.violinplot.html
+            https://seaborn.pydata.org/generated/seaborn.stripplot.html
+        
+        Examples
+        --------
+        >>> clean.visualize_raincloud('col1') # Will plot col1 values on the x axis and your target variable values on the y axis
+        >>> clean.visualize_raincloud('col1', 'col2') # Will plot col1 on the x and col2 on the y axis
+        """
+
+        if y_col is None:
+            y_col = self.target_field
+
+        if self.data_properties.use_full_data:
+            raincloud(y_col, x_col, self.data)
+        else:
+            raincloud(y_col, x_col, self.train_data)
+
+    def visualize_barplot(self, x_col, y_col, groupby=None, method=None, orient='v', **kwargs):
+        """
+        Plots a bar plot for the given columns provided.
+
+        If `groupby` is provided, method must be provided for example you may want to plot Age against survival rate,
+        so you would want to `groupby` Age and then find the `mean` as the method.
+
+        For a list of group by methods please checkout the following pandas link:
+        https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html#computations-descriptive-stats
+
+        For a list of possible arguments for the bar plot please checkout the following links:
+        https://github.com/PatrikHlobil/Pandas-Bokeh#barplot and
+        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.vbar or
+        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.hbar for horizontal
+        
+        Parameters
+        ----------
+        x : str
+            Column name for the x axis.
+        y : str
+            Column for the y axis
+        groupby : str
+            Data to groupby - x-axis, optional, by default None
+        method : str
+            Method to aggregate groupy data
+            Examples: min, max, mean, etc., optional
+            by default None
+        orient : str, optional
+            Orientation of graph, 'h' for horizontal
+            'v' for vertical, by default 'v'
+        """
+
+        if self.data_properties.use_full_data:
+            barplot(x_col, y_col, self.data, groupby=groupby, method=method, orient=orient, **kwargs)
+        else:
+            barplot(x_col, y_col, self.train_data, groupby=groupby, method=method, orient=orient, **kwargs)

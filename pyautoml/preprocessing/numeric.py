@@ -10,7 +10,7 @@ from pyautoml.util import (_function_input_validation,
 from sklearn.preprocessing import MinMaxScaler
 
 
-def preprocess_normalize(list_of_cols=[], params={}, **datasets):
+def preprocess_normalize(list_of_cols=[], **algo_kwargs):
     """
     Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
     
@@ -20,8 +20,8 @@ def preprocess_normalize(list_of_cols=[], params={}, **datasets):
         A list of specific columns to apply this technique to
         If `list_of_cols` is not provided, the strategy will be
         applied to all numeric columns, by default []
-    params : dict, optional
-        A dictionary of parmaters to pass into MinMaxScaler() constructor
+    algo_kwargs : optional
+        Parmaters to pass into MinMaxScaler() constructor
         from Scikit-Learn, by default {}
 
     Either the full data or training data plus testing data MUST be provided, not both.
@@ -41,18 +41,15 @@ def preprocess_normalize(list_of_cols=[], params={}, **datasets):
     * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
+    data = algo_kwargs.pop('data', None)
+    train_data = algo_kwargs.pop('train_data', None)
+    test_data = algo_kwargs.pop('test_data', None)
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
     list_of_cols = _numeric_input_conditions(list_of_cols, data, train_data)
-    scaler = MinMaxScaler(**params)
+    scaler = MinMaxScaler(**algo_kwargs)
 
     if data is not None:
         scaled_data = scaler.fit_transform(data[list_of_cols])
