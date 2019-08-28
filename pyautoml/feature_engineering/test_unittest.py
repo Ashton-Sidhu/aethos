@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+
 from pyautoml import Feature
 
 
@@ -31,10 +32,10 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(data=data,
                           test_split_percentage=0.5, use_full_data=True)
-        feature.tfidf(tfidf_params={"lowercase": False})
+        feature.tfidf(lowercase=False, stop_words='english')
         validate = feature.data.shape[1]
 
-        self.assertEqual(validate, 5)
+        self.assertEqual(validate, 2)
 
     def test_featureextractioncategorical_onehot(self):
 
