@@ -1,10 +1,11 @@
 import copy
+import re
 
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
-from pandas_summary import DataFrameSummary
 
+from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 from pyautoml.visualizations.visualize import *
@@ -353,7 +354,7 @@ class MethodBase(object):
                 return test_data_summary[column]
                 
 
-    def drop(self, *drop_columns, reason=''):
+    def drop(self, *drop_columns, keep=[], regexp='', reason=''):
         """
         Drops columns from the dataframe.
         
@@ -381,9 +382,15 @@ class MethodBase(object):
         except:
             data_columns = self.train_data.columns
 
-        drop_columns = list(drop_columns)
+        if regexp:
+            regex = re.compile(regexp)
+            regex_columns = list(filter(regex.search, data_columns))
+        else:
+            regex_columns = []
 
-        if  not all(elem in data_columns for elem in drop_columns):
+        drop_columns = list(set(set(drop_columns).union(regex_columns)).difference(keep))
+
+        if not all(elem in data_columns for elem in drop_columns):
             raise ValueError("Not all columns exist in Dataframe")
 
         if self.data_properties.use_full_data:

@@ -124,6 +124,22 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_dropcolumns_complex(self):
+
+        int_missing_data = [[1, 0, 0, 3],
+                            [0, 2, 3, 4],
+                            [0, 3, 4, 4],
+                            [1, 2, 3, 6]]
+        columns = ["col1", "col2", "col3", "py"]        
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(data=data, train_data=None, test_data=None, use_full_data=False, target_field='', report_name="test", test_split_percentange=0.5)
+        base.drop("col1", keep=['col2'], regexp=r'col*', reason="Columns were unimportant.")
+
+        validate = (list(base.train_data.columns) == ['col2', 'py'] and list(base.test_data.columns) ==  ['col2', 'py'])
+
+        self.assertTrue(validate)    
+
     def test_getattr(self):
         
         int_missing_data = [[1, 0, 0],
