@@ -33,7 +33,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data, test_split_percentage=0.5, split=False, report_name="test")
+        clean = Clean(data=data, test_split_percentage=0.5, split=False, report_name="test")
         clean.remove_columns(0.5)
 
         with open(clean.data_properties.report.filename) as f:
@@ -73,7 +73,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(data, test_split_percentage=0.5, split=False, report_name="test")
+        preprocess = Preprocess(data=data, test_split_percentage=0.5, split=False, report_name="test")
         preprocess.normalize_numeric()
         
         with open(preprocess.data_properties.report.filename) as f:

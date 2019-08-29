@@ -10,7 +10,7 @@ from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
 from pyautoml.feature_engineering.util import *
-from pyautoml.util import _input_columns
+from pyautoml.util import _contructor_data_properties, _input_columns
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -23,7 +23,9 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
 
 class Feature(MethodBase):
 
-    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(self, step=None, data=None, train_data=None, test_data=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+        
+        data_properties = _contructor_data_properties(step)
 
         if data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
@@ -71,7 +73,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_one_hot_encode(list_of_cols=list_of_cols,
@@ -81,7 +83,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
 
 
     def tfidf(self, *list_args, list_of_cols=[], keep_col=False, **tfidf_params):
@@ -124,7 +126,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
@@ -137,7 +139,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
 
 
     def bag_of_words(self, *list_args, list_of_cols=[], keep_col=False, **bow_params):
@@ -179,7 +181,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_bag_of_words(list_of_cols=list_of_cols,
@@ -192,7 +194,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
 
 
     def nltk_postag(self, *list_args, list_of_cols=[]):
@@ -227,7 +229,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = nltk_feature_postag(
@@ -236,7 +238,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
 
 
     def apply(self, func, output_col: str, description=''):
@@ -277,7 +279,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.log(f"Applied function to dataset. {description}")
     
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = apply(func,
@@ -288,4 +290,4 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.log(f"Added feature {output_col}. {description}")
     
-            return Feature(data_properties=copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self.data_properties))

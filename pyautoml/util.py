@@ -192,3 +192,27 @@ def _input_columns(list_args: list, list_of_cols: list):
         column_list = list(list_args)  
 
     return column_list
+
+def _contructor_data_properties(step_obj):
+    """
+    Strips down a step object like Clean, Preprocess, Feature, etc and returns its data properties
+    
+    Parameters
+    ----------
+    step_obj : object
+        Step object such as Clean, Preprocess, Feature
+
+    Returns
+    -------
+    data_properties: object
+        Data object
+    """
+
+    if not step_obj:
+        return None
+    else:
+        # Big hack until I implement a self __deepcopy__ implementation
+        try:
+            return step_obj.data_properties
+        except:
+            return step_obj

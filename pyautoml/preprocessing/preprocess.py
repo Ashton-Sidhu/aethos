@@ -9,7 +9,8 @@ from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import _input_columns, _numeric_input_conditions
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _numeric_input_conditions)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -22,7 +23,9 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
 class Preprocess(MethodBase):
 
     
-    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(self, step=None, data=None, train_data=None, test_data=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+
+        data_properties = _contructor_data_properties(step)
 
         if data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
@@ -77,7 +80,7 @@ class Preprocess(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
             
-            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
+            return Preprocess(copy.deepcopy(self.data_properties))
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
@@ -92,7 +95,7 @@ class Preprocess(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
+            return Preprocess(copy.deepcopy(self.data_properties))
 
     def sentence_split(self, col_name: str):
         """
@@ -117,7 +120,7 @@ class Preprocess(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
-            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
+            return Preprocess(copy.deepcopy(self.data_properties))
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = split_sentence(col_name, 
@@ -127,4 +130,4 @@ class Preprocess(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
-            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
+            return Preprocess(copy.deepcopy(self.data_properties))
