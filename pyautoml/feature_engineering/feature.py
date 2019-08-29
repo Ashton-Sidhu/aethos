@@ -2,9 +2,8 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
@@ -283,9 +282,9 @@ class Feature(MethodBase):
     
         else:
             self.data_properties.train_data, self.data_properties.test_data = apply(func,
-                                                                                                                    output_col,
-                                                                                                                    train_data=self.data_properties.train_data,
-                                                                                                                    test_data=self.data_properties.test_data)
+                                                                                    output_col,
+                                                                                    train_data=self.data_properties.train_data,
+                                                                                    test_data=self.data_properties.test_data)
     
             if self.report is not None:
                 self.report.log(f"Added feature {output_col}. {description}")

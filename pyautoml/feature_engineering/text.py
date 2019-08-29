@@ -7,11 +7,10 @@ nltk_feature_postag
 """
 
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from textblob import TextBlob
-
 from pyautoml.util import (_function_input_validation, _get_columns,
                            drop_replace_columns)
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from textblob import TextBlob
 
 
 def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
@@ -130,7 +129,7 @@ def feature_tfidf(list_of_cols=[], keep_col=False, **algo_kwargs):
 
             enc_test_data = enc.transform(test_data[col]).toarray()
             enc_test_df = pd.DataFrame(
-                enc_test_data, columns=enc.get_features_names())
+                enc_test_data, columns=enc.get_feature_names())
             test_data = drop_replace_columns(test_data, col, enc_test_df, keep_col)
 
         return train_data, test_data

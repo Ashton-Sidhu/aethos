@@ -39,12 +39,12 @@ def split_sentence(list_of_cols=[], **datasets):
 
     if data is not None:
         for col in list_of_cols:
-            data.loc[:, col + '_sentences'] = data[col].apply(lambda x: sent_tokenize(x))
+            data.loc[:, col + '_sentences'] = data.loc[:, col].apply(lambda x: sent_tokenize(x))
 
         return data
     else:
         for col in list_of_cols:
-            train_data.loc[:, col + '_sentences'] = train_data[col].apply(lambda x: sent_tokenize(x))
-            test_data.loc[:, col + '_sentences'] = test_data[col].apply(lambda x: sent_tokenize(x))
+            train_data.loc[:, col + '_sentences'] = train_data.loc[:, col].apply(lambda x: sent_tokenize(x))
+            test_data.loc[:, col + '_sentences'] = test_data.loc[:, col].apply(lambda x: sent_tokenize(x))
 
         return train_data, test_data

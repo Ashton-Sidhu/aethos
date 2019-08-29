@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from pyautoml import Feature
 
 
@@ -50,6 +49,20 @@ class TestFeatureExtraction(unittest.TestCase):
                           test_split_percentage=0.5, split=False)
         feature.tfidf(lowercase=False, stop_words='english')
         validate = feature.data.shape[1]
+
+        self.assertEqual(validate, 2)
+
+    def test_featureextractiontext_splittfidf(self):
+
+        list_of_sentences = ['Hi my name is pyml',
+                             'Hi name pyml']
+        columns = ["text"]
+        data = pd.DataFrame(list_of_sentences, columns=columns)
+
+        feature = Feature(data=data,
+                          test_split_percentage=0.5)
+        feature.tfidf('text', lowercase=False, stop_words='english')
+        validate = feature.train_data.shape[1]
 
         self.assertEqual(validate, 2)
 
