@@ -360,6 +360,10 @@ class MethodBase(object):
         
         Parameters
         ----------
+        keep : list: optional
+            List of columns to not drop, by default []
+        regexp : str, optional
+            Regular Expression of columns to drop, by default ''
         reason : str, optional
             Reasoning for dropping columns, by default ''
 
