@@ -15,7 +15,7 @@ class TestData(unittest.TestCase):
         columns = ["PID", "CapsLock", "space column name", "Caps Space"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
+        data = Data(data=dataset, train_data=None, test_data=None, split=True, target_field="", report_name=None)
         new_df = data.normalize_column_names(dataset)
 
         self.assertListEqual(new_df.columns.tolist(), ["pid", "capslock", "space_column_name", "caps_space"])
@@ -30,7 +30,7 @@ class TestData(unittest.TestCase):
         columns = ["PID", "CapsLock", "space column name", "Caps Space"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
+        data = Data(data=dataset, train_data=None, test_data=None, split=True, target_field="", report_name=None)
         new_df = data.normalize_column_names(dataset)
 
         self.assertDictEqual(data.colMapping, {"PID": "pid"
@@ -44,7 +44,7 @@ class TestData(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
+        data = Data(data=dataset, train_data=None, test_data=None, split=True, target_field="", report_name=None)
         data.field_types = {"col1": 0, "col3": 0}
         new_df = data.reduce_data(dataset)
 
@@ -58,7 +58,7 @@ class TestData(unittest.TestCase):
         columns = ["pid","col1", "col2", "col3", "col4", "col5"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, use_full_data=False, target_field="", report_name=None)
+        data = Data(data=dataset, train_data=None, test_data=None, split=True, target_field="", report_name=None)
         new_df = data.standardize_data(dataset)
 
         self.assertIsNotNone(new_df)

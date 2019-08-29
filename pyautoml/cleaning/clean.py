@@ -21,14 +21,14 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
 class Clean(MethodBase):
 
     
-    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):   
+    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):   
 
         if data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+                        split=split, target_field=target_field, report_name=report_name)
         else:
             super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report_name)
+                        split=data_properties.split, target_field=data_properties.target_field, report_name=data_properties.report_name)
         
         if self.data_properties.report is not None:
             self.report.write_header("Cleaning")
@@ -54,7 +54,7 @@ class Clean(MethodBase):
 
         report_info = technique_reason_repo['clean']['general']['remove_columns']
 
-        if self.data_properties.use_full_data:            
+        if not self.data_properties.split:            
             #Gather original data information
             original_columns = set(list(self.data_properties.data.columns))
 
@@ -102,7 +102,7 @@ class Clean(MethodBase):
 
         report_info = technique_reason_repo['clean']['general']['remove_rows']
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = remove_rows_threshold(threshold, data=self.data_properties.data)
 
             #Write to report
@@ -152,7 +152,7 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="mean", data=self.data_properties.data)
 
             #Write to report
@@ -210,7 +210,7 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="median", data=self.data_properties.data)
             
             if self.report is not None:
@@ -265,7 +265,7 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="most_frequent", data=self.data_properties.data)
 
             if self.report is not None:
@@ -332,7 +332,7 @@ class Clean(MethodBase):
             ## If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_constant = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = replace_missing_constant(col_to_constant=col_to_constant, constant=constant, data=self.data_properties.data)
 
             if self.report is not None:
@@ -402,7 +402,7 @@ class Clean(MethodBase):
             ## If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_category = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = replace_missing_new_category(col_to_category=col_to_category, constant=new_category, data=self.data_properties.data)
 
             if self.report is not None:
@@ -454,7 +454,7 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = replace_missing_remove_row(list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
@@ -501,7 +501,7 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
    
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
@@ -532,7 +532,7 @@ class Clean(MethodBase):
     
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
     
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = remove_duplicate_columns(data=self.data_properties.data)
 
             if self.report is not None:
@@ -581,7 +581,7 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
         
-        if self.data_properties.use_full_data:   
+        if not self.data_properties.split:   
             self.data_properties.data = replace_missing_random_discrete(list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:

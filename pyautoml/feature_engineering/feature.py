@@ -23,14 +23,14 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
 
 class Feature(MethodBase):
 
-    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):
+    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
 
         if data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+                        split=split, target_field=target_field, report_name=report_name)
         else:
             super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report_name)
+                        split=data_properties.split, target_field=data_properties.target_field, report_name=data_properties.report_name)
                         
         if self.data_properties.report is not None:
             self.report.write_header("Feature Engineering")
@@ -65,7 +65,7 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = feature_one_hot_encode(list_of_cols, data=self.data_properties.data, **onehot_params)
 
             if self.report is not None:
@@ -115,7 +115,7 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = feature_tfidf(
                 list_of_cols=list_of_cols, **tfidf_params, data=self.data_properties.data,)
 
@@ -167,7 +167,7 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = feature_bag_of_words(
                 list_of_cols, **bow_params, data=self.data_properties.data)
 
@@ -218,7 +218,7 @@ class Feature(MethodBase):
         else:
             list_of_cols = list(list_args)
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = nltk_feature_postag(list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
@@ -268,7 +268,7 @@ class Feature(MethodBase):
             2     1     0     1     1
         """
         
-        if self.data_properties.use_full_data:    
+        if not self.data_properties.split:    
             self.data_properties.data = apply(func, output_col, data=self.data_properties.data)
     
             if self.report is not None:

@@ -3,6 +3,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from pyautoml import Clean, Feature, Preprocess
 from pyautoml.reporting.report import Report
 
@@ -32,7 +33,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
+        clean = Clean(data, test_split_percentage=0.5, split=False, report_name="test")
         clean.remove_columns(0.5)
 
         with open(clean.data_properties.report.filename) as f:
@@ -52,7 +53,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, use_full_data=True, report_name="test")
+        clean = Clean(data=data, test_split_percentage=0.5, split=False, report_name="test")
         clean_data = clean.replace_missing_new_category()
 
         with open(clean.data_properties.report.filename) as f:
@@ -72,7 +73,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(data, test_split_percentage=0.5, use_full_data=False, report_name="test")
+        preprocess = Preprocess(data, test_split_percentage=0.5, split=False, report_name="test")
         preprocess.normalize_numeric()
         
         with open(preprocess.data_properties.report.filename) as f:
@@ -91,7 +92,7 @@ class TestReport(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(data=data, test_split_percentage=0.5, use_full_data=True, report_name="test")
+        feature = Feature(data=data, test_split_percentage=0.5, split=False, report_name="test")
         feature.bag_of_words()
 
         with open(feature.data_properties.report.filename) as f:

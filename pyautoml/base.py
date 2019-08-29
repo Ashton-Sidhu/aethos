@@ -18,7 +18,7 @@ class MethodBase(object):
         data = kwargs.pop('data')
         train_data = kwargs.pop('train_data')
         test_data = kwargs.pop('test_data')
-        use_full_data = kwargs.pop('use_full_data')
+        split = kwargs.pop('split')
         target_field = kwargs.pop('target_field')
         report_name = kwargs.pop('report_name')
         test_split_percentage = kwargs.pop('test_split_percentange')
@@ -26,9 +26,9 @@ class MethodBase(object):
         if not _function_input_validation(data, train_data, test_data):
             raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
-        self.data_properties = Data(data, train_data, test_data, use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+        self.data_properties = Data(data, train_data, test_data, split=split, target_field=target_field, report_name=report_name)
 
-        if data is not None and not use_full_data:
+        if data is not None and split:
             # Generate train set and test set.
             # NOTE: Test if setting data to `None` is a good idea.
             self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
@@ -46,7 +46,7 @@ class MethodBase(object):
         shell = get_ipython().__class__.__name__
 
         if shell == 'ZMQInteractiveShell':
-            if self.data_properties.use_full_data:
+            if not self.data_properties.split:
                 display(self.data_properties.data.head(10)) # Hack for jupyter notebooks
                 
                 return ''
@@ -56,7 +56,7 @@ class MethodBase(object):
                 return ''
         
         else:
-            if self.data_properties.use_full_data:
+            if not self.data_properties.split:
                 return self.data_properties.data.to_string()
             else:
                 return self.data_properties.train_data.to_string()
@@ -64,7 +64,7 @@ class MethodBase(object):
 
     def __getitem__(self, column):
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             return self.data_properties.data[column]
         else:
             return self.data_properties.train_data[column]
@@ -72,7 +72,7 @@ class MethodBase(object):
 
     def __setitem__(self, column, value):
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data[column] = value
 
             return self.data_properties.data.head(10)
@@ -104,7 +104,7 @@ class MethodBase(object):
 
     def __getattr__(self, column):
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             return self.data_properties.data[column]
         else:
             return self.data_properties.train_data[column]
@@ -227,7 +227,7 @@ class MethodBase(object):
             Dataframe describing your dataset with basic descriptive info
         """
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             data_summary = DataFrameSummary(self.data)
 
             return data_summary.summary()
@@ -270,7 +270,7 @@ class MethodBase(object):
             Dataframe describing your columns with basic descriptive info
         """
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             data_summary = DataFrameSummary(self.data)
 
             return data_summary.columns_stats
@@ -339,7 +339,7 @@ class MethodBase(object):
             Dictionary mapping a statistic and its value for a specific column
         """
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             data_summary = DataFrameSummary(self.data)
 
             return data_summary[column]
@@ -393,7 +393,7 @@ class MethodBase(object):
         if not all(elem in data_columns for elem in drop_columns):
             raise ValueError("Not all columns exist in Dataframe")
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             self.data_properties.data = self.data.drop(drop_columns, axis=1)
 
             if self.report is not None:
@@ -540,7 +540,7 @@ class MethodBase(object):
         if y_col is None:
             y_col = self.target_field
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             raincloud(y_col, x_col, self.data)
         else:
             raincloud(y_col, x_col, self.train_data)
@@ -577,7 +577,7 @@ class MethodBase(object):
             'v' for vertical, by default 'v'
         """
 
-        if self.data_properties.use_full_data:
+        if not self.data_properties.split:
             barplot(x_col, y_col, self.data, groupby=groupby, method=method, orient=orient, **kwargs)
         else:
             barplot(x_col, y_col, self.train_data, groupby=groupby, method=method, orient=orient, **kwargs)

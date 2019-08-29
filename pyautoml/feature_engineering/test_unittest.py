@@ -16,7 +16,7 @@ class TestFeatureExtraction(unittest.TestCase):
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
         feature = Feature(data=data,
-                          test_split_percentage=0.5, use_full_data=True)
+                          test_split_percentage=0.5, split=False)
         feature.bag_of_words()
         validate = feature.data.values.tolist()
 
@@ -31,7 +31,7 @@ class TestFeatureExtraction(unittest.TestCase):
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
         feature = Feature(data=data,
-                          test_split_percentage=0.5, use_full_data=True)
+                          test_split_percentage=0.5, split=False)
         feature.tfidf(lowercase=False, stop_words='english')
         validate = feature.data.shape[1]
 
@@ -46,7 +46,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(data=data, test_split_percentage=0.5, use_full_data=True)
+        feature = Feature(data=data, test_split_percentage=0.5, split=False)
         feature.onehot_encode(list_of_cols=["col1", "col3"])
         validate = feature.data.values.tolist()
 
@@ -62,7 +62,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(data=data, test_split_percentage=0.5, use_full_data=True)
+        feature = Feature(data=data, test_split_percentage=0.5, split=False)
         feature.nltk_postag()
         validate = len(feature.data.columns)
 
@@ -78,7 +78,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(data, columns=columns)
 
-        feature = Feature(data=data, use_full_data=True)
+        feature = Feature(data=data, split=False)
         feature.apply(lambda x: x['col1'] > 0, 'new_col')
         validate = 'new_col' in feature.data.columns
 
