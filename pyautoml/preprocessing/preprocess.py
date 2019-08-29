@@ -2,9 +2,8 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -45,7 +44,7 @@ class Preprocess(MethodBase):
         
         If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
 
-        If a list of columns is provided use the list, otherwise use arguemnts.
+        If a list of columns is provided use the list, otherwise use arguments.
 
         This function can be found in `preprocess/numeric.py`     
         
@@ -97,25 +96,31 @@ class Preprocess(MethodBase):
 
             return Preprocess(copy.deepcopy(self.data_properties))
 
-    def sentence_split(self, col_name: str):
+    def sentence_split(self, *list_args, list_of_cols=[]):
         """
-        Splits text data into sentences and saves it into another column for analysis
+        Splits text data into sentences and saves it into another column for analysis.
+
+        If a list of columns is provided use the list, otherwise use arguments.
         
         Parameters
         ----------
-        col_name : str
-            Column name of your text data
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
 
         Returns
         -------
         Preprocess Object:
             Returns a deep copy of the Preprocess object.
         """
-    
+
         report_info = technique_reason_repo['preprocess']['text']['split_sentence']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)        
     
         if not self.data_properties.split:    
-            self.data_properties.data = split_sentence(col_name, data=self.data_properties.data)
+            self.data_properties.data = split_sentence(list_of_cols, data=self.data_properties.data)
     
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
@@ -123,7 +128,7 @@ class Preprocess(MethodBase):
             return Preprocess(copy.deepcopy(self.data_properties))
     
         else:
-            self.data_properties.train_data, self.data_properties.test_data = split_sentence(col_name, 
+            self.data_properties.train_data, self.data_properties.test_data = split_sentence(list_of_cols, 
                                                                                             train_data=self.data_properties.train_data, 
                                                                                             test_data=self.data_properties.test_data)
     
