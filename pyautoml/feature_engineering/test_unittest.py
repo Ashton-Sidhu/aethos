@@ -23,6 +23,22 @@ class TestFeatureExtraction(unittest.TestCase):
         self.assertListEqual(validate, [[1, 1, 1, 1, 1],
                                         [1, 0, 0, 1, 1]])
 
+    def test_featureextractiontext_bow_keepcol(self):
+
+        list_of_sentences = ['Hi my name is pyml',
+                             'Hi name pyml']
+
+        columns = ["text"]
+        data = pd.DataFrame(list_of_sentences, columns=columns)
+
+        feature = Feature(data=data,
+                          test_split_percentage=0.5, split=False)
+        feature.bag_of_words(keep_col=True)
+        validate = feature.data.values.tolist()
+
+        self.assertListEqual(validate, [['Hi my name is pyml', 1, 1, 1, 1, 1],
+                                        ['Hi name pyml', 1, 0, 0, 1, 1]])
+
     def test_featureextractiontext_tfidf(self):
 
         list_of_sentences = ['Hi my name is pyml',
@@ -36,6 +52,20 @@ class TestFeatureExtraction(unittest.TestCase):
         validate = feature.data.shape[1]
 
         self.assertEqual(validate, 2)
+
+    def test_featureextractiontext_tfidf_keepcol(self):
+
+        list_of_sentences = ['Hi my name is pyml',
+                             'Hi name pyml']
+        columns = ["text"]
+        data = pd.DataFrame(list_of_sentences, columns=columns)
+
+        feature = Feature(data=data,
+                          test_split_percentage=0.5, split=False)
+        feature.tfidf(keep_col=True, lowercase=False, stop_words='english')
+        validate = feature.data.shape[1]
+
+        self.assertEqual(validate, 3)
 
     def test_featureextractioncategorical_onehot(self):
 

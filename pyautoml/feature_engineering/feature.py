@@ -66,7 +66,7 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self.data_properties.split:
-            self.data_properties.data = feature_one_hot_encode(list_of_cols, data=self.data_properties.data, **onehot_params)
+            self.data_properties.data = feature_one_hot_encode(list_of_cols=list_of_cols, data=self.data_properties.data, **onehot_params)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
@@ -74,7 +74,7 @@ class Feature(MethodBase):
             return Feature(data_properties=copy.deepcopy(self.data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = feature_one_hot_encode(list_of_cols,
+            self.data_properties.train_data, self.data_properties.test_data = feature_one_hot_encode(list_of_cols=list_of_cols,
                                                                                                   train_data=self.data_properties.train_data,
                                                                                                   test_data=self.data_properties.test_data,
                                                                                                   **onehot_params)
@@ -84,7 +84,7 @@ class Feature(MethodBase):
             return Feature(data_properties=copy.deepcopy(self.data_properties))
 
 
-    def tfidf(self, *list_args, list_of_cols=[], **tfidf_params):
+    def tfidf(self, *list_args, list_of_cols=[], keep_col=False, **tfidf_params):
         """
         Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
@@ -101,6 +101,8 @@ class Feature(MethodBase):
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+        keep_col : bool, optional
+            True if you want to keep the column(s) or False if you want to drop the column(s)
         tfidf_params : optional
             Parameters you would pass into TFIDF constructor as a dictionary, by default {}
         
@@ -117,7 +119,7 @@ class Feature(MethodBase):
 
         if not self.data_properties.split:
             self.data_properties.data = feature_tfidf(
-                list_of_cols=list_of_cols, **tfidf_params, data=self.data_properties.data,)
+                list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params, data=self.data_properties.data,)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
@@ -126,6 +128,7 @@ class Feature(MethodBase):
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
+                                                                                            keep_col = keep_col,
                                                                                            **tfidf_params,
                                                                                            train_data=self.data_properties.train_data,
                                                                                            test_data=self.data_properties.test_data,
@@ -137,7 +140,7 @@ class Feature(MethodBase):
             return Feature(data_properties=copy.deepcopy(self.data_properties))
 
 
-    def bag_of_words(self, *list_args, list_of_cols=[], **bow_params):
+    def bag_of_words(self, *list_args, list_of_cols=[], keep_col=False, **bow_params):
         """
         Creates a matrix of how many times a word appears in a document.
 
@@ -153,6 +156,8 @@ class Feature(MethodBase):
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+        keep_col : bool, optional
+            True if you want to keep the column(s) or False if you want to drop the column(s)
         bow_params : dict, optional
             Parameters you would pass into Bag of Words constructor, by default {}
         
@@ -169,7 +174,7 @@ class Feature(MethodBase):
 
         if not self.data_properties.split:
             self.data_properties.data = feature_bag_of_words(
-                list_of_cols, **bow_params, data=self.data_properties.data)
+                list_of_cols=list_of_cols, keep_col=keep_col, **bow_params, data=self.data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
@@ -177,11 +182,12 @@ class Feature(MethodBase):
             return Feature(data_properties=copy.deepcopy(self.data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = feature_bag_of_words(list_of_cols,
-                                                                                                **bow_params,
-                                                                                                train_data=self.data_properties.train_data,
-                                                                                                test_data=self.data_properties.test_data,
-                                                                                                )
+            self.data_properties.train_data, self.data_properties.test_data = feature_bag_of_words(list_of_cols=list_of_cols,
+                                                                                                    keep_col=keep_col,
+                                                                                                    **bow_params,
+                                                                                                    train_data=self.data_properties.train_data,
+                                                                                                    test_data=self.data_properties.test_data,
+                                                                                                    )
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
@@ -203,7 +209,8 @@ class Feature(MethodBase):
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
-        
+        keep_col : bool, optional
+            True if you want to keep the column(s) or False if you want to drop the column(s)        
         Returns
         -------
         Feature Object:
@@ -212,14 +219,10 @@ class Feature(MethodBase):
         
         report_info = technique_reason_repo['feature']['text']['postag']
 
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
-        if list_of_cols or (not list_of_cols and not list_args):
-            list_of_cols = list_of_cols
-        else:
-            list_of_cols = list(list_args)
+        list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self.data_properties.split:
-            self.data_properties.data = nltk_feature_postag(list_of_cols, data=self.data_properties.data)
+            self.data_properties.data = nltk_feature_postag(list_of_cols=list_of_cols, data=self.data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
@@ -228,7 +231,7 @@ class Feature(MethodBase):
 
         else:
             self.data_properties.train_data, self.data_properties.test_data = nltk_feature_postag(
-                list_of_cols, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data)
+                list_of_cols=list_of_cols, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])

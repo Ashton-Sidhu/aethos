@@ -43,7 +43,7 @@ def get_keys_by_values(dict_of_elements: dict, item) -> list:
     return [key for (key, value) in dict_of_elements.items() if value == item]
 
 
-def drop_replace_columns(df, drop_cols, new_data):
+def drop_replace_columns(df, drop_cols, new_data, keep_col=False):
     """
     Utility function that drops a column that has been processed and replaces it with the new columns that have been derived from it.
     
@@ -62,8 +62,11 @@ def drop_replace_columns(df, drop_cols, new_data):
         Dataframe with the dropped column and the new data added
     """
 
-    df = df.drop(drop_cols, axis=1)
-    df = pd.concat([df, new_data], axis=1)
+    if keep_col:
+        df = pd.concat([df, new_data], axis=1)
+    else:
+        df = df.drop(drop_cols, axis=1)
+        df = pd.concat([df, new_data], axis=1)
 
     return df
 
