@@ -43,7 +43,7 @@ def get_keys_by_values(dict_of_elements: dict, item) -> list:
     return [key for (key, value) in dict_of_elements.items() if value == item]
 
 
-def drop_replace_columns(df, drop_cols, new_data):
+def drop_replace_columns(df, drop_cols, new_data, keep_col=False):
     """
     Utility function that drops a column that has been processed and replaces it with the new columns that have been derived from it.
     
@@ -62,8 +62,11 @@ def drop_replace_columns(df, drop_cols, new_data):
         Dataframe with the dropped column and the new data added
     """
 
-    df = df.drop(drop_cols, axis=1)
-    df = pd.concat([df, new_data], axis=1)
+    if keep_col:
+        df = pd.concat([df, new_data], axis=1)
+    else:
+        df = df.drop(drop_cols, axis=1)
+        df = pd.concat([df, new_data], axis=1)
 
     return df
 
@@ -189,3 +192,27 @@ def _input_columns(list_args: list, list_of_cols: list):
         column_list = list(list_args)  
 
     return column_list
+
+def _contructor_data_properties(step_obj):
+    """
+    Strips down a step object like Clean, Preprocess, Feature, etc and returns its data properties
+    
+    Parameters
+    ----------
+    step_obj : object
+        Step object such as Clean, Preprocess, Feature
+
+    Returns
+    -------
+    _data_properties: object
+        Data object
+    """
+
+    if not step_obj:
+        return None
+    else:
+        # Big hack until I implement a self __deepcopy__ implementation
+        try:
+            return step_obj._data_properties
+        except:
+            return step_obj
