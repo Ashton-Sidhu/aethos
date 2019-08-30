@@ -20,7 +20,7 @@ class MethodBase(object):
         split = kwargs.pop('split')
         target_field = kwargs.pop('target_field')
         report_name = kwargs.pop('report_name')
-        test_split_percentage = kwargs.pop('test_split_percentange')
+        test_split_percentage = kwargs.pop('test_split_percentage')
 
         if not _function_input_validation(data, train_data, test_data):
             raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
@@ -113,7 +113,14 @@ class MethodBase(object):
         if item not in self.__dict__:       # any normal attributes are handled normally
             dict.__setattr__(self, item, value)
         else:
-            self.__setitem__(item, value)            
+            self.__setitem__(item, value)
+
+    def __deepcopy__(self, memo):
+        
+        data_props = copy.deepcopy(self._data_properties)
+        new_inst = type(self)(data_props)
+
+        return new_inst
 
     @property
     def data(self):
@@ -203,6 +210,18 @@ class MethodBase(object):
                     [total, percent], axis=1, keys=['Total', 'Percent'])
 
                 display(missing_data.T)
+
+    def copy(self):
+        """
+        Returns deep copy of object.
+        
+        Returns
+        -------
+        Object
+            Deep copy of object
+        """
+
+        return copy.deepcopy(self)
 
     def where(self, *filter_columns, **columns):
         """
@@ -409,10 +428,10 @@ class MethodBase(object):
 
         Column names must be provided as strings that exist in the data.
         
-        Raises
-        ------
-        ValueError
-            If all columns provided don't exist in Dataframe
+        Returns
+        -------
+        self : Object
+            Return deep copy of itself.
 
         Examples
         --------
@@ -439,16 +458,13 @@ class MethodBase(object):
 
         drop_columns = list(set(set(drop_columns).union(regex_columns)).difference(keep))
         
-        if not all(elem in data_columns for elem in drop_columns):
-            raise ValueError("Not all columns exist in Dataframe")
-
         if not self._data_properties.split:
             self._data_properties.data = self.data.drop(drop_columns, axis=1)
 
             if self.report is not None:
                 self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
 
-            return self.data.head(10)
+            return self.copy()
         else:
             self._data_properties.train_data = self.train_data.drop(drop_columns, axis=1)
             self._data_properties.test_data = self.test_data.drop(drop_columns, axis=1)
@@ -456,7 +472,7 @@ class MethodBase(object):
             if self.report is not None:
                 self.report.log(f'Dropped columns {", ".join(drop_columns)} in both train and test set. {reason}')
 
-            return self.train_data.head(10)
+            return self.copy()
 
     def _set_item(self, column: str, value: list, train_length: int, test_length: int):
         """

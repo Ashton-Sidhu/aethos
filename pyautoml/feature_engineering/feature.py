@@ -27,10 +27,10 @@ class Feature(MethodBase):
         _data_properties = _contructor_data_properties(step)
 
         if _data_properties is None:        
-            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
+            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentange=test_split_percentage,
+            super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
@@ -85,7 +85,7 @@ class Feature(MethodBase):
             return Feature(copy.deepcopy(self._data_properties))
 
 
-    def tfidf(self, *list_args, list_of_cols=[], keep_col=False, **tfidf_params):
+    def tfidf(self, *list_args, list_of_cols=[], keep_col=True, **tfidf_params):
         """
         Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
@@ -141,7 +141,7 @@ class Feature(MethodBase):
             return Feature(copy.deepcopy(self._data_properties))
 
 
-    def bag_of_words(self, *list_args, list_of_cols=[], keep_col=False, **bow_params):
+    def bag_of_words(self, *list_args, list_of_cols=[], keep_col=True, **bow_params):
         """
         Creates a matrix of how many times a word appears in a document.
 

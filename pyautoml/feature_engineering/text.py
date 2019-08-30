@@ -74,7 +74,7 @@ def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
         return train_data, test_data
 
 
-def feature_tfidf(list_of_cols=[], keep_col=False, **algo_kwargs):
+def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
     """
     Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
     

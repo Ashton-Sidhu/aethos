@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+from pyautoml import Clean
 from pyautoml.base import MethodBase
 
 
@@ -16,7 +17,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentange=0.25)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentage=0.25)
 
         base['col4'] = 5
 
@@ -34,7 +35,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentange=0.5)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentage=0.5)
 
         base['col4'] = [5, 5]
 
@@ -51,7 +52,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentange=0.25)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentage=0.25)
 
         base['col4'] = [5, 5, 5]
 
@@ -68,7 +69,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentange=0.75)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentage=0.75)
 
         base['col4'] = [5, 5, 5]
 
@@ -84,7 +85,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentange=0.5)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentage=0.5)
         base['col4'] = ([5, 5], [2,2])
 
         validate = any(base.train_data['col4'].isnull()) and any(base.test_data['col4'].isnull())
@@ -100,7 +101,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentange=0.25)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name=None, test_split_percentage=0.25)
         base['col4'] = ([5, 5, 5], [2])
 
         validate = any(base.train_data['col4'].isnull()) and any(base.test_data['col4'].isnull())
@@ -116,10 +117,10 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentange=0.5)
-        base.drop("col1", "col3", reason="Columns were unimportant.")
+        clean = Clean(data=data, report_name="test", test_split_percentage=0.5)
+        clean_inst = clean.drop("col1", "col3", reason="Columns were unimportant.")
 
-        validate = (base.train_data.columns == ['col2'] and base.test_data.columns == ['col2'])
+        validate = (clean_inst.train_data.columns == ['col2'] and clean_inst.test_data.columns == ['col2'] and isinstance(clean_inst, Clean))
 
         self.assertTrue(validate)
 
@@ -132,10 +133,10 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentange=0.5)
-        base.drop(keep=['col2'], reason="Columns were unimportant.")
+        clean = Clean(data=data, report_name="test", test_split_percentage=0.5)
+        clean_inst = clean.drop(keep=['col2'], reason="Columns were unimportant.")
 
-        validate = (base.train_data.columns == ['col2'] and base.test_data.columns == ['col2'])
+        validate = (clean_inst.train_data.columns == ['col2'] and clean_inst.test_data.columns == ['col2'] and isinstance(clean_inst, Clean))
 
         self.assertTrue(validate)
 
@@ -148,10 +149,10 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3", "py"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentange=0.5)
-        base.drop("col1", keep=['col2'], regexp=r'col*', reason="Columns were unimportant.")
+        clean = Clean(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentage=0.5)
+        clean.drop("col1", keep=['col2'], regexp=r'col*', reason="Columns were unimportant.")
 
-        validate = (list(base.train_data.columns) == ['col2', 'py'] and list(base.test_data.columns) ==  ['col2', 'py'])
+        validate = (list(clean.train_data.columns) == ['col2', 'py'] and list(clean.test_data.columns) ==  ['col2', 'py'])
 
         self.assertTrue(validate)    
 
@@ -164,7 +165,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentange=0.5)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentage=0.5)
 
         self.assertIsNotNone(base.col1)
 
@@ -178,7 +179,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentange=0.5)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentage=0.5)
         base.col4 = 4
 
         self.assertIsNotNone(base.col4)
@@ -192,7 +193,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentange=0.5)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", test_split_percentage=0.5)
         base._data_properties.target_field = "col3"
 
         self.assertEquals('col3', base.target_field)
@@ -209,7 +210,7 @@ class Test_TestBase(unittest.TestCase):
                             [0, 3, 4],
                             [1, 2, 3]]
 
-        base = MethodBase(data=int_missing_data, train_data=None, test_data=None, split=False, target_field='', report_name="test", test_split_percentange=0.5)
+        base = MethodBase(data=int_missing_data, train_data=None, test_data=None, split=False, target_field='', report_name="test", test_split_percentage=0.5)
 
         base.data = int_missing_data_rep
 
@@ -225,7 +226,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(data=data, train_data=None, test_data=None, split=False, target_field='', report_name="test", test_split_percentange=0.5)
+        base = MethodBase(data=data, train_data=None, test_data=None, split=False, target_field='', report_name="test", test_split_percentage=0.5)
 
         subset = base.where(col1=0, col2=2, col3=[3,4])
         validate = subset.values.tolist()

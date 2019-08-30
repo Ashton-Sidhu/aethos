@@ -16,7 +16,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(data=data,
                           test_split_percentage=0.5, split=False)
-        feature.bag_of_words()
+        feature.bag_of_words(keep_col=False)
         validate = feature.data.values.tolist()
 
         self.assertListEqual(validate, [[1, 1, 1, 1, 1],
@@ -47,7 +47,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(data=data,
                           test_split_percentage=0.5, split=False)
-        feature.tfidf(lowercase=False, stop_words='english')
+        feature.tfidf(keep_col=False, lowercase=False, stop_words='english')
         validate = feature.data.shape[1]
 
         self.assertEqual(validate, 2)
@@ -61,7 +61,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(data=data,
                           test_split_percentage=0.5)
-        feature.tfidf('text', lowercase=False, stop_words='english')
+        feature.tfidf('text', keep_col=False, lowercase=False, stop_words='english')
         validate = feature.train_data.shape[1]
 
         self.assertEqual(validate, 2)
