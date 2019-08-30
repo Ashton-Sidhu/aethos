@@ -2,14 +2,14 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import _input_columns, _numeric_input_conditions
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _numeric_input_conditions)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -22,17 +22,19 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
 class Preprocess(MethodBase):
 
     
-    def __init__(self, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, use_full_data=False, target_field="", report_name=None):
+    def __init__(self, step=None, data=None, train_data=None, test_data=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
 
-        if data_properties is None:        
-            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=use_full_data, target_field=target_field, report_name=report_name)
+        _data_properties = _contructor_data_properties(step)
+
+        if _data_properties is None:        
+            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
+                        split=split, target_field=target_field, report_name=report_name)
         else:
-            super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
-                        use_full_data=data_properties.use_full_data, target_field=data_properties.target_field, report_name=data_properties.report_name)
+            super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
+                        split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
                         
 
-        if self.data_properties.report is not None:
+        if self._data_properties.report is not None:
             self.report.write_header("Preprocessing")
 
         
@@ -42,7 +44,7 @@ class Preprocess(MethodBase):
         
         If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
 
-        If a list of columns is provided use the list, otherwise use arguemnts.
+        If a list of columns is provided use the list, otherwise use arguments.
 
         This function can be found in `preprocess/numeric.py`     
         
@@ -67,64 +69,70 @@ class Preprocess(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if self.data_properties.use_full_data:
-            self.data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, **normalize_params, data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, **normalize_params, data=self._data_properties.data)
 
             if self.report is not None:
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
             
-            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
+            return self.copy()
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
+            self._data_properties.train_data, self._data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
                                                                                                     **normalize_params,
-                                                                                                    train_data=self.data_properties.train_data,
-                                                                                                    test_data=self.data_properties.test_data)
+                                                                                                    train_data=self._data_properties.train_data,
+                                                                                                    test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
+            return self.copy()
 
-    def sentence_split(self, col_name: str):
+    def sentence_split(self, *list_args, list_of_cols=[]):
         """
-        Splits text data into sentences and saves it into another column for analysis
+        Splits text data into sentences and saves it into another column for analysis.
+
+        If a list of columns is provided use the list, otherwise use arguments.
         
         Parameters
         ----------
-        col_name : str
-            Column name of your text data
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
 
         Returns
         -------
         Preprocess Object:
             Returns a deep copy of the Preprocess object.
         """
-    
+
         report_info = technique_reason_repo['preprocess']['text']['split_sentence']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)        
     
-        if self.data_properties.use_full_data:    
-            self.data_properties.data = split_sentence(col_name, data=self.data_properties.data)
+        if not self._data_properties.split:    
+            self._data_properties.data = split_sentence(list_of_cols, data=self._data_properties.data)
     
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
-            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
+            return self.copy()
     
         else:
-            self.data_properties.train_data, self.data_properties.test_data = split_sentence(col_name, 
-                                                                                            train_data=self.data_properties.train_data, 
-                                                                                            test_data=self.data_properties.test_data)
+            self._data_properties.train_data, self._data_properties.test_data = split_sentence(list_of_cols, 
+                                                                                            train_data=self._data_properties.train_data, 
+                                                                                            test_data=self._data_properties.test_data)
     
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
-            return Preprocess(data_properties=copy.deepcopy(self.data_properties))
+            return self.copy()

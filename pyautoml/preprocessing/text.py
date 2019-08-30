@@ -9,14 +9,14 @@ NLTK_STEMMERS : {
         'porter': PorterStemmer()
         }
 
-def split_sentence(col_name: str, **datasets):
+def split_sentence(list_of_cols=[], **datasets):
     """
     Splits text by its sentences and then saves that list in a new column.
     
     Parameters
     ----------
-    col_name : str
-        Column name of text data that you want to separate into sentences
+    list_of_cols : list, optional
+        Column name(s) of text data that you want to separate into sentences
     
     Either the full data or training data plus testing data MUST be provided, not both.
 
@@ -44,12 +44,14 @@ def split_sentence(col_name: str, **datasets):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:
-        data.loc[:, col_name + '_sentences'] = data[col_name].apply(lambda x: sent_tokenize(x))
+        for col in list_of_cols:
+            data.loc[:, col + '_sentences'] = data.loc[:, col].apply(lambda x: sent_tokenize(x))
 
         return data
     else:
-        train_data.loc[:, col_name + '_sentences'] = train_data[col_name].apply(lambda x: sent_tokenize(x))
-        test_data.loc[:, col_name + '_sentences'] = test_data[col_name].apply(lambda x: sent_tokenize(x))
+        for col in list_of_cols:
+            train_data.loc[:, col + '_sentences'] = train_data.loc[:, col].apply(lambda x: sent_tokenize(x))
+            test_data.loc[:, col + '_sentences'] = test_data.loc[:, col].apply(lambda x: sent_tokenize(x))
 
         return train_data, test_data
 
