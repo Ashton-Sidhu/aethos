@@ -72,7 +72,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
 
         else:
             self._data_properties.train_data, self._data_properties.test_data = feature_one_hot_encode(list_of_cols=list_of_cols,
@@ -82,7 +82,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
 
 
     def tfidf(self, *list_args, list_of_cols=[], keep_col=True, **tfidf_params):
@@ -125,7 +125,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
 
         else:
             self._data_properties.train_data, self._data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
@@ -138,7 +138,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
 
 
     def bag_of_words(self, *list_args, list_of_cols=[], keep_col=True, **bow_params):
@@ -180,7 +180,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
 
         else:
             self._data_properties.train_data, self._data_properties.test_data = feature_bag_of_words(list_of_cols=list_of_cols,
@@ -193,7 +193,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
 
 
     def nltk_postag(self, *list_args, list_of_cols=[]):
@@ -228,7 +228,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
 
         else:
             self._data_properties.train_data, self._data_properties.test_data = nltk_feature_postag(
@@ -237,7 +237,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
 
 
     def apply(self, func, output_col: str, description=''):
@@ -278,7 +278,7 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.log(f"Applied function to dataset. {description}")
     
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()
     
         else:
             self._data_properties.train_data, self._data_properties.test_data = apply(func,
@@ -289,4 +289,4 @@ class Feature(MethodBase):
             if self.report is not None:
                 self.report.log(f"Added feature {output_col}. {description}")
     
-            return Feature(copy.deepcopy(self._data_properties))
+            return self.copy()

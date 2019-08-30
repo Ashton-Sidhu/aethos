@@ -79,7 +79,7 @@ class Preprocess(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
             
-            return Preprocess(copy.deepcopy(self._data_properties))
+            return self.copy()
 
         else:
             self._data_properties.train_data, self._data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
@@ -94,7 +94,7 @@ class Preprocess(MethodBase):
                     list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Preprocess(copy.deepcopy(self._data_properties))
+            return self.copy()
 
     def sentence_split(self, *list_args, list_of_cols=[]):
         """
@@ -125,7 +125,7 @@ class Preprocess(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
-            return Preprocess(copy.deepcopy(self._data_properties))
+            return self.copy()
     
         else:
             self._data_properties.train_data, self._data_properties.test_data = split_sentence(list_of_cols, 
@@ -135,4 +135,4 @@ class Preprocess(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
-            return Preprocess(copy.deepcopy(self._data_properties))
+            return self.copy()
