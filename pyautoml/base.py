@@ -4,7 +4,6 @@ import re
 import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
-
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
@@ -26,59 +25,59 @@ class MethodBase(object):
         if not _function_input_validation(data, train_data, test_data):
             raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
-        self.data_properties = Data(data, train_data, test_data, split=split, target_field=target_field, report_name=report_name)
+        self._data_properties = Data(data, train_data, test_data, split=split, target_field=target_field, report_name=report_name)
 
         if data is not None and split:
             # Generate train set and test set.
             # NOTE: Test if setting data to `None` is a good idea.
-            self.data_properties.train_data, self.data_properties.test_data = split_data(self.data_properties.data, test_split_percentage)
-            self.data_properties.data = None
-            self.data_properties.train_data.reset_index(drop=True, inplace=True)
-            self.data_properties.test_data.reset_index(drop=True, inplace=True)
+            self._data_properties.train_data, self._data_properties.test_data = split_data(self._data_properties.data, test_split_percentage)
+            self._data_properties.data = None
+            self._data_properties.train_data.reset_index(drop=True, inplace=True)
+            self._data_properties.test_data.reset_index(drop=True, inplace=True)
 
-        if self.data_properties.report is None:
+        if self._data_properties.report is None:
             self.report = None
         else:
-            self.report = self.data_properties.report        
+            self.report = self._data_properties.report        
             
     def __repr__(self):
 
         shell = get_ipython().__class__.__name__
 
         if shell == 'ZMQInteractiveShell':
-            if not self.data_properties.split:
-                display(self.data_properties.data.head(10)) # Hack for jupyter notebooks
+            if not self._data_properties.split:
+                display(self._data_properties.data.head(10)) # Hack for jupyter notebooks
                 
                 return ''
             else:
-                display(self.data_properties.train_data.head(10)) # Hack for jupyter notebooks
+                display(self._data_properties.train_data.head(10)) # Hack for jupyter notebooks
 
                 return ''
         
         else:
-            if not self.data_properties.split:
-                return self.data_properties.data.to_string()
+            if not self._data_properties.split:
+                return self._data_properties.data.to_string()
             else:
-                return self.data_properties.train_data.to_string()
+                return self._data_properties.train_data.to_string()
 
 
     def __getitem__(self, column):
 
-        if not self.data_properties.split:
-            return self.data_properties.data[column]
+        if not self._data_properties.split:
+            return self._data_properties.data[column]
         else:
-            return self.data_properties.train_data[column]
+            return self._data_properties.train_data[column]
 
 
     def __setitem__(self, column, value):
 
-        if not self.data_properties.split:
-            self.data_properties.data[column] = value
+        if not self._data_properties.split:
+            self._data_properties.data[column] = value
 
-            return self.data_properties.data.head(10)
+            return self._data_properties.data.head(10)
         else:
-            train_data_length = self.data_properties.train_data.shape[0]
-            test_data_length = self.data_properties.test_data.shape[0]
+            train_data_length = self._data_properties.train_data.shape[0]
+            test_data_length = self._data_properties.test_data.shape[0]
 
             if isinstance(value, list):
                 ## If the number of entries in the list does not match the number of rows in the training or testing
@@ -96,18 +95,18 @@ class MethodBase(object):
                     self._set_item(column, data, train_data_length, test_data_length)
 
             else:
-                self.data_properties.train_data[column] = value
-                self.data_properties.test_data[column] = value
+                self._data_properties.train_data[column] = value
+                self._data_properties.test_data[column] = value
 
-            return self.data_properties.train_data.head(10)
+            return self._data_properties.train_data.head(10)
 
 
     def __getattr__(self, column):
 
-        if not self.data_properties.split:
-            return self.data_properties.data[column]
+        if not self._data_properties.split:
+            return self._data_properties.data[column]
         else:
-            return self.data_properties.train_data[column]
+            return self._data_properties.train_data[column]
 
     def __setattr__(self, item, value):
         
@@ -122,10 +121,10 @@ class MethodBase(object):
         Property function for the entire dataset.
         """
         
-        if self.data_properties.data is None:
+        if self._data_properties.data is None:
             return "There seems to be nothing here. Try .train_data or .test_data"
         
-        return self.data_properties.data
+        return self._data_properties.data
 
     @data.setter
     def data(self, value):
@@ -133,7 +132,7 @@ class MethodBase(object):
         Setter function for the entire dataset.
         """
 
-        self.data_properties.data = value
+        self._data_properties.data = value
 
 
     @property
@@ -142,10 +141,10 @@ class MethodBase(object):
         Property function for the training dataset.
         """
         
-        if self.data_properties.train_data is None:
+        if self._data_properties.train_data is None:
             return "There seems to be nothing here. Try .data"
 
-        return self.data_properties.train_data
+        return self._data_properties.train_data
 
     @train_data.setter
     def train_data(self, value):
@@ -153,10 +152,10 @@ class MethodBase(object):
         Setter function for the training dataset.
         """
 
-        if self.data_properties.train_data is None:
+        if self._data_properties.train_data is None:
             return "There seems to be nothing here. Try .data"
 
-        self.data_properties.train_data = value
+        self._data_properties.train_data = value
         
     @property
     def test_data(self):
@@ -164,7 +163,7 @@ class MethodBase(object):
         Property function for the entire dataset.
         """
 
-        return self.data_properties.test_data
+        return self._data_properties.test_data
 
     @test_data.setter
     def test_data(self, value):
@@ -172,17 +171,17 @@ class MethodBase(object):
         Property function for the entire dataset.
         """
 
-        self.data_properties.test_data = value
+        self._data_properties.test_data = value
 
     @property
     def target_field(self):
 
-        return self.data_properties.target_field
+        return self._data_properties.target_field
 
     @target_field.setter
     def target_field(self, value):
 
-        self.data_properties.target_field = values
+        self._data_properties.target_field = values
         
     @property
     def missing_values(self):
@@ -191,7 +190,7 @@ class MethodBase(object):
         """
 
         dataframes = list(filter(lambda x: x is not None, [
-                          self.data_properties.data, self.data_properties.train_data, self.data_properties.test_data]))
+                          self._data_properties.data, self._data_properties.train_data, self._data_properties.test_data]))
 
         for dataframe in dataframes:
             if not dataframe.isnull().values.any():            
@@ -205,6 +204,47 @@ class MethodBase(object):
 
                 display(missing_data.T)
 
+    def where(self, *filter_columns, **columns):
+        """
+        Filters the dataframe down for highlevel analysis. 
+
+        Can only handle '==', for more complex queries, interact with pandas.
+        
+        Parameters
+        ----------
+        filter_columns : str(s)
+            Columns you want to see at the end result
+        columns : key word arguments
+            Columns and the associated value to filter on.
+            Columns can equal a value or a list of values to include.
+        
+        Returns
+        -------
+        Dataframe
+            A view of your data or training data
+
+        Examples
+        --------
+        >>> clean.where('col1', col2=3, col3=4, col4=[1,2,3])
+        >>> This translates to your data where col2 is equal to 3 and col 3 is equal to 4 and column 4 is equal to 1, 2 or 3.
+        >>> The col1 specifies that this this is the only column you want to see at the output.
+        """
+
+        if not self._data_properties.split:
+            filtered_data = self._data_properties.data
+        else:
+            filtered_data = self._data_properties.train_data
+
+        for col in columns.keys():
+            if isinstance(columns[col], list):
+                filtered_data = filtered_data[filtered_data[col].isin(columns[col])]
+            else:
+                filtered_data = filtered_data[filtered_data[col] == columns[col]]
+
+        if filter_columns:
+            return filtered_data[list(filter_columns)]
+        else:
+            return filtered_data
 
     def describe(self, dataset='train'):
         """
@@ -227,7 +267,7 @@ class MethodBase(object):
             Dataframe describing your dataset with basic descriptive info
         """
 
-        if not self.data_properties.split:
+        if not self._data_properties.split:
             data_summary = DataFrameSummary(self.data)
 
             return data_summary.summary()
@@ -270,7 +310,7 @@ class MethodBase(object):
             Dataframe describing your columns with basic descriptive info
         """
 
-        if not self.data_properties.split:
+        if not self._data_properties.split:
             data_summary = DataFrameSummary(self.data)
 
             return data_summary.columns_stats
@@ -339,7 +379,7 @@ class MethodBase(object):
             Dictionary mapping a statistic and its value for a specific column
         """
 
-        if not self.data_properties.split:
+        if not self._data_properties.split:
             data_summary = DataFrameSummary(self.data)
 
             return data_summary[column]
@@ -386,6 +426,11 @@ class MethodBase(object):
         except:
             data_columns = self.train_data.columns
 
+        if not drop_columns:
+            drop_columns = data_columns
+        else:
+            drop_columns = set(data_columns).intersection(drop_columns)
+
         if regexp:
             regex = re.compile(regexp)
             regex_columns = list(filter(regex.search, data_columns))
@@ -393,20 +438,20 @@ class MethodBase(object):
             regex_columns = []
 
         drop_columns = list(set(set(drop_columns).union(regex_columns)).difference(keep))
-
+        
         if not all(elem in data_columns for elem in drop_columns):
             raise ValueError("Not all columns exist in Dataframe")
 
-        if not self.data_properties.split:
-            self.data_properties.data = self.data.drop(drop_columns, axis=1)
+        if not self._data_properties.split:
+            self._data_properties.data = self.data.drop(drop_columns, axis=1)
 
             if self.report is not None:
                 self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
 
             return self.data.head(10)
         else:
-            self.data_properties.train_data = self.train_data.drop(drop_columns, axis=1)
-            self.data_properties.test_data = self.test_data.drop(drop_columns, axis=1)
+            self._data_properties.train_data = self.train_data.drop(drop_columns, axis=1)
+            self._data_properties.test_data = self.test_data.drop(drop_columns, axis=1)
 
             if self.report is not None:
                 self.report.log(f'Dropped columns {", ".join(drop_columns)} in both train and test set. {reason}')
@@ -433,14 +478,14 @@ class MethodBase(object):
         ## If the training data and testing data have the same number of rows, apply the value to both
         ## train and test data set
         if len(value) == train_length and len(value) == test_length:
-            self.data_properties.train_data[column] = value
-            self.data_properties.test_data[column] = value
+            self._data_properties.train_data[column] = value
+            self._data_properties.test_data[column] = value
 
         elif len(value) == train_length:
-            self.data_properties.train_data[column] = value
+            self._data_properties.train_data[column] = value
 
         else:
-            self.data_properties.test_data[column] = value
+            self._data_properties.test_data[column] = value
 
 
     def visualize_raincloud(self, x_col: str, y_col=None, params={}):
@@ -544,7 +589,7 @@ class MethodBase(object):
         if y_col is None:
             y_col = self.target_field
 
-        if not self.data_properties.split:
+        if not self._data_properties.split:
             raincloud(y_col, x_col, self.data)
         else:
             raincloud(y_col, x_col, self.train_data)
@@ -581,7 +626,7 @@ class MethodBase(object):
             'v' for vertical, by default 'v'
         """
 
-        if not self.data_properties.split:
+        if not self._data_properties.split:
             barplot(x_col, y_col, self.data, groupby=groupby, method=method, orient=orient, **kwargs)
         else:
             barplot(x_col, y_col, self.train_data, groupby=groupby, method=method, orient=orient, **kwargs)

@@ -204,7 +204,7 @@ def _contructor_data_properties(step_obj):
 
     Returns
     -------
-    data_properties: object
+    _data_properties: object
         Data object
     """
 
@@ -213,6 +213,6 @@ def _contructor_data_properties(step_obj):
     else:
         # Big hack until I implement a self __deepcopy__ implementation
         try:
-            return step_obj.data_properties
+            return step_obj._data_properties
         except:
             return step_obj

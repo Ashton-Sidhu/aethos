@@ -36,11 +36,11 @@ class TestReport(unittest.TestCase):
         clean = Clean(data=data, test_split_percentage=0.5, split=False, report_name="test")
         clean.remove_columns(0.5)
 
-        with open(clean.data_properties.report.filename) as f:
+        with open(clean._data_properties.report.filename) as f:
             content = f.read()
         validate = "col2" in content and "col3" in content
 
-        os.remove(clean.data_properties.report.filename)
+        os.remove(clean._data_properties.report.filename)
 
         self.assertTrue(validate)
 
@@ -56,11 +56,11 @@ class TestReport(unittest.TestCase):
         clean = Clean(data=data, test_split_percentage=0.5, split=False, report_name="test")
         clean_data = clean.replace_missing_new_category()
 
-        with open(clean.data_properties.report.filename) as f:
+        with open(clean._data_properties.report.filename) as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
 
-        os.remove(clean.data_properties.report.filename)
+        os.remove(clean._data_properties.report.filename)
 
         self.assertTrue(validate)
 
@@ -76,11 +76,11 @@ class TestReport(unittest.TestCase):
         preprocess = Preprocess(data=data, test_split_percentage=0.5, split=False, report_name="test")
         preprocess.normalize_numeric()
         
-        with open(preprocess.data_properties.report.filename) as f:
+        with open(preprocess._data_properties.report.filename) as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
 
-        os.remove(preprocess.data_properties.report.filename)
+        os.remove(preprocess._data_properties.report.filename)
 
         self.assertTrue(validate)
 
@@ -95,11 +95,11 @@ class TestReport(unittest.TestCase):
         feature = Feature(data=data, test_split_percentage=0.5, split=False, report_name="test")
         feature.bag_of_words()
 
-        with open(feature.data_properties.report.filename) as f:
+        with open(feature._data_properties.report.filename) as f:
             content = f.read()
         validate = "representation" in content
 
-        os.remove(feature.data_properties.report.filename)
+        os.remove(feature._data_properties.report.filename)
 
         self.assertTrue(validate)
 

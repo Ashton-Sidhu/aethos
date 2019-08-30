@@ -24,16 +24,16 @@ class Feature(MethodBase):
 
     def __init__(self, step=None, data=None, train_data=None, test_data=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
         
-        data_properties = _contructor_data_properties(step)
+        _data_properties = _contructor_data_properties(step)
 
-        if data_properties is None:        
+        if _data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
                         split=split, target_field=target_field, report_name=report_name)
         else:
-            super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
-                        split=data_properties.split, target_field=data_properties.target_field, report_name=data_properties.report_name)
+            super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentange=test_split_percentage,
+                        split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
                         
-        if self.data_properties.report is not None:
+        if self._data_properties.report is not None:
             self.report.write_header("Feature Engineering")
 
 
@@ -66,23 +66,23 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = feature_one_hot_encode(list_of_cols=list_of_cols, data=self.data_properties.data, **onehot_params)
+        if not self._data_properties.split:
+            self._data_properties.data = feature_one_hot_encode(list_of_cols=list_of_cols, data=self._data_properties.data, **onehot_params)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = feature_one_hot_encode(list_of_cols=list_of_cols,
-                                                                                                  train_data=self.data_properties.train_data,
-                                                                                                  test_data=self.data_properties.test_data,
+            self._data_properties.train_data, self._data_properties.test_data = feature_one_hot_encode(list_of_cols=list_of_cols,
+                                                                                                  train_data=self._data_properties.train_data,
+                                                                                                  test_data=self._data_properties.test_data,
                                                                                                   **onehot_params)
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
 
 
     def tfidf(self, *list_args, list_of_cols=[], keep_col=False, **tfidf_params):
@@ -118,27 +118,27 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = feature_tfidf(
-                list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params, data=self.data_properties.data,)
+        if not self._data_properties.split:
+            self._data_properties.data = feature_tfidf(
+                list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params, data=self._data_properties.data,)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
+            self._data_properties.train_data, self._data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
                                                                                             keep_col = keep_col,
                                                                                            **tfidf_params,
-                                                                                           train_data=self.data_properties.train_data,
-                                                                                           test_data=self.data_properties.test_data,
+                                                                                           train_data=self._data_properties.train_data,
+                                                                                           test_data=self._data_properties.test_data,
                                                                                            )
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
 
 
     def bag_of_words(self, *list_args, list_of_cols=[], keep_col=False, **bow_params):
@@ -173,27 +173,27 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = feature_bag_of_words(
-                list_of_cols=list_of_cols, keep_col=keep_col, **bow_params, data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = feature_bag_of_words(
+                list_of_cols=list_of_cols, keep_col=keep_col, **bow_params, data=self._data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = feature_bag_of_words(list_of_cols=list_of_cols,
+            self._data_properties.train_data, self._data_properties.test_data = feature_bag_of_words(list_of_cols=list_of_cols,
                                                                                                     keep_col=keep_col,
                                                                                                     **bow_params,
-                                                                                                    train_data=self.data_properties.train_data,
-                                                                                                    test_data=self.data_properties.test_data,
+                                                                                                    train_data=self._data_properties.train_data,
+                                                                                                    test_data=self._data_properties.test_data,
                                                                                                     )
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
 
 
     def nltk_postag(self, *list_args, list_of_cols=[]):
@@ -222,22 +222,22 @@ class Feature(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = nltk_feature_postag(list_of_cols=list_of_cols, data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = nltk_feature_postag(list_of_cols=list_of_cols, data=self._data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = nltk_feature_postag(
-                list_of_cols=list_of_cols, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data)
+            self._data_properties.train_data, self._data_properties.test_data = nltk_feature_postag(
+                list_of_cols=list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
 
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
 
 
     def apply(self, func, output_col: str, description=''):
@@ -272,21 +272,21 @@ class Feature(MethodBase):
             2     1     0     1     1
         """
         
-        if not self.data_properties.split:    
-            self.data_properties.data = apply(func, output_col, data=self.data_properties.data)
+        if not self._data_properties.split:    
+            self._data_properties.data = apply(func, output_col, data=self._data_properties.data)
     
             if self.report is not None:
                 self.report.log(f"Applied function to dataset. {description}")
     
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))
     
         else:
-            self.data_properties.train_data, self.data_properties.test_data = apply(func,
+            self._data_properties.train_data, self._data_properties.test_data = apply(func,
                                                                                     output_col,
-                                                                                    train_data=self.data_properties.train_data,
-                                                                                    test_data=self.data_properties.test_data)
+                                                                                    train_data=self._data_properties.train_data,
+                                                                                    test_data=self._data_properties.test_data)
     
             if self.report is not None:
                 self.report.log(f"Added feature {output_col}. {description}")
     
-            return Feature(copy.deepcopy(self.data_properties))
+            return Feature(copy.deepcopy(self._data_properties))

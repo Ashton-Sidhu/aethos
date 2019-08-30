@@ -22,18 +22,18 @@ with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
 class Clean(MethodBase):
 
     
-    def __init__(self, step=None, data=None, train_data=None, test_data=None, data_properties=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):   
+    def __init__(self, step=None, data=None, train_data=None, test_data=None, _data_properties=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):   
         
-        data_properties = _contructor_data_properties(step)
+        _data_properties = _contructor_data_properties(step)
 
-        if data_properties is None:        
+        if _data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentange=test_split_percentage,
                         split=split, target_field=target_field, report_name=report_name)
         else:
-            super().__init__(data=data_properties.data, train_data=data_properties.train_data, test_data=data_properties.test_data, test_split_percentange=test_split_percentage,
-                        split=data_properties.split, target_field=data_properties.target_field, report_name=data_properties.report_name)
+            super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentange=test_split_percentage,
+                        split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
         
-        if self.data_properties.report is not None:
+        if self._data_properties.report is not None:
             self.report.write_header("Cleaning")
 
 
@@ -57,32 +57,32 @@ class Clean(MethodBase):
 
         report_info = technique_reason_repo['clean']['general']['remove_columns']
 
-        if not self.data_properties.split:            
+        if not self._data_properties.split:            
             #Gather original data information
-            original_columns = set(list(self.data_properties.data.columns))
+            original_columns = set(list(self._data_properties.data.columns))
 
-            self.data_properties.data = remove_columns_threshold(threshold, data=self.data_properties.data)
+            self._data_properties.data = remove_columns_threshold(threshold, data=self._data_properties.data)
 
             #Write to report
             if self.report is not None:
-                new_columns = original_columns.difference(self.data_properties.data.columns)
+                new_columns = original_columns.difference(self._data_properties.data.columns)
                 self.report.report_technique(report_info, new_columns)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
         else:
             #Gather original data information
-            original_columns = set(list(self.data_properties.train_data.columns))
+            original_columns = set(list(self._data_properties.train_data.columns))
 
-            self.data_properties.train_data, self.data_properties.test_data = remove_columns_threshold(threshold,
-                                                                                                        train_data=self.data_properties.train_data,
-                                                                                                        test_data=self.data_properties.test_data)
+            self._data_properties.train_data, self._data_properties.test_data = remove_columns_threshold(threshold,
+                                                                                                        train_data=self._data_properties.train_data,
+                                                                                                        test_data=self._data_properties.test_data)
 
             if self.report is not None:
-                new_columns = original_columns.difference(self.data_properties.train_data.columns)
+                new_columns = original_columns.difference(self._data_properties.train_data.columns)
                 self.report.report_technique(report_info, new_columns)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
 
     def remove_rows(self, threshold: float):
@@ -105,25 +105,25 @@ class Clean(MethodBase):
 
         report_info = technique_reason_repo['clean']['general']['remove_rows']
 
-        if not self.data_properties.split:
-            self.data_properties.data = remove_rows_threshold(threshold, data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = remove_rows_threshold(threshold, data=self._data_properties.data)
 
             #Write to report
             if self.report is not None:            
                 self.report.report_technique(report_info, [])
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = remove_rows_threshold(threshold,
-                                                                                                    train_data=self.data_properties.train_data,
-                                                                                                    test_data=self.data_properties.test_data)
+            self._data_properties.train_data, self._data_properties.test_data = remove_rows_threshold(threshold,
+                                                                                                    train_data=self._data_properties.train_data,
+                                                                                                    test_data=self._data_properties.test_data)
 
             #Write to report
             if self.report is not None:            
                 self.report.report_technique(report_info, [])                                                                                    
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
     
     def replace_missing_mean(self, *list_args, list_of_cols=[]):
         """
@@ -155,33 +155,33 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="mean", data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="mean", data=self._data_properties.data)
 
             #Write to report
             if self.report is not None:            
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
+            self._data_properties.train_data, self._data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
                                                                                                             strategy="mean",                                                                                                            
-                                                                                                            train_data=self.data_properties.train_data,
-                                                                                                            test_data=self.data_properties.test_data)
+                                                                                                            train_data=self._data_properties.train_data,
+                                                                                                            test_data=self._data_properties.test_data)
             
             if self.report is not None:
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
     def replace_missing_median(self, *list_args, list_of_cols=[]):
         """
@@ -213,32 +213,32 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="median", data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="median", data=self._data_properties.data)
             
             if self.report is not None:
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
+            self._data_properties.train_data, self._data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
                                                                                                             strategy="median",                                                                                                            
-                                                                                                            train_data=self.data_properties.train_data,
-                                                                                                            test_data=self.data_properties.test_data)
+                                                                                                            train_data=self._data_properties.train_data,
+                                                                                                            test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
     def replace_missing_mostcommon(self, *list_args, list_of_cols=[]):
         """
@@ -268,31 +268,31 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="most_frequent", data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="most_frequent", data=self._data_properties.data)
 
             if self.report is not None:
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self.data_properties.data, None)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
+            self._data_properties.train_data, self._data_properties.test_data = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
                                                                                                             strategy="most_frequent",                                                                                                            
-                                                                                                            train_data=self.data_properties.train_data,
-                                                                                                            test_data=self.data_properties.test_data)
+                                                                                                            train_data=self._data_properties.train_data,
+                                                                                                            test_data=self._data_properties.test_data)
             if self.report is not None:
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self.data_properties.train_data)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.train_data)
                     self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
     def replace_missing_constant(self, *list_args, list_of_cols=[], constant=0, col_mapping=None):
         """
@@ -335,30 +335,30 @@ class Clean(MethodBase):
             ## If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_constant = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = replace_missing_constant(col_to_constant=col_to_constant, constant=constant, data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = replace_missing_constant(col_to_constant=col_to_constant, constant=constant, data=self._data_properties.data)
 
             if self.report is not None:
                 if not col_to_constant:
-                    self.report.report_technique(report_info, self.data_properties.data.columns)
+                    self.report.report_technique(report_info, self._data_properties.data.columns)
                 else:
                     self.report.report_technique(report_info, list(col_to_constant))
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = replace_missing_constant(col_to_constant=col_to_constant,
+            self._data_properties.train_data, self._data_properties.test_data = replace_missing_constant(col_to_constant=col_to_constant,
                                                                                                     constant=constant,                                                                                                    
-                                                                                                    train_data=self.data_properties.train_data,
-                                                                                                    test_data=self.data_properties.test_data)
+                                                                                                    train_data=self._data_properties.train_data,
+                                                                                                    test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 if not col_to_constant:
-                    self.report.report_technique(report_info, self.data_properties.train_data.columns)
+                    self.report.report_technique(report_info, self._data_properties.train_data.columns)
                 else:
                     self.report.report_technique(report_info, list(col_to_constant))
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
 
     def replace_missing_new_category(self, *list_args, list_of_cols=[], new_category=None, col_mapping=None):
@@ -405,30 +405,30 @@ class Clean(MethodBase):
             ## If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_category = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = replace_missing_new_category(col_to_category=col_to_category, constant=new_category, data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = replace_missing_new_category(col_to_category=col_to_category, constant=new_category, data=self._data_properties.data)
 
             if self.report is not None:
                 if not col_to_category:
-                    self.report.report_technique(report_info, self.data_properties.data.columns)
+                    self.report.report_technique(report_info, self._data_properties.data.columns)
                 else:
                     self.report.report_technique(report_info, list(col_to_category))
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = replace_missing_new_category(col_to_category=col_to_category,
+            self._data_properties.train_data, self._data_properties.test_data = replace_missing_new_category(col_to_category=col_to_category,
                                                                                                         constant=new_category,                                                                                                                                                                                                            
-                                                                                                        train_data=self.data_properties.train_data,
-                                                                                                        test_data=self.data_properties.test_data)
+                                                                                                        train_data=self._data_properties.train_data,
+                                                                                                        test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 if col_to_category is None:
-                    self.report.report_technique(report_info, self.data_properties.train_data.columns)
+                    self.report.report_technique(report_info, self._data_properties.train_data.columns)
                 else:
                     self.report.report_technique(report_info, list(col_to_category))                                                                                                   
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
 
     def replace_missing_remove_row(self, *list_args, list_of_cols=[]):
@@ -457,23 +457,23 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self.data_properties.split:
-            self.data_properties.data = replace_missing_remove_row(list_of_cols, data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = replace_missing_remove_row(list_of_cols, data=self._data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
         else:
-            self.data_properties.train_data, self.data_properties.test_data = replace_missing_remove_row(list_of_cols,                                                                                                    
-                                                                                                    train_data=self.data_properties.train_data,
-                                                                                                    test_data=self.data_properties.test_data)                                                                                        
+            self._data_properties.train_data, self._data_properties.test_data = replace_missing_remove_row(list_of_cols,                                                                                                    
+                                                                                                    train_data=self._data_properties.train_data,
+                                                                                                    test_data=self._data_properties.test_data)                                                                                        
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
 
     def remove_duplicate_rows(self, *list_args, list_of_cols=[]):
@@ -504,23 +504,23 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
    
-        if not self.data_properties.split:
-            self.data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self._data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
     
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
     
         else:
-            self.data_properties.train_data, self.data_properties.test_data = remove_duplicate_rows(list_of_cols=list_of_cols,
-                                                                                                train_data=self.data_properties.train_data,
-                                                                                                test_data=self.data_properties.test_data)
+            self._data_properties.train_data, self._data_properties.test_data = remove_duplicate_rows(list_of_cols=list_of_cols,
+                                                                                                train_data=self._data_properties.train_data,
+                                                                                                test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
 
     def remove_duplicate_columns(self):
@@ -535,22 +535,22 @@ class Clean(MethodBase):
     
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
     
-        if not self.data_properties.split:
-            self.data_properties.data = remove_duplicate_columns(data=self.data_properties.data)
+        if not self._data_properties.split:
+            self._data_properties.data = remove_duplicate_columns(data=self._data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
     
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
     
         else:
-            self.data_properties.train_data, self.data_properties.test_data = remove_duplicate_columns(train_data=self.data_properties.train_data,
-                                                                                                        test_data=self.data_properties.test_data)
+            self._data_properties.train_data, self._data_properties.test_data = remove_duplicate_columns(train_data=self._data_properties.train_data,
+                                                                                                        test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
 
 
     def replace_missing_random_discrete(self, *list_args, list_of_cols=[]):
@@ -584,20 +584,20 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
         
-        if not self.data_properties.split:   
-            self.data_properties.data = replace_missing_random_discrete(list_of_cols, data=self.data_properties.data)
+        if not self._data_properties.split:   
+            self._data_properties.data = replace_missing_random_discrete(list_of_cols, data=self._data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
     
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
     
         else:
-            self.data_properties.train_data, self.data_properties.test_data = replace_missing_random_discrete(list_of_cols,
-                                                                                                            train_data=self.data_properties.train_data,
-                                                                                                            test_data=self.data_properties.test_data)
+            self._data_properties.train_data, self._data_properties.test_data = replace_missing_random_discrete(list_of_cols,
+                                                                                                            train_data=self._data_properties.train_data,
+                                                                                                            test_data=self._data_properties.test_data)
     
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
     
-            return Clean(copy.deepcopy(self.data_properties))
+            return Clean(copy.deepcopy(self._data_properties))
