@@ -188,7 +188,7 @@ class MethodBase(object):
     @target_field.setter
     def target_field(self, value):
 
-        self._data_properties.target_field = values
+        self._data_properties.target_field = value
         
     @property
     def missing_values(self):
