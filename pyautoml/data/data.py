@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 
 class Data():    
 
-    def __init__(self, data, train_data, test_data, use_full_data, target_field, report_name):
+    def __init__(self, data, train_data, test_data, split, target_field, report_name):
 
         self.data = data
         self.field_types = {}
@@ -15,7 +15,7 @@ class Data():
         self.target_field = target_field
         self.train_data = train_data
         self.test_data = test_data
-        self.use_full_data = use_full_data
+        self.split = split
         self.report_name = report_name
         
         if report_name is not None:
