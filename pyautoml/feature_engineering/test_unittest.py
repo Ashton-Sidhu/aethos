@@ -90,7 +90,7 @@ class TestFeatureExtraction(unittest.TestCase):
         data = pd.DataFrame(normal_data, columns=columns)
 
         feature = Feature(data=data, test_split_percentage=0.5, split=False)
-        feature.onehot_encode(list_of_cols=["col1", "col3"])
+        feature.onehot_encode(list_of_cols=["col1", "col3"], keep_col=False)
         validate = feature.data.values.tolist()
 
         self.assertListEqual(validate, [["Green", 0, 1, 1, 0],

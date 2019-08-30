@@ -37,7 +37,7 @@ class Feature(MethodBase):
             self.report.write_header("Feature Engineering")
 
 
-    def onehot_encode(self, *list_args, list_of_cols=[], **onehot_params):
+    def onehot_encode(self, *list_args, list_of_cols=[], keep_col=True, **onehot_params):
         """
         Creates a matrix of converted categorical columns into binary columns of ones and zeros.
 
@@ -49,6 +49,9 @@ class Feature(MethodBase):
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+        keep_col : bool
+            A parameter to specify whether to drop the column being transformed, by default
+            keep the column, True
         params : optional
             Parameters you would pass into Bag of Words constructor as a dictionary, by default handle_unknown=ignore}
         
@@ -67,7 +70,7 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = feature_one_hot_encode(list_of_cols=list_of_cols, data=self._data_properties.data, **onehot_params)
+            self._data_properties.data = feature_one_hot_encode(list_of_cols=list_of_cols, keep_col=keep_col, data=self._data_properties.data, **onehot_params)
 
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
@@ -76,9 +79,10 @@ class Feature(MethodBase):
 
         else:
             self._data_properties.train_data, self._data_properties.test_data = feature_one_hot_encode(list_of_cols=list_of_cols,
-                                                                                                  train_data=self._data_properties.train_data,
-                                                                                                  test_data=self._data_properties.test_data,
-                                                                                                  **onehot_params)
+                                                                                                    keep_col=keep_col,
+                                                                                                    train_data=self._data_properties.train_data,
+                                                                                                    test_data=self._data_properties.test_data,
+                                                                                                    **onehot_params)
             if self.report is not None:
                 self.report.report_technique(report_info, list_of_cols)
 

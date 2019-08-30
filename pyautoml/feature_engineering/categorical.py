@@ -10,7 +10,7 @@ from pyautoml.util import (_function_input_validation, _get_columns,
 from sklearn.preprocessing import OneHotEncoder
 
 
-def feature_one_hot_encode(list_of_cols: list, **algo_kwargs):
+def feature_one_hot_encode(list_of_cols: list, keep_col=True, **algo_kwargs):
     """
     Creates a matrix of converted categorical columns into binary columns of ones and zeros.
     
@@ -18,6 +18,9 @@ def feature_one_hot_encode(list_of_cols: list, **algo_kwargs):
     ----------
     list_of_cols : list
          A list of specific columns to apply this technique to.
+    keep_col : bool
+        A parameter to specify whether to drop the column being transformed, by default
+        keep the column, True
     algo_kwargs : optional
         Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
 
@@ -52,7 +55,7 @@ def feature_one_hot_encode(list_of_cols: list, **algo_kwargs):
         
         enc_data = enc.fit_transform(data[list_of_cols]).toarray()
         enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols))
-        data = drop_replace_columns(data, list_of_cols, enc_df)
+        data = drop_replace_columns(data, list_of_cols, enc_df, keep_col)
 
         return data
 
@@ -60,10 +63,10 @@ def feature_one_hot_encode(list_of_cols: list, **algo_kwargs):
 
         enc_train_data = enc.fit_transform(train_data[list_of_cols]).toarray()
         enc_train_df = pd.DataFrame(enc_train_data, columns=enc.get_feature_names(list_of_cols))
-        train_data = drop_replace_columns(train_data, list_of_cols, enc_train_df)
+        train_data = drop_replace_columns(train_data, list_of_cols, enc_train_df, keep_col)
 
         enc_test_data = enc.transform(test_data[list_of_cols]).toarray()
         enc_test_df = pd.DataFrame(enc_test_data, columns=enc.get_feature_names(list_of_cols))
-        test_data = drop_replace_columns(test_data, list_of_cols, enc_test_df)
+        test_data = drop_replace_columns(test_data, list_of_cols, enc_test_df, keep_col)
 
         return train_data, test_data
