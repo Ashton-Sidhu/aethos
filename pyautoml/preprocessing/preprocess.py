@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -96,7 +97,8 @@ class Preprocess(MethodBase):
 
             return self.copy()
 
-    def sentence_split(self, *list_args, list_of_cols=[]):
+
+    def sentence_split(self, *list_args, list_of_cols=[], new_col_name='_sentences'):
         """
         Splits text data into sentences and saves it into another column for analysis.
 
@@ -108,6 +110,8 @@ class Preprocess(MethodBase):
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_sentences`
 
         Returns
         -------
@@ -120,7 +124,7 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)        
     
         if not self._data_properties.split:    
-            self._data_properties.data = split_sentence(list_of_cols, data=self._data_properties.data)
+            self._data_properties.data = split_sentence(list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
     
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
@@ -128,11 +132,65 @@ class Preprocess(MethodBase):
             return self.copy()
     
         else:
-            self._data_properties.train_data, self._data_properties.test_data = split_sentence(list_of_cols, 
+            self._data_properties.train_data, self._data_properties.test_data = split_sentence(list_of_cols,
+                                                                                            new_col_name=new_col_name,
                                                                                             train_data=self._data_properties.train_data, 
                                                                                             test_data=self._data_properties.test_data)
     
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
     
+            return self.copy()
+
+    def nltk_stem(self, *list_args, list_of_cols=[], stemmer='porter',  new_col_name='_stemmed'):
+        """
+        Transforms text to their word stem, base or root form. 
+        For example:
+            dogs --> dog
+            churches --> church
+            abaci --> abacus
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        stemmer : str, optional
+            Type of NLTK stemmer to use, by default porter
+
+            Current stemming implementations:
+                - Porter
+
+            For more information please refer to the NLTK stemming api https://www.nltk.org/api/nltk.stem.html
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_sentences`
+        
+        Returns
+        -------
+        [type]
+            [description]
+        """
+
+        report_info = technique_reason_repo['preprocess']['text']['stem']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        if not self._data_properties.split:
+
+            self._data_properties.data = nltk_stem(
+                list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, data=self._data_properties.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = nltk_stem(
+                list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
             return self.copy()
