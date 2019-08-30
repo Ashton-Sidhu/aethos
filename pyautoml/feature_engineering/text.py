@@ -7,10 +7,11 @@ nltk_feature_postag
 """
 
 import pandas as pd
-from pyautoml.util import (_function_input_validation, _get_columns,
-                           drop_replace_columns)
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
+
+from pyautoml.util import (_function_input_validation, _get_columns,
+                           drop_replace_columns)
 
 
 def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
@@ -135,7 +136,7 @@ def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
         return train_data, test_data
 
 
-def nltk_feature_postag(list_of_cols=[], **datasets):    
+def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):    
     """
     Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
     Verbs, etc.
@@ -146,6 +147,8 @@ def nltk_feature_postag(list_of_cols=[], **datasets):
     ----------
     list_of_cols : list, optional
         A list of specific columns to apply this technique to, by default []
+    new_col_name : str, optional
+        New column name to be created when applying this technique, by default `COLUMN_postagged`
     
     Either the full data or training data plus testing data MUST be provided, not both.
 
@@ -179,15 +182,15 @@ def nltk_feature_postag(list_of_cols=[], **datasets):
     if data is not None:
         for col in list_of_cols:
             data[col +
-                 '_postagged'] = data[col].apply(lambda x: TextBlob(x).tags)
+                 new_col_name] = list(map(lambda x: TextBlob(x).tags, data[col]))
 
         return data
 
     else:
         for col in list_of_cols:
             train_data[col +
-                       '_postagged'] = train_data[col].apply(lambda x: TextBlob(x).tags)
+                       new_col_name] = list(map(lambda x: TextBlob(x).tags, train_data[col]))
             test_data[col +
-                      '_postagged'] = test_data[col].apply(lambda x: TextBlob(x).tags)
+                      new_col_name] = list(map(lambda x: TextBlob(x).tags, test_data[col]))
 
         return train_data, test_data

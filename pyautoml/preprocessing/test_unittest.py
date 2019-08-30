@@ -54,12 +54,26 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False, test_split_percentage=0.5)
+        prep = Preprocess(data=data, split=False)
         prep.sentence_split('data')
         validate = prep.data['data_sentences'].values.tolist()
 
         self.assertListEqual(validate, [["Hi my name is PyAutoML.", "Please split me."],
                                         ["This function is going to split by sentence.", "Automation is great."]])
+
+    def test_preprocess_ntlkstem(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.nltk_stem('data')
+        validate = prep.data.shape[1]
+
+        self.assertEquals(validate, 2)
 
 if __name__ == "__main__":
     unittest.main()

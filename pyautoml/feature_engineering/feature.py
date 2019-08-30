@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
@@ -200,7 +201,7 @@ class Feature(MethodBase):
             return self.copy()
 
 
-    def nltk_postag(self, *list_args, list_of_cols=[]):
+    def nltk_postag(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
         """
         Tag documents with their respective "Part of Speech" tag. These tags classify a word as a
         noun, verb, adjective, etc. A full list and their meaning can be found here:
@@ -214,8 +215,9 @@ class Feature(MethodBase):
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
-        keep_col : bool, optional
-            True if you want to keep the column(s) or False if you want to drop the column(s)        
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_postagged`
+
         Returns
         -------
         Feature Object:
@@ -227,7 +229,7 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = nltk_feature_postag(list_of_cols=list_of_cols, data=self._data_properties.data)
+            self._data_properties.data = nltk_feature_postag(list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
@@ -236,7 +238,7 @@ class Feature(MethodBase):
 
         else:
             self._data_properties.train_data, self._data_properties.test_data = nltk_feature_postag(
-                list_of_cols=list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+                list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 self.report.report_technique(report_info, [])
