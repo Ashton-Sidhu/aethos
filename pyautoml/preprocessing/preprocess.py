@@ -164,12 +164,12 @@ class Preprocess(MethodBase):
 
             For more information please refer to the NLTK stemming api https://www.nltk.org/api/nltk.stem.html
         new_col_name : str, optional
-            New column name to be created when applying this technique, by default `COLUMN_sentences`
+            New column name to be created when applying this technique, by default `COLUMN_stemmed`
         
         Returns
         -------
-        [type]
-            [description]
+        Preprocess
+            Copy of preprocess object
         """
 
         report_info = technique_reason_repo['preprocess']['text']['stem']

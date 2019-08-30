@@ -80,6 +80,8 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
         For more information please refer to the NLTK stemming api https://www.nltk.org/api/nltk.stem.html
     
     Either the full data or training data plus testing data MUST be provided, not both.
+    new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_stemmed`
 
     data : DataFrame
         Full dataset, by default None
