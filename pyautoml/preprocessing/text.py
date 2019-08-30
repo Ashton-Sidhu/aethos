@@ -1,6 +1,13 @@
 from nltk import sent_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.snowball import PorterStemmer
+
 from pyautoml.util import _function_input_validation
 
+NLTK_STEMMERS : {
+        'wordnet': WordNetLemmatizer(),
+        'porter': PorterStemmer()
+        }
 
 def split_sentence(col_name: str, **datasets):
     """
@@ -47,7 +54,7 @@ def split_sentence(col_name: str, **datasets):
         return train_data, test_data
 
         
-def nltk_stem(list_of_cols=[], **datasets):
+def nltk_stem(list_of_cols=[], stemmer='wordnet' **datasets):
     """
     Stems all the text in a column.
     
