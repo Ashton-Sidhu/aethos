@@ -47,9 +47,9 @@ def split_sentence(col_name: str, **datasets):
         return train_data, test_data
 
         
-def lemmatize(list_of_cols=[], **datasets):
+def nltk_stem(list_of_cols=[], **datasets):
     """
-    Lemmatizes all the text in a column.
+    Stems all the text in a column.
     
     Parameters
     ----------
