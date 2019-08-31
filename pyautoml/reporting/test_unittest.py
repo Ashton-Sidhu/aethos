@@ -3,9 +3,8 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from pyautoml.cleaning.clean import Clean
-from pyautoml.feature_engineering.feature import Feature
-from pyautoml.preprocessing.preprocess import Preprocess
+
+from pyautoml import Clean, Feature, Preprocess
 from pyautoml.reporting.report import Report
 
 
@@ -16,13 +15,13 @@ class TestReport(unittest.TestCase):
         contents = "This is a test."
 
         report = Report("test")
-        report.WriteHeader(header)
-        report.WriteContents(contents)
+        report.write_header(header)
+        report.write_contents(contents)
 
-        with open("pyautoml_reports/test.txt") as f:
+        with open(report.filename) as f:
             content = f.read()
 
-        os.remove("pyautoml_reports/test.txt")
+        os.remove(report.filename)
 
         self.assertEqual(content, "Test\n\nThis is a test.")
 
@@ -34,14 +33,14 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
+        clean = Clean(data=data, test_split_percentage=0.5, split=False, report_name="test")
         clean.remove_columns(0.5)
 
-        with open("pyautoml_reports/test.txt") as f:
+        with open(clean._data_properties.report.filename) as f:
             content = f.read()
         validate = "col2" in content and "col3" in content
 
-        os.remove("pyautoml_reports/test.txt")
+        os.remove(clean._data_properties.report.filename)
 
         self.assertTrue(validate)
 
@@ -54,14 +53,14 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Clean(data, test_split_percentage=0.5, use_full_data=True, report_name="test")
+        clean = Clean(data=data, test_split_percentage=0.5, split=False, report_name="test")
         clean_data = clean.replace_missing_new_category()
 
-        with open("pyautoml_reports/test.txt") as f:
+        with open(clean._data_properties.report.filename) as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
 
-        os.remove("pyautoml_reports/test.txt")
+        os.remove(clean._data_properties.report.filename)
 
         self.assertTrue(validate)
 
@@ -74,30 +73,33 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(data, test_split_percentage=0.5, use_full_data=False, report_name="test")
-        normal_data, test = preprocess.normalize_numeric()
+        preprocess = Preprocess(data=data, test_split_percentage=0.5, split=False, report_name="test")
+        preprocess.normalize_numeric()
         
-        with open("pyautoml_reports/test.txt") as f:
+        with open(preprocess._data_properties.report.filename) as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
 
-        os.remove("pyautoml_reports/test.txt")
+        os.remove(preprocess._data_properties.report.filename)
 
         self.assertTrue(validate)
 
     def test_report_feature_bow(self):
 
         list_of_sentences = ['Hi my name is pyml',
-                            'Hi name pyml']
+                             'Hi name pyml']
 
-        feature = Feature(list_of_sentences, test_split_percentage=0.5, use_full_data=True, report_name="test")
-        transform_data = feature.bag_of_words()
+        columns = ["text"]
+        data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        with open("pyautoml_reports/test.txt") as f:
+        feature = Feature(data=data, test_split_percentage=0.5, split=False, report_name="test")
+        feature.bag_of_words()
+
+        with open(feature._data_properties.report.filename) as f:
             content = f.read()
         validate = "representation" in content
 
-        os.remove("pyautoml_reports/test.txt")
+        os.remove(feature._data_properties.report.filename)
 
         self.assertTrue(validate)
 

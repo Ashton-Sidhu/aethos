@@ -1,64 +1,72 @@
 """
 This file contains the following methods:
 
-FeatureOneHotEncode
+feature_one_hot_encode
 """
 
 import pandas as pd
-from pyautoml.util import (DropAndReplaceColumns, GetListOfCols,
-                           _FunctionInputValidation)
+from pyautoml.util import (_function_input_validation, _get_columns,
+                           drop_replace_columns)
 from sklearn.preprocessing import OneHotEncoder
 
 
-def FeatureOneHotEncode(list_of_cols, params={"handle_unknown": "ignore"}, **datasets):
-    """ 
-    Creates a matrix of converted categorical columns into binary columns.
-
-    Args:
-        list_of_cols (list): A list of specific columns to apply this technique to.
-        params (dict, optional): Parameters you would pass into Bag of Words constructor as a dictionary. 
-                            Defaults to {"handle_unknown": "ignore"}.
+def feature_one_hot_encode(list_of_cols: list, keep_col=True, **algo_kwargs):
+    """
+    Creates a matrix of converted categorical columns into binary columns of ones and zeros.
     
-        Either the full data or training data plus testing data MUST be provided, not both.
+    Parameters
+    ----------
+    list_of_cols : list
+         A list of specific columns to apply this technique to.
+    keep_col : bool
+        A parameter to specify whether to drop the column being transformed, by default
+        keep the column, True
+    algo_kwargs : optional
+        Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
 
-        data {DataFrame} -- Full dataset. Defaults to None.
-        train_data {DataFrame} -- Training dataset. Defaults to None.
-        test_data {DataFrame} -- Testing dataset. Defaults to None.
+    Either the full data or training data plus testing data MUST be provided, not both.
 
-    Returns:
-        Dataframe, *Dataframe: Transformed dataframe with rows with a missing values in a specific column are missing
+    data : DataFrame
+        Full dataset, by default None
+    train_data : DataFrame
+        Training dataset, by default None
+    test_data : DataFrame
+        Testing dataset, by default None
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
 
-        * Returns 2 Dataframes if Train and Test data is provided.  
+    * Returns 2 Dataframes if Train and Test data is provided. 
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    data = algo_kwargs.pop('data', None)
+    train_data = algo_kwargs.pop('train_data', None)
+    test_data = algo_kwargs.pop('test_data', None)
 
-    if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
-
-    if not _FunctionInputValidation(data, train_data, test_data):
+    if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
 
-    enc = OneHotEncoder(**params)
+    enc = OneHotEncoder(handle_unknown='ignore', **algo_kwargs)
+    list_of_cols = _get_columns(list_of_cols, data, train_data)
 
     if data is not None:
         
         enc_data = enc.fit_transform(data[list_of_cols]).toarray()
-        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names().tolist())
-        data = DropAndReplaceColumns(data, list_of_cols, enc_df)
+        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols))
+        data = drop_replace_columns(data, list_of_cols, enc_df, keep_col)
 
         return data
 
     else:        
 
         enc_train_data = enc.fit_transform(train_data[list_of_cols]).toarray()
-        enc_train_df = pd.DataFrame(enc_train_data, columns=enc_data.get_feature_names().tolist())
-        train_data = DropAndReplaceColumns(train_data, list_of_cols, enc_train_df)
+        enc_train_df = pd.DataFrame(enc_train_data, columns=enc.get_feature_names(list_of_cols))
+        train_data = drop_replace_columns(train_data, list_of_cols, enc_train_df, keep_col)
 
         enc_test_data = enc.transform(test_data[list_of_cols]).toarray()
-        enc_test_df = pd.DataFrame(enc_test_data, columns=enc.get_features_names().tolist())
-        test_data = DropAndReplaceColumns(test_data, list_of_cols, enc_test_df)
+        enc_test_df = pd.DataFrame(enc_test_data, columns=enc.get_feature_names(list_of_cols))
+        test_data = drop_replace_columns(test_data, list_of_cols, enc_test_df, keep_col)
 
         return train_data, test_data

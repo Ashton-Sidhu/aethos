@@ -7,23 +7,27 @@ from sklearn.model_selection import train_test_split
 
 class Data():    
 
-    def __init__(self, data, train_data, test_data, use_full_data, target_field, report_name):
+    def __init__(self, data, train_data, test_data, split, target_field, report_name):
 
-        self.orig_data = data
+        self.data = data
         self.field_types = {}
         self.colMapping = {}
         self.target_field = target_field
         self.train_data = train_data
         self.test_data = test_data
-        self.use_full_data = use_full_data
+        self.split = split
+        self.report_name = report_name
         
         if report_name is not None:
             self.report = Report(report_name)
+            self.report_name = self.report.filename
         else:
             self.report = None
 
-    def GetInputTypes(self, df, custom_cols={}):
+    def get_input_types(self, df, custom_cols={}):
         """
+        ============= UNUSED ===================
+
         Credit: https://github.com/minimaxir/automl-gs/
 
         Get the input types for each field in the DataFrame that corresponds
@@ -101,17 +105,22 @@ class Data():
         self.field_types = {k: v for k, v in self.field_types.items() if v != 'ignore'}
 
 
-    def NormalizeColNames(self, df):
+    def normalize_column_names(self, df):
         """
         Utility function that fixes unusual column names (e.g. Caps, Spaces)
         to make them suitable printing into code templates.
-
-        Arguemnts:
-            df {Dataframe} -- Dataframe of the data
-
-        Returns:
-            [Dataframe] -- Dataframe whos column names have been normalized.       
+        
+        Parameters
+        ----------
+        df : Dataframe
+            Pandas Dataframe of the data.
+        
+        Returns
+        -------
+        Dataframe
+            Dataframe whos column names have been normalized.
         """
+
         new_column_names = {}
         pattern = re.compile('\W+')
 
@@ -122,8 +131,10 @@ class Data():
         
         return df.rename(index=str, columns=new_column_names)
 
-    def ReduceData(self, df):
+    def reduce_data(self, df):
         """
+        ============= UNUSED ===================
+
         Utility function that selects a subset of the data that has been categorized as a column worth feature engineering on.
 
         Arguments:
@@ -135,8 +146,11 @@ class Data():
         return df[list(self.field_types.keys())]
 
     
-    def StandardizeData(self, df, custom_cols={}):
-        """Standarizes the properties of the dataset: column names and removes unimportant columns.
+    def standardize_data(self, df, custom_cols={}):
+        """
+        ============= UNUSED ===================
+
+        Standarizes the properties of the dataset: column names and removes unimportant columns.
         Initializes the types of each column (categorical, numeric, etc.)
         
         Arguments:
@@ -149,24 +163,9 @@ class Data():
             [Dataframe] -- Standardized version of the dataframe
         """
 
-        df = self.NormalizeColNames(df)
-        self.GetInputTypes(df, custom_cols)
-        df = self.ReduceData(df)
+        df = self.normalize_column_names(df)
+        self.get_input_types(df, custom_cols)
+        df = self.reduce_data(df)
         self.standardized = True
 
         return df
-
-    def SplitData(self, test_split_percentage):
-        """Splits data into train and test set.
-        
-        Arguments:
-            test_split_percentage {[float]} -- Percentage of data in your test set.
-        
-        Returns:
-            [DataFrame],  DataFrame] -- Dataframe(s) missing values replaced by the method. If train and test are provided then the cleaned version 
-            of both are returned. 
-        """
-
-        self.train_data, self.test_data = train_test_split(self.orig_data, test_size=test_split_percentage)
-
-        return self.train_data, self.test_data

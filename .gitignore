@@ -128,3 +128,5 @@ upload.bat
 
 .devcontainer.json
 .dockerignore
+
+pyautoml_web/*/sources/*
