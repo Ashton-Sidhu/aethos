@@ -38,18 +38,6 @@ class TestData(unittest.TestCase):
                                                 ,"space column name": "space_column_name"
                                                 ,"Caps Space": "caps_space"})     
 
-    def test_data_reducedata(self):
-
-        data = np.zeros((4,4))
-        columns = ["col1", "col2", "col3", "col4"]
-
-        dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, split=True, target_field="", report_name=None)
-        data.field_types = {"col1": 0, "col3": 0}
-        new_df = data.reduce_data(dataset)
-
-        self.assertListEqual(new_df.columns.tolist(), ["col1", "col3"])
-
     def test_data_standardizedata(self):
 
         data = [[1, 1, 0, "hi my name is pyautoml", "green", 532.1],
@@ -75,15 +63,6 @@ class TestData(unittest.TestCase):
 
         self.assertTrue(has_null)
 
-    def test_datautil_getkeysbyvalue(self):
-        
-        data = {"eagle": "bird",
-                "sparrow": "bird",
-                "mosquito": "insect"}
-        
-        list_of_keys = get_keys_by_values(data, "bird")
-
-        self.assertListEqual(list_of_keys, ["eagle", "sparrow"])
 
     def test_datautil_dropandreplacecolumns(self):
         data_zeros = np.zeros((2,2))

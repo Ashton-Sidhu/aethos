@@ -27,7 +27,7 @@ setup(
     packages=find_packages(),
     author='Ashton Sidhu',
     author_email='ashton.sidhu1994@gmail.com',
-    install_requires=['numpy', 'pandas', 'scikit-learn', 'textblob', 'pandas_summary', 'pandas-bokeh', 'ptitprince', 'nltk', 'ipython'],
+    install_requires=['numpy', 'pandas', 'scikit-learn', 'textblob', 'pandas_summary', 'pandas-bokeh', 'ptitprince', 'nltk', 'ipython', 'geopandas'],
     version=VERSION,
     license='GPL-3.0',
     description='A library of data science and machine learning techniques to help automate your workflow.',
