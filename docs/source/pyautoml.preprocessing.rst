@@ -7,7 +7,7 @@ Submodules
 pyautoml.preprocess module
 ----------------------------------------
 
-.. automodule:: pyautoml.preprocessing.preprocess
+.. automodule:: pyautoml.preprocess
    :members:
    :undoc-members:
    :show-inheritance:
