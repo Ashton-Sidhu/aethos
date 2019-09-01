@@ -510,7 +510,7 @@ class MethodBase(object):
             self._data_properties.test_data[column] = value
 
 
-    def visualize_raincloud(self, x_col: str, y_col=None, params={}):
+    def visualize_raincloud(self, x_col: str, y_col=None, **params):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.
         This is used to offer eyeballed statistical inference, assessment of data distributions (useful to check assumptions),
@@ -521,25 +521,6 @@ class MethodBase(object):
         2) "Rain", a stripplot below the cloud
         3) "Umberella", a boxplot
         4) "Thunder", a pointplot connecting the mean of the different categories (if `pointplot` is `True`)
-
-        Parameters
-        ----------
-        x_col : str
-            X axis data, reference by column name, any data
-        y_col : str
-            Y axis data, reference by column name, measurable data (numeric)
-            by default target_field
-        params : dict, optional
-            Parameters for the rain cloud plot, by default
-                { 'x'=target_col
-                'y'=col
-                'data'=data.infer_objects()
-                'pointplot'=True
-                'width_viol'=0.8
-                'width_box'=.4
-                'figsize'=(12,8)
-                'orient'='h'
-                'move'=0. }
 
         Possible Params for Raincloud Plot
         ----------------------------------
@@ -598,9 +579,30 @@ class MethodBase(object):
 
         Useful parameter documentation
         ------------------------------
-            https://seaborn.pydata.org/generated/seaborn.boxplot.html
-            https://seaborn.pydata.org/generated/seaborn.violinplot.html
-            https://seaborn.pydata.org/generated/seaborn.stripplot.html
+        https://seaborn.pydata.org/generated/seaborn.boxplot.html
+
+        https://seaborn.pydata.org/generated/seaborn.violinplot.html
+
+        https://seaborn.pydata.org/generated/seaborn.stripplot.html
+
+        Parameters
+        ----------
+        x_col : str
+            X axis data, reference by column name, any data
+        y_col : str
+            Y axis data, reference by column name, measurable data (numeric)
+            by default target_field
+        params : dict, optional
+            Parameters for the rain cloud plot, by default
+                { 'x'=target_col
+                'y'=col
+                'data'=data.infer_objects()
+                'pointplot'=True
+                'width_viol'=0.8
+                'width_box'=.4
+                'figsize'=(12,8)
+                'orient'='h'
+                'move'=0. }
         
         Examples
         --------
@@ -628,7 +630,9 @@ class MethodBase(object):
 
         For a list of possible arguments for the bar plot please checkout the following links:
         https://github.com/PatrikHlobil/Pandas-Bokeh#barplot and
+
         https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.vbar or
+
         https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.hbar for horizontal
         
         Parameters

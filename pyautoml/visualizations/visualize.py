@@ -2,7 +2,7 @@ import pandas_bokeh
 import ptitprince as pt
 
 
-def raincloud(col: str, target_col: str, data, params={}):
+def raincloud(col: str, target_col: str, data, **params):
     """
     Visualizes 2 columns using raincloud.
     
@@ -29,9 +29,7 @@ def raincloud(col: str, target_col: str, data, params={}):
                 'orient': 'h',
                 'move': 0.
                 }
-    else:
-        params = params
-
+                
     ax = pt.RainCloud(**params)
 
 def barplot(x, y, data, groupby=None, method=None, orient='v', **kwargs):
