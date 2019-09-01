@@ -167,7 +167,7 @@ class MethodBase(object):
     @property
     def test_data(self):
         """
-        Property function for the entire dataset.
+        Property function for the test dataset.
         """
 
         return self._data_properties.test_data
@@ -175,18 +175,24 @@ class MethodBase(object):
     @test_data.setter
     def test_data(self, value):
         """
-        Property function for the entire dataset.
+        Setter for the test data set.
         """
 
         self._data_properties.test_data = value
 
     @property
     def target_field(self):
+        """
+        Property function for the target field.
+        """
 
         return self._data_properties.target_field
 
     @target_field.setter
     def target_field(self, value):
+        """
+        Setter for the target field/
+        """
 
         self._data_properties.target_field = value
         
