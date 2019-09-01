@@ -17,14 +17,13 @@ def remove_columns_threshold(threshold: float, **datasets):
     Remove columns from the dataframe that have more than the threshold value of missing rows.
     Example: Remove columns where > 50% of the data is missing
 
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     threshold : float
         Threshold value between 0 and 1 that if the column
         has more than the specified threshold of missing values, it is removed. 
-
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data: Dataframe or array like - 2d
         Full dataset, by default None.
     train_data: Dataframe or array like - 2d
@@ -37,7 +36,7 @@ def remove_columns_threshold(threshold: float, **datasets):
     Dataframe, *Dataframe
         Transformed dataframe with rows with a missing values in a specific column are missing
 
-    * Returns 2 Dataframes if Train and Test data is provided.
+    Returns 2 Dataframes if Train and Test data is provided.
     """
 
     data = datasets.pop('data', None)
@@ -68,14 +67,13 @@ def remove_rows_threshold(threshold: float, **datasets):
     Remove rows from the dataframe that have more than the threshold value of missing rows.
     Example: Remove rows where > 50% of the data is missing
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     threshold : float
         Threshold value between 0 and 1 that if the row
         has more than the specified threshold of missing values, it is removed. 
-
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data: Dataframe or array like - 2d
         Full dataset, by default None.
     train_data: Dataframe or array like - 2d
@@ -88,7 +86,7 @@ def remove_rows_threshold(threshold: float, **datasets):
     Dataframe, *Dataframe
         Transformed dataframe with rows with a missing values in a specific row are missing
 
-    * Returns 2 Dataframes if Train and Test data is provided.
+    Returns 2 Dataframes if Train and Test data is provided.
     """
 
     if threshold > 1 or threshold < 0:
