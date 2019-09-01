@@ -1,4 +1,22 @@
+import os
+import sys
+
 from setuptools import find_packages, setup
+
+VERSION = "0.3.2"
+
+class VerifyVersionCommand(install):
+    """Custom command to verify that the git tag matches our version"""
+    description = 'verify that the git tag matches our version'
+
+    def run(self):
+        tag = os.getenv('CIRCLE_TAG')
+
+        if tag != VERSION:
+            info = "Git tag: {0} does not match the version of this app: {1}".format(
+                tag, VERSION
+            )
+            sys.exit(info)
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -10,10 +28,15 @@ setup(
     author='Ashton Sidhu',
     author_email='ashton.sidhu1994@gmail.com',
     install_requires=['numpy', 'pandas', 'scikit-learn', 'textblob', 'pandas_summary', 'pandas-bokeh', 'ptitprince', 'nltk', 'ipython'],
-    version='0.3.2',
+    version=VERSION,
     license='GPL-3.0',
     description='A library of data science and machine learning techniques to help automate your workflow.',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    include_package_data=True
+    include_package_data=True,
+    keywords='datascience, machinelearning, automation, analysis'
+    python_requires='>=3',
+    cmdclass={
+        'verify': VerifyVersionCommand,
+    }
 )

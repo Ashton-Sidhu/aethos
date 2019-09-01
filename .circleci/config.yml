@@ -1,4 +1,35 @@
-version: 2
+version: 2.1
+workflows:
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - test-python-install:
+          version: "3.4"
+          requires:
+            - build
+      - test-python-install:
+          version: "3.5"
+          requires:
+            - build
+      - test-python-install:
+          version: "3.6"
+          requires:
+            - build
+      - test-python-install:
+          version: "3.7"
+          requires:
+            - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
 jobs:
   build:
     working_directory: ~/py-automl
@@ -7,9 +38,87 @@ jobs:
     steps:
       - checkout  # checkout source code to working directory
       - run:
+          name: install python dependencies
           command: |  # use pipenv to install dependencies
-            sudo pip install pipenv
-            pipenv install
-            pipenv run python -m textblob.download_corpora
-            pipenv run python -m unittest discover pyautoml/
-       
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+            python3 -m textblob.download_corpora
+      - save_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            python3 -m unittest discover pyautoml/
+  test-python-install:
+      parameters:
+        version:
+          type: string
+          default: latest
+      docker:
+        - image: circleci/python:<< parameters.version >>
+      steps:
+        - checkout
+        - run:
+            name: install python dependencies
+            command: |  # use pipenv to install dependencies
+              python3 -m venv venv
+              . venv/bin/activate
+              pip3 install -r requirements.txt
+              python3 -m textblob.download_corpora
+        - save_cache:
+            key: v1-dependency-cache-{{ checksum "setup.py" }}
+            paths:
+              - "venv"
+        - run:
+            name: run tests
+            command: |
+              . venv/bin/activate
+              python3 -m unittest discover pyautoml/
+        - run:
+            name: Smoke Test Install 
+            command: |
+              python --version
+              sudo pip3 install py-automl
+  deploy:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
+      - run:
+            name: install python dependencies
+            command: |  # use pipenv to install dependencies
+              python3 -m venv venv
+              . venv/bin/activate
+              pip3 install -r requirements.txt
+              python3 -m textblob.download_corpora
+      - save_cache:
+          key: v1-dependency-cache-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            python setup.py verify
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = asidhu" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: create packages
+          command: |
+            python setup.py sdist
+      - run:
+          name: upload to pypi
+          command: |
+            . venv/bin/activate
+            twine upload dist/*
