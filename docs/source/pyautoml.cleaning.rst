@@ -1,13 +1,13 @@
-pyautoml.clean package
+pyautoml.Clean package
 =========================
 
 Submodules
 ----------
 
-pyautoml.clean module
+pyautoml.Clean module
 ------------------------------
 
-.. automodule:: pyautoml.clean
+.. automodule:: pyautoml.Clean
    :members:
    :undoc-members:
    :show-inheritance:

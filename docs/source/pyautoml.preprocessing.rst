@@ -1,4 +1,4 @@
-pyautoml.preprocessing package
+pyautoml.Preprocessing package
 ==============================
 
 Submodules
@@ -7,7 +7,7 @@ Submodules
 pyautoml.preprocess module
 ----------------------------------------
 
-.. automodule:: pyautoml.preprocess
+.. automodule:: pyautoml.Preprocess
    :members:
    :undoc-members:
    :show-inheritance:

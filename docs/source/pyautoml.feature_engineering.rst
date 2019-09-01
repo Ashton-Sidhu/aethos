@@ -1,4 +1,4 @@
-pyautoml.feature package
+pyautoml.Feature package
 =====================================
 
 Submodules
@@ -7,7 +7,7 @@ Submodules
 pyautoml.feature\_engineering.feature module
 --------------------------------------------
 
-.. automodule:: pyautoml.feature
+.. automodule:: pyautoml.Feature
    :members:
    :undoc-members:
    :show-inheritance:
