@@ -14,7 +14,7 @@ class VerifyVersionCommand(install):
     def run(self):
         tag = os.getenv('CIRCLE_TAG')
 
-        if tag != VERSION:
+        if tag != 'v' + VERSION:
             info = "Git tag: {0} does not match the version of this app: {1}".format(
                 tag, VERSION
             )
@@ -37,7 +37,7 @@ setup(
     long_description_content_type="text/markdown",
     include_package_data=True,
     keywords='datascience, machinelearning, automation, analysis',
-    python_requires='> 3.5',
+    python_requires='>= 3.5',
     cmdclass={
         'verify': VerifyVersionCommand,
     }
