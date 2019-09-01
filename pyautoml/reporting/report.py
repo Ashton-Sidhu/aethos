@@ -10,7 +10,7 @@ class Report():
         if os.path.exists(self.report_name):
             self.filename = self.report_name
         else:
-            self.filename = f'pyautoml_reports/{report_name}{datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")}.txt'
+            self.filename = 'pyautoml_reports/{}{}.txt'.format(report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p"))
 
         #TODO: Move making the directory on first time run to some config file
         if not os.path.exists("pyautoml_reports/"):

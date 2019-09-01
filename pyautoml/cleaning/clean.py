@@ -12,7 +12,7 @@ from pyautoml.util import _contructor_data_properties, _input_columns
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
-with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
+with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
     try:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:

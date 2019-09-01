@@ -3,7 +3,6 @@ from functools import partial
 from nltk import sent_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import PorterStemmer
-
 from pyautoml.util import _function_input_validation
 
 NLTK_STEMMERS = {
@@ -45,8 +44,7 @@ def split_sentence(list_of_cols=[], new_col_name='_sentences', **datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
-
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
@@ -101,8 +99,7 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
-
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
@@ -146,6 +143,6 @@ def _apply_text_method(text_data, transformer=None):
     transformed_text_data = ''
 
     for word in text_data.split():
-        transformed_text_data += f'{transformer(word)} '
+        transformed_text_data += '{} '.format(transformer(word))
 
     return transformed_text_data.strip()

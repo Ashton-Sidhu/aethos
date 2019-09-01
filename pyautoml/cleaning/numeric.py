@@ -55,7 +55,7 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
@@ -125,7 +125,7 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")

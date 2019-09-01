@@ -2,9 +2,8 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
@@ -14,7 +13,7 @@ from pyautoml.util import _contructor_data_properties, _input_columns
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
-with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
+with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
     try:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
@@ -282,7 +281,7 @@ class Feature(MethodBase):
             self._data_properties.data = apply(func, output_col, data=self._data_properties.data)
     
             if self.report is not None:
-                self.report.log(f"Applied function to dataset. {description}")
+                self.report.log("Applied function to dataset. {}".format(description))
     
             return self.copy()
     
@@ -293,6 +292,6 @@ class Feature(MethodBase):
                                                                                     test_data=self._data_properties.test_data)
     
             if self.report is not None:
-                self.report.log(f"Added feature {output_col}. {description}")
+                self.report.log("Added feature {}. {}".format(output_col, description))
     
             return self.copy()

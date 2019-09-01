@@ -83,14 +83,14 @@ class MethodBase(object):
                 ## If the number of entries in the list does not match the number of rows in the training or testing
                 ## set raise a value error
                 if len(value) != train_data_length and len(value) != test_data_length:
-                    raise ValueError(f"Length of list: {len(value)} does not equal the number rows as the training set or test set.")
+                    raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
 
                 self._set_item(column, value, train_data_length, test_data_length)
 
             elif isinstance(value, tuple):
                 for data in value:
                     if len(data) != train_data_length and len(data) != test_data_length:
-                        raise ValueError(f"Length of list: {len(data)} does not equal the number rows as the training set or test set.")
+                        raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
 
                     self._set_item(column, data, train_data_length, test_data_length)
 
@@ -462,7 +462,7 @@ class MethodBase(object):
             self._data_properties.data = self.data.drop(drop_columns, axis=1)
 
             if self.report is not None:
-                self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
+                self.report.log('Dropped columns: {}. {}'.format(", ".join(drop_columns), reason))
 
             return self.copy()
         else:
@@ -470,7 +470,7 @@ class MethodBase(object):
             self._data_properties.test_data = self.test_data.drop(drop_columns, axis=1)
 
             if self.report is not None:
-                self.report.log(f'Dropped columns {", ".join(drop_columns)} in both train and test set. {reason}')
+                self.report.log('Dropped columns {} in both train and test set. {}'.format(", ".join(drop_columns), reason))
 
             return self.copy()
 

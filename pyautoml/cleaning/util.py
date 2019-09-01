@@ -48,7 +48,7 @@ def remove_columns_threshold(threshold: float, **datasets):
         raise ValueError("Threshold cannot be greater than 1 or less than 0.")
 
     if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
@@ -99,7 +99,7 @@ def remove_rows_threshold(threshold: float, **datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
@@ -144,8 +144,8 @@ def remove_duplicate_rows(list_of_cols=[], **datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
-
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
+        
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
@@ -186,8 +186,7 @@ def remove_duplicate_columns(**datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
-
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
@@ -232,8 +231,7 @@ def replace_missing_random_discrete(list_of_cols: list, **datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
-
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 

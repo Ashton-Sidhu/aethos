@@ -39,8 +39,7 @@ def apply(func, output_col: str, **datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
-
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
 
