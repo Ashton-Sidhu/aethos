@@ -7,6 +7,7 @@ VERSION = "0.3.3"
 
 class VerifyVersionCommand(install):
     """Custom command to verify that the git tag matches our version"""
+    
     description = 'verify that the git tag matches our version'
 
     def run(self):
