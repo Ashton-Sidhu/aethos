@@ -117,13 +117,12 @@ def remove_duplicate_rows(list_of_cols=[], **datasets):
     """
     Removes rows that are exact duplicates of each other.
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     list_of_cols: list, optional
         Columns to check if their values are duplicated, by default []
-    
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data: Dataframe or array like - 2d
         Full dataset, by default None.
     train_data: Dataframe or array like - 2d
@@ -136,7 +135,7 @@ def remove_duplicate_rows(list_of_cols=[], **datasets):
     Dataframe, *Dataframe
         Transformed dataframe with rows with a missing values in a specific row are missing
 
-    * Returns 2 Dataframes if Train and Test data is provided.
+    Returns 2 Dataframes if Train and Test data is provided.
     """
 
     data = datasets.pop('data', None)
@@ -162,10 +161,10 @@ def remove_duplicate_columns(**datasets):
     """
     Removes columns whose values are exact duplicates of each other.
     
-    Parameters
-    ----------
     Either the full data or training data plus testing data MUST be provided, not both.
 
+    Parameters
+    ----------
     data: Dataframe or array like - 2d
         Full dataset, by default None.
     train_data: Dataframe or array like - 2d
@@ -178,7 +177,7 @@ def remove_duplicate_columns(**datasets):
     Dataframe, *Dataframe
         Transformed dataframe with rows with a missing values in a specific row are missing
 
-    * Returns 2 Dataframes if Train and Test data is provided.
+    Returns 2 Dataframes if Train and Test data is provided.
     """
 
     data = datasets.pop('data', None)
@@ -204,13 +203,12 @@ def replace_missing_random_discrete(list_of_cols: list, **datasets):
     Replace missing values in with a random number based off the distribution (number of occurences) 
     of the data.
 
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     list_of_cols : list
         A list of specific columns to apply this technique to, by default []
-
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data: Dataframe or array like - 2d
         Full dataset, by default None.
     train_data: Dataframe or array like - 2d
@@ -223,7 +221,7 @@ def replace_missing_random_discrete(list_of_cols: list, **datasets):
     Dataframe, *Dataframe
         Transformed dataframe with rows with a missing values in a specific row are missing
 
-    * Returns 2 Dataframes if Train and Test data is provided.
+    Returns 2 Dataframes if Train and Test data is provided.
     """
 
     data = datasets.pop('data', None)

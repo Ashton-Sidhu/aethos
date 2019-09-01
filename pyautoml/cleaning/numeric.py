@@ -22,6 +22,9 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
     Mean: Average value of the column. Effected by outliers.
     Median: Middle value of a list of numbers. Equal to the mean if data follows normal distribution. Not effected much by anomalies.
     Mode: Most common number in a list of numbers.
+
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     
     Parameters
     ----------
@@ -32,9 +35,6 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
     strategy : str
         Strategy for replacing missing values.
         Can be either "mean", "median" or "most_frequent"
-
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data: Dataframe or array like - 2d
         Full dataset, by default None.
     train_data: Dataframe or array like - 2d
@@ -47,7 +47,7 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
     Dataframe, *Dataframe
         Transformed dataframe with rows with a missing values in a specific column are missing
 
-    * Returns 2 Dataframes if Train and Test data is provided.  
+    Returns 2 Dataframes if Train and Test data is provided.  
     """
 
     data = datasets.pop('data', None)
@@ -89,6 +89,8 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
     Replaces missing values in every numeric column with a constant. If `col_to_constant` is not provided,
     all the missing values in the data will be replaced with `constant`
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     col_to_constant : list, dict, optional
@@ -96,9 +98,6 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
         by default None
     constant : int, float, optional
         Value to replace missing values with, by default 0
-    
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data: Dataframe or array like - 2d
         Full dataset, by default None.
     train_data: Dataframe or array like - 2d
@@ -111,7 +110,7 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
     Dataframe, *Dataframe
         Transformed dataframe with rows with a missing values in a specific column are missing
 
-    * Returns 2 Dataframes if Train and Test data is provided.  
+    Returns 2 Dataframes if Train and Test data is provided.  
     
     Examples
     ------

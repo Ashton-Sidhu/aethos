@@ -15,6 +15,8 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
     """
     Replaces missing values in categorical column with its own category. The categories can be autochosen
     from the defaults set.
+
+    Either the full data or training data plus testing data MUST be provided, not both.
     
     Parameters
     ----------
@@ -22,9 +24,6 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
         A dictionary mapping column name to the category name you want to replace , by default None
     constant : str, int or float, optional
         Category placeholder value for missing values, by default None
-
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data : DataFrame
         Full dataset, by default None
     train_data : DataFrame
@@ -37,7 +36,7 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
     Dataframe, *Dataframe:
         Cleaned columns of the dataframe(s) provides with the provided constant.
         
-    * Returns 2 Dataframes if Train and Test data is provided.
+    Returns 2 Dataframes if Train and Test data is provided.
 
     Examples
     --------
@@ -128,13 +127,12 @@ def replace_missing_remove_row(cols_to_remove: list, **datasets):
     """
     Remove rows where the value of a column for those rows is missing.
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+    
     Parameters
     ----------
     cols_to_remove : list
-        List of columns you want to check to see if they have missing values in a row 
-
-    Either the full data or training data plus testing data MUST be provided, not both.
-
+        List of columns you want to check to see if they have missing values in a row
     data : DataFrame
         Full dataset, by default None
     train_data : DataFrame
@@ -147,7 +145,7 @@ def replace_missing_remove_row(cols_to_remove: list, **datasets):
     Dataframe, *Dataframe:
         Cleaned columns of the dataframe(s) provides with the provided constant.
         
-    * Returns 2 Dataframes if Train and Test data is provided.        
+    Returns 2 Dataframes if Train and Test data is provided.        
     """
 
     data = datasets.pop('data', None)

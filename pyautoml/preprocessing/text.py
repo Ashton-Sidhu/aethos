@@ -17,15 +17,14 @@ def split_sentence(list_of_cols=[], new_col_name='_sentences', **datasets):
     """
     Splits text by its sentences and then saves that list in a new column.
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     list_of_cols : list, optional
         Column name(s) of text data that you want to separate into sentences
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_sentences`
-    
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data : DataFrame
         Full dataset, by default None
     train_data : DataFrame
@@ -35,8 +34,10 @@ def split_sentence(list_of_cols=[], new_col_name='_sentences', **datasets):
     
     Returns
     -------
-    Dataframe
+    Dataframe, *Dataframe
         Transformed dataframe with the new column
+
+    Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = datasets.pop('data', None)
@@ -65,6 +66,8 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
     """
     Stems all the text in a column.
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     list_of_cols : list, optional
@@ -76,11 +79,8 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
             - Porter
 
         For more information please refer to the NLTK stemming api https://www.nltk.org/api/nltk.stem.html
-    
-    Either the full data or training data plus testing data MUST be provided, not both.
     new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_stemmed`
-
     data : DataFrame
         Full dataset, by default None
     train_data : DataFrame
@@ -90,8 +90,10 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
     
     Returns
     -------
-    Dataframe
-        Transformed dataframe with the new column
+    Dataframe, *Dataframe
+        Transformed dataframe with the new column.
+
+    Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = datasets.pop('data', None)

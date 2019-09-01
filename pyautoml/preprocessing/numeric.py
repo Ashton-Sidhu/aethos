@@ -14,6 +14,8 @@ def preprocess_normalize(list_of_cols=[], **algo_kwargs):
     """
     Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     list_of_cols : list, optional
@@ -23,9 +25,6 @@ def preprocess_normalize(list_of_cols=[], **algo_kwargs):
     algo_kwargs : optional
         Parmaters to pass into MinMaxScaler() constructor
         from Scikit-Learn, by default {}
-
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data : DataFrame
         Full dataset, by default None
     train_data : DataFrame
@@ -36,9 +35,9 @@ def preprocess_normalize(list_of_cols=[], **algo_kwargs):
     Returns
     -------
     Dataframe, *Dataframe
-        Transformed dataframe with rows with a missing values in a specific column are missing
+        Transformed dataframe with rows normalized.
 
-    * Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = algo_kwargs.pop('data', None)

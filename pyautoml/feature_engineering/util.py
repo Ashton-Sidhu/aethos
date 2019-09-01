@@ -12,15 +12,14 @@ def apply(func, output_col: str, **datasets):
     Wrapper for pandas apply function to be used in this library. Applies `func` to the entire data
     or just the trianing and testing data
 
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     func : Function pointer
             Function describing the transformation for the new column
     output_col : str
         New column name
-        
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data : DataFrame
         Full dataset, by default None
     train_data : DataFrame
@@ -30,8 +29,10 @@ def apply(func, output_col: str, **datasets):
     
     Returns
     -------
-    Dataframe
+    Dataframe, *Dataframe
         Transformed dataframe with the new column
+
+    Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = datasets.pop('data', None)
