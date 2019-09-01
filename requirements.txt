@@ -11,4 +11,3 @@ nltk==3.4.5
 ipython==7.7.0
 scikit_learn==0.21.3
 PyYAML==5.1.2
-geopandas==0.5.1
