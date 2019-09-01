@@ -4,6 +4,14 @@ pyautoml.preprocessing package
 Submodules
 ----------
 
+pyautoml.preprocess module
+----------------------------------------
+
+.. automodule:: pyautoml.preprocessing.preprocess
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pyautoml.preprocessing.categorical module
 -----------------------------------------
 
@@ -16,22 +24,6 @@ pyautoml.preprocessing.numeric module
 -------------------------------------
 
 .. automodule:: pyautoml.preprocessing.numeric
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyautoml.preprocessing.preprocess module
-----------------------------------------
-
-.. automodule:: pyautoml.preprocessing.preprocess
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyautoml.preprocessing.test\_unittest module
---------------------------------------------
-
-.. automodule:: pyautoml.preprocessing.test_unittest
    :members:
    :undoc-members:
    :show-inheritance:

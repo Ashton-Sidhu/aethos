@@ -4,6 +4,14 @@ pyautoml.clean package
 Submodules
 ----------
 
+pyautoml.clean module
+------------------------------
+
+.. automodule:: pyautoml.cleaning.clean
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pyautoml.cleaning.categorical module
 ------------------------------------
 
