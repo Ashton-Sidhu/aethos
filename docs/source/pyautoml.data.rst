@@ -20,6 +20,14 @@ pyautoml.data.datavalidation module
    :undoc-members:
    :show-inheritance:
 
+pyautoml.data.test\_unittest module
+-----------------------------------
+
+.. automodule:: pyautoml.data.test_unittest
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
