@@ -50,7 +50,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -98,7 +98,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -145,7 +145,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -203,7 +203,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -258,7 +258,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
        
@@ -316,7 +316,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
 
         Examples
@@ -385,7 +385,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
 
         Examples
@@ -447,7 +447,7 @@ class Clean(MethodBase):
 
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -494,7 +494,7 @@ class Clean(MethodBase):
        
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
     
@@ -528,7 +528,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
     
@@ -568,7 +568,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
 
         Examples

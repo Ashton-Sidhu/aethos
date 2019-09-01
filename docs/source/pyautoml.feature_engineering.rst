@@ -1,4 +1,4 @@
-pyautoml.feature\_engineering package
+pyautoml.Feature Engineering package
 =====================================
 
 Submodules
@@ -28,13 +28,6 @@ pyautoml.feature\_engineering.numeric module
    :undoc-members:
    :show-inheritance:
 
-pyautoml.feature\_engineering.test\_unittest module
----------------------------------------------------
-
-.. automodule:: pyautoml.feature_engineering.test_unittest
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 pyautoml.feature\_engineering.text module
 -----------------------------------------

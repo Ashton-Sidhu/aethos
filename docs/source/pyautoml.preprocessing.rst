@@ -28,13 +28,6 @@ pyautoml.preprocessing.preprocess module
    :undoc-members:
    :show-inheritance:
 
-pyautoml.preprocessing.test\_unittest module
---------------------------------------------
-
-.. automodule:: pyautoml.preprocessing.test_unittest
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 pyautoml.preprocessing.text module
 ----------------------------------

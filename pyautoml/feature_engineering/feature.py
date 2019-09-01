@@ -57,7 +57,7 @@ class Feature(MethodBase):
         
         Returns
         -------
-        Feature Object:
+        Feature:
             Returns a deep copy of the Feature object.
 
         Examples
@@ -113,7 +113,7 @@ class Feature(MethodBase):
         
         Returns
         -------
-        Feature Object:
+        Feature:
             Returns a deep copy of the Feature object.
         """
         
@@ -168,7 +168,7 @@ class Feature(MethodBase):
         
         Returns
         -------
-        Feature Object:
+        Feature:
             Returns a deep copy of the Feature object.
         """
 
@@ -219,7 +219,7 @@ class Feature(MethodBase):
 
         Returns
         -------
-        Feature Object:
+        Feature:
             Returns a deep copy of the Feature object.
         """
         
@@ -261,7 +261,7 @@ class Feature(MethodBase):
         
         Returns
         -------
-        Feature Object:
+        Feature:
             Returns a deep copy of the Feature object.
 
         Examples

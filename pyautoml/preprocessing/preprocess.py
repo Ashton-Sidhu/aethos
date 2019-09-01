@@ -2,9 +2,8 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -61,7 +60,7 @@ class Preprocess(MethodBase):
         
         Returns
         -------
-        Preprocess Object:
+        Preprocess:
             Returns a deep copy of the Preprocess object.
         """
 
@@ -115,7 +114,7 @@ class Preprocess(MethodBase):
 
         Returns
         -------
-        Preprocess Object:
+        Preprocess:
             Returns a deep copy of the Preprocess object.
         """
 
