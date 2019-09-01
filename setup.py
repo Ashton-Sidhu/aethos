@@ -3,7 +3,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-VERSION = "0.3.2"
+VERSION = "0.3.3"
 
 class VerifyVersionCommand(install):
     """Custom command to verify that the git tag matches our version"""
