@@ -1,4 +1,4 @@
-pyautoml.cleaning package
+pyautoml.clean package
 =========================
 
 Submodules
@@ -12,14 +12,6 @@ pyautoml.cleaning.categorical module
    :undoc-members:
    :show-inheritance:
 
-pyautoml.cleaning.clean module
-------------------------------
-
-.. automodule:: pyautoml.cleaning.clean
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 pyautoml.cleaning.numeric module
 --------------------------------
 
@@ -28,13 +20,6 @@ pyautoml.cleaning.numeric module
    :undoc-members:
    :show-inheritance:
 
-pyautoml.cleaning.test\_unittest module
----------------------------------------
-
-.. automodule:: pyautoml.cleaning.test_unittest
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 pyautoml.cleaning.text module
 -----------------------------
@@ -56,7 +41,7 @@ pyautoml.cleaning.util module
 Module contents
 ---------------
 
-.. automodule:: pyautoml.cleaning
+.. automodule:: pyautoml.clean
    :members:
    :undoc-members:
    :show-inheritance:
