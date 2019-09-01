@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 
@@ -14,12 +15,32 @@
         </div>
 
         <!--begin::Form-->
-        <form class="kt-form kt-form--label-right" method="post" enctype="multipart/form-data">
+        <form id="formsubmit" class="kt-form kt-form--label-right" method="post" enctype="multipart/form-data" novalidate="novalidate">
         {% csrf_token %}
             <div class="kt-portlet__body">
                 <div class="form-group row">
                     <label class="col-form-label col-lg-3 col-sm-12"></label>
+                    <div class="form-group form-group-last kt-hide">
+                        <div class="alert alert-danger" role="alert" id="kt_form_1_msg">
+                            <div class="alert-icon"><i class="flaticon-warning"></i></div>
+                            <div class="alert-text">
+                                Oh snap! Change a few things up and try submitting again.
+                            </div>
+                            <div class="alert-close">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true"><i class="la la-close"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>            
                     <div class="col-lg-4 col-md-9 col-sm-12">
+                        <div class="form-group row">                    
+                            <label class="col-form-label col-lg-3 col-sm-12">* Analysis Name:</label>
+                            <div class="col-lg-9 col-md-9 col-sm-12">
+                                <input type="text" class="form-control" name="title" placeholder="Enter name for analysis.">
+                                <span class="form-text text-muted">This will also be the title of your analysis report and general reference to this dataset.</span>                        
+                            </div>
+                        </div>
                         <div class="kt-dropzone dropzone m-dropzone--primary dz-clickable" action="{% url 'upload' %}" id="m-dropzone-two">
                             <div class="kt-dropzone__msg dz-message needsclick">
                                 <h3 class="kt-dropzone__msg-title">Drop files here or click to upload.</h3>
@@ -27,13 +48,13 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>  
             </div>
             <div class="kt-portlet__foot">
                 <div class="kt-form__actions">
                     <div class="row">
                         <div class="col-lg-9 ml-lg-auto">
-                            <button type="reset" class="btn btn-brand">Submit</button>
+                            <button type="submit" id="submit" class="btn btn-brand">Submit</button>
                             <button type="reset" class="btn btn-secondary">Cancel</button>
                         </div>
                     </div>
@@ -47,4 +68,13 @@
     <!--end::Portlet-->
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{% static "vendors/general/jquery-validation/dist/jquery.validate.js" %}" type="text/javascript"></script>
+<script src="{% static "vendors/general/jquery-validation/dist/additional-methods.js" %}" type="text/javascript"></script>
+<script src="{% static "vendors/custom/js/vendors/jquery-validation.init.js" %}" type="text/javascript"></script>
+<script src="{% static "vendors/general/dropzone/dist/dropzone.js" %}" type="text/javascript"></script>
+<script src="{% static "js/fileupload.js" %}" type="text/javascript"></script>
 {% endblock %}
