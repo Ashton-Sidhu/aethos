@@ -7,7 +7,7 @@ Submodules
 pyautoml.cleaning.clean module
 ------------------------------------
 
-.. automodule:: pyautoml.clean
+.. automodule:: pyautoml.cleaning.clean
    :members:
    :undoc-members:
    :show-inheritance:
