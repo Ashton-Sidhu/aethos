@@ -7,6 +7,10 @@ workflows:
             tags:
               only: /.*/
       - test-python-install:
+          version: "3.5"
+          requires:
+            - build
+      - test-python-install:
           version: "3.6"
           requires:
             - build
@@ -60,6 +64,7 @@ jobs:
               python3 -m venv venv
               . venv/bin/activate
               pip3 install -r requirements.txt
+              pip3 install geopandas pyspark
               python3 -m textblob.download_corpora
         - save_cache:
             key: v1-dependency-cache-{{ checksum "setup.py" }}
