@@ -9,6 +9,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Motivation](#motivation)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -23,11 +24,17 @@
 
 ## Introduction
 
-Py-automl is a platform (Web Application and API) that automates tasks of the ML pipeline, from Data Cleaning to Validation. Py-automl is designed to aggregate machine learning techniques and models so that they are usable by everyone from Data Scientists and Machine Learning Engineers to Data Analysts and Business Professionals. It gives users full customizability and visibility into the techniques that are being used and also comes with an autoML feature (soon). Each technique has customizable parameters where applicable that can be passed in as arguments to help automate tasks. Every part of the auto-ml pipeline will be automated and users can start automating at any point (i.e. if the user already has cleaned their dataset, they can start automating from the feature engineering/extraction phase). All of this being done with the goal in mind that engineers, scientists, analysts and professionals alike spend less time on coding and worrying about how to do the analysis and instead worry about what analytic tools will best help them get insights from their data.
+Py-automl is a library/platform that automates your data science and analytical tasks at any stage in the pipeline. From cleaning your data, visualizing it and even applying feature engineering techniques from your favourite libraries - all done with a single, human readable, line of code! Not to mention this process becomes easier with the use of the webapp, where it's just one click (Coming soon). When you're all done with your analysis, pick the techniques that best suit your data and with one line of code (or one click) get the python code of your pipeline thats transform your data to its processed state. You can also choose to just get the file of your transformed data and/or the model itself (Coming soon)!
 
-Py-automl provides you with the code for each technique that was ran on your dataset to remove the "black box" of other autoML platforms. This allows users to learn, customize and tweak the code as they desire. The code provided will be production-ready so you don't have to waste time writing the code and then revising it to production standard. If any models were ran, the users will receive the trained models. As py-automl goes through the ML pipeline it records its actions and steps provides a detailed report of what was done, how it was done, where it was done, etc. allowing users to share their process with co-workers, colleagues, friends, etc.
+Py-automl utilizes other open source libraries to help enhance your analysis from enhanced stastical information, interactive visual plots or statistical tests and models - all in one place, all accessible with one line of code or a click! See below in the [Acknowledgments](#acknowledgments) for the open source libraries being used in this project.
 
-It is Py-automls's goal that Data Scientists and Machine Learning Engineers will contribute the techniques they have used and that researchers will contribute with their code and paper so that everyone using the platform can apply the latest advancements and techniques in A.I. onto their dataset.
+## Motivation
+
+I created this library to help automate the data science/machine learning pipeline and have all the tools required for analysis in one place. I hated having to go back and look at code to find implementation for a certain type of analysis or googling for the implementation. I wanted to be able to focus more time on thinking about the analysis and the techniques to apply instead of worrying about developing them and finding implementations. 
+
+Secondly there were alot of people that wanted to do data science that were in a different technical stream but were blocked due to knowledge and technical barriers. My goal was to remove the technical barriers, so that as long as they understand the techniques at a high level, they can work with data scientists and help contribute to performing some analysis with just one line of code or a click of a button - allowing the data scientist or ML engineer to focus on interpreting/applying the results.
+
+For more info see my [vision statememt](https://github.com/Ashton-Sidhu/py-automl/blob/develop/VISION.md).
 
 ## Features
 - Python package that simplifies and automates cleaning, preprocessing, feature engineering, and modelling techniques.
@@ -89,8 +96,8 @@ Examples can be viewed [here](https://github.com/Ashton-Sidhu/py-automl/tree/dev
 
 #### Phase 1
   - [x] Base Framework
-  - [ ] File Upload - IPR
-  - [ ] Detect column type (categorical (numeric/string), numeric, string, text, etc.)
+  - [x] File Upload
+  - [ ] Detect column type (categorical (numeric/string), numeric, string, text, etc.) - IPR
   - [ ] Display Data
   - [ ] Modify and Display data with technique choosing
   - [ ] Export final Result
@@ -116,6 +123,8 @@ N/A
 ## Acknowledgments
 
 [@mouradmourafiq](https://github.com/mouradmourafiq) for his [pandas-summary](https://github.com/mouradmourafiq/pandas-summary) library.
+
+[@PatrikHlobil](https://github.com/PatrikHlobil) for his [Pandas-Bokeh](https://github.com/PatrikHlobil/Pandas-Bokeh) library.
 
 ## For Developers
 
