@@ -618,7 +618,7 @@ class MethodBase(object):
         else:
             raincloud(y_col, x_col, self.train_data)
 
-    def visualize_barplot(self, x_col, y_col, groupby=None, method=None, orient='v', **kwargs):
+    def visualize_barplot(self, x_col, *cols, groupby=None, method=None, orient='v', stacked=False, **kwargs):
         """
         Plots a bar plot for the given columns provided.
 
@@ -637,10 +637,10 @@ class MethodBase(object):
         
         Parameters
         ----------
-        x : str
+        x_col : str
             Column name for the x axis.
-        y : str
-            Column for the y axis
+        cols : str
+            Columns you would like to see plotted against the x_col
         groupby : str
             Data to groupby - x-axis, optional, by default None
         method : str
@@ -649,10 +649,13 @@ class MethodBase(object):
             by default None
         orient : str, optional
             Orientation of graph, 'h' for horizontal
-            'v' for vertical, by default 'v'
+            'v' for vertical, by default 'v',
+        stacked : bool
+            Whether to stack the different columns resulting in a stacked bar chart,
+            by default False
         """
-
+        
         if not self._data_properties.split:
-            barplot(x_col, y_col, self.data, groupby=groupby, method=method, orient=orient, **kwargs)
+            barplot(x_col, list(cols), self.data, groupby=groupby, method=method, orient=orient, stacked=stacked, **kwargs)
         else:
-            barplot(x_col, y_col, self.train_data, groupby=groupby, method=method, orient=orient, **kwargs)
+            barplot(x_col, list(cols), self.train_data, groupby=groupby, method=method, orient=orient, stacked=stacked, **kwargs)
