@@ -86,5 +86,5 @@ model:
     textrank_keywords: >
       Extracted keywords using the Text Rank algorithm.
       
-    textrank_summarize: >
+    textrank_summarizer: >
       Created an extractive summary using the Text Rank algorithm.
