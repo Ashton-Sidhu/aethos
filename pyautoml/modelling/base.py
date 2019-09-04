@@ -1,5 +1,7 @@
 
-from pyautoml import base
+from pyautoml.base import MethodBase
+from pyautoml.modelling.text import *
+from pyautoml.util import _input_columns
 
 
 class Model(MethodBase):
@@ -84,3 +86,154 @@ class Model(MethodBase):
         """
 
         self._test_target_data = value
+
+    def summarize_gensim_textrank(self, *list_args, list_of_cols=[], new_col_name="_summarized", **summarizer_kwargs):
+        """
+        Summarize bodies of text using Gensim's Text Rank algorith. Note that it uses a Text Rank variant as stated here:
+        https://radimrehurek.com/gensim/summarization/summariser.html
+
+        The output summary will consist of the most representative sentences and will be returned as a string, divided by newlines.
+        
+        Parameters
+        ----------
+        list_of_cols : list, optional
+            Column name(s) of text data that you want to summarize
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `_extracted_keywords`
+        ratio : float, optional
+            Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.
+        word_count : int or None, optional
+            Determines how many words will the output contain. If both parameters are provided, the ratio will be ignored.
+        split : bool, optional
+            If True, list of sentences will be returned. Otherwise joined strings will be returned.
+
+        Returns
+        -------
+        TextModel
+            Resulting model
+        """
+    
+        report_info = technique_reason_repo['model']['text']['textrank_summarizer']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        if not self._data_properties.split:
+
+            self._data_properties.data = gensim_textrank_summarizer(
+                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self.data_properties.data, **summarizer_kwargs)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_summarizer(
+                list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data, **summarizer_kwargs)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+    def extract_keywords_gensim_textrank(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", **keyword_kwargs):
+        """
+        Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
+
+        Get most ranked words of provided text and/or its combinations.
+        
+        Parameters
+        ----------
+        list_of_cols : list, optional
+            Column name(s) of text data that you want to summarize
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `_extracted_keywords`
+        ratio : float, optional
+            Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.
+        words : int, optional
+            Number of returned words.        
+        split : bool, optional
+            If True, list of sentences will be returned. Otherwise joined strings will be returned.
+        scores : bool, optional
+            Whether score of keyword.
+        pos_filter : tuple, optional
+            Part of speech filters.
+        lemmatize : bool, optional 
+            If True - lemmatize words.
+        deacc : bool, optional
+            If True - remove accentuation.
+        
+        Returns
+        -------
+        TextModel
+            Resulting model
+        """
+
+        report_info = technique_reason_repo['model']['text']['textrank_keywords']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        if not self._data_properties.split:
+
+            self._data_properties.data = gensim_textrank_keywords(
+                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self.data_properties.data, **keyword_kwargs)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_keywords(
+                list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data, **keyword_kwargs)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords"):
+        """
+        Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
+
+        Get most ranked words of provided text and/or its combinations.
+        
+        Parameters
+        ----------
+        list_of_cols : list, optional
+            Column name(s) of text data that you want to summarize
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `_extracted_keywords`
+
+        Returns
+        -------
+        TextModel
+            Resulting model
+        """
+
+        report_info = technique_reason_repo['model']['text']['textrank_keywords']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        if not self._data_properties.split:
+
+            self._data_properties.data = gensim_textrank_generic_keywords(
+                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self.data_properties.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_generic_keywords(
+                list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self.data_properties.train_data, test_data=self.data_properties.test_data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+
+class TextModel(object):
+    pass
