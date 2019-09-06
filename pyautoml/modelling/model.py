@@ -1,11 +1,14 @@
 
 import os
 
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
+from pyautoml.modelling.model_types import *
 from pyautoml.modelling.text import *
-from pyautoml.util import _contructor_data_properties, _input_columns
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _validate_model_name)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -40,6 +43,23 @@ class Model(MethodBase):
             else:
                 self._target_data = self._data_properties.data[self._data_properties.target_field]
                 self._data_properties.data = self._data_properties.data.drop([self._data_properties.target_field], axis=1)
+
+        self._models = {}
+
+    def __getitem__(self, key):
+
+        if key in self._models:
+            return self._models[key]
+
+        return super().__getitem__(key)
+
+    ## Identical copies are made to avoid infinite recursion loop .. better safe than sorry
+    def __getattr__(self, key):
+
+        if key in self._models:
+            return self._models[key]
+
+        return super().__getattr__(key)
 
     @property
     def target_data(self):
@@ -98,7 +118,7 @@ class Model(MethodBase):
 
         self._test_target_data = value
 
-    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", **summarizer_kwargs):
+    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", **summarizer_kwargs):
         """
         Summarize bodies of text using Gensim's Text Rank algorith. Note that it uses a Text Rank variant as stated here:
         https://radimrehurek.com/gensim/summarization/summariser.html
@@ -111,6 +131,8 @@ class Model(MethodBase):
             Column name(s) of text data that you want to summarize
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `_extracted_keywords`
+        model_name : str, optional
+            Name for this model, default to `model_summarize_gensim`
         ratio : float, optional
             Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.
         word_count : int or None, optional
@@ -123,6 +145,9 @@ class Model(MethodBase):
         TextModel
             Resulting model
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another.")
     
         report_info = technique_reason_repo['model']['text']['textrank_summarizer']
 
@@ -135,9 +160,7 @@ class Model(MethodBase):
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
-
-            return self.copy()
-
+            
         else:
             self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_summarizer(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **summarizer_kwargs)
@@ -145,9 +168,11 @@ class Model(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
 
-            return self.copy()
+        self._models[model_name] = TextModel(self)
 
-    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", **keyword_kwargs):
+        return self._models[model_name]        
+
+    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", **keyword_kwargs):
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
 
@@ -159,6 +184,8 @@ class Model(MethodBase):
             Column name(s) of text data that you want to summarize
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `_extracted_keywords`
+        model_name : str, optional
+            Name for this model, default to `model_extract_keywords_gensim`
         ratio : float, optional
             Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.
         words : int, optional
@@ -179,9 +206,11 @@ class Model(MethodBase):
         TextModel
             Resulting model
         """
+        
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another.")
 
         report_info = technique_reason_repo['model']['text']['textrank_keywords']
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
@@ -192,8 +221,6 @@ class Model(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
 
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_keywords(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **keyword_kwargs)
@@ -201,7 +228,6 @@ class Model(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
 
-            return self.copy()
+        self._models[model_name] = TextModel(self)
 
-class TextModel(object):
-    pass
+        return self._models[model_name]

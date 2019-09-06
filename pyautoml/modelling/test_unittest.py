@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+
 from pyautoml import Model
 
 
@@ -21,6 +22,7 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    
     def test_text_gensim_keywords(self):
 
         text_data = [
@@ -35,6 +37,23 @@ class TestModelling(unittest.TestCase):
         validate = model.data_extracted_keywords is not None
 
         self.assertTrue(validate)
+
+
+    def test_model_getattr(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        model = Model(data=data, split=False)
+        model.extract_keywords_gensim('data', ratio=0.5, model_name='model1')
+        validate = model.model1 is not None and model['model1'] is not None
+
+        self.assertTrue(validate)
+
 
 if __name__ == "__main__":
     unittest.main()
