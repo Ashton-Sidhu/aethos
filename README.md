@@ -126,7 +126,11 @@ N/A
 
 [@PatrikHlobil](https://github.com/PatrikHlobil) for his [Pandas-Bokeh](https://github.com/PatrikHlobil/Pandas-Bokeh) library.
 
+[@pandas-profiling](https://github.com/pandas-profiling) for their automated [EDA report generation](https://github.com/pandas-profiling/pandas-profiling) library.
+
 ## For Developers
+
+For python snippets to make deving new techniques either, message me and I can send them.
 
 To install packages `pip3 install -r requirements.txt`
 
