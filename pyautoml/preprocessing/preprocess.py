@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -97,7 +98,7 @@ class Preprocess(MethodBase):
             return self.copy()
 
 
-    def sentence_split(self, *list_args, list_of_cols=[], new_col_name='_sentences'):
+    def split_sentences(self, *list_args, list_of_cols=[], new_col_name='_sentences'):
         """
         Splits text data into sentences and saves it into another column for analysis.
 

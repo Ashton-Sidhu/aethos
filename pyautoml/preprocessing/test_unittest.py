@@ -54,7 +54,7 @@ class TestPreprocessing(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=['data'])
 
         prep = Preprocess(data=data, split=False)
-        prep.sentence_split('data')
+        prep.split_sentences('data')
         validate = prep.data['data_sentences'].values.tolist()
 
         self.assertListEqual(validate, [["Hi my name is PyAutoML.", "Please split me."],
