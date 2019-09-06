@@ -2,14 +2,15 @@ import copy
 import re
 
 import pandas as pd
+import pandas_profiling
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
-
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 from pyautoml.visualizations.visualize import *
 
+SHELL = get_ipython().__class__.__name__
 
 class MethodBase(object):
 
@@ -43,9 +44,7 @@ class MethodBase(object):
             
     def __repr__(self):
 
-        shell = get_ipython().__class__.__name__
-
-        if shell == 'ZMQInteractiveShell':
+        if SHELL == 'ZMQInteractiveShell':
             if not self._data_properties.split:
                 display(self._data_properties.data.head(10)) # Hack for jupyter notebooks
                 
@@ -278,6 +277,54 @@ class MethodBase(object):
             return filtered_data[list(filter_columns)]
         else:
             return filtered_data
+
+    def data_report(self, title='Profile Report', output_file='', suppress=False):
+        """
+        Generates a full Exploratory Data Analysis report using Pandas Profiling.
+
+        Credits: https://github.com/pandas-profiling/pandas-profiling
+        
+        For each column the following statistics - if relevant for the column type - are presented in an interactive HTML report:
+
+        - Essentials: type, unique values, missing values
+        - Quantile statistics like minimum value, Q1, median, Q3, maximum, range, interquartile range
+        - Descriptive statistics like mean, mode, standard deviation, sum, median absolute deviation, coefficient of variation, kurtosis, skewness
+        - Most frequent values
+        - Histogram
+        - Correlations highlighting of highly correlated variables, Spearman, Pearson and Kendall matrices
+        - Missing values matrix, count, heatmap and dendrogram of missing values
+        
+        Parameters
+        ----------
+        title : str, optional
+            Title of the report, by default 'Profile Report'
+        output_file : str, optional
+            File name of the output file for the report, by default ''
+        suppress : bool, optional
+            True if you do not want to display the report, by default False
+        
+        Returns
+        -------
+        HTML display of Exploratory Data Analysis report
+        """
+
+        if not self._data_properties.split:
+            if SHELL == "ZMQInteractiveShell":
+                report = self._data_properties.data.profile_report(title=title, style={'full_width':True})
+            else:
+                report = self._data_properties.data.profile_report(title=title)
+        else:
+            if SHELL == "ZMQInteractiveShell":
+                report = self._data_properties.train_data.profile_report(title=title, style={'full_width':True})
+            else:
+                report = self._data_properties.train_data.profile_report(title=title)
+
+        if output_file:
+            report.to_file(output_file=output_file)
+
+        if not suppress:
+            return report
+        
 
     def describe(self, dataset='train'):
         """
