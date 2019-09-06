@@ -104,9 +104,9 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
+
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
-
 
     stem = NLTK_STEMMERS[stemmer]
     ## Create partial for speed purposes
@@ -158,11 +158,11 @@ def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", *
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f'Invalid parameters passed: {str(datasets)}')
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError('Function input is incorrectly provided.')
-    
+
     tokenizer = RegexpTokenizer(regexp)
 
     if data is not None:
