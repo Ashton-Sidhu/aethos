@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from pyautoml import Preprocess
 
 
@@ -69,10 +70,36 @@ class TestPreprocessing(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=['data'])
 
         prep = Preprocess(data=data, split=False)
-        prep.nltk_stem('data')
+        prep.stem_nltk('data')
         validate = prep.data.shape[1]
 
         self.assertEquals(validate, 2)
+
+    def test_preprocess_ntlksplit(self):
+
+        text_data = [
+                    "Please.exe split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.split_words_nltk('data')
+        validate = prep.data.data_tokenized.values.tolist()
+
+        self.assertListEqual(validate, [["Please.exe", "split", "me", "."]])
+
+    def test_preprocess_ntlksplit_regex(self):
+
+        text_data = [
+                    "Please123 split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.split_words_nltk('data', regexp=r'\w+\d+')
+        validate = prep.data.data_tokenized.values.tolist()
+
+        self.assertListEqual(validate, [["Please123"]])
 
 if __name__ == "__main__":
     unittest.main()

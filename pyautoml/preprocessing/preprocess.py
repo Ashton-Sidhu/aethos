@@ -124,7 +124,7 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)        
     
         if not self._data_properties.split:    
-            self._data_properties.data = split_sentence(list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
+            self._data_properties.data = split_sentences(list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
     
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
@@ -132,7 +132,7 @@ class Preprocess(MethodBase):
             return self.copy()
     
         else:
-            self._data_properties.train_data, self._data_properties.test_data = split_sentence(list_of_cols,
+            self._data_properties.train_data, self._data_properties.test_data = split_sentences(list_of_cols,
                                                                                             new_col_name=new_col_name,
                                                                                             train_data=self._data_properties.train_data, 
                                                                                             test_data=self._data_properties.test_data)
@@ -142,7 +142,7 @@ class Preprocess(MethodBase):
     
             return self.copy()
 
-    def nltk_stem(self, *list_args, list_of_cols=[], stemmer='porter',  new_col_name='_stemmed'):
+    def stem_nltk(self, *list_args, list_of_cols=[], stemmer='porter', new_col_name='_stemmed'):
         """
         Transforms text to their word stem, base or root form. 
         For example:
@@ -177,7 +177,6 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-
             self._data_properties.data = nltk_stem(
                 list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, data=self._data_properties.data)
 
@@ -189,6 +188,52 @@ class Preprocess(MethodBase):
         else:
             self._data_properties.train_data, self._data_properties.test_data = nltk_stem(
                 list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+    def split_words_nltk(self, *list_args, list_of_cols=[], regexp='', new_col_name="_tokenized"):
+        """
+        Splits text into its words using nltk punkt tokenizer by default. 
+    
+        Default is by spaces and punctuation but if a regex expression is provided, it will use that.
+        
+        Parameters
+        ----------
+         list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        regexp : str, optional
+            Regex expression used to define what a word is.
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_stemmed`
+        
+        Returns
+        -------
+        Preprocess
+            Copy of preprocess object
+        """
+
+        report_info = technique_reason_repo['preprocess']['text']['split_words']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        if not self._data_properties.split:
+
+            self._data_properties.data = nltk_word_tokenizer(
+                list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, data=self._data_properties.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = nltk_word_tokenizer(
+                list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info)

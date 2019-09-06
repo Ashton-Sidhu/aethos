@@ -60,6 +60,9 @@ preprocess:
       Stemmed all the words down to their root words for more efficient processing and analysis. For example, words that belong to 
       different tenses are now reduced to the same word, i.e. 'ask' and 'asked'.
 
+    split_words: >
+      Split text into it's individual words.
+
 feature:
   general:
 
