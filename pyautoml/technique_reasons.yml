@@ -80,3 +80,11 @@ feature:
 
     postag: >
       Tagged each word with its Part of Speech tag where the tag represents whether a word is a Noun, Verb, Adjective, etc.
+
+model:
+  text:
+    textrank_keywords: >
+      Extracted keywords using the Text Rank algorithm.
+      
+    textrank_summarizer: >
+      Created an extractive summary using the Text Rank algorithm.

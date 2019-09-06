@@ -5,6 +5,7 @@ import pandas as pd
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, split_data
 from pyautoml.visualizations.visualize import *
@@ -63,11 +64,15 @@ class MethodBase(object):
 
     def __getitem__(self, column):
 
-        if not self._data_properties.split:
-            return self._data_properties.data[column]
-        else:
-            return self._data_properties.train_data[column]
+        try: 
+            if not self._data_properties.split:
+                return self._data_properties.data[column]
+            else:
+                return self._data_properties.train_data[column]
 
+        except Exception as e:
+            raise AttributeError(e)
+        
 
     def __setitem__(self, column, value):
 
@@ -100,13 +105,16 @@ class MethodBase(object):
 
             return self._data_properties.train_data.head(10)
 
-
     def __getattr__(self, column):
 
-        if not self._data_properties.split:
-            return self._data_properties.data[column]
-        else:
-            return self._data_properties.train_data[column]
+        try:
+            if not self._data_properties.split:
+                return self._data_properties.data[column]
+            else:
+                return self._data_properties.train_data[column]
+
+        except Exception as e:
+            raise AttributeError(e)
 
     def __setattr__(self, item, value):
         
