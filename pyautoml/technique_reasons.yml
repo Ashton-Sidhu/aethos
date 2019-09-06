@@ -63,6 +63,12 @@ preprocess:
     split_words: >
       Split text into it's individual words.
 
+    remove_stopwords: >
+      Removed most common words from all the text.
+
+    remove_punctuation: >
+      Removed punctuation from all the text.
+
 feature:
   general:
 

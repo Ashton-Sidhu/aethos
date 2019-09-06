@@ -61,7 +61,7 @@ class TestPreprocessing(unittest.TestCase):
         self.assertListEqual(validate, [["Hi my name is PyAutoML.", "Please split me."],
                                         ["This function is going to split by sentence.", "Automation is great."]])
 
-    def test_preprocess_ntlkstem(self):
+    def test_preprocess_nltkstem(self):
 
         text_data = [
                     "Hi my name is PyAutoML. Please split me.",
@@ -75,7 +75,7 @@ class TestPreprocessing(unittest.TestCase):
 
         self.assertEquals(validate, 2)
 
-    def test_preprocess_ntlksplit(self):
+    def test_preprocess_nltksplit(self):
 
         text_data = [
                     "Please.exe split me.",
@@ -88,7 +88,7 @@ class TestPreprocessing(unittest.TestCase):
 
         self.assertListEqual(validate, [["Please.exe", "split", "me", "."]])
 
-    def test_preprocess_ntlksplit_regex(self):
+    def test_preprocess_nltksplit_regex(self):
 
         text_data = [
                     "Please123 split me.",
@@ -100,6 +100,58 @@ class TestPreprocessing(unittest.TestCase):
         validate = prep.data.data_tokenized.values.tolist()
 
         self.assertListEqual(validate, [["Please123"]])
+
+    def test_preprocess_nltkremove_punctuation(self):
+
+        text_data = [
+                    "Please split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.remove_punctuation('data')
+        validate = prep.data.data_rem_punct.values.tolist()
+
+        self.assertListEqual(validate, ["Please split me"])
+
+    def test_preprocess_nltkremove_punctuation_regexp(self):
+
+        text_data = [
+                    "Please, split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.remove_punctuation('data', regexp=r'\w+\.|\w+')
+        validate = prep.data.data_rem_punct.values.tolist()
+
+        self.assertListEqual(validate, ["Please split me."])
+
+    def test_preprocess_nltkremove_punctuation_exception(self):
+
+        text_data = [
+                    "Please,> split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.remove_punctuation('data', exceptions=['.',  '>'])
+        validate = prep.data.data_rem_punct.values.tolist()
+
+        self.assertListEqual(validate, ["Please> split me."])
+
+    def test_preprocess_nltkremove_stopwords(self):
+
+        text_data = [
+                    "Please the split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.remove_stopwords_nltk('data', custom_stopwords=['please'])
+        validate = prep.data.data_rem_stop.values.tolist()
+
+        self.assertListEqual(validate, ["split ."])  
 
 if __name__ == "__main__":
     unittest.main()

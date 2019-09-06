@@ -202,7 +202,7 @@ class Preprocess(MethodBase):
         
         Parameters
         ----------
-         list_args : str(s), optional
+        list_args : str(s), optional
             Specific columns to apply this technique to.
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
@@ -234,6 +234,107 @@ class Preprocess(MethodBase):
         else:
             self._data_properties.train_data, self._data_properties.test_data = nltk_word_tokenizer(
                 list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+    def remove_stopwords_nltk(self, *list_args, list_of_cols=[], custom_stopwords=[], new_col_name="_rem_stop"):
+        """
+        Removes stopwords following the nltk English stopwords list.
+
+        A list of custom words can be provided as well, usually for domain specific words.
+
+        Stop words are generally the most common words in a language
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        custom_stop_words : list, optional
+            Custom list of words to also drop with the stop words, must be LOWERCASE, by default []
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_stemmed`
+        
+        Returns
+        -------
+        Preprocess
+            Copy of preprocess object
+        """
+
+        report_info = technique_reason_repo['preprocess']['text']['remove_stopwords']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        if not self._data_properties.split:
+
+            self._data_properties.data = nltk_remove_stopwords(
+                list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, data=self._data_properties.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = nltk_remove_stopwords(
+                list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+    def remove_punctuation(self, *list_args, list_of_cols=[], regexp='', exceptions=[], new_col_name='_rem_punct'):
+        """
+        Removes punctuation from every string entry.
+
+        Defaults to removing all punctuation, but if regex of punctuation is provided, it will remove them.
+        
+        An example regex would be:
+
+        (\w+\.|\w+)[^,] - Include all words and words with periods after them but don't include commas.
+        (\w+\.)|(\w+), would also achieve the same result
+
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        regexp : str, optional
+            Regex expression used to define what to include.
+        exceptions : list, optional
+            List of punctuation to include in the text, by default []
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_stemmed`
+        
+        Returns
+        -------
+        Preprocess
+            Copy of preprocess object
+        """
+
+        report_info = technique_reason_repo['preprocess']['text']['remove_punctuation']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        if not self._data_properties.split:
+
+            self._data_properties.data = remove_punctuation(
+                list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, data=self._data_properties.data)
+
+            if self.report is not None:
+                self.report.ReportTechnique(report_info)
+
+            return self.copy()
+
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = remove_punctuation(
+                list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
