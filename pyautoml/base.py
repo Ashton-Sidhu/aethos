@@ -278,7 +278,7 @@ class MethodBase(object):
         else:
             return filtered_data
 
-    def eda_report(self, title='Profile Report', output_file='', suppress=False):
+    def data_report(self, title='Profile Report', output_file='', suppress=False):
         """
         Generates a full Exploratory Data Analysis report using Pandas Profiling.
 
