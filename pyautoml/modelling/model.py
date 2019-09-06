@@ -147,7 +147,7 @@ class Model(MethodBase):
         """
 
         if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another.")
+            raise AttributeError("Invalid model name. Please choose another one.")
     
         report_info = technique_reason_repo['model']['text']['textrank_summarizer']
 
@@ -206,9 +206,9 @@ class Model(MethodBase):
         TextModel
             Resulting model
         """
-        
+
         if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another.")
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo['model']['text']['textrank_keywords']
         list_of_cols = _input_columns(list_args, list_of_cols)
