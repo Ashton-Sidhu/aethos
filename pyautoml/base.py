@@ -673,9 +673,9 @@ class MethodBase(object):
         else:
             raincloud(y_col, x_col, self.train_data)
 
-    def visualize_barplot(self, x_col, *cols, groupby=None, method=None, orient='v', stacked=False, **kwargs):
+    def visualize_barplot(self, x_col, *cols, groupby=None, method=None, orient='v', stacked=False, output_file='', **barplot_kwargs):
         """
-        Plots a bar plot for the given columns provided.
+        Plots a bar plot for the given columns provided using Bokeh.
 
         If `groupby` is provided, method must be provided for example you may want to plot Age against survival rate,
         so you would want to `groupby` Age and then find the `mean` as the method.
@@ -711,6 +711,44 @@ class MethodBase(object):
         """
         
         if not self._data_properties.split:
-            barplot(x_col, list(cols), self.data, groupby=groupby, method=method, orient=orient, stacked=stacked, **kwargs)
+            barplot(x_col, list(cols), self._data_properties.data, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
         else:
-            barplot(x_col, list(cols), self.train_data, groupby=groupby, method=method, orient=orient, stacked=stacked, **kwargs)
+            barplot(x_col, list(cols), self._data_properties.train_data, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
+
+    def visualize_scatterplot(self, x_col: str, y_col: str, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
+        """
+        Plots a scatterplot for the given x and y columns provided using Bokeh.
+
+        For a list of possible scatterplot_kwargs please check out the following links:
+
+        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.scatter
+
+        https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#userguide-styling-line-properties 
+
+        https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#userguide-styling-fill-properties 
+        
+        Parameters
+        ----------
+        x_col : str
+            X column name
+        y_col : str
+            Y column name
+        category : str, optional
+            Category to group your data, by default None
+        title : str, optional
+            Title of the plot, by default 'Scatterplot'
+        size : int or str, optional
+            Size of the circle, can either be a number
+            or a column name to scale the size, by default 8
+        fill_color : color value, optional
+            Colour or Colour palette to set fill colour
+        line_color : color value, optional
+            Colour or Colour palette to set line colour
+        output_file : str
+            Output html file name for image
+        """
+
+        if not self._data_properties.split:
+            scatterplot(x_col, y_col, self._data_properties.data, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
+        else:
+            scatterplot(x_col, y_col, self._data_properties.train_data, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
