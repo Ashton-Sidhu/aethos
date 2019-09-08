@@ -174,6 +174,36 @@ For package use (no GUI):
 
 Currently working on condas implementation.
 
+General Methods and Visualizations
+==================================
+
+For general methods and visualization docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#module-pyautoml.base/>`_.
+
+Cleaning Methods
+================
+
+For cleaning docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.cleaning.html#module-contents/>`_.
+
+Preprocessing Methods
+=====================
+
+For preprocessing docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.preprocessing.html#module-pyautoml.preprocessing/>`_.
+
+Feature Engineering Methods
+===========================
+
+For feature engineering docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.feature_engineering.html#module-pyautoml.feature_engineering/>`_.
+
+Modelling Methods
+=================
+
+For modelling docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.modelling.html#module-pyautoml.modelling/>`_.
+
+Examples
+========
+
+Examples can be viewed `here <https://github.com/Ashton-Sidhu/py-automl/tree/develop/examples/>`_.
+
 Indices and tables
 ==================
 
