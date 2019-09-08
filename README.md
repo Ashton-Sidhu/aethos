@@ -169,7 +169,7 @@ This will replace the missing values in the `Fare` and `Embarked` columns with t
 rep_mcommon = clean.replace_missing_mostcommon('Fare', 'Embarked')
 ```
 
-Now I can keep going with my analysis using the clean object and if something goes wrong when exploring that analysis path, I can pick right up from this point by using the `rep_mcommon` variable, without having to restart any kernel
+Now I can keep going with my analysis using the clean object and if something goes wrong when exploring that analysis path, I can pick right up from this point by using the `rep_mcommon` variable, without having to restart any kernels or reload any data.
 
 Another example, we can replace missing values in the `Age` column with a random value that follows the distribution of that column as follows:
 
