@@ -166,7 +166,7 @@ Or you can now transform your data or abstract new features from your data throu
 In terms of speed, on the backend I am doing everything I can do to use vectorization to reduce processing and computation time (even when using .apply) and I am constantly trying to make speed improvements where possible.
 
 Installation
-------------
+============
 
 For package use (no GUI):
 
