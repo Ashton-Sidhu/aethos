@@ -49,7 +49,7 @@ pyautoml.cleaning.util module
 Module contents
 ---------------
 
-.. automodule:: pyautoml.clean
+.. automodule:: pyautoml.cleaning
    :members:
    :undoc-members:
    :show-inheritance:
