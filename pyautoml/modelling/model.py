@@ -15,6 +15,10 @@ from pyautoml.util import (_contructor_data_properties, _input_columns,
 ############################################################
 from sklearn.cluster import DBSCAN, KMeans
 
+############################################################
+#################### END IMPORT ###########################
+############################################################
+
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
 with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
@@ -131,7 +135,7 @@ class Model(MethodBase):
         return
 
     @add_to_queue
-    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=False, **summarizer_kwargs):
+    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=True, **summarizer_kwargs):
         """
         Summarize bodies of text using Gensim's Text Rank algorith. Note that it uses a Text Rank variant as stated here:
         https://radimrehurek.com/gensim/summarization/summariser.html
@@ -188,7 +192,7 @@ class Model(MethodBase):
         return self._models[model_name]        
 
     @add_to_queue
-    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=False, **keyword_kwargs):
+    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=True, **keyword_kwargs):
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
 
@@ -251,7 +255,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=False, **kmeans_kwargs):
+    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=True, **kmeans_kwargs):
         """
         [summary]
         
@@ -291,7 +295,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=False, **dbscan_kwargs):
+    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=True, **dbscan_kwargs):
         """
         [summary]
         

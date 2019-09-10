@@ -1,4 +1,5 @@
 import inspect
+import warnings
 from functools import partial
 
 
@@ -14,6 +15,7 @@ def add_to_queue(model_function):
         if kwargs['run']:
             model_function(self, *args, **kwargs)
         else:
+            warnings.warn("Running models all at once not available yet. Please set `run=True` to train your model.")
             kwargs['run'] = True
             self._queued_models[kwargs['model_name']] = partial(model_function, self, *args, **kwargs)
     
