@@ -27,8 +27,6 @@ with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
 
-## TODO: Implement lazy evaluation of training models.
-
 class Model(MethodBase):
 
     def __init__(self, step=None, data=None, train_data=None, test_data=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
