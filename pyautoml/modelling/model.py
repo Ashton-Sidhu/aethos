@@ -39,7 +39,7 @@ class Model(MethodBase):
                         split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
-            self.report.write_header("Feature Engineering")
+            self.report.write_header("Modelling")
 
         if target_field:
             if split:
