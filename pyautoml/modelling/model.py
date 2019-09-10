@@ -283,7 +283,8 @@ class Model(MethodBase):
             kmeans.fit(self._data_properties.train_data)
 
             self._data_properties.train_data[new_col_name] = kmeans.labels_
-            self._data_properties.test_data[new_col_name] =  kmeans.predict(self._data_properties.test_data)
+            self._data_properties.test_data[new_col_name] = kmeans.predict(
+                self._data_properties.test_data)
 
         self._models[model_name] = ClusterModel(self)
 
@@ -308,7 +309,7 @@ class Model(MethodBase):
         ClusterModel
             ClusterModel object to view results and further analysis
         """
-        
+
         dbscan = DBSCAN(**dbscan_kwargs)
 
         report_info = technique_reason_repo['model']['unsupervised']['kmeans']
@@ -318,9 +319,11 @@ class Model(MethodBase):
             self._data_properties.data[new_col_name] = dbscan.labels_
 
         else:
-            warnings.warn('DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.data`.')
+            warnings.warn(
+                'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.data`.')
 
-            full_data = self._data_properties.train_data.append(self._data_properties.test_data, ignore_index=True)            
+            full_data = self._data_properties.train_data.append(
+                self._data_properties.test_data, ignore_index=True)
             dbscan.fit(full_data)
             full_data[new_col_name] = dbscan.labels_
             self._data_properties.data = full_data
