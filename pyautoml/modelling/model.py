@@ -1,14 +1,19 @@
 
 import os
-
-import yaml
+import warnings
 
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.modelling.model_types import *
 from pyautoml.modelling.text import *
+from pyautoml.modelling.util import add_to_queue
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _validate_model_name)
+############################################################
+#################### IMPORT MODELS #########################
+############################################################
+from sklearn.cluster import DBSCAN, KMeans
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -17,6 +22,8 @@ with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
+
+## TODO: Implement lazy evaluation of training models.
 
 class Model(MethodBase):
 
@@ -45,6 +52,7 @@ class Model(MethodBase):
                 self._data_properties.data = self._data_properties.data.drop([self._data_properties.target_field], axis=1)
 
         self._models = {}
+        self._queued_models = {}
 
     def __getitem__(self, key):
 
@@ -118,7 +126,12 @@ class Model(MethodBase):
 
         self._test_target_data = value
 
-    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", **summarizer_kwargs):
+    def train_models(self):
+        """ TODO: Implement multi processing running of models """
+        return
+
+    @add_to_queue
+    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=False, **summarizer_kwargs):
         """
         Summarize bodies of text using Gensim's Text Rank algorith. Note that it uses a Text Rank variant as stated here:
         https://radimrehurek.com/gensim/summarization/summariser.html
@@ -133,6 +146,8 @@ class Model(MethodBase):
             New column name to be created when applying this technique, by default `_extracted_keywords`
         model_name : str, optional
             Name for this model, default to `model_summarize_gensim`
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
         ratio : float, optional
             Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.
         word_count : int or None, optional
@@ -172,7 +187,8 @@ class Model(MethodBase):
 
         return self._models[model_name]        
 
-    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", **keyword_kwargs):
+    @add_to_queue
+    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=False, **keyword_kwargs):
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
 
@@ -186,6 +202,8 @@ class Model(MethodBase):
             New column name to be created when applying this technique, by default `_extracted_keywords`
         model_name : str, optional
             Name for this model, default to `model_extract_keywords_gensim`
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
         ratio : float, optional
             Number between 0 and 1 that determines the proportion of the number of sentences of the original text to be chosen for the summary.
         words : int, optional
@@ -229,5 +247,84 @@ class Model(MethodBase):
                 self.report.ReportTechnique(report_info)
 
         self._models[model_name] = TextModel(self)
+
+        return self._models[model_name]
+
+    @add_to_queue
+    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=False, **kmeans_kwargs):
+        """
+        [summary]
+        
+        Parameters
+        ----------
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+        model_name : str, optional
+            Name for this model, by default "kmeans"
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "kmeans_clusters"
+        
+        Returns
+        -------
+        ClusterModel
+            ClusterModel object to view results and further analysis
+        """
+
+        kmeans = KMeans(**kmeans_kwargs)
+
+        report_info = technique_reason_repo['model']['unsupervised']['kmeans']
+
+        if not self._data_properties.split:
+            kmeans.fit(self._data_properties.data)
+
+            self._data_properties.data[new_col_name] = kmeans.labels_
+
+        else:
+            kmeans.fit(self._data_properties.train_data)
+
+            self._data_properties.train_data[new_col_name] = kmeans.labels_
+            self._data_properties.test_data[new_col_name] =  kmeans.predict(self._data_properties.test_data)
+
+        self._models[model_name] = ClusterModel(self)
+
+        return self._models[model_name]
+
+    @add_to_queue
+    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=False, **dbscan_kwargs):
+        """
+        [summary]
+        
+        Parameters
+        ----------
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+        model_name : str, optional
+            Name for this model, by default "dbscan"
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "dbscan_clusters"
+        
+        Returns
+        -------
+        ClusterModel
+            ClusterModel object to view results and further analysis
+        """
+        
+        dbscan = DBSCAN(**dbscan_kwargs)
+
+        report_info = technique_reason_repo['model']['unsupervised']['kmeans']
+
+        if not self._data_properties.split:
+            dbscan.fit(self._data_properties.data)
+            self._data_properties.data[new_col_name] = dbscan.labels_
+
+        else:
+            warnings.warn('DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.data`.')
+
+            full_data = self._data_properties.train_data.append(self._data_properties.test_data, ignore_index=True)            
+            dbscan.fit(full_data)
+            full_data[new_col_name] = dbscan.labels_
+            self._data_properties.data = full_data
+
+        self._models[model_name] = ClusterModel(self)
 
         return self._models[model_name]

@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from pyautoml import Model
 
 
@@ -17,7 +16,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=['data'])
 
         model = Model(data=data, split=False)
-        model.summarize_gensim('data', ratio=0.5)
+        model.summarize_gensim('data', ratio=0.5, run=True)
         validate = model.data_summarized is not None
 
         self.assertTrue(validate)
@@ -33,7 +32,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=['data'])
 
         model = Model(data=data, split=False)
-        model.extract_keywords_gensim('data', ratio=0.5)
+        model.extract_keywords_gensim('data', ratio=0.5, run=True)
         validate = model.data_extracted_keywords is not None
 
         self.assertTrue(validate)
@@ -49,10 +48,27 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=['data'])
 
         model = Model(data=data, split=False)
-        model.extract_keywords_gensim('data', ratio=0.5, model_name='model1')
+        model.extract_keywords_gensim('data', ratio=0.5, model_name='model1', run=True)
         validate = model.model1 is not None and model['model1'] is not None
 
         self.assertTrue(validate)
+
+    def test_model_addtoqueue(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        model = Model(data=data, split=False)
+        model.extract_keywords_gensim('data', ratio=0.5, model_name='model1')
+        model.summarize_gensim('data', ratio=0.5)
+        validate = len(model._queued_models)
+
+        self.assertEquals(validate, 2)
+
 
 
 if __name__ == "__main__":
