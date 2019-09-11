@@ -14,3 +14,4 @@ ipython==7.8.0
 scikit_learn==0.21.3
 sphinx_rtd_theme==0.4.3
 PyYAML==5.1.2
+cookiecutter
