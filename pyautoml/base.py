@@ -46,11 +46,11 @@ class MethodBase(object):
 
         if SHELL == 'ZMQInteractiveShell':
             if not self._data_properties.split:
-                display(self._data_properties.data.head(10)) # Hack for jupyter notebooks
+                display(self._data_properties.data.head()) # Hack for jupyter notebooks
                 
                 return ''
             else:
-                display(self._data_properties.train_data.head(10)) # Hack for jupyter notebooks
+                display(self._data_properties.train_data.head()) # Hack for jupyter notebooks
 
                 return ''
         
@@ -78,7 +78,7 @@ class MethodBase(object):
         if not self._data_properties.split:
             self._data_properties.data[column] = value
 
-            return self._data_properties.data.head(10)
+            return self._data_properties.data.head()
         else:
             train_data_length = self._data_properties.train_data.shape[0]
             test_data_length = self._data_properties.test_data.shape[0]
@@ -102,7 +102,7 @@ class MethodBase(object):
                 self._data_properties.train_data[column] = value
                 self._data_properties.test_data[column] = value
 
-            return self._data_properties.train_data.head(10)
+            return self._data_properties.train_data.head()
 
     def __getattr__(self, column):
 
