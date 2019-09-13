@@ -4,7 +4,7 @@ class ModelBase(object):
 
         self.data = model_object._data_properties.data
         self.train_data = model_object._data_properties.train_data
-        self.test_data = model_object._data_properties.train_data
+        self.test_data = model_object._data_properties.test_data
 
 class TextModel(ModelBase):
 
@@ -16,7 +16,7 @@ class ClusterModel(ModelBase):
 
     def __init__(self, model_object):
 
-        super().__init__(self, model_object)
+        super().__init__(model_object)
 
     def filter_cluster(self, col: str, cluster_no: int):
         """
