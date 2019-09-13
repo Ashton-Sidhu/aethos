@@ -1,5 +1,6 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 from pyautoml import Clean
 from pyautoml.base import MethodBase
@@ -232,6 +233,32 @@ class Test_TestBase(unittest.TestCase):
         validate = subset.values.tolist()
 
         self.assertListEqual(validate, [[0, 2, 3]])
+
+    def test_groupbyanalysis(self):
+
+        data = pd.DataFrame({'A': [1, 1, 2, 2], 
+                           'B': [1, 2, 3, 4],
+                           'C': np.random.randn(4),
+                           'D': ['A', 'A', 'B', 'B']})
+
+        base = MethodBase(data=data, train_data=None, test_data=None, split=False, target_field='', report_name="test", test_split_percentage=0.5)
+
+        base.groupby_analysis(['A'])
+
+        self.assertTrue(True)
+
+    def test_groupby(self):
+
+        data = pd.DataFrame({'A': [1, 1, 2, 2], 
+                           'B': [1, 2, 3, 4],
+                           'C': np.random.randn(4),
+                           'D': ['A', 'A', 'B', 'B']})
+
+        clean = Clean(data=data, train_data=None, test_data=None, split=False, target_field='', report_name="test", test_split_percentage=0.5)
+
+        clean.groupby('A', replace=True)
+
+        self.assertTrue(True)
 
 if __name__ == "__main__":
     unittest.main()
