@@ -2,9 +2,8 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -209,7 +208,7 @@ class Preprocess(MethodBase):
         regexp : str, optional
             Regex expression used to define what a word is.
         new_col_name : str, optional
-            New column name to be created when applying this technique, by default `COLUMN_stemmed`
+            New column name to be created when applying this technique, by default `COLUMN_tokenized`
         
         Returns
         -------
@@ -257,7 +256,7 @@ class Preprocess(MethodBase):
         custom_stop_words : list, optional
             Custom list of words to also drop with the stop words, must be LOWERCASE, by default []
         new_col_name : str, optional
-            New column name to be created when applying this technique, by default `COLUMN_stemmed`
+            New column name to be created when applying this technique, by default `COLUMN_rem_stop`
         
         Returns
         -------
@@ -310,7 +309,7 @@ class Preprocess(MethodBase):
         exceptions : list, optional
             List of punctuation to include in the text, by default []
         new_col_name : str, optional
-            New column name to be created when applying this technique, by default `COLUMN_stemmed`
+            New column name to be created when applying this technique, by default `COLUMN_rem_punct`
         
         Returns
         -------

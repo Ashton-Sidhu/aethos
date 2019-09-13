@@ -1,13 +1,14 @@
 import copy
 import re
 
+import numpy as np
 import pandas as pd
 import pandas_profiling
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
-from pyautoml.util import _function_input_validation, split_data
+from pyautoml.util import _function_input_validation, _get_columns, split_data
 from pyautoml.visualizations.visualize import *
 
 SHELL = get_ipython().__class__.__name__
@@ -46,11 +47,11 @@ class MethodBase(object):
 
         if SHELL == 'ZMQInteractiveShell':
             if not self._data_properties.split:
-                display(self._data_properties.data.head(10)) # Hack for jupyter notebooks
+                display(self._data_properties.data.head()) # Hack for jupyter notebooks
                 
                 return ''
             else:
-                display(self._data_properties.train_data.head(10)) # Hack for jupyter notebooks
+                display(self._data_properties.train_data.head()) # Hack for jupyter notebooks
 
                 return ''
         
@@ -78,7 +79,7 @@ class MethodBase(object):
         if not self._data_properties.split:
             self._data_properties.data[column] = value
 
-            return self._data_properties.data.head(10)
+            return self._data_properties.data.head()
         else:
             train_data_length = self._data_properties.train_data.shape[0]
             test_data_length = self._data_properties.test_data.shape[0]
@@ -87,7 +88,7 @@ class MethodBase(object):
                 ## If the number of entries in the list does not match the number of rows in the training or testing
                 ## set raise a value error
                 if len(value) != train_data_length and len(value) != test_data_length:
-                    raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
+                    raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(value))))
 
                 self._set_item(column, value, train_data_length, test_data_length)
 
@@ -102,7 +103,7 @@ class MethodBase(object):
                 self._data_properties.train_data[column] = value
                 self._data_properties.test_data[column] = value
 
-            return self._data_properties.train_data.head(10)
+            return self._data_properties.train_data.head()
 
     def __getattr__(self, column):
 
@@ -236,6 +237,51 @@ class MethodBase(object):
 
         return copy.deepcopy(self)
 
+    def search(self, *values, not_equal=False, replace=False):
+        """
+        Searches the entire dataset for specified value(s) and returns rows that contain the values.
+        
+        Parameters
+        ----------
+        values : Any
+            Value to search for in dataframe
+        not_equal : bool, optional
+            True if you want filter by values in the dataframe that are not equal to the value provided, by default False
+        replace : bool, optional
+            Whether to permanently transform your data, by default False
+        """
+
+        if not values:
+            return ValueError("Please provided columns to groupby.")        
+
+        if replace:
+            if not self._data_properties.split:
+                if not not_equal:
+                    self._data_properties.data = self._data_properties.data[self._data_properties.data.isin(list(values)).any(axis=1)]
+                else:
+                    self._data_properties.data = self._data_properties.data[~self._data_properties.data.isin(list(values)).any(axis=1)]
+            else:
+                if not_equal:
+                    self._data_properties.train_data = self._data_properties.train_data[self._data_properties.train_data.isin(list(values)).any(axis=1)]
+                    self._data_properties.data.test_data = self._data_properties.test_data[self._data_properties.train_data.isin(list(values)).any(axis=1)]
+                else:
+                    self._data_properties.train_data = self._data_properties.train_data[self._data_properties.test_data.isin(list(values)).any(axis=1)]
+                    self._data_properties.data.test_data = self._data_properties.test_data[self._data_properties.test_data.isin(list(values)).any(axis=1)]
+
+            return self.copy()            
+        else:
+            if not self._data_properties.split:
+                data = self._data_properties.data.copy()
+            else:
+                data = self._data_properties.train_data.copy()
+           
+            if not not_equal:
+                data = data[data.isin(list(values))].dropna(how='all')
+            else:
+                data = data[~data.isin(list(values))].dropna(how='all')
+                
+            return data
+
     def where(self, *filter_columns, **columns):
         """
         Filters the dataframe down for highlevel analysis. 
@@ -258,14 +304,14 @@ class MethodBase(object):
         Examples
         --------
         >>> clean.where('col1', col2=3, col3=4, col4=[1,2,3])
-        >>> This translates to your data where col2 is equal to 3 and col 3 is equal to 4 and column 4 is equal to 1, 2 or 3.
-        >>> The col1 specifies that this this is the only column you want to see at the output.
+        This translates to your data where col2 is equal to 3 and col 3 is equal to 4 and column 4 is equal to 1, 2 or 3.
+        The col1 specifies that this this is the only column you want to see at the output.
         """
 
         if not self._data_properties.split:
-            filtered_data = self._data_properties.data
+            filtered_data = self._data_properties.data.copy()
         else:
-            filtered_data = self._data_properties.train_data
+            filtered_data = self._data_properties.train_data.copy()
 
         for col in columns.keys():
             if isinstance(columns[col], list):
@@ -277,6 +323,107 @@ class MethodBase(object):
             return filtered_data[list(filter_columns)]
         else:
             return filtered_data
+        
+    def groupby(self, *groupby, replace=False):
+        """
+        Groups data by the provided columns.
+        
+        Parameters
+        ----------
+        groupby : str(s)
+            Columns to group the data by.
+        replace : bool, optional
+            Whether to permanently transform your data, by default False
+        
+        Returns
+        -------
+        Dataframe, Clean, Preprocess or Feature
+            Dataframe or copy of object
+        """
+
+        if not groupby:
+            return ValueError("Please provided columns to groupby.")
+
+        if replace:
+            if not self._data_properties.split:
+                self._data_properties.data = self._data_properties.data.groupby(list(groupby))
+            else:
+                self._data_properties.train_data = self._data_properties.train_data.groupby(list(groupby))
+                self._data_properties.data.test_data = self._data_properties.test_data.groupby(list(groupby))
+
+            return self.copy()            
+        else:
+            if not self._data_properties.split:
+                data = self._data_properties.data.copy()
+            else:
+                data = self._data_properties.train_data.copy()
+
+            return data.groupby(list(groupby))
+
+    def groupby_analysis(self, groupby: list, *cols, data_filter=None):
+        """
+        Groups your data and then provides descriptive statistics for the other columns on the grouped data.
+
+        For numeric data, the descriptive statistics are:
+
+            - count
+            - min
+            - max
+            - mean
+            - standard deviation
+            - variance
+            - median
+            - most common
+            - sum
+            - Median absolute deviation
+            - number of unique values
+
+        For other types of data:
+
+            - count
+            - most common
+            - number of unique values
+        
+        Parameters
+        ----------
+        groupby : list
+            List of columns to groupby.
+        cols : str(s)
+            Columns you want statistics on, if none are provided, it will provide statistics for every column.
+        data_filter : Dataframe, optional
+            Filtered dataframe, by default None
+        
+        Returns
+        -------
+        Dataframe
+            Dataframe of grouped columns and statistics for each column.
+        """
+
+        analysis = {}
+        numeric_analysis = ['count', 'min', 'max', 'mean', 'std', 'var', 'median', ('most_common', lambda x: pd.Series.mode(x)[0]), 'sum', 'mad', 'nunique']
+        other_analysis = ['count', ('most_common', lambda x: pd.Series.mode(x)[0]), 'nunique']
+
+        list_of_cols = _get_columns(list(cols), self._data_properties.data, self._data_properties.test_data)
+
+        if isinstance(data_filter, pd.DataFrame):
+            data = data_filter
+        else:
+            if not self._data_properties.split:
+                data = self._data_properties.data.copy()
+            else:
+                data = self._data_properties.train_data.copy()            
+
+        for col in list_of_cols:
+            if col not in groupby:
+                #biufc - bool, int, unsigned, float, complex
+                if data[col].dtype.kind in 'biufc':
+                    analysis[col] = numeric_analysis
+                else:
+                    analysis[col] = other_analysis
+
+        analyzed_data = data.groupby(groupby).agg(analysis)
+        
+        return analyzed_data
 
     def data_report(self, title='Profile Report', output_file='', suppress=False):
         """
@@ -535,36 +682,6 @@ class MethodBase(object):
 
             return self.copy()
 
-    def _set_item(self, column: str, value: list, train_length: int, test_length: int):
-        """
-        Utility function for __setitem__ for determining which input is for which dataset
-        and then sets the input to the new column for the correct dataset.
-        
-        Parameters
-        ----------
-        column : str
-            New column name
-        value : list
-            List of values for new column
-        train_length : int
-            Length of training data
-        test_length : int
-            Length of training data
-        """
-
-        ## If the training data and testing data have the same number of rows, apply the value to both
-        ## train and test data set
-        if len(value) == train_length and len(value) == test_length:
-            self._data_properties.train_data[column] = value
-            self._data_properties.test_data[column] = value
-
-        elif len(value) == train_length:
-            self._data_properties.train_data[column] = value
-
-        else:
-            self._data_properties.test_data[column] = value
-
-
     def visualize_raincloud(self, x_col: str, y_col=None, **params):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.
@@ -752,3 +869,32 @@ class MethodBase(object):
             scatterplot(x_col, y_col, self._data_properties.data, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
         else:
             scatterplot(x_col, y_col, self._data_properties.train_data, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
+
+    def _set_item(self, column: str, value: list, train_length: int, test_length: int):
+        """
+        Utility function for __setitem__ for determining which input is for which dataset
+        and then sets the input to the new column for the correct dataset.
+        
+        Parameters
+        ----------
+        column : str
+            New column name
+        value : list
+            List of values for new column
+        train_length : int
+            Length of training data
+        test_length : int
+            Length of training data
+        """
+
+        ## If the training data and testing data have the same number of rows, apply the value to both
+        ## train and test data set
+        if len(value) == train_length and len(value) == test_length:
+            self._data_properties.train_data[column] = value
+            self._data_properties.test_data[column] = value
+
+        elif len(value) == train_length:
+            self._data_properties.train_data[column] = value
+
+        else:
+            self._data_properties.test_data[column] = value

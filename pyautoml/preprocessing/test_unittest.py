@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml import Preprocess
 
 
@@ -117,15 +116,16 @@ class TestPreprocessing(unittest.TestCase):
     def test_preprocess_nltkremove_punctuation_regexp(self):
 
         text_data = [
-                    "Please, split me.",
+                    "Please.exe, split me.",
+                    "hello it's me, testing.dll."
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
         prep = Preprocess(data=data, split=False)
-        prep.remove_punctuation('data', regexp=r'\w+\.|\w+')
+        prep.remove_punctuation('data', regexp=r'\w+\.\w+|\w+')
         validate = prep.data.data_rem_punct.values.tolist()
 
-        self.assertListEqual(validate, ["Please split me."])
+        self.assertListEqual(validate, ["Please.exe split me", "hello it s me testing.dll"])
 
     def test_preprocess_nltkremove_punctuation_exception(self):
 

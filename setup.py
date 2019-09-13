@@ -29,9 +29,9 @@ setup(
     packages=find_packages(),
     author='Ashton Sidhu',
     author_email='ashton.sidhu1994@gmail.com',
-    install_requires=['numpy', 'pandas', 'scikit-learn', 'textblob',
+    install_requires=['numpy', 'pandas>=0.25', 'scikit-learn', 'textblob',
                       'pandas_summary', 'pandas-bokeh', 'ptitprince', 'nltk', 'ipython', 'gensim',
-                      'pandas-profiling'],
+                      'pandas-profiling', 'cookiecutter'],
     version=VERSION,
     license='GPL-3.0',
     description='A library of data science and machine learning techniques to help automate your workflow.',
@@ -42,5 +42,8 @@ setup(
     python_requires='>= 3.5',
     cmdclass={
         'verify': VerifyVersionCommand,
+    },
+    entry_points= {
+        'console_scripts' : ['pyautoml=pyautoml.__main__:main']
     }
 )
