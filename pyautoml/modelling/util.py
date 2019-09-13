@@ -13,7 +13,7 @@ def add_to_queue(model_function):
             kwargs['model_name'] = default_kwargs['model_name']
 
         if kwargs['run']:
-            model_function(self, *args, **kwargs)
+            return model_function(self, *args, **kwargs)
         else:
             warnings.warn("Running models all at once not available yet. Please set `run=True` to train your model.")
             kwargs['run'] = True

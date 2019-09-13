@@ -97,3 +97,9 @@ model:
       
     textrank_summarizer: >
       Created an extractive summary using the Text Rank algorithm.
+  unsupervised:
+    kmeans: >
+      Ran KMeans clustering.
+
+    dbscan: >
+      Ran DBSCAN clustering.
