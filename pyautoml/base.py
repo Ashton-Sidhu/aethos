@@ -1,6 +1,7 @@
 import copy
 import re
 
+import numpy as np
 import pandas as pd
 import pandas_profiling
 from IPython import get_ipython
@@ -236,6 +237,51 @@ class MethodBase(object):
 
         return copy.deepcopy(self)
 
+    def search(self, *values, not_equal=False, replace=False):
+        """
+        Searches the entire dataset for specified value(s) and returns rows that contain the values.
+        
+        Parameters
+        ----------
+        values : Any
+            Value to search for in dataframe
+        not_equal : bool, optional
+            True if you want filter by values in the dataframe that are not equal to the value provided, by default False
+        replace : bool, optional
+            Whether to permanently transform your data, by default False
+        """
+
+        if not values:
+            return ValueError("Please provided columns to groupby.")        
+
+        if replace:
+            if not self._data_properties.split:
+                if not not_equal:
+                    self._data_properties.data = self._data_properties.data[self._data_properties.data.isin(list(values)).any(axis=1)]
+                else:
+                    self._data_properties.data = self._data_properties.data[~self._data_properties.data.isin(list(values)).any(axis=1)]
+            else:
+                if not_equal:
+                    self._data_properties.train_data = self._data_properties.train_data[self._data_properties.train_data.isin(list(values)).any(axis=1)]
+                    self._data_properties.data.test_data = self._data_properties.test_data[self._data_properties.train_data.isin(list(values)).any(axis=1)]
+                else:
+                    self._data_properties.train_data = self._data_properties.train_data[self._data_properties.test_data.isin(list(values)).any(axis=1)]
+                    self._data_properties.data.test_data = self._data_properties.test_data[self._data_properties.test_data.isin(list(values)).any(axis=1)]
+
+            return self.copy()            
+        else:
+            if not self._data_properties.split:
+                data = self._data_properties.data.copy()
+            else:
+                data = self._data_properties.train_data.copy()
+           
+            if not not_equal:
+                data = data[data.isin(list(values))].dropna(how='all')
+            else:
+                data = data[~data.isin(list(values))].dropna(how='all')
+                
+            return data
+
     def where(self, *filter_columns, **columns):
         """
         Filters the dataframe down for highlevel analysis. 
@@ -263,9 +309,9 @@ class MethodBase(object):
         """
 
         if not self._data_properties.split:
-            filtered_data = self._data_properties.data
+            filtered_data = self._data_properties.data.copy()
         else:
-            filtered_data = self._data_properties.train_data
+            filtered_data = self._data_properties.train_data.copy()
 
         for col in columns.keys():
             if isinstance(columns[col], list):
@@ -295,6 +341,9 @@ class MethodBase(object):
             Dataframe or copy of object
         """
 
+        if not groupby:
+            return ValueError("Please provided columns to groupby.")
+
         if replace:
             if not self._data_properties.split:
                 self._data_properties.data = self._data_properties.data.groupby(list(groupby))
@@ -310,7 +359,6 @@ class MethodBase(object):
                 data = self._data_properties.train_data.copy()
 
             return data.groupby(list(groupby))
-
 
     def groupby_analysis(self, groupby: list, *cols, data_filter=None):
         """

@@ -260,5 +260,29 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+    def test_search(self):
+
+        data = pd.DataFrame({'A': [1, 1, 2, 2], 
+                           'B': [1, 2, 3, 4],
+                           'C': np.random.randn(4),
+                           'D': ['A', 'A', 'B', 'B']})
+
+        clean = Clean(data=data, train_data=None, test_data=None, split=False, target_field='', report_name="test", test_split_percentage=0.5)
+        clean.search('A', replace=True)
+
+        self.assertTrue(True)
+
+    def test_search_notequal(self):
+
+        data = pd.DataFrame({'A': [1, 1, 2, 2], 
+                           'B': [1, 2, 3, 4],
+                           'C': np.random.randn(4),
+                           'D': ['A', 'A', 'B', 'B']})
+
+        clean = Clean(data=data, train_data=None, test_data=None, split=False, target_field='', report_name="test", test_split_percentage=0.5)
+        clean.search('A', not_equal=True, replace=True)
+
+        self.assertTrue(True)
+
 if __name__ == "__main__":
     unittest.main()
