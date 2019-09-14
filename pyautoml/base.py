@@ -7,6 +7,7 @@ import pandas_profiling
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
 from pyautoml.util import _function_input_validation, _get_columns, split_data
 from pyautoml.visualizations.visualize import *

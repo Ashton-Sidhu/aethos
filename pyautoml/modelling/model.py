@@ -3,22 +3,18 @@ import os
 import warnings
 
 import yaml
-############################################################
-#################### IMPORT MODELS #########################
-############################################################
 from sklearn.cluster import DBSCAN, KMeans
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
 
 import pyautoml
+from default_gridsearch_params import *
 from pyautoml.base import MethodBase
 from pyautoml.modelling.model_types import *
 from pyautoml.modelling.text import *
 from pyautoml.modelling.util import add_to_queue
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _validate_model_name)
-
-############################################################
-#################### END IMPORT ###########################
-############################################################
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -386,5 +382,56 @@ class Model(MethodBase):
             self._data_properties.data = full_data
 
         self._models[model_name] = ClusterModel(self)
+
+        return self._models[model_name]
+
+    @add_to_queue
+    def logistic_regression(self, gridsearch=False, gridsearch_cv=3, gridsearch_score= model_name="logistic_regression", new_col_name="log_predictions", run=True, **logreg_kwargs):
+        """
+        [summary]
+        
+        Parameters
+        ----------
+        model_name : str, optional
+            [description], by default "logistic_regression"
+        new_col_name : str, optional
+            [description], by default "log_predictions"
+        run : bool, optional
+            [description], by default True
+        """
+
+        if gridsearch:
+            log_reg = LogisticRegression()
+
+            if isinstance(gridsearch, dict):
+                gridsearch_vals = gridsearch
+            elif gridsearch == True:
+                gridsearch = {'penalty': penalty_12,
+                            'max_iter': max_iter,
+                            'tol': tol,
+                            'warm_start': warm_start,
+                            'C':C,
+                            'solver': ['liblinear']
+                            }
+                print("Gridsearching with the following parameters: {}".format(gridsearch))
+            else:
+                raise ValueError("Invalid Gridsearch input.")
+
+            log_reg = GridSearchCV(log_reg, gridsearch, cv=gridsearch_cv)
+        else:
+            log_reg = LogisticRegression(**logreg_kwargs)
+
+        if not self._data_properties.split:
+            log_reg.fit(self._data_properties.data, self.target_data)
+            
+            self._data_properties.data[new_col_name] = log_reg.predict(self._data_properties.data)
+
+        else:
+            log_reg.fit(self._data_properties.train_data, self.train_target_data)
+
+            self._data_properties.train_data[new_col_name] = log_reg.predict(self._data_properties.train_data)
+            self._data.properties.test_data[new_col_name] = log_reg.predict(self._data_properties.test_data)
+
+        self._models[model_name] = ClassificationModel(self)
 
         return self._models[model_name]

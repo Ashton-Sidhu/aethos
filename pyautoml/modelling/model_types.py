@@ -1,10 +1,11 @@
 class ModelBase(object):
 
-    def __init__(self, model_object):
+    def __init__(self, model_object, model, truth_predictions=None, predictions=None):
 
         self.data = model_object._data_properties.data
         self.train_data = model_object._data_properties.train_data
         self.test_data = model_object._data_properties.test_data
+        self.model = model
 
 class TextModel(ModelBase):
 
@@ -39,3 +40,20 @@ class ClusterModel(ModelBase):
             return self.data[self.data[col] == cluster_no]
         else:
             return self.test_data[self.test_data[col] == cluster_no]
+
+def ClassificationModel(ModelBase):
+    # TODO: Confusion Matrix
+    # TODO: Precision, Recall, F1
+    # TODO: ROC Curve
+    # TODO: Model Weights
+    # TODO: MSFT Interpret
+    # TODO: SHAP
+
+    pass
+
+def RegressionModel(ModelBase):
+    # TODO: Summary statistics
+    # TODO: Errors
+    # TODO: Model Weights
+    # TODO: MSFT Interpret
+    # TODO: SHAP
