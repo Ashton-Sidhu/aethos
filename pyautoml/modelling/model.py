@@ -286,25 +286,10 @@ class Model(MethodBase):
             Number of time the k-means algorithm will be run with different centroid seeds. The final results will be the best output of n_init consecutive runs in terms of inertia.
         max_iter : int, default: 300
             Maximum number of iterations of the k-means algorithm for a single run.
-        tol : float, default: 1e-4
-            Relative tolerance with regards to inertia to declare convergence
-        precompute_distances : {‘auto’, True, False}
-            Precompute distances (faster but takes more memory).
-
-            ‘auto’ : do not precompute distances if n_samples * n_clusters > 12 million. This corresponds to about 100MB overhead per job using double precision.
-
-            True : always precompute distances
-
-            False : never precompute distances
         verbose : int, default 0
             Verbosity mode.
         random_state : int, RandomState instance or None (default)
             Determines random number generation for centroid initialization. Use an int to make the randomness deterministic. See Glossary.
-        copy_x : boolean, optional
-            When pre-computing distances it is more numerically accurate to center the data first.
-            If copy_x is True (default), then the original data is not modified, ensuring X is C-contiguous.
-            If False, the original data is modified, and put back before the function returns, but small numerical differences may be introduced by subtracting and then adding the data mean,
-            in this case it will also not ensure that data is C-contiguous which may cause a significant slowdown.
         n_jobs : int or None, optional (default=None)
             The number of jobs to use for the computation. This works by computing each of the n_init runs in parallel.
             None means 1 unless in a joblib.parallel_backend context. -1 means using all processors. See Glossary for more details.
@@ -369,15 +354,6 @@ class Model(MethodBase):
             If metric is a string or callable, it must be one of the options allowed by sklearn.metrics.pairwise_distances for its metric parameter.
             If metric is “precomputed”, X is assumed to be a distance matrix and must be square.
             X may be a sparse matrix, in which case only “nonzero” elements may be considered neighbors for DBSCAN.
-        metric_params : dict, optional
-            Additional keyword arguments for the metric function.
-        algorithm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
-            The algorithm to be used by the NearestNeighbors module to compute pointwise distances and find nearest neighbors.
-            See NearestNeighbors module documentation for details.
-        leaf_size : int, optional (default = 30)
-            Leaf size passed to BallTree or cKDTree.
-            This can affect the speed of the construction and query, as well as the memory required to store the tree.
-            The optimal value depends on the nature of the problem.
         p : float, optional
             The power of the Minkowski metric to be used to calculate distance between points.
         n_jobs : int or None, optional (default=None)
