@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from pyautoml import Feature
 
 
@@ -107,7 +106,7 @@ class TestFeatureExtraction(unittest.TestCase):
         data = pd.DataFrame(normal_data, columns=columns)
 
         feature = Feature(data=data, test_split_percentage=0.5, split=False)
-        feature.nltk_postag()
+        feature.postag_nltk()
         validate = len(feature.data.columns)
 
         self.assertTrue(validate, 2)

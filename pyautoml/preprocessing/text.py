@@ -1,6 +1,7 @@
 import string
 from functools import partial
 
+import pandas as pd
 from nltk import sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
