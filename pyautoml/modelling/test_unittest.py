@@ -124,5 +124,30 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_defaultgridsearch(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', report_name='gridsearch_test')
+        model.logistic_regression(gridsearch=True, gridsearch_cv=2)
+
+        self.assertTrue(True)
+
+    def test_model_logisticregression(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3')
+        model.logistic_regression(random_state=2, penalty='l1')
+        validate = model.train_data.log_predictions is not None and model.test_data.log_predictions is not None
+
+        self.assertTrue(validate)
+
 if __name__ == "__main__":
     unittest.main()

@@ -28,12 +28,16 @@ def split_sentences(list_of_cols=[], new_col_name='_sentences', **datasets):
     ----------
     list_of_cols : list, optional
         Column name(s) of text data that you want to separate into sentences
+
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_sentences`
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+
     test_data : DataFrame
         Testing dataset, by default None
 
@@ -80,6 +84,7 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
     ----------
     list_of_cols : list, optional
         Column name(s) of text data that you want to stem
+
     stemmer : str, optional
         Type of NLTK stemmer to use, by default porter
 
@@ -87,12 +92,16 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
             - Porter
 
         For more information please refer to the NLTK stemming api https://www.nltk.org/api/nltk.stem.html
+
     new_col_name : str, optional
-            New column name to be created when applying this technique, by default `COLUMN_stemmed`
+        New column name to be created when applying this technique, by default `COLUMN_stemmed`
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+
     test_data : DataFrame
         Testing dataset, by default None
 
@@ -141,14 +150,19 @@ def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", *
     ----------
     list_of_cols : list, optional
         Column name(s) of text data that you want to stem
+
     pattern : str, optional
         Regex pattern used to split words.
+
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_tokenized`
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+
     test_data : DataFrame
         Testing dataset, by default None
 
@@ -207,14 +221,19 @@ def nltk_remove_stopwords(list_of_cols=[], custom_stopwords=[], new_col_name='_r
     ----------
     list_of_cols : list, optional
         Column name(s) of text data that you want to stem
+
     regexp : str, optional
         Regex pattern used to split words.
+
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_rem_words`
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+
     test_data : DataFrame
         Testing dataset, by default None
 
@@ -266,16 +285,22 @@ def remove_punctuation(list_of_cols=[], regexp='', exceptions=[], new_col_name='
     ----------
     list_of_cols : list, optional
         Column name(s) of text data that you want to stem
+
     regexp : str, optional
         Regex pattern of punctuation to be removed.
+
     exceptions : list, optional
         List of punctuation to remove.
+
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `_rem_punct`
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+
     test_data : DataFrame
         Testing dataset, by default None
 
@@ -335,6 +360,7 @@ def _apply_text_method(text_data, transformer=None):
     ----------
     text_data : str
         Text data to transform
+        
     transformer : Transformation object, optional
         trasnformer applied on the data, for example
         lemmatizer, stemmer, etc. , by default None

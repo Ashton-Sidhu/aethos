@@ -9,6 +9,7 @@ replace_missing_random_discrete
 """
 import numpy as np
 import pandas as pd
+
 from pyautoml.util import _function_input_validation
 
 
@@ -24,10 +25,13 @@ def remove_columns_threshold(threshold: float, **datasets):
     threshold : float
         Threshold value between 0 and 1 that if the column
         has more than the specified threshold of missing values, it is removed. 
+
     data: Dataframe or array like - 2d
         Full dataset, by default None.
+
     train_data: Dataframe or array like - 2d
         Training dataset, by default None.
+
     test_data: Dataframe or array like - 2d
         Testing dataset, by default None.
     
@@ -74,10 +78,13 @@ def remove_rows_threshold(threshold: float, **datasets):
     threshold : float
         Threshold value between 0 and 1 that if the row
         has more than the specified threshold of missing values, it is removed. 
+
     data: Dataframe or array like - 2d
         Full dataset, by default None.
+
     train_data: Dataframe or array like - 2d
         Training dataset, by default None.
+
     test_data: Dataframe or array like - 2d
         Testing dataset, by default None.
     
@@ -121,10 +128,13 @@ def remove_duplicate_rows(list_of_cols=[], **datasets):
     ----------
     list_of_cols: list, optional
         Columns to check if their values are duplicated, by default []
+
     data: Dataframe or array like - 2d
         Full dataset, by default None.
+
     train_data: Dataframe or array like - 2d
         Training dataset, by default None.
+
     test_data: Dataframe or array like - 2d
         Testing dataset, by default None.
     
@@ -165,8 +175,10 @@ def remove_duplicate_columns(**datasets):
     ----------
     data: Dataframe or array like - 2d
         Full dataset, by default None.
+
     train_data: Dataframe or array like - 2d
         Training dataset, by default None.
+
     test_data: Dataframe or array like - 2d
         Testing dataset, by default None.
     
@@ -207,10 +219,13 @@ def replace_missing_random_discrete(list_of_cols: list, **datasets):
     ----------
     list_of_cols : list
         A list of specific columns to apply this technique to, by default []
+
     data: Dataframe or array like - 2d
         Full dataset, by default None.
+
     train_data: Dataframe or array like - 2d
         Training dataset, by default None.
+        
     test_data: Dataframe or array like - 2d
         Testing dataset, by default None.
     

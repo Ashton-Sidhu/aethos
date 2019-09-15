@@ -7,10 +7,11 @@ nltk_feature_postag
 """
 
 import pandas as pd
-from pyautoml.util import (_function_input_validation, _get_columns,
-                           drop_replace_columns)
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
+
+from pyautoml.util import (_function_input_validation, _get_columns,
+                           drop_replace_columns)
 
 
 def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
@@ -23,12 +24,16 @@ def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
     ----------
     list_of_cols : list, optional
         A list of specific columns to apply this technique to., by default []
+
     algo_kwargs : dict, optional
         Parameters you would pass into Bag of Words constructor as a dictionary., by default {}
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+        
     test_data : DataFrame
         Testing dataset, by default None
     

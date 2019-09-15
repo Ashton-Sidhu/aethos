@@ -6,10 +6,11 @@ replace_missing_constant
 '''
 
 import pandas as pd
+from sklearn.impute import SimpleImputer
+
 from pyautoml.cleaning.categorical import replace_missing_new_category
 from pyautoml.util import (_function_input_validation, _get_columns,
                            _numeric_input_conditions, drop_replace_columns)
-from sklearn.impute import SimpleImputer
 
 #TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing data
 
@@ -32,13 +33,17 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
         A list of specific columns to apply this technique to
         If `list_of_cols` is not provided, the strategy will be
         applied to all numeric columns., by default []
+
     strategy : str
         Strategy for replacing missing values.
         Can be either "mean", "median" or "most_frequent"
+
     data: Dataframe or array like - 2d
         Full dataset, by default None.
+
     train_data: Dataframe or array like - 2d
         Training dataset, by default None.
+
     test_data: Dataframe or array like - 2d
         Testing dataset, by default None.
     
@@ -96,12 +101,16 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
     col_to_constant : list, dict, optional
         Either a list of columns to replace missing values or a `column`: `value` dictionary mapping,
         by default None
+
     constant : int, float, optional
         Value to replace missing values with, by default 0
+
     data: Dataframe or array like - 2d
         Full dataset, by default None.
+
     train_data: Dataframe or array like - 2d
         Training dataset, by default None.
+        
     test_data: Dataframe or array like - 2d
         Testing dataset, by default None.
     

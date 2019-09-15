@@ -7,6 +7,7 @@ replace_missing_remove_row
 
 import numpy as np
 import pandas as pd
+
 from pyautoml.util import _function_input_validation, _get_columns
 
 #TODO: Implement KNN, and replacing with most common category 
@@ -22,12 +23,16 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
     ----------
     col_to_category : list or dict, optional
         A dictionary mapping column name to the category name you want to replace , by default None
+
     constant : str, int or float, optional
         Category placeholder value for missing values, by default None
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+
     test_data : DataFrame
         Testing dataset, by default None
     
@@ -133,10 +138,13 @@ def replace_missing_remove_row(cols_to_remove: list, **datasets):
     ----------
     cols_to_remove : list
         List of columns you want to check to see if they have missing values in a row
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+        
     test_data : DataFrame
         Testing dataset, by default None
     

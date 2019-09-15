@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -52,8 +53,10 @@ class Preprocess(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         normalize_params : dict, optional
             Parmaters to pass into MinMaxScaler() constructor
             from Scikit-Learn, by default {}
@@ -107,8 +110,10 @@ class Preprocess(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_sentences`
 
@@ -126,7 +131,7 @@ class Preprocess(MethodBase):
             self._data_properties.data = split_sentences(list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
     
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
     
             return self.copy()
     
@@ -137,7 +142,7 @@ class Preprocess(MethodBase):
                                                                                             test_data=self._data_properties.test_data)
     
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
     
             return self.copy()
 
@@ -153,8 +158,10 @@ class Preprocess(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         stemmer : str, optional
             Type of NLTK stemmer to use, by default porter
 
@@ -162,6 +169,7 @@ class Preprocess(MethodBase):
                 - Porter
 
             For more information please refer to the NLTK stemming api https://www.nltk.org/api/nltk.stem.html
+
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_stemmed`
         
@@ -180,7 +188,7 @@ class Preprocess(MethodBase):
                 list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, data=self._data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
 
             return self.copy()
 
@@ -189,7 +197,7 @@ class Preprocess(MethodBase):
                 list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
 
             return self.copy()
 
@@ -203,10 +211,13 @@ class Preprocess(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         regexp : str, optional
             Regex expression used to define what a word is.
+
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_tokenized`
         
@@ -226,7 +237,7 @@ class Preprocess(MethodBase):
                 list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, data=self._data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
 
             return self.copy()
 
@@ -235,7 +246,7 @@ class Preprocess(MethodBase):
                 list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
 
             return self.copy()
 
@@ -251,10 +262,13 @@ class Preprocess(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         custom_stop_words : list, optional
             Custom list of words to also drop with the stop words, must be LOWERCASE, by default []
+
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_rem_stop`
         
@@ -274,7 +288,7 @@ class Preprocess(MethodBase):
                 list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, data=self._data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
 
             return self.copy()
 
@@ -283,7 +297,7 @@ class Preprocess(MethodBase):
                 list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
 
             return self.copy()
 
@@ -302,12 +316,16 @@ class Preprocess(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         regexp : str, optional
             Regex expression used to define what to include.
+            
         exceptions : list, optional
             List of punctuation to include in the text, by default []
+
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_rem_punct`
         
@@ -327,7 +345,7 @@ class Preprocess(MethodBase):
                 list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, data=self._data_properties.data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
 
             return self.copy()
 
@@ -336,6 +354,6 @@ class Preprocess(MethodBase):
                 list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
             if self.report is not None:
-                self.report.ReportTechnique(report_info)
+                self.report.report_technique(report_info)
 
             return self.copy()

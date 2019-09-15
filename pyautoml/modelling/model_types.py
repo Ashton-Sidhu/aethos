@@ -1,6 +1,6 @@
 class ModelBase(object):
 
-    def __init__(self, model_object, model, truth_predictions=None, predictions=None):
+    def __init__(self, model_object, model=None, truth_predictions=None, predictions=None):
 
         self.data = model_object._data_properties.data
         self.train_data = model_object._data_properties.train_data
@@ -27,6 +27,7 @@ class ClusterModel(ModelBase):
         ----------
         col : str
             Column of cluster labels
+            
         cluster_no : int
             Cluster number to filter by
         
@@ -48,8 +49,9 @@ def ClassificationModel(ModelBase):
     # TODO: Model Weights
     # TODO: MSFT Interpret
     # TODO: SHAP
+    # TODO: classification report
 
-    pass
+    return
 
 def RegressionModel(ModelBase):
     # TODO: Summary statistics
@@ -57,3 +59,5 @@ def RegressionModel(ModelBase):
     # TODO: Model Weights
     # TODO: MSFT Interpret
     # TODO: SHAP
+
+    return

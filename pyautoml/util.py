@@ -31,6 +31,7 @@ def get_keys_by_values(dict_of_elements: dict, item) -> list:
     ----------
     dict_of_elements : dict
         Dictionary of key value mapping
+
     item : Any
         Value you want to return keys of.
     
@@ -51,8 +52,10 @@ def drop_replace_columns(df, drop_cols, new_data, keep_col=False):
     ----------
     df : Dataframe
         Dataframe of the data
+
     drop_cols : str or [str]
         Column or list of columns to be dropped
+
     new_data : Dataframe
         New data columns to be added to the dataframe
     
@@ -79,6 +82,7 @@ def split_data(df, split_percentage: float):
     ----------
     df : Dataframe
         Full dataset you want to split.
+
     split_percentage : float
         The % of data that you want in your test set, split_percentage is the percentage of data in the traning set.
     
@@ -147,8 +151,10 @@ def _get_columns(list_of_cols, data, train_data) -> list:
     ----------
     list_of_cols : list
         List of columns to apply method to.
+
     data : Dataframe or array like - 2d
         Full dataset
+
     train_data : Dataframe or array like - 2d
         Training Dataset
     
@@ -177,6 +183,7 @@ def _input_columns(list_args: list, list_of_cols: list):
     ----------
     list_args : list
         Input columns passed as args
+
     list_of_cols : list
         Hardcoded provided list of input columns.
     
@@ -226,6 +233,7 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
     ----------
     model_name : str
         Proposed name of the model
+        
     model_obj : Model
         Model object
     

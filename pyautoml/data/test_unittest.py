@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from pyautoml.data.data import Data
 from pyautoml.util import *
 

@@ -103,3 +103,6 @@ model:
 
     dbscan: >
       Ran DBSCAN clustering.
+  classification:
+    logreg: >
+      Ran Logistic Regression model.

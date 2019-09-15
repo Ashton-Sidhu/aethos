@@ -48,11 +48,14 @@ class Feature(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         keep_col : bool
             A parameter to specify whether to drop the column being transformed, by default
             keep the column, True
+
         params : optional
             Parameters you would pass into Bag of Words constructor as a dictionary, by default handle_unknown=ignore}
         
@@ -105,10 +108,13 @@ class Feature(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
+
         tfidf_params : optional
             Parameters you would pass into TFIDF constructor as a dictionary, by default {}
         
@@ -160,10 +166,13 @@ class Feature(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
+
         bow_params : dict, optional
             Parameters you would pass into Bag of Words constructor, by default {}
         
@@ -213,8 +222,10 @@ class Feature(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_postagged`
 
@@ -255,8 +266,10 @@ class Feature(MethodBase):
         ----------
         func : Function pointer
             Function describing the transformation for the new column
+
         output_col : str
             New column name
+            
         description : str, optional
             Description of the new column to be logged into the report, by default ''
         

@@ -5,9 +5,10 @@ feature_one_hot_encode
 """
 
 import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
+
 from pyautoml.util import (_function_input_validation, _get_columns,
                            drop_replace_columns)
-from sklearn.preprocessing import OneHotEncoder
 
 
 def feature_one_hot_encode(list_of_cols: list, keep_col=True, **algo_kwargs):
@@ -20,15 +21,20 @@ def feature_one_hot_encode(list_of_cols: list, keep_col=True, **algo_kwargs):
     ----------
     list_of_cols : list
          A list of specific columns to apply this technique to.
+
     keep_col : bool
         A parameter to specify whether to drop the column being transformed, by default
         keep the column, True
+
     algo_kwargs : optional
         Parameters you would pass into Bag of Words constructor as a dictionary, by default {"handle_unknown": "ignore"}
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+
     test_data : DataFrame
         Testing dataset, by default None
     
