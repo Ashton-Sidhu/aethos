@@ -128,6 +128,25 @@ class Model(MethodBase):
         """ TODO: Implement multi processing running of models """
         return
 
+    def list_models(self):
+        """
+        Prints out all queued and ran models.
+        """
+        
+        print("######## QUEUED MODELS ########")
+        if self._queued_models:
+            for key in self._queued_models:
+                print(key)
+        else:
+            print("No queued models.")
+
+        print()
+        
+        print("######## RAN MODELS ########")
+        if self._models:
+            for key in self._models:
+                print(key)
+
     @add_to_queue
     def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=True, **summarizer_kwargs):
         """
@@ -480,7 +499,7 @@ class Model(MethodBase):
             Weights associated with classes in the form {class_label: weight}. If not given, all classes are supposed to have weight one.
             The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y)).
             Note that these weights will be multiplied with sample_weight (passed through the fit method) if sample_weight is specified.
-            
+
         random_state : int, RandomState instance or None, optional (default=None)
             The seed of the pseudo random number generator to use when shuffling the data.
             If int, random_state is the seed used by the random number generator; If RandomState instance, random_state is the random number generator;
