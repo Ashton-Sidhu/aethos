@@ -2,9 +2,8 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
@@ -185,7 +184,7 @@ class Feature(MethodBase):
         return self.copy()
 
 
-    def nltk_postag(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
+    def postag_nltk(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
         """
         Tag documents with their respective "Part of Speech" tag. These tags classify a word as a
         noun, verb, adjective, etc. A full list and their meaning can be found here:

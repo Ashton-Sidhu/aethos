@@ -7,10 +7,11 @@ nltk_feature_postag
 """
 
 import pandas as pd
-from pyautoml.util import (_function_input_validation, _get_columns,
-                           drop_replace_columns)
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
+
+from pyautoml.util import (_function_input_validation, _get_columns,
+                           drop_replace_columns)
 
 
 def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
@@ -178,15 +179,15 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
     if data is not None:
         for col in list_of_cols:
             data[col +
-                 new_col_name] = list(map(lambda x: TextBlob(x).tags, data[col]))
+                 new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, data[col]))
 
         return data
 
     else:
         for col in list_of_cols:
             train_data[col +
-                       new_col_name] = list(map(lambda x: TextBlob(x).tags, train_data[col]))
+                       new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, train_data[col]))
             test_data[col +
-                      new_col_name] = list(map(lambda x: TextBlob(x).tags, test_data[col]))
+                      new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, test_data[col]))
 
         return train_data, test_data
