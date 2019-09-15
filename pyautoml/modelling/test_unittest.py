@@ -119,7 +119,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, split=False)
         model = model.dbscan(eps=3, min_samples=2)
-        filtered = model.filter_cluster('dbscan_clusters', 0)
+        filtered = model.filter_cluster(0)
         validate = all(filtered.dbscan_clusters == 0)
 
         self.assertTrue(validate)
@@ -127,7 +127,8 @@ class TestModelling(unittest.TestCase):
     def test_model_defaultgridsearch(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [3, 2, 0], [1, 2, 1]]
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
