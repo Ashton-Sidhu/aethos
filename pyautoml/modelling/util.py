@@ -36,7 +36,32 @@ def get_default_args(func):
         if v.default is not inspect.Parameter.empty
     }
 
-def run_gridsearch(model, gridsearch, grid_params, cv, score):
+def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str):
+    """
+    Runs Gridsearch on a model
+    
+    Parameters
+    ----------
+    model : Model
+        Model to run gridsearch on
+
+    gridsearch : bool or dist
+        True, False or custom grid to test
+
+    grid_params : dict
+        Dictionary of model params and values to test
+
+    cv : int
+        Number of folds for cross validation
+    
+    score : str
+        Scoring metric to use when evaluating models
+    
+    Returns
+    -------
+    Model
+        Initialized Gridsearch model
+    """
 
     if isinstance(gridsearch, dict):
         gridsearch_grid = gridsearch
