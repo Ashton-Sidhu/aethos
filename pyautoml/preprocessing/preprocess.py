@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -338,4 +339,43 @@ class Preprocess(MethodBase):
             if self.report is not None:
                 self.report.ReportTechnique(report_info)
 
+            return self.copy()
+
+    def encode_labels(self, *list_args, list_of_cols=[]):
+        """
+        Encode labels with value between 0 and n_classes-1.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        
+        Returns
+        -------
+        Preprocess
+            Copy of preprocess object
+        """
+    
+        report_info = technique_reason_repo['preprocess']['categorical']['label_encode']
+    
+        list_of_cols = _input_columns(list_args, list_of_cols)
+    
+        if not self._data_properties.split:
+    
+            self._data_properties.data = label_encoder(list_of_cols, data=self._data_properties.data)
+    
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, list_of_cols)
+    
+            return self.copy()
+    
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = label_encoder(list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+    
+            if self.report is not None:
+                self.report.ReportTechnique(report_info, list_of_cols)
+    
             return self.copy()

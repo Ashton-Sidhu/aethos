@@ -1,5 +1,7 @@
 from sklearn.preprocessing import LabelEncoder
 
+from pyautoml.util import _function_input_validation
+
 
 def label_encoder(list_of_cols=[], **datasets):
     """
@@ -13,10 +15,13 @@ def label_encoder(list_of_cols=[], **datasets):
         A list of specific columns to apply this technique to
         If `list_of_cols` is not provided, the strategy will be
         applied to all numeric columns., by default []
+
     data: Dataframe or array like - 2d
         Full dataset, by default None.
+
     train_data: Dataframe or array like - 2d
         Training dataset, by default None.
+
     test_data: Dataframe or array like - 2d
         Testing dataset, by default None.
 
@@ -40,19 +45,14 @@ def label_encoder(list_of_cols=[], **datasets):
     
     label_encode = LabelEncoder()
 
-    if data is not None:                
-        fit_data = label_encode.fit_transform(data[list_of_cols])
-        fit_df = pd.DataFrame(fit_data, columns=list_of_cols)
-        data = drop_replace_columns(data, list_of_cols, fit_df)
+    if data is not None:
+        for col in list_of_cols:
+            data[col] = label_encode.fit_transform(data[col])
 
         return data
     else:
-        fit_train_data = label_encode.fit_transform(train_data[list_of_cols])
-        fit_train_df = pd.DataFrame(fit_train_data, columns=list_of_cols)            
-        train_data = drop_replace_columns(train_data, list_of_cols, fit_train_df)
-        
-        fit_test_data = label_encode.transform(test_data[list_of_cols])
-        fit_test_df = pd.DataFrame(fit_test_data, columns=list_of_cols)      
-        test_data = drop_replace_columns(test_data, list_of_cols, fit_test_df)
+        for col in list_of_cols:
+            train_data[col] = label_encode.fit_transform(train_data[col])
+            test_data[col] = label_encode.transform(test_data[col])
 
         return train_data, test_data

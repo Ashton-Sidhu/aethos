@@ -46,6 +46,8 @@ preprocess:
   general:
   
   categorical:
+    label_encode: >
+      Encoded the label(s) in column(s) column_name_placeholder.
 
   numeric:
     standardize: >
