@@ -66,7 +66,7 @@ class Report():
             with open(self.filename, 'a+') as f:
                 f.write(content)
 
-    def report_technique(self, technique: str, list_of_cols: list):
+    def report_technique(self, technique: str, list_of_cols=[]):
         """
         IN ALPHA V1
         ============

@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+
 from pyautoml import Feature
 
 
@@ -141,6 +142,19 @@ class TestFeatureExtraction(unittest.TestCase):
         validate = 'new_col' in feature.train_data.columns and 'new_col' in feature.test_data.columns
 
         self.assertTrue(validate)
+
+    def test_feature_labelencoder(self):
+
+        data = [["canada", "green", 1],
+                ["canada", "green", 1],
+                ["canada", "green", 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        feature = Feature(data=data, test_split_percentage=0.33, report_name="test")
+        feature.encode_labels('col1', 'col2')
+        
+        self.assertTrue(True)
 
 if __name__ == "__main__":
     unittest.main()

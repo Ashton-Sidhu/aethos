@@ -125,22 +125,16 @@ class Preprocess(MethodBase):
     
         if not self._data_properties.split:    
             self._data_properties.data = split_sentences(list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
-    
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
-    
-            return self.copy()
-    
         else:
             self._data_properties.train_data, self._data_properties.test_data = split_sentences(list_of_cols,
                                                                                             new_col_name=new_col_name,
                                                                                             train_data=self._data_properties.train_data, 
                                                                                             test_data=self._data_properties.test_data)
     
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
-    
-            return self.copy()
+        if self.report is not None:
+            self.report.report_technique(report_info)
+
+        return self.copy()
 
     def stem_nltk(self, *list_args, list_of_cols=[], stemmer='porter', new_col_name='_stemmed'):
         """
@@ -179,20 +173,14 @@ class Preprocess(MethodBase):
         if not self._data_properties.split:
             self._data_properties.data = nltk_stem(
                 list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = nltk_stem(
                 list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
-            return self.copy()
+        return self.copy()
 
     def split_words_nltk(self, *list_args, list_of_cols=[], regexp='', new_col_name="_tokenized"):
         """
@@ -222,23 +210,16 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-
             self._data_properties.data = nltk_word_tokenizer(
                 list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = nltk_word_tokenizer(
                 list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
-            return self.copy()
+        return self.copy()
 
     def remove_stopwords_nltk(self, *list_args, list_of_cols=[], custom_stopwords=[], new_col_name="_rem_stop"):
         """
@@ -270,23 +251,16 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-
             self._data_properties.data = nltk_remove_stopwords(
                 list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = nltk_remove_stopwords(
                 list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
-            return self.copy()
+        return self.copy()
 
     def remove_punctuation(self, *list_args, list_of_cols=[], regexp='', exceptions=[], new_col_name='_rem_punct'):
         """
@@ -323,27 +297,22 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-
             self._data_properties.data = remove_punctuation(
                 list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = remove_punctuation(
                 list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
-            if self.report is not None:
-                self.report.ReportTechnique(report_info)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
-            return self.copy()
+        return self.copy()
 
     def encode_labels(self, *list_args, list_of_cols=[]):
         """
         Encode labels with value between 0 and n_classes-1.
+
+        Note that this will not work if your test data will have labels that your train data does not.
         
         Parameters
         ----------
@@ -363,19 +332,12 @@ class Preprocess(MethodBase):
     
         list_of_cols = _input_columns(list_args, list_of_cols)
     
-        if not self._data_properties.split:
-    
-            self._data_properties.data = label_encoder(list_of_cols, data=self._data_properties.data)
-    
-            if self.report is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
-    
-            return self.copy()
-    
+        if not self._data_properties.split:    
+            self._data_properties.data = label_encoder(list_of_cols, data=self._data_properties.data)    
         else:
             self._data_properties.train_data, self._data_properties.test_data = label_encoder(list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
     
-            if self.report is not None:
-                self.report.ReportTechnique(report_info, list_of_cols)
-    
-            return self.copy()
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
