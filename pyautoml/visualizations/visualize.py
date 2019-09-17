@@ -29,7 +29,6 @@ def raincloud(col: str, target_col: str, data, **params):
                 'pointplot': True,
                 'width_viol': 0.8,
                 'width_box': .4,
-                'figsize': (12,8),
                 'orient': 'h',
                 'move': 0.
                 }

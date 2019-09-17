@@ -2,11 +2,8 @@
 import os
 import warnings
 
-import yaml
-from sklearn.cluster import DBSCAN, KMeans
-from sklearn.linear_model import LogisticRegression
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_types import *
@@ -14,6 +11,8 @@ from pyautoml.modelling.text import *
 from pyautoml.modelling.util import add_to_queue, run_gridsearch
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _validate_model_name)
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.linear_model import LogisticRegression
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -86,7 +85,6 @@ class Model(MethodBase):
 
         self._target_data = value
 
-
     @property
     def train_target_data(self):
         """
@@ -142,10 +140,12 @@ class Model(MethodBase):
 
         print()
         
-        print("######## RAN MODELS ########")
+        print("######### RAN MODELS ##########")
         if self._models:
             for key in self._models:
                 print(key)
+        else:
+            print("No ran models.")
 
     @add_to_queue
     def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=True, **summarizer_kwargs):
