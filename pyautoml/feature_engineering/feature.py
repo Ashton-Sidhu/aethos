@@ -29,10 +29,10 @@ class Feature(MethodBase):
 
         if _data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
-                        split=split, target_field=target_field, report_name=report_name)
+                        split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
             super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
-                        split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
+                        split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
             self.report.write_header("Feature Engineering")

@@ -23,13 +23,14 @@ class MethodBase(object):
         test_data = kwargs.pop('test_data')
         split = kwargs.pop('split')
         target_field = kwargs.pop('target_field')
+        target_mapping = kwargs.pop('target_mapping')
         report_name = kwargs.pop('report_name')
         test_split_percentage = kwargs.pop('test_split_percentage')
 
         if not _function_input_validation(data, train_data, test_data):
             raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
-        self._data_properties = Data(data, train_data, test_data, split=split, target_field=target_field, report_name=report_name)
+        self._data_properties = Data(data, train_data, test_data, split=split, target_field=target_field, target_mapping=target_mapping, report_name=report_name)
 
         if data is not None and split:
             # Generate train set and test set.
@@ -200,10 +201,26 @@ class MethodBase(object):
     @target_field.setter
     def target_field(self, value):
         """
-        Setter for the target field/
+        Setter for the target field
         """
 
         self._data_properties.target_field = value
+
+    @property
+    def target_mapping(self):
+        """
+        Property function for the label mapping
+        """
+
+        return self._data_properties.target_mapping
+
+    @target_mapping.setter
+    def target_mapping(self, value):
+        """
+        Setter for the label mapping
+        """
+
+        self._data_properties.target_mapping = value
         
     @property
     def missing_values(self):
