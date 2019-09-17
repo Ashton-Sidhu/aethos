@@ -195,13 +195,16 @@ class Model(MethodBase):
 
             self._data_properties.data = gensim_textrank_summarizer(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data, **summarizer_kwargs)
+
+            if self.report is not None:
+                self.report.report_technique(report_info)
             
         else:
             self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_summarizer(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **summarizer_kwargs)
 
-        if self.report is not None:
-            self.report.report_technique(report_info)
+            if self.report is not None:
+                self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self)
 
@@ -266,12 +269,15 @@ class Model(MethodBase):
             self._data_properties.data = gensim_textrank_keywords(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data, **keyword_kwargs)
 
+            if self.report is not None:
+                self.report.report_technique(report_info)
+
         else:
             self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_keywords(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **keyword_kwargs)
 
-        if self.report is not None:
-            self.report.report_technique(report_info)
+            if self.report is not None:
+                self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self)
 

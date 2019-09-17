@@ -1,12 +1,12 @@
 import string
 from functools import partial
 
+import pandas as pd
 from nltk import sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import PorterStemmer
 from nltk.tokenize import RegexpTokenizer, word_tokenize
-
 from pyautoml.util import _function_input_validation
 
 NLTK_STEMMERS = {
@@ -61,15 +61,15 @@ def split_sentences(list_of_cols=[], new_col_name='_sentences', **datasets):
     if data is not None:
         for col in list_of_cols:
             data[col +
-                 new_col_name] = list(map(sent_tokenize, data.loc[:, col]))
+                 new_col_name] = pd.Series(map(sent_tokenize, data.loc[:, col]))
 
         return data
     else:
         for col in list_of_cols:
             train_data[col +
-                       new_col_name] = list(map(sent_tokenize, train_data[col]))
+                       new_col_name] = pd.Series(map(sent_tokenize, train_data[col]))
             test_data[col +
-                      new_col_name] = list(map(sent_tokenize, test_data[col]))
+                      new_col_name] = pd.Series(map(sent_tokenize, test_data[col]))
 
         return train_data, test_data
 

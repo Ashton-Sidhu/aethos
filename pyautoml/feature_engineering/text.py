@@ -183,15 +183,15 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
     if data is not None:
         for col in list_of_cols:
             data[col +
-                 new_col_name] = list(map(lambda x: TextBlob(x).tags, data[col]))
+                 new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, data[col]))
 
         return data
 
     else:
         for col in list_of_cols:
             train_data[col +
-                       new_col_name] = list(map(lambda x: TextBlob(x).tags, train_data[col]))
+                       new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, train_data[col]))
             test_data[col +
-                      new_col_name] = list(map(lambda x: TextBlob(x).tags, test_data[col]))
+                      new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, test_data[col]))
 
         return train_data, test_data

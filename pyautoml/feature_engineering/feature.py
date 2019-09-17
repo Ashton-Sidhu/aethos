@@ -2,14 +2,14 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
 from pyautoml.feature_engineering.util import *
+from pyautoml.preprocessing.categorical import label_encoder
 from pyautoml.util import _contructor_data_properties, _input_columns
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
@@ -68,6 +68,7 @@ class Feature(MethodBase):
         --------
         >>> feature.onehot_encode('col1', 'col2', 'col3')
         """
+        
         report_info = technique_reason_repo['feature']['categorical']['onehotencode']
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
@@ -75,22 +76,16 @@ class Feature(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.data = feature_one_hot_encode(list_of_cols=list_of_cols, keep_col=keep_col, data=self._data_properties.data, **onehot_params)
-
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = feature_one_hot_encode(list_of_cols=list_of_cols,
                                                                                                     keep_col=keep_col,
                                                                                                     train_data=self._data_properties.train_data,
                                                                                                     test_data=self._data_properties.test_data,
                                                                                                     **onehot_params)
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
 
-            return self.copy()
+        return self.copy()
 
 
     def tfidf(self, *list_args, list_of_cols=[], keep_col=True, **tfidf_params):
@@ -131,13 +126,7 @@ class Feature(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.data = feature_tfidf(
-                list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params, data=self._data_properties.data,)
-
-            if self.report is not None:
-                self.report.report_technique(report_info, [])
-
-            return self.copy()
-
+                list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params, data=self._data_properties.data)
         else:
             self._data_properties.train_data, self._data_properties.test_data = feature_tfidf(list_of_cols=list_of_cols,
                                                                                             keep_col = keep_col,
@@ -146,10 +135,10 @@ class Feature(MethodBase):
                                                                                            test_data=self._data_properties.test_data,
                                                                                            )
 
-            if self.report is not None:
-                self.report.report_technique(report_info, [])
+        if self.report is not None:
+            self.report.report_technique(report_info, [])
 
-            return self.copy()
+        return self.copy()
 
 
     def bag_of_words(self, *list_args, list_of_cols=[], keep_col=True, **bow_params):
@@ -190,12 +179,6 @@ class Feature(MethodBase):
         if not self._data_properties.split:
             self._data_properties.data = feature_bag_of_words(
                 list_of_cols=list_of_cols, keep_col=keep_col, **bow_params, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.report_technique(report_info, [])
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = feature_bag_of_words(list_of_cols=list_of_cols,
                                                                                                     keep_col=keep_col,
@@ -204,13 +187,13 @@ class Feature(MethodBase):
                                                                                                     test_data=self._data_properties.test_data,
                                                                                                     )
 
-            if self.report is not None:
-                self.report.report_technique(report_info, [])
+        if self.report is not None:
+            self.report.report_technique(report_info, [])
 
-            return self.copy()
+        return self.copy()
 
 
-    def nltk_postag(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
+    def postag_nltk(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
         """
         Tag documents with their respective "Part of Speech" tag. These tags classify a word as a
         noun, verb, adjective, etc. A full list and their meaning can be found here:
@@ -241,20 +224,14 @@ class Feature(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.data = nltk_feature_postag(list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.report_technique(report_info, [])
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = nltk_feature_postag(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
 
-            if self.report is not None:
-                self.report.report_technique(report_info, [])
+        if self.report is not None:
+            self.report.report_technique(report_info, [])
 
-            return self.copy()
+        return self.copy()
 
 
     def apply(self, func, output_col: str, description=''):
@@ -292,20 +269,48 @@ class Feature(MethodBase):
         """
         
         if not self._data_properties.split:    
-            self._data_properties.data = apply(func, output_col, data=self._data_properties.data)
-    
-            if self.report is not None:
-                self.report.log("Applied function to dataset. {}".format(description))
-    
-            return self.copy()
-    
+            self._data_properties.data = apply(func, output_col, data=self._data_properties.data)        
         else:
             self._data_properties.train_data, self._data_properties.test_data = apply(func,
                                                                                     output_col,
                                                                                     train_data=self._data_properties.train_data,
                                                                                     test_data=self._data_properties.test_data)
     
-            if self.report is not None:
-                self.report.log("Added feature {}. {}".format(output_col, description))
+        if self.report is not None:
+            self.report.log("Added feature {}. {}".format(output_col, description))
+
+        return self.copy()
+
+    def encode_labels(self, *list_args, list_of_cols=[]):
+        """
+        Encode categorical values with value between 0 and n_classes-1.
+
+        Note that this will not work if your test data will have labels that your train data does not.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        
+        Returns
+        -------
+        Feature
+            Copy of feature object
+        """
     
-            return self.copy()
+        report_info = technique_reason_repo['preprocess']['categorical']['label_encode']
+    
+        list_of_cols = _input_columns(list_args, list_of_cols)
+    
+        if not self._data_properties.split:    
+            self._data_properties.data = label_encoder(list_of_cols, data=self._data_properties.data)        
+        else:
+            self._data_properties.train_data, self._data_properties.test_data = label_encoder(list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+    
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()

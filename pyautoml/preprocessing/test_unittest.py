@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from pyautoml import Preprocess
 
 
@@ -151,7 +152,24 @@ class TestPreprocessing(unittest.TestCase):
         prep.remove_stopwords_nltk('data', custom_stopwords=['please'])
         validate = prep.data.data_rem_stop.values.tolist()
 
-        self.assertListEqual(validate, ["split ."])  
+        self.assertListEqual(validate, ["split ."])
+    
+    def test_preprocess_labelencoder(self):
+
+        data = [["canada", "green", 1],
+                ["usa", "green", 1],
+                ["canada", "blue", 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.encode_labels('col1', 'col2')
+        validate = prep.data.values.tolist()
+
+        self.assertListEqual(validate, [[0, 1, 1],
+                                        [1, 1, 1],
+                                        [0, 0, 0]])
+
 
 if __name__ == "__main__":
     unittest.main()
