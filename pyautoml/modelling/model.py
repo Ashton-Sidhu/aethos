@@ -38,7 +38,7 @@ class Model(MethodBase):
         if self._data_properties.report is not None:
             self.report.write_header("Modelling")
 
-        if target_field:
+        if self._data_properties.target_field:
             if split:
                 self._train_target_data = self._data_properties.train_data[self._data_properties.target_field]
                 self._test_target_data = self._data_properties.test_data[self._data_properties.target_field]
@@ -71,11 +71,13 @@ class Model(MethodBase):
         """
         Property function for the target data.
         """
-        
-        if self._data_properties.data is None:
-            raise AttributeError("There seems to be nothing here. Try .train_data or .test_data")
-        
-        return self._target_data
+        try:
+            if self._data_properties.data is None:
+                raise AttributeError("There seems to be nothing here. Try .train_data or .test_data")
+            
+            return self._target_data
+        except Exception as e:
+            print('Target Data does not exist. Please check if target field is set and then recreate the object.')
 
     @target_data.setter
     def target_data(self, value):
@@ -91,10 +93,13 @@ class Model(MethodBase):
         Property function for the training target data.
         """
         
-        if self._data_properties.train_data is None:
-            raise AttributeError("There seems to be nothing here. Try .data")
+        try:
+            if self._data_properties.train_data is None:
+                raise AttributeError("There seems to be nothing here. Try .data")
 
-        return self._train_target_data
+            return self._train_target_data
+        except Exception as e:
+            print('Train target Data does not exist. Please check if target field is set and then recreate the object.')
 
     @train_target_data.setter
     def train_target_data(self, value):
@@ -109,10 +114,14 @@ class Model(MethodBase):
         """
         Property function for the test target data.
         """
-        if self._data_properties.train_data is None:
-            raise AttributeError("There seems to be nothing here. Try .data")
 
-        return self._test_target_data
+        try:
+            if self._data_properties.train_data is None:
+                raise AttributeError("There seems to be nothing here. Try .data")
+
+            return self._test_target_data
+        except Exception as e:
+            print('Test target Data does not exist. Please check if target field is set and then recreate the object.')
 
     @test_target_data.setter
     def test_target_data(self, value):

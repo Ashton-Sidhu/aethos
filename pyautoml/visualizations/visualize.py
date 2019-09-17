@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import pandas_bokeh
 import ptitprince as pt
@@ -22,6 +23,8 @@ def raincloud(col: str, target_col: str, data, **params):
         Parameters for the RainCloud visualization
     """
 
+    _, ax = plt.subplots(figsize=(12,8))
+
     if not params:
         params = {'x': col,
                 'y': target_col,
@@ -30,7 +33,8 @@ def raincloud(col: str, target_col: str, data, **params):
                 'width_viol': 0.8,
                 'width_box': .4,
                 'orient': 'h',
-                'move': 0.
+                'move': 0.,
+                'ax': ax
                 }
                 
     ax = pt.RainCloud(**params)
