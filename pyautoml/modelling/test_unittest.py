@@ -150,5 +150,18 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_confusionmatrix(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3')
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.confusion_matrix()
+
+        self.assertTrue(True)
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,5 @@
 import collections
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -57,6 +58,7 @@ def label_encoder(list_of_cols=[], target=False, **datasets):
 
         if target:
             target_mapping = dict(zip(data[list_of_cols], label_encode.inverse_transform(data[col])))
+            target_mapping = OrderedDict(sorted(target_mapping.items()))
 
             return data, target_mapping
 
@@ -68,6 +70,7 @@ def label_encoder(list_of_cols=[], target=False, **datasets):
 
         if target:
             target_mapping = dict(zip(train_data[list_of_cols], label_encode.inverse_transform(train_data[col])))
+            target_mapping = OrderedDict(sorted(target_mapping.items()))
 
             return train_data, test_data, target_mapping
 
