@@ -9,7 +9,8 @@ from IPython.display import display
 from pandas_summary import DataFrameSummary
 
 from pyautoml.data.data import Data
-from pyautoml.util import _function_input_validation, _get_columns, split_data
+from pyautoml.util import (_function_input_validation, _get_columns,
+                           label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
 
 SHELL = get_ipython().__class__.__name__
@@ -710,6 +711,36 @@ class MethodBase(object):
                 self.report.log('Dropped columns {} in both train and test set. {}'.format(", ".join(drop_columns), reason))
 
             return self.copy()
+
+    
+    def encode_target(self):
+        """
+        Encodes target variables with value between 0 and n_classes-1.
+
+        Running this function will automatically set the corresponding mapping for the target variable mapping number to the original value.
+
+        Note that this will not work if your test data will have labels that your train data does not.        
+
+        Returns
+        -------
+        Clean, Preprocess, Feature or Model
+            Copy of object
+        """
+
+        if not self._data_properties.target_field:
+            raise ValueError('Please set the `target_field` field variable before encoding.')
+    
+        if not self._data_properties.split:
+            self._data_properties.data, self._data_properties.target_mapping = label_encoder(
+                self._data_properties.target_field, target=True, data=self._data_properties.data)
+        else:
+            self._data_properties.train_data, self._data_properties.test_data, self._data_properties.target_mapping = label_encoder(
+                self._data_properties.target_field, target=True, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+
+        if self.report is not None:
+            self.report.log('Encoded the target variable as numeric values.')
+
+        return self.copy()
 
     def visualize_raincloud(self, x_col: str, y_col=None, **params):
         """

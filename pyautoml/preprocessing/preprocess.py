@@ -2,15 +2,14 @@ import copy
 import os
 
 import pandas as pd
-import yaml
-
 import pyautoml
+import yaml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
 from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _numeric_input_conditions)
+                           _numeric_input_conditions, label_encoder)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -329,8 +328,10 @@ class Preprocess(MethodBase):
         """
         Encode labels with value between 0 and n_classes-1.
 
+        Running this function will automatically set the corresponding mapping for the target variable mapping number to the original value.
+
         Note that this will not work if your test data will have labels that your train data does not.
-        
+
         Parameters
         ----------
         list_args : str(s), optional
@@ -346,14 +347,16 @@ class Preprocess(MethodBase):
         """
     
         report_info = technique_reason_repo['preprocess']['categorical']['label_encode']
-    
+
         list_of_cols = _input_columns(list_args, list_of_cols)
-    
-        if not self._data_properties.split:    
-            self._data_properties.data = label_encoder(list_of_cols, data=self._data_properties.data)    
+
+        if not self._data_properties.split:
+            self._data_properties.data = label_encoder(
+                list_of_cols, data=self._data_properties.data)
         else:
-            self._data_properties.train_data, self._data_properties.test_data = label_encoder(list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
-    
+            self._data_properties.train_data, self._data_properties.test_data = label_encoder(
+                list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 

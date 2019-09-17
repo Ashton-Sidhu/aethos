@@ -308,6 +308,19 @@ class Test_TestBase(unittest.TestCase):
         
         self.assertEqual(clean.target_mapping, 'a')
 
+    def test_encodelabels(self):
+
+        data = pd.DataFrame({'A': [1, 1, 2, 2], 
+                    'B': [1, 2, 3, 4],
+                    'C': np.random.randn(4),
+                    'D': ['B', 'A', 'B', 'B']})
+
+        clean = Clean(data=data, train_data=None, test_data=None, split=False, target_field='D', report_name="test", test_split_percentage=0.5)
+        clean.encode_target()
+
+        self.assertDictEqual(clean.target_mapping, {0:'A', 1:'B'})
+
+
 
 if __name__ == "__main__":
     unittest.main()
