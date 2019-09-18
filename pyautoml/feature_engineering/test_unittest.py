@@ -106,7 +106,7 @@ class TestFeatureExtraction(unittest.TestCase):
         data = pd.DataFrame(normal_data, columns=columns)
 
         feature = Feature(data=data, test_split_percentage=0.5, split=False)
-        feature.nltk_postag()
+        feature.postag_nltk()
         validate = len(feature.data.columns)
 
         self.assertTrue(validate, 2)
@@ -141,6 +141,19 @@ class TestFeatureExtraction(unittest.TestCase):
         validate = 'new_col' in feature.train_data.columns and 'new_col' in feature.test_data.columns
 
         self.assertTrue(validate)
+
+    def test_feature_labelencoder(self):
+
+        data = [["canada", "green", 1],
+                ["canada", "green", 1],
+                ["canada", "green", 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        feature = Feature(data=data, test_split_percentage=0.33, report_name="test")
+        feature.encode_labels('col1', 'col2')
+        
+        self.assertTrue(True)
 
 if __name__ == "__main__":
     unittest.main()

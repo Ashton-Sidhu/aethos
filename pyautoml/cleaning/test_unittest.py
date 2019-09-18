@@ -78,6 +78,7 @@ class TestCleaning(unittest.TestCase):
                                         [0, 0, 1],
                                         [0.5, 0, 1.5]])
 
+
     def test_cleannumeric_mostfrequent(self):
         int_missing_data = np.array([(1, 0, 2),
                                  (1, np.nan, 1),

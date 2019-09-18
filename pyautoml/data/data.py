@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 
 class Data():    
 
-    def __init__(self, data, train_data, test_data, split, target_field, report_name):
+    def __init__(self, data, train_data, test_data, split, target_field, target_mapping, report_name):
 
         self.data = data
         self.field_types = {}
@@ -17,6 +17,7 @@ class Data():
         self.test_data = test_data
         self.split = split
         self.report_name = report_name
+        self.target_mapping = target_mapping
         
         if report_name is not None:
             self.report = Report(report_name)
@@ -131,20 +132,6 @@ class Data():
         
         return df.rename(index=str, columns=new_column_names)
 
-    def reduce_data(self, df):
-        """
-        ============= UNUSED ===================
-
-        Utility function that selects a subset of the data that has been categorized as a column worth feature engineering on.
-
-        Arguments:
-            df {Dataframe} -- Dataframe of the data
-        
-        Returns:
-            [Dataframe] -- Subset of the dataframe
-        """
-        return df[list(self.field_types.keys())]
-
     
     def standardize_data(self, df, custom_cols={}):
         """
@@ -165,7 +152,6 @@ class Data():
 
         df = self.normalize_column_names(df)
         self.get_input_types(df, custom_cols)
-        df = self.reduce_data(df)
         self.standardized = True
 
         return df

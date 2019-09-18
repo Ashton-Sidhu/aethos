@@ -10,6 +10,7 @@ Subpackages
    pyautoml.data
    pyautoml.feature_engineering
    pyautoml.preprocessing
+   pyautoml.modelling
    pyautoml.reporting
 
 Submodules

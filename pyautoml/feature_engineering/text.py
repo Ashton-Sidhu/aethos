@@ -18,28 +18,31 @@ def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
     """
     Creates a matrix of how many times a word appears in a document.
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     list_of_cols : list, optional
         A list of specific columns to apply this technique to., by default []
+
     algo_kwargs : dict, optional
         Parameters you would pass into Bag of Words constructor as a dictionary., by default {}
 
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+        
     test_data : DataFrame
         Testing dataset, by default None
     
     Returns
     -------
     Dataframe, *Dataframe
-        Transformed dataframe with rows with a missing values in a specific column are missing
+        Transformed dataframe with the new column.
 
-    * Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = algo_kwargs.pop('data', None)
@@ -79,15 +82,14 @@ def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
     """
     Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+    
     Parameters
     ----------
     list_of_cols : list, optional
         A list of specific columns to apply this technique to, by default []
     algo_kwargs :  optional
         Parameters you would pass into TFIDF constructor, by default {}
-
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data : DataFrame
         Full dataset, by default None
     train_data : DataFrame
@@ -98,9 +100,9 @@ def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
     Returns
     -------
     Dataframe, *Dataframe
-        Transformed dataframe with rows with a missing values in a specific column are missing
+        Transformed dataframe with the new column
 
-    * Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = algo_kwargs.pop('data', None)
@@ -143,15 +145,14 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
 
     This utilizes TextBlob which utlizes the NLTK tagger and is a wrapper for the tagging process.
     
+    Either the full data or training data plus testing data MUST be provided, not both.
+
     Parameters
     ----------
     list_of_cols : list, optional
         A list of specific columns to apply this technique to, by default []
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_postagged`
-    
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     data : DataFrame
         Full dataset, by default None
     train_data : DataFrame
@@ -162,9 +163,9 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
     Returns
     -------
     Dataframe, *Dataframe
-        Transformed dataframe with rows with a missing values in a specific column are missing
+        Transformed dataframe with the new column.
 
-    * Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if Train and Test data is provided. 
     """
 
     data = datasets.pop('data', None)
@@ -172,7 +173,7 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
     test_data = datasets.pop('test_data', None)
 
     if datasets:
-        raise TypeError(f"Invalid parameters passed: {str(datasets)}")    
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))    
 
     if not _function_input_validation(data, train_data, test_data):
         raise ValueError("Function input is incorrectly provided.")
@@ -182,15 +183,15 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
     if data is not None:
         for col in list_of_cols:
             data[col +
-                 new_col_name] = list(map(lambda x: TextBlob(x).tags, data[col]))
+                 new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, data[col]))
 
         return data
 
     else:
         for col in list_of_cols:
             train_data[col +
-                       new_col_name] = list(map(lambda x: TextBlob(x).tags, train_data[col]))
+                       new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, train_data[col]))
             test_data[col +
-                      new_col_name] = list(map(lambda x: TextBlob(x).tags, test_data[col]))
+                      new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, test_data[col]))
 
         return train_data, test_data

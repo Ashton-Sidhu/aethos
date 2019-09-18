@@ -46,6 +46,8 @@ preprocess:
   general:
   
   categorical:
+    label_encode: >
+      Encoded the label(s) in column(s) column_name_placeholder.
 
   numeric:
     standardize: >
@@ -59,6 +61,15 @@ preprocess:
     stem: >
       Stemmed all the words down to their root words for more efficient processing and analysis. For example, words that belong to 
       different tenses are now reduced to the same word, i.e. 'ask' and 'asked'.
+
+    split_words: >
+      Split text into it's individual words.
+
+    remove_stopwords: >
+      Removed most common words from all the text.
+
+    remove_punctuation: >
+      Removed punctuation from all the text.
 
 feature:
   general:
@@ -80,3 +91,20 @@ feature:
 
     postag: >
       Tagged each word with its Part of Speech tag where the tag represents whether a word is a Noun, Verb, Adjective, etc.
+
+model:
+  text:
+    textrank_keywords: >
+      Extracted keywords using the Text Rank algorithm.
+      
+    textrank_summarizer: >
+      Created an extractive summary using the Text Rank algorithm.
+  unsupervised:
+    kmeans: >
+      Ran KMeans clustering.
+
+    dbscan: >
+      Ran DBSCAN clustering.
+  classification:
+    logreg: >
+      Ran Logistic Regression model.

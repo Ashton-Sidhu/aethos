@@ -10,7 +10,7 @@ class Report():
         if os.path.exists(self.report_name):
             self.filename = self.report_name
         else:
-            self.filename = f'pyautoml_reports/{report_name}{datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")}.txt'
+            self.filename = 'pyautoml_reports/{}{}.txt'.format(report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p"))
 
         #TODO: Move making the directory on first time run to some config file
         if not os.path.exists("pyautoml_reports/"):
@@ -64,9 +64,9 @@ class Report():
 
         if write:
             with open(self.filename, 'a+') as f:
-                f.write(content)
+                f.writelines(content)
 
-    def report_technique(self, technique: str, list_of_cols: list):
+    def report_technique(self, technique: str, list_of_cols=[]):
         """
         IN ALPHA V1
         ============
@@ -78,6 +78,7 @@ class Report():
         ----------
         technique : str
             Analytic technique
+            
         list_of_cols : list
             List of columns
         """
@@ -105,3 +106,33 @@ class Report():
         """
 
         self.write_contents(log + "\n")
+
+    def report_gridsearch(self, clf, verbose):
+
+        content = "Tuning hyper-parameters:\n\n \
+            Best parameters set found on training set:\n \
+                {}\n\n \
+            Grid scores on training set:\n\n".format(
+            str(clf.best_params_))
+
+        self.write_contents("\n".join(map(str.lstrip, content.split('\n'))))
+        
+        if verbose:
+            print(content)
+
+        means = clf.cv_results_['mean_test_score']
+        stds = clf.cv_results_['std_test_score']
+        for mean, std, params in zip(means, stds, clf.cv_results_['params']):
+            stats = '{:.2%} (+/-{}) for {}\n'.format(float(mean), std*2, params)
+            self.write_contents(stats)
+            if verbose:
+                print(stats)
+            
+            self.write_contents('\n')
+
+        # self.write_contents("Detailed classification report:\n")
+        # self.write_contents("The model is trained on the full development set.")
+        # self.write_contents("The scores are computed on the full evaluation set.\n")
+        # y_true, y_pred = y_test, clf.predict(X_test)
+        # print(classification_report(y_true, y_pred))
+        # print()

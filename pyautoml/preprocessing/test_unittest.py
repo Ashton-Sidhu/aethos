@@ -55,13 +55,13 @@ class TestPreprocessing(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=['data'])
 
         prep = Preprocess(data=data, split=False)
-        prep.sentence_split('data')
+        prep.split_sentences('data')
         validate = prep.data['data_sentences'].values.tolist()
 
         self.assertListEqual(validate, [["Hi my name is PyAutoML.", "Please split me."],
                                         ["This function is going to split by sentence.", "Automation is great."]])
 
-    def test_preprocess_ntlkstem(self):
+    def test_preprocess_nltkstem(self):
 
         text_data = [
                     "Hi my name is PyAutoML. Please split me.",
@@ -70,10 +70,106 @@ class TestPreprocessing(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=['data'])
 
         prep = Preprocess(data=data, split=False)
-        prep.nltk_stem('data')
+        prep.stem_nltk('data')
         validate = prep.data.shape[1]
 
         self.assertEquals(validate, 2)
+
+    def test_preprocess_nltksplit(self):
+
+        text_data = [
+                    "Please.exe split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.split_words_nltk('data')
+        validate = prep.data.data_tokenized.values.tolist()
+
+        self.assertListEqual(validate, [["Please.exe", "split", "me", "."]])
+
+    def test_preprocess_nltksplit_regex(self):
+
+        text_data = [
+                    "Please123 split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.split_words_nltk('data', regexp=r'\w+\d+')
+        validate = prep.data.data_tokenized.values.tolist()
+
+        self.assertListEqual(validate, [["Please123"]])
+
+    def test_preprocess_nltkremove_punctuation(self):
+
+        text_data = [
+                    "Please split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.remove_punctuation('data')
+        validate = prep.data.data_rem_punct.values.tolist()
+
+        self.assertListEqual(validate, ["Please split me"])
+
+    def test_preprocess_nltkremove_punctuation_regexp(self):
+
+        text_data = [
+                    "Please.exe, split me.",
+                    "hello it's me, testing.dll."
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.remove_punctuation('data', regexp=r'\w+\.\w+|\w+')
+        validate = prep.data.data_rem_punct.values.tolist()
+
+        self.assertListEqual(validate, ["Please.exe split me", "hello it s me testing.dll"])
+
+    def test_preprocess_nltkremove_punctuation_exception(self):
+
+        text_data = [
+                    "Please,> split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.remove_punctuation('data', exceptions=['.',  '>'])
+        validate = prep.data.data_rem_punct.values.tolist()
+
+        self.assertListEqual(validate, ["Please> split me."])
+
+    def test_preprocess_nltkremove_stopwords(self):
+
+        text_data = [
+                    "Please the split me.",
+                    ]
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.remove_stopwords_nltk('data', custom_stopwords=['please'])
+        validate = prep.data.data_rem_stop.values.tolist()
+
+        self.assertListEqual(validate, ["split ."])
+    
+    def test_preprocess_labelencoder(self):
+
+        data = [["canada", "green", 1],
+                ["usa", "green", 1],
+                ["canada", "blue", 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        prep = Preprocess(data=data, split=False)
+        prep.encode_labels('col1', 'col2')
+        validate = prep.data.values.tolist()
+
+        self.assertListEqual(validate, [[0, 1, 1],
+                                        [1, 1, 1],
+                                        [0, 0, 0]])
+
 
 if __name__ == "__main__":
     unittest.main()

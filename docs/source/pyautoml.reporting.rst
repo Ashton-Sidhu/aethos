@@ -12,15 +12,6 @@ pyautoml.reporting.report module
    :undoc-members:
    :show-inheritance:
 
-pyautoml.reporting.test\_unittest module
-----------------------------------------
-
-.. automodule:: pyautoml.reporting.test_unittest
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 Module contents
 ---------------
 

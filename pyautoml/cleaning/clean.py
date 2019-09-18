@@ -2,17 +2,19 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
-from pyautoml.util import _contructor_data_properties, _input_columns
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _numeric_input_conditions)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
-with open(f"{pkg_directory}/technique_reasons.yml", 'r') as stream:
+with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
     try:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
@@ -27,10 +29,10 @@ class Clean(MethodBase):
 
         if _data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
-                        split=split, target_field=target_field, report_name=report_name)
+                        split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
             super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
-                        split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
+                        split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
         
         if self._data_properties.report is not None:
             self.report.write_header("Cleaning")
@@ -50,7 +52,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -98,7 +100,7 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -106,23 +108,16 @@ class Clean(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.data = remove_rows_threshold(threshold, data=self._data_properties.data)
-
-            #Write to report
-            if self.report is not None:            
-                self.report.report_technique(report_info, [])
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = remove_rows_threshold(threshold,
                                                                                                     train_data=self._data_properties.train_data,
                                                                                                     test_data=self._data_properties.test_data)
 
-            #Write to report
-            if self.report is not None:            
-                self.report.report_technique(report_info, [])                                                                                    
+        #Write to report
+        if self.report is not None:            
+            self.report.report_technique(report_info)                                                                                    
 
-            return self.copy()
+        return self.copy()
     
     def replace_missing_mean(self, *list_args, list_of_cols=[]):
         """
@@ -140,12 +135,13 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to
+
         list_of_cols : list, optional
             Specific columns to apply this technique to, by default []
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -198,12 +194,13 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             Specific columns to apply this technique to., by default []
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -253,12 +250,13 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
        
@@ -307,16 +305,19 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         constant : int or float, optional
             Numeric value to replace all missing values with , by default 0
+
         col_mapping : dict, optional
             Dictionary mapping {'ColumnName': `constant`}, by default None
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
 
         Examples
@@ -376,16 +377,19 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         new_category : str, int, or float, optional
             Category to replace missing values with, by default None
+
         col_mapping : dict, optional
            Dictionary mapping {'ColumnName': `constant`}, by default None
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
 
         Examples
@@ -442,12 +446,13 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
 
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
 
@@ -458,21 +463,15 @@ class Clean(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.data = replace_missing_remove_row(list_of_cols, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
-
-            return self.copy()
-
         else:
             self._data_properties.train_data, self._data_properties.test_data = replace_missing_remove_row(list_of_cols,                                                                                                    
                                                                                                     train_data=self._data_properties.train_data,
                                                                                                     test_data=self._data_properties.test_data)                                                                                        
 
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
 
-            return self.copy()
+        return self.copy()
 
 
     def remove_duplicate_rows(self, *list_args, list_of_cols=[]):
@@ -489,12 +488,13 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
        
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
     
@@ -504,22 +504,16 @@ class Clean(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
    
         if not self._data_properties.split:
-            self._data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
-    
-            return self.copy()
-    
+            self._data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self._data_properties.data)    
         else:
             self._data_properties.train_data, self._data_properties.test_data = remove_duplicate_rows(list_of_cols=list_of_cols,
                                                                                                 train_data=self._data_properties.train_data,
                                                                                                 test_data=self._data_properties.test_data)
 
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
 
-            return self.copy()
+        return self.copy()
 
 
     def remove_duplicate_columns(self):
@@ -528,28 +522,22 @@ class Clean(MethodBase):
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
         """
     
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
     
         if not self._data_properties.split:
-            self._data_properties.data = remove_duplicate_columns(data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
-    
-            return self.copy()
-    
+            self._data_properties.data = remove_duplicate_columns(data=self._data_properties.data)    
         else:
             self._data_properties.train_data, self._data_properties.test_data = remove_duplicate_columns(train_data=self._data_properties.train_data,
                                                                                                         test_data=self._data_properties.test_data)
 
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
-            return self.copy()
+        return self.copy()
 
 
     def replace_missing_random_discrete(self, *list_args, list_of_cols=[]):
@@ -563,12 +551,13 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+            
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
         
         Returns
         -------
-        Clean Object:
+        Clean:
             Returns a deep copy of the Clean object.
 
         Examples
@@ -585,18 +574,12 @@ class Clean(MethodBase):
         
         if not self._data_properties.split:   
             self._data_properties.data = replace_missing_random_discrete(list_of_cols, data=self._data_properties.data)
-
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
-    
-            return self.copy()
-    
         else:
             self._data_properties.train_data, self._data_properties.test_data = replace_missing_random_discrete(list_of_cols,
                                                                                                             train_data=self._data_properties.train_data,
                                                                                                             test_data=self._data_properties.test_data)
     
-            if self.report is not None:
-                self.report.report_technique(report_info, list_of_cols)
-    
-            return self.copy()
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
