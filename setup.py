@@ -29,7 +29,7 @@ setup(
     packages=find_packages(),
     author='Ashton Sidhu',
     author_email='ashton.sidhu1994@gmail.com',
-    install_requires=['numpy', 'pandas>=0.25', 'scikit-learn', 'textblob', 'matplotlib==3.1.0',
+    install_requires=['numpy', 'pandas>=0.25', 'scikit-learn', 'textblob', 'matplotlib<=3.1.0',
                       'pandas_summary', 'pandas-bokeh', 'ptitprince', 'nltk', 'ipython', 'gensim',
                       'pandas-profiling', 'cookiecutter'],
     version=VERSION,
