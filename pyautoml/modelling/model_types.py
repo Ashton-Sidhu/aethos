@@ -6,7 +6,17 @@ import pandas as pd
 import seaborn as sns
 import sklearn
 
-
+SCORE_METRICS = [
+    'accuracy',
+    'average_precision',
+    'balanced_accuracy',
+    'cohen_kappa',
+    'f1',
+    'jaccard',
+    'precision',
+    'recall',
+    'roc_auc',
+]
 class ModelBase(object):
 
     def __init__(self, model_object, model_name):
@@ -76,6 +86,56 @@ class ClassificationModel(ModelBase):
 
         if self.report:
             self.report.write_header(f'Analyzing Model {self.model_name}')
+
+    def metric(self, *metrics, metric='accuracy', **scoring_kwargs):
+        """
+        Measures how well your model performed based off a certain metric. It can be any combination of the ones below or 'all' for 
+        every metric listed below. The default measure is accuracy.
+
+        For more detailed information and parameters please see the following link: https://scikit-learn.org/stable/modules/classes.html#classification-metrics
+
+        Supported metrics are:
+
+            all : Everything below.
+            accuracy : Accuracy classification score.
+            average_precision : Compute average precision (AP) from prediction scores
+            balanced_accuracy : Compute the balanced accuracy
+            cohen_kappa : Cohen’s kappa: a statistic that measures inter-annotator agreement.
+            f1 : Compute the F1 score, also known as balanced F-score or F-measure
+            fbeta : Compute the F-beta score
+            jaccard : Jaccard similarity coefficient score
+            precision : Compute the precision
+            recall : Compute the recall
+            roc_auc : Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
+        
+        Parameters
+        ----------
+        metric : str, optional
+            Specific type of metric, by default 'accuracy'
+        """
+
+        y_true = self.target_data
+        y_pred = self.prediction_data
+        computed_metrics = []
+
+        if metric == 'all' or 'all' in metrics:
+            for met in SCORE_METRICS:
+                metric_str = f'{met} : {getattr(sklearn.metrics, f"{met}_score")(y_true, y_pred)}'
+                computed_metrics.append(metric_str)
+                print(metric_str)
+        elif metrics:
+            for met in metrics:
+                metric_str = f'{met} : {getattr(sklearn.metrics, f"{met}_score")(y_true, y_pred)}'
+                computed_metrics.append(metric_str)
+                print(metric_str)
+        else:      
+            metric_str = f'{metric} : {getattr(sklearn.metrics, f"{metric}_score")(y_true, y_pred, **scoring_kwargs)}'
+            computed_metrics.append(metric_str)
+            print(metric_str)
+
+        if self.report:
+            self.report.log('Metrics:\n')
+            self.report.log('\n'.join(computed_metrics))
 
     def confusion_matrix(self, title=None, normalize=False, hide_counts=False, x_tick_rotation=0, figsize=None, cmap='Blues', title_fontsize="large", text_fontsize="medium"):
         """
