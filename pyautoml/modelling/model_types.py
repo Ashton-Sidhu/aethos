@@ -134,7 +134,7 @@ class ClassificationModel(ModelBase):
                 computed_metrics.append(metric_str)
                 print(metric_str)
         except Exception as e:
-            print('Could not calculate metric, due to {}').format(e)
+            print('Could not calculate metric, due to {}'.format(e))
 
         if self.report:
             self.report.log('Metrics:\n')
