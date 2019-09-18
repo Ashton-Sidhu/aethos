@@ -158,7 +158,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3')
         model.logistic_regression(random_state=2, penalty='l1')
-        model.log_reg.cm_analysis()
+        model.log_reg.confusion_matrix()
 
         self.assertTrue(True)
 

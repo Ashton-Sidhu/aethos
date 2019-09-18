@@ -72,114 +72,59 @@ class ClassificationModel(ModelBase):
             self.target_data = model_object.test_target_data
             self.prediction_data = self.test_data[predictions_col]
 
-    def confusion_matrix(self, title='Confusion Matrix', cmap=None, normalize=False):
-        """
-        Plots a confusion matrix based off your test data.
-
-        Parameters
-        ----------
-        title:        
-            The text to display at the top of the matrix
-
-        cmap: str
-            The gradient of the values displayed from matplotlib.pyplot.cm
-            see http://matplotlib.org/examples/color/colormaps_reference.html
-            plt.get_cmap('jet') or plt.cm.Blues
-
-        normalize: str   
-            If False, plot the raw numbers
-            If True, plot the proportions
-
-        Usage
-        -----
-        plot_confusion_matrix(
-                            normalize    = True,                # show proportions
-                            target_names = y_labels_vals,       # list of names of the classes
-                            title        = best_estimator_name) # title of graph
-
-        Citiation
-        ---------
-        https://www.kaggle.com/grfiv4/plot-a-confusion-matrix
-
-        """
-        cm = sklearn.metrics.confusion_matrix(self.target_data, self.prediction_data)
-
-        accuracy = np.trace(cm) / float(np.sum(cm))
-        mis_class = 1 - accuracy
-
-        if cmap is None:
-            cmap = plt.get_cmap('Blues')
-
-        plt.imshow(cm, interpolation='nearest', cmap=cmap)
-        plt.title(title)
-        plt.colorbar()
-
-        if normalize:
-            cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-
-        thresh = cm.max() / 1.5 if normalize else cm.max() / 2
-        for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-            if normalize:
-                plt.text(j, i, "{:0.4f}".format(cm[i, j]),
-                        horizontalalignment="center",
-                        verticalalignment="center",
-                        color="white" if cm[i, j] > thresh else "black")
-            else:
-                plt.text(j, i, "{:,}".format(cm[i, j]),
-                        horizontalalignment="center",
-                        verticalalignment="center",
-                        color="white" if cm[i, j] > thresh else "black")
-
-
-        if self.target_mapping is not None:
-            tick_marks = np.arange(len(self.target_mapping))
-            plt.xticks(tick_marks, self.target_mapping.keys(), rotation=45)
-            plt.yticks(tick_marks, self.target_mapping.keys())
-        else:
-            tick_marks = np.unique(self.target_data)
-            plt.xticks(tick_marks)
-            plt.ylim(tick_marks)
-            plt.yticks(tick_marks)
-
-        plt.tight_layout()
-        plt.ylabel('True label')
-        plt.xlabel('Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}'.format(accuracy, mis_class))
-        plt.show()
-
-    def plot_cmat(self, title=None, normalize=False,
-                    hide_zeros=False, hide_counts=False, x_tick_rotation=0,
-                    figsize=(10,7), cmap='Blues', title_fontsize="large",
+    def confusion_matrix(self, title=None, normalize=False,
+                    hide_counts=False, x_tick_rotation=0,
+                    figsize=None, cmap='Blues', title_fontsize="large",
                     text_fontsize="medium"):
         """
-        Prints a confusion matrix, as returned by sklearn.metrics.confusion_matrix, as a heatmap.
+        Prints a confusion matrix as a heatmap.
     
         Arguments
         ---------
-        confusion_matrix: numpy.ndarray
-            The numpy.ndarray object returned from a call to sklearn.metrics.confusion_matrix. 
-            Similarly constructed ndarrays can also be used.
-        class_names: list
-            An ordered list of class names, in the order they index the given confusion matrix.
-        figsize: tuple
-            A 2-long tuple, the first value determining the horizontal size of the ouputted figure,
-            the second determining the vertical size. Defaults to (10,7).
-        fontsize: int
-            Font size for axes labels. Defaults to 14.
-            
-        Returns
-        -------
-        matplotlib.figure.Figure
-            The resulting confusion matrix figure
+        title : str
+            The text to display at the top of the matrix, by default 'Confusion Matrix'
+
+        normalize : bool
+            If False, plot the raw numbers
+            If True, plot the proportions,
+            by default False
+
+        hide_counts : bool
+            If False, display the counts and percentage
+            If True, hide display of the counts and percentage
+            by default, False
+
+        x_tick_rotation : int
+            Degree of rotation to rotate the x ticks
+            by default, 0
+
+        figsize : tuple(int, int)
+            Size of the figure
+            by default, None
+
+        cmap : str   
+            The gradient of the values displayed from matplotlib.pyplot.cm
+            see http://matplotlib.org/examples/color/colormaps_reference.html
+            plt.get_cmap('jet') or plt.cm.Blues
+            by default, 'Blues'
+
+        title_fontsize : str
+            Size of the title, by default 'large'
+
+        text_fontsize : str
+            Size of the text of the rest of the plot, by default 'medium'        
         """
         
         y_true = self.target_data
         y_pred = self.prediction_data
-        fmt = 'd' if normalize else '.2f'
+
+        if figsize:
+            plt.figure(figsize=figsize)
 
         if self.target_mapping is None:
-            classes = list(map(str, np.unique(list(y_true) + list(y_pred))))
+            classes = np.unique(list(y_true) + list(y_pred))
         else:
-            classes = list(map(str, self.target_mapping.values()))
+            classes = self.target_mapping.values()
 
         confusion_matrix = sklearn.metrics.confusion_matrix(y_true, y_pred)
 
@@ -200,19 +145,33 @@ class ClassificationModel(ModelBase):
         else:
             plt.title('Confusion Matrix', fontsize=title_fontsize)
 
-        annot = True if not hide_counts else False        
+        cm_sum = np.sum(confusion_matrix, axis=1)
+        cm_perc = confusion_matrix / cm_sum.astype(float) * 100
+        nrows, ncols = confusion_matrix.shape
 
-        try:
-            heatmap = sns.heatmap(df_cm, annot=annot, fmt=fmt, cmap=plt.cm.get_cmap(cmap))
-        except ValueError:
-            raise ValueError("Confusion matrix values must be integers.")        
+        if not hide_counts:
+            annot = np.zeros_like(confusion_matrix).astype('str')
 
-        # plt.yticks(np.arange(len(classes)) + 0.5, classes, rotation=0, va="center", fontsize=text_fontsize)
-        # plt.xticks(np.arange(len(classes)) + 0.5, classes, rotation=45, fontsize=text_fontsize)
+            for i in range(nrows):
+                for j in range(ncols):
+                    c = confusion_matrix[i, j]
+                    p = cm_perc[i, j]
+                    if i == j:
+                        s = cm_sum[i]
+                        annot[i, j] = '{:.2f}%\n{}/{}'.format(float(p), int(c), int(s))
+                    elif c == 0:
+                        annot[i, j] = ''
+                    else:
+                        annot[i, j] = '{:.2f}%\n{}'.format(p, c)
+        else:
+            annot = np.zeros_like(confusion_matrix, dtype=str)  
+
+        heatmap = sns.heatmap(df_cm, annot=annot, square=True, cmap=plt.cm.get_cmap(cmap), fmt='')       
 
         plt.tight_layout()
-        plt.ylabel('True label')
-        plt.xlabel('Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}'.format(accuracy, mis_class))
+        plt.ylabel('True label', fontsize=text_fontsize)
+        plt.xlabel('Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}'.format(accuracy, mis_class), fontsize=text_fontsize)
+        plt.xticks(np.array(classes) + 0.5, classes, rotation=x_tick_rotation)
 
         plt.show()
 
