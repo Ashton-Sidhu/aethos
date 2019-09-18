@@ -215,7 +215,7 @@ class Model(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info)
 
-        self._models[model_name] = TextModel(self)
+        self._models[model_name] = TextModel(self, model_name)
 
         return self._models[model_name]        
 
@@ -288,7 +288,7 @@ class Model(MethodBase):
             if self.report is not None:
                 self.report.report_technique(report_info)
 
-        self._models[model_name] = TextModel(self)
+        self._models[model_name] = TextModel(self, model_name)
 
         return self._models[model_name]
 
@@ -365,7 +365,7 @@ class Model(MethodBase):
         if self.report is not None:
             self.report.report_technique(report_info)
 
-        self._models[model_name] = ClusterModel(self, kmeans, new_col_name)
+        self._models[model_name] = ClusterModel(self, model_name, kmeans, new_col_name)
 
         return self._models[model_name]
 
@@ -440,7 +440,7 @@ class Model(MethodBase):
         if self.report is not None:
             self.report.report_technique(report_info)
 
-        self._models[model_name] = ClusterModel(self, dbscan, new_col_name)
+        self._models[model_name] = ClusterModel(self, model_name, dbscan, new_col_name)
 
         return self._models[model_name]
 
@@ -550,6 +550,6 @@ class Model(MethodBase):
         
             self.report.report_technique(report_info)
 
-        self._models[model_name] = ClassificationModel(self, log_reg, new_col_name)
+        self._models[model_name] = ClassificationModel(self, model_name, log_reg, new_col_name)
 
         return self._models[model_name]

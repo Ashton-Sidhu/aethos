@@ -9,23 +9,25 @@ import sklearn
 
 class ModelBase(object):
 
-    def __init__(self, model_object):
+    def __init__(self, model_object, model_name):
 
+        self.model_name = model_name
         self.data = model_object._data_properties.data
         self.train_data = model_object._data_properties.train_data
         self.test_data = model_object._data_properties.test_data
+        self.report = model_object._data_properties.report
 
 class TextModel(ModelBase):
 
-    def __init__(self, model_object):
+    def __init__(self, model_object, model_name):
 
-        super().__init__(model_object)
+        super().__init__(model_object, model_name)
 
 class ClusterModel(ModelBase):
 
-    def __init__(self, model_object, model, cluster_col):
+    def __init__(self, model_object, model_name, model, cluster_col):
 
-        super().__init__(model_object)
+        super().__init__(model_object, model_name)
 
         self.model = model
         self.cluster_col = cluster_col
@@ -58,9 +60,9 @@ class ClusterModel(ModelBase):
 
 class ClassificationModel(ModelBase):
 
-    def __init__(self, model_object, model, predictions_col):
+    def __init__(self, model_object, model_name, model, predictions_col):
 
-        super().__init__(model_object)
+        super().__init__(model_object, model_name)
 
         self.model = model
         self.target_mapping = model_object.target_mapping
@@ -71,6 +73,9 @@ class ClassificationModel(ModelBase):
         else:
             self.target_data = model_object.test_target_data
             self.prediction_data = self.test_data[predictions_col]
+
+        if self.report:
+            self.report.write_header(f'Analyzing Model {self.model_name}')
 
     def confusion_matrix(self, title=None, normalize=False, hide_counts=False, x_tick_rotation=0, figsize=None, cmap='Blues', title_fontsize="large", text_fontsize="medium"):
         """
@@ -131,10 +136,6 @@ class ClassificationModel(ModelBase):
         accuracy = np.trace(confusion_matrix) / float(np.sum(confusion_matrix))
         mis_class = 1 - accuracy
 
-        df_cm = pd.DataFrame(
-            confusion_matrix, index=classes, columns=classes, 
-        )
-
         if title:
             plt.title(title, fontsize=title_fontsize)
         elif normalize:
@@ -161,7 +162,11 @@ class ClassificationModel(ModelBase):
                     else:
                         annot[i, j] = '{:.2f}%\n{}'.format(p, c)
         else:
-            annot = np.zeros_like(confusion_matrix, dtype=str)  
+            annot = np.zeros_like(confusion_matrix, dtype=str)
+
+        df_cm = pd.DataFrame(
+            confusion_matrix, index=classes, columns=classes, 
+        )
 
         heatmap = sns.heatmap(df_cm, annot=annot, square=True, cmap=plt.cm.get_cmap(cmap), fmt='')       
 
@@ -169,8 +174,11 @@ class ClassificationModel(ModelBase):
         plt.ylabel('True label', fontsize=text_fontsize)
         plt.xlabel('Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}'.format(accuracy, mis_class), fontsize=text_fontsize)
         plt.xticks(np.array(classes) + 0.5, classes, rotation=x_tick_rotation)
-
         plt.show()
+
+        if self.report:
+            self.report.log('CONFUSION MATRIX:\n')
+            self.report.log(df_cm.to_string())
 
     # TODO: Precision, Recall, F1
     # TODO: ROC Curve
