@@ -72,10 +72,7 @@ class ClassificationModel(ModelBase):
             self.target_data = model_object.test_target_data
             self.prediction_data = self.test_data[predictions_col]
 
-    def confusion_matrix(self, title=None, normalize=False,
-                    hide_counts=False, x_tick_rotation=0,
-                    figsize=None, cmap='Blues', title_fontsize="large",
-                    text_fontsize="medium"):
+    def confusion_matrix(self, title=None, normalize=False, hide_counts=False, x_tick_rotation=0, figsize=None, cmap='Blues', title_fontsize="large", text_fontsize="medium"):
         """
         Prints a confusion matrix as a heatmap.
     
