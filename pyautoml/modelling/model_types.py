@@ -118,20 +118,23 @@ class ClassificationModel(ModelBase):
         y_pred = self.prediction_data
         computed_metrics = []
 
-        if metric == 'all' or 'all' in metrics:
-            for met in SCORE_METRICS:
-                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
+        try:
+            if metric == 'all' or 'all' in metrics:
+                for met in SCORE_METRICS:
+                    metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
+                    computed_metrics.append(metric_str)
+                    print(metric_str)
+            elif metrics:
+                for met in metrics:
+                    metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
+                    computed_metrics.append(metric_str)
+                    print(metric_str)
+            else:      
+                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred, **scoring_kwargs))
                 computed_metrics.append(metric_str)
                 print(metric_str)
-        elif metrics:
-            for met in metrics:
-                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
-                computed_metrics.append(metric_str)
-                print(metric_str)
-        else:      
-            metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred, **scoring_kwargs))
-            computed_metrics.append(metric_str)
-            print(metric_str)
+        except Exception as e:
+            print('Could not calculate metric, due to {}').format(e)
 
         if self.report:
             self.report.log('Metrics:\n')
