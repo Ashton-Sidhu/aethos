@@ -85,7 +85,7 @@ class ClassificationModel(ModelBase):
             self.prediction_data = self.test_data[predictions_col]
 
         if self.report:
-            self.report.write_header(f'Analyzing Model {self.model_name}')
+            self.report.write_header('Analyzing Model {}'.format(self.model_name))
 
     def metric(self, *metrics, metric='accuracy', **scoring_kwargs):
         """
@@ -120,16 +120,16 @@ class ClassificationModel(ModelBase):
 
         if metric == 'all' or 'all' in metrics:
             for met in SCORE_METRICS:
-                metric_str = f'{met} : {getattr(sklearn.metrics, f"{met}_score")(y_true, y_pred)}'
+                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
                 computed_metrics.append(metric_str)
                 print(metric_str)
         elif metrics:
             for met in metrics:
-                metric_str = f'{met} : {getattr(sklearn.metrics, f"{met}_score")(y_true, y_pred)}'
+                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
                 computed_metrics.append(metric_str)
                 print(metric_str)
         else:      
-            metric_str = f'{metric} : {getattr(sklearn.metrics, f"{metric}_score")(y_true, y_pred, **scoring_kwargs)}'
+            metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred, **scoring_kwargs))
             computed_metrics.append(metric_str)
             print(metric_str)
 
