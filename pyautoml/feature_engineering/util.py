@@ -17,13 +17,17 @@ def apply(func, output_col: str, **datasets):
     Parameters
     ----------
     func : Function pointer
-            Function describing the transformation for the new column
+        Function describing the transformation for the new column
+
     output_col : str
         New column name
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+        
     test_data : DataFrame
         Testing dataset, by default None
     

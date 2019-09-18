@@ -1,9 +1,80 @@
 import collections
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
+
+def label_encoder(list_of_cols=[], target=False, **datasets):
+    """
+    Label encodes the columns provided.
+    
+    Either the full data or training data plus testing data MUST be provided, not both.
+    
+    Parameters
+    ----------
+    list_of_cols : list, optional
+        A list of specific columns to apply this technique to
+        If `list_of_cols` is not provided, the strategy will be
+        applied to all numeric columns., by default []
+
+    target : bool, optional
+            True if the column being encoded is the target variable, by default False
+
+    data: Dataframe or array like - 2d
+        Full dataset, by default None.
+
+    train_data: Dataframe or array like - 2d
+        Training dataset, by default None.
+
+    test_data: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
+
+    Returns 2 Dataframes if Train and Test data is provided.  
+    """
+
+    data = datasets.pop('data', None)
+    train_data = datasets.pop('train_data', None)
+    test_data = datasets.pop('test_data', None)
+
+    if datasets:
+        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
+
+    if not _function_input_validation(data, train_data, test_data):
+        raise ValueError("Function input is incorrectly provided.")
+    
+    label_encode = LabelEncoder()
+
+    if data is not None:
+        for col in list_of_cols:
+            data[col] = label_encode.fit_transform(data[col])
+
+        if target:
+            target_mapping = dict(zip(data[list_of_cols], label_encode.inverse_transform(data[col])))
+            target_mapping = OrderedDict(sorted(target_mapping.items()))
+
+            return data, target_mapping
+
+        return data
+    else:
+        for col in list_of_cols:
+            train_data[col] = label_encode.fit_transform(train_data[col])
+            test_data[col] = label_encode.transform(test_data[col])
+
+        if target:
+            target_mapping = dict(zip(train_data[list_of_cols], label_encode.inverse_transform(train_data[col])))
+            target_mapping = OrderedDict(sorted(target_mapping.items()))
+
+            return train_data, test_data, target_mapping
+
+        return train_data, test_data
 
 def check_missing_data(df) -> bool:
     """
@@ -31,6 +102,7 @@ def get_keys_by_values(dict_of_elements: dict, item) -> list:
     ----------
     dict_of_elements : dict
         Dictionary of key value mapping
+
     item : Any
         Value you want to return keys of.
     
@@ -51,8 +123,10 @@ def drop_replace_columns(df, drop_cols, new_data, keep_col=False):
     ----------
     df : Dataframe
         Dataframe of the data
+
     drop_cols : str or [str]
         Column or list of columns to be dropped
+
     new_data : Dataframe
         New data columns to be added to the dataframe
     
@@ -79,6 +153,7 @@ def split_data(df, split_percentage: float):
     ----------
     df : Dataframe
         Full dataset you want to split.
+
     split_percentage : float
         The % of data that you want in your test set, split_percentage is the percentage of data in the traning set.
     
@@ -147,8 +222,10 @@ def _get_columns(list_of_cols, data, train_data) -> list:
     ----------
     list_of_cols : list
         List of columns to apply method to.
+
     data : Dataframe or array like - 2d
         Full dataset
+
     train_data : Dataframe or array like - 2d
         Training Dataset
     
@@ -177,6 +254,7 @@ def _input_columns(list_args: list, list_of_cols: list):
     ----------
     list_args : list
         Input columns passed as args
+
     list_of_cols : list
         Hardcoded provided list of input columns.
     
@@ -226,6 +304,7 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
     ----------
     model_name : str
         Proposed name of the model
+        
     model_obj : Model
         Model object
     

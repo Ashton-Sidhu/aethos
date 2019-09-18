@@ -7,8 +7,10 @@ import pandas_profiling
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
-from pyautoml.util import _function_input_validation, _get_columns, split_data
+from pyautoml.util import (_function_input_validation, _get_columns,
+                           label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
 
 SHELL = get_ipython().__class__.__name__
@@ -22,13 +24,14 @@ class MethodBase(object):
         test_data = kwargs.pop('test_data')
         split = kwargs.pop('split')
         target_field = kwargs.pop('target_field')
+        target_mapping = kwargs.pop('target_mapping')
         report_name = kwargs.pop('report_name')
         test_split_percentage = kwargs.pop('test_split_percentage')
 
         if not _function_input_validation(data, train_data, test_data):
             raise ValueError("Error initialzing constructor, please provide one of either data or train_data and test_data, not both.")
 
-        self._data_properties = Data(data, train_data, test_data, split=split, target_field=target_field, report_name=report_name)
+        self._data_properties = Data(data, train_data, test_data, split=split, target_field=target_field, target_mapping=target_mapping, report_name=report_name)
 
         if data is not None and split:
             # Generate train set and test set.
@@ -199,10 +202,26 @@ class MethodBase(object):
     @target_field.setter
     def target_field(self, value):
         """
-        Setter for the target field/
+        Setter for the target field
         """
 
         self._data_properties.target_field = value
+
+    @property
+    def target_mapping(self):
+        """
+        Property function for the label mapping
+        """
+
+        return self._data_properties.target_mapping
+
+    @target_mapping.setter
+    def target_mapping(self, value):
+        """
+        Setter for the label mapping
+        """
+
+        self._data_properties.target_mapping = value
         
     @property
     def missing_values(self):
@@ -245,8 +264,10 @@ class MethodBase(object):
         ----------
         values : Any
             Value to search for in dataframe
+
         not_equal : bool, optional
             True if you want filter by values in the dataframe that are not equal to the value provided, by default False
+
         replace : bool, optional
             Whether to permanently transform your data, by default False
         """
@@ -292,6 +313,7 @@ class MethodBase(object):
         ----------
         filter_columns : str(s)
             Columns you want to see at the end result
+
         columns : key word arguments
             Columns and the associated value to filter on.
             Columns can equal a value or a list of values to include.
@@ -332,6 +354,7 @@ class MethodBase(object):
         ----------
         groupby : str(s)
             Columns to group the data by.
+
         replace : bool, optional
             Whether to permanently transform your data, by default False
         
@@ -388,8 +411,10 @@ class MethodBase(object):
         ----------
         groupby : list
             List of columns to groupby.
+
         cols : str(s)
             Columns you want statistics on, if none are provided, it will provide statistics for every column.
+
         data_filter : Dataframe, optional
             Filtered dataframe, by default None
         
@@ -445,8 +470,10 @@ class MethodBase(object):
         ----------
         title : str, optional
             Title of the report, by default 'Profile Report'
+
         output_file : str, optional
             File name of the output file for the report, by default ''
+
         suppress : bool, optional
             True if you do not want to display the report, by default False
         
@@ -594,6 +621,7 @@ class MethodBase(object):
         ----------
         column : str
             Column in your dataset you want to analze.
+
         dataset : str, optional
             Type of dataset to describe. Can either be `train` or `test`.
             If you are using the full dataset it will automatically describe
@@ -629,8 +657,10 @@ class MethodBase(object):
         ----------
         keep : list: optional
             List of columns to not drop, by default []
+
         regexp : str, optional
             Regular Expression of columns to drop, by default ''
+
         reason : str, optional
             Reasoning for dropping columns, by default ''
 
@@ -682,6 +712,36 @@ class MethodBase(object):
 
             return self.copy()
 
+    
+    def encode_target(self):
+        """
+        Encodes target variables with value between 0 and n_classes-1.
+
+        Running this function will automatically set the corresponding mapping for the target variable mapping number to the original value.
+
+        Note that this will not work if your test data will have labels that your train data does not.        
+
+        Returns
+        -------
+        Clean, Preprocess, Feature or Model
+            Copy of object
+        """
+
+        if not self._data_properties.target_field:
+            raise ValueError('Please set the `target_field` field variable before encoding.')
+    
+        if not self._data_properties.split:
+            self._data_properties.data, self._data_properties.target_mapping = label_encoder(
+                self._data_properties.target_field, target=True, data=self._data_properties.data)
+        else:
+            self._data_properties.train_data, self._data_properties.test_data, self._data_properties.target_mapping = label_encoder(
+                self._data_properties.target_field, target=True, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+
+        if self.report is not None:
+            self.report.log('Encoded the target variable as numeric values.')
+
+        return self.copy()
+
     def visualize_raincloud(self, x_col: str, y_col=None, **params):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.
@@ -698,52 +758,71 @@ class MethodBase(object):
         ----------------------------------
         x : Iterable, np.array, or dataframe column name if 'data' is specified
             Categorical data.
+
         y : Iterable, np.array, or dataframe column name if 'data' is specified
             Measure data (Numeric)
+
         hue : Iterable, np.array, or dataframe column name if 'data' is specified
             Second categorical data. Use it to obtain different clouds and rainpoints
+
         data : Dataframe              
             input pandas dataframe
+
         orient : str                  
             vertical if "v" (default), horizontal if "h"
+
         width_viol : float            
             width of the cloud
+
         width_box : float             
             width of the boxplot
+
         palette : list or dict        
             Colours to use for the different levels of categorical variables
+
         bw : str or float
             Either the name of a reference rule or the scale factor to use when computing the kernel bandwidth,
             by default "scott"
+
         linewidth : float             
             width of the lines
+
         cut : float
             Distance, in units of bandwidth size, to extend the density past the extreme datapoints.
             Set to 0 to limit the violin range within the range of the observed data,
             by default 2
+
         scale : str
             The method used to scale the width of each violin.
             If area, each violin will have the same area.
             If count, the width of the violins will be scaled by the number of observations in that bin.
             If width, each violin will have the same width.
             By default "area"
+
         jitter : float, True/1
             Amount of jitter (only along the categorical axis) to apply.
             This can be useful when you have many points and they overlap,
             so that it is easier to see the distribution. You can specify the amount of jitter (half the width of the uniform random variable support),
             or just use True for a good default.
+
         move : float                  
             adjust rain position to the x-axis (default value 0.)
+
         offset : float                
             adjust cloud position to the x-axis
+
         color : matplotlib color
             Color for all of the elements, or seed for a gradient palette.
+
         ax : matplotlib axes
             Axes object to draw the plot onto, otherwise uses the current Axes.
+
         figsize : (int, int)    
             size of the visualization, ex (12, 5)
+
         pointplot : bool   
             line that connects the means of all categories, by default False
+
         dodge : bool 
             When hue nesting is used, whether elements should be shifted along the categorical axis.
 
@@ -761,9 +840,11 @@ class MethodBase(object):
         ----------
         x_col : str
             X axis data, reference by column name, any data
+
         y_col : str
             Y axis data, reference by column name, measurable data (numeric)
             by default target_field
+
         params : dict, optional
             Parameters for the rain cloud plot, by default
                 { 'x'=target_col
@@ -811,17 +892,22 @@ class MethodBase(object):
         ----------
         x_col : str
             Column name for the x axis.
+
         cols : str
             Columns you would like to see plotted against the x_col
+
         groupby : str
             Data to groupby - x-axis, optional, by default None
+
         method : str
             Method to aggregate groupy data
             Examples: min, max, mean, etc., optional
             by default None
+
         orient : str, optional
             Orientation of graph, 'h' for horizontal
             'v' for vertical, by default 'v',
+
         stacked : bool
             Whether to stack the different columns resulting in a stacked bar chart,
             by default False
@@ -848,19 +934,26 @@ class MethodBase(object):
         ----------
         x_col : str
             X column name
+
         y_col : str
             Y column name
+
         category : str, optional
             Category to group your data, by default None
+
         title : str, optional
             Title of the plot, by default 'Scatterplot'
+
         size : int or str, optional
             Size of the circle, can either be a number
             or a column name to scale the size, by default 8
+
         fill_color : color value, optional
             Colour or Colour palette to set fill colour
+
         line_color : color value, optional
             Colour or Colour palette to set line colour
+
         output_file : str
             Output html file name for image
         """
@@ -879,10 +972,13 @@ class MethodBase(object):
         ----------
         column : str
             New column name
+
         value : list
             List of values for new column
+
         train_length : int
             Length of training data
+            
         test_length : int
             Length of training data
         """

@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from pyautoml import Model
 
 
@@ -119,10 +118,75 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, split=False)
         model = model.dbscan(eps=3, min_samples=2)
-        filtered = model.filter_cluster('dbscan_clusters', 0)
+        filtered = model.filter_cluster(0)
         validate = all(filtered.dbscan_clusters == 0)
 
         self.assertTrue(validate)
+
+    def test_model_defaultgridsearch(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [3, 2, 0], [1, 2, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', report_name='gridsearch_test')
+        model.logistic_regression(gridsearch=True, gridsearch_cv=2)
+
+        self.assertTrue(True)
+
+    def test_model_logisticregression(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3')
+        model.logistic_regression(random_state=2, penalty='l1')
+        validate = model.train_data.log_predictions is not None and model.test_data.log_predictions is not None
+
+        self.assertTrue(validate)
+
+    def test_model_confusionmatrix(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3')
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.confusion_matrix()
+
+        self.assertTrue(True)
+
+    def test_model_report_confusionmatrix(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', report_name='confusion_report')
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.confusion_matrix()
+
+        self.assertTrue(True)
+
+    def test_model_all_score_metrics(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', report_name='metric_report')
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.metric('all', metric='all')
+
+        self.assertTrue(True)
 
 if __name__ == "__main__":
     unittest.main()

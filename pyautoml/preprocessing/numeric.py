@@ -5,9 +5,10 @@ preprocess_normalize
 """
 
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
 from pyautoml.util import (_function_input_validation,
                            _numeric_input_conditions, drop_replace_columns)
-from sklearn.preprocessing import MinMaxScaler
 
 
 def preprocess_normalize(list_of_cols=[], **algo_kwargs):
@@ -22,13 +23,17 @@ def preprocess_normalize(list_of_cols=[], **algo_kwargs):
         A list of specific columns to apply this technique to
         If `list_of_cols` is not provided, the strategy will be
         applied to all numeric columns, by default []
+
     algo_kwargs : optional
         Parmaters to pass into MinMaxScaler() constructor
         from Scikit-Learn, by default {}
+
     data : DataFrame
         Full dataset, by default None
+
     train_data : DataFrame
         Training dataset, by default None
+        
     test_data : DataFrame
         Testing dataset, by default None
     

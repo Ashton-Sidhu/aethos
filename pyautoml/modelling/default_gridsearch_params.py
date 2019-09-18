@@ -44,3 +44,11 @@ min_samples_split = [2, 5, 10, 0.1]
 min_impurity_split = [1e-7, 1e-6, 1e-5, 1e-4, 1e-3]
 tree_learning_rate = [0.8, 1]
 min_samples_leaf = [2]
+
+logreg_gridsearch = {'penalty': penalty_12,
+            'max_iter': max_iter,
+            'tol': tol,
+            'warm_start': warm_start,
+            'C': C,
+            'solver': ['liblinear']
+            }

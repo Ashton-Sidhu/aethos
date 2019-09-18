@@ -9,8 +9,8 @@ from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
 from pyautoml.feature_engineering.util import *
-from pyautoml.preprocessing.categorical import label_encoder
-from pyautoml.util import _contructor_data_properties, _input_columns
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           label_encoder)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -29,10 +29,10 @@ class Feature(MethodBase):
 
         if _data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
-                        split=split, target_field=target_field, report_name=report_name)
+                        split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
             super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
-                        split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
+                        split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
             self.report.write_header("Feature Engineering")
@@ -48,11 +48,14 @@ class Feature(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         keep_col : bool
             A parameter to specify whether to drop the column being transformed, by default
             keep the column, True
+
         params : optional
             Parameters you would pass into Bag of Words constructor as a dictionary, by default handle_unknown=ignore}
         
@@ -100,10 +103,13 @@ class Feature(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
+
         tfidf_params : optional
             Parameters you would pass into TFIDF constructor as a dictionary, by default {}
         
@@ -149,10 +155,13 @@ class Feature(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
+
         bow_params : dict, optional
             Parameters you would pass into Bag of Words constructor, by default {}
         
@@ -196,8 +205,10 @@ class Feature(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_postagged`
 
@@ -232,8 +243,10 @@ class Feature(MethodBase):
         ----------
         func : Function pointer
             Function describing the transformation for the new column
+
         output_col : str
             New column name
+            
         description : str, optional
             Description of the new column to be logged into the report, by default ''
         
@@ -272,8 +285,10 @@ class Feature(MethodBase):
         """
         Encode categorical values with value between 0 and n_classes-1.
 
-        Note that this will not work if your test data will have labels that your train data does not.
-        
+        Running this function will automatically set the corresponding mapping for the target variable mapping number to the original value.
+
+        Note that this will not work if your test data will have labels that your train data does not.        
+
         Parameters
         ----------
         list_args : str(s), optional
@@ -289,14 +304,16 @@ class Feature(MethodBase):
         """
     
         report_info = technique_reason_repo['preprocess']['categorical']['label_encode']
-    
+
         list_of_cols = _input_columns(list_args, list_of_cols)
-    
-        if not self._data_properties.split:    
-            self._data_properties.data = label_encoder(list_of_cols, data=self._data_properties.data)        
+
+        if not self._data_properties.split:
+            self._data_properties.data = label_encoder(
+                list_of_cols, data=self._data_properties.data)
         else:
-            self._data_properties.train_data, self._data_properties.test_data = label_encoder(list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
-    
+            self._data_properties.train_data, self._data_properties.test_data = label_encoder(
+                list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 

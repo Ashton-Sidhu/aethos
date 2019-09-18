@@ -1,6 +1,7 @@
 
 from gensim.summarization import keywords
 from gensim.summarization.summarizer import summarize
+
 from pyautoml.util import _function_input_validation
 
 
@@ -14,6 +15,7 @@ def gensim_textrank_summarizer(list_of_cols=[], new_col_name="_summarized", **al
     ----------
     list_of_cols : list, optional
         Column name(s) of text data that you want to summarize
+
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `_summarized`
     
@@ -55,6 +57,7 @@ def gensim_textrank_keywords(list_of_cols=[], new_col_name="_extracted_keywords"
     ----------
     list_of_cols : list, optional
         Column name(s) of text data that you want to summarize
+
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `_extracted_keywords`
     

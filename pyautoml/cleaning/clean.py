@@ -9,7 +9,8 @@ from pyautoml.base import MethodBase
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
-from pyautoml.util import _contructor_data_properties, _input_columns
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _numeric_input_conditions)
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -28,10 +29,10 @@ class Clean(MethodBase):
 
         if _data_properties is None:        
             super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
-                        split=split, target_field=target_field, report_name=report_name)
+                        split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
             super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
-                        split=_data_properties.split, target_field=_data_properties.target_field, report_name=_data_properties.report_name)
+                        split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
         
         if self._data_properties.report is not None:
             self.report.write_header("Cleaning")
@@ -134,6 +135,7 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to
+
         list_of_cols : list, optional
             Specific columns to apply this technique to, by default []
         
@@ -192,6 +194,7 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             Specific columns to apply this technique to., by default []
         
@@ -247,6 +250,7 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
         
@@ -301,10 +305,13 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         constant : int or float, optional
             Numeric value to replace all missing values with , by default 0
+
         col_mapping : dict, optional
             Dictionary mapping {'ColumnName': `constant`}, by default None
         
@@ -370,10 +377,13 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
+
         new_category : str, int, or float, optional
             Category to replace missing values with, by default None
+
         col_mapping : dict, optional
            Dictionary mapping {'ColumnName': `constant`}, by default None
         
@@ -436,6 +446,7 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
 
@@ -477,6 +488,7 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
        
@@ -539,6 +551,7 @@ class Clean(MethodBase):
         ----------
         list_args : str(s), optional
             Specific columns to apply this technique to.
+            
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
         

@@ -2,6 +2,8 @@ import inspect
 import warnings
 from functools import partial
 
+from sklearn.model_selection import GridSearchCV
+
 
 def add_to_queue(model_function):
     def wrapper(self, *args, **kwargs):
@@ -33,3 +35,42 @@ def get_default_args(func):
         for k, v in signature.parameters.items()
         if v.default is not inspect.Parameter.empty
     }
+
+def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str):
+    """
+    Runs Gridsearch on a model
+    
+    Parameters
+    ----------
+    model : Model
+        Model to run gridsearch on
+
+    gridsearch : bool or dist
+        True, False or custom grid to test
+
+    grid_params : dict
+        Dictionary of model params and values to test
+
+    cv : int
+        Number of folds for cross validation
+    
+    score : str
+        Scoring metric to use when evaluating models
+    
+    Returns
+    -------
+    Model
+        Initialized Gridsearch model
+    """
+
+    if isinstance(gridsearch, dict):
+        gridsearch_grid = gridsearch
+    elif gridsearch == True:
+        gridsearch_grid = grid_params
+        print("Gridsearching with the following parameters: {}".format(grid_params))
+    else:
+        raise ValueError("Invalid Gridsearch input.")
+
+    model = GridSearchCV(model, gridsearch_grid, cv=cv, scoring=score)
+
+    return model
