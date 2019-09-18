@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from pyautoml import Model
 
 
@@ -159,7 +158,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3')
         model.logistic_regression(random_state=2, penalty='l1')
-        model.log_reg.confusion_matrix()
+        model.log_reg.cm_analysis()
 
         self.assertTrue(True)
 

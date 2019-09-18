@@ -2,6 +2,8 @@ import itertools
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 import sklearn
 
 
@@ -142,6 +144,76 @@ class ClassificationModel(ModelBase):
         plt.tight_layout()
         plt.ylabel('True label')
         plt.xlabel('Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}'.format(accuracy, mis_class))
+        plt.show()
+
+    def plot_cmat(self, title=None, normalize=False,
+                    hide_zeros=False, hide_counts=False, x_tick_rotation=0,
+                    figsize=(10,7), cmap='Blues', title_fontsize="large",
+                    text_fontsize="medium"):
+        """
+        Prints a confusion matrix, as returned by sklearn.metrics.confusion_matrix, as a heatmap.
+    
+        Arguments
+        ---------
+        confusion_matrix: numpy.ndarray
+            The numpy.ndarray object returned from a call to sklearn.metrics.confusion_matrix. 
+            Similarly constructed ndarrays can also be used.
+        class_names: list
+            An ordered list of class names, in the order they index the given confusion matrix.
+        figsize: tuple
+            A 2-long tuple, the first value determining the horizontal size of the ouputted figure,
+            the second determining the vertical size. Defaults to (10,7).
+        fontsize: int
+            Font size for axes labels. Defaults to 14.
+            
+        Returns
+        -------
+        matplotlib.figure.Figure
+            The resulting confusion matrix figure
+        """
+        
+        y_true = self.target_data
+        y_pred = self.prediction_data
+        fmt = 'd' if normalize else '.2f'
+
+        if self.target_mapping is None:
+            classes = list(map(str, np.unique(list(y_true) + list(y_pred))))
+        else:
+            classes = list(map(str, self.target_mapping.values()))
+
+        confusion_matrix = sklearn.metrics.confusion_matrix(y_true, y_pred)
+
+        if normalize:
+            confusion_matrix = confusion_matrix.astype('float') / confusion_matrix.sum(axis=1)[:, np.newaxis]
+
+        accuracy = np.trace(confusion_matrix) / float(np.sum(confusion_matrix))
+        mis_class = 1 - accuracy
+
+        df_cm = pd.DataFrame(
+            confusion_matrix, index=classes, columns=classes, 
+        )
+
+        if title:
+            plt.title(title, fontsize=title_fontsize)
+        elif normalize:
+            plt.title('Normalized Confusion Matrix', fontsize=title_fontsize)
+        else:
+            plt.title('Confusion Matrix', fontsize=title_fontsize)
+
+        annot = True if not hide_counts else False        
+
+        try:
+            heatmap = sns.heatmap(df_cm, annot=annot, fmt=fmt, cmap=plt.cm.get_cmap(cmap))
+        except ValueError:
+            raise ValueError("Confusion matrix values must be integers.")        
+
+        # plt.yticks(np.arange(len(classes)) + 0.5, classes, rotation=0, va="center", fontsize=text_fontsize)
+        # plt.xticks(np.arange(len(classes)) + 0.5, classes, rotation=45, fontsize=text_fontsize)
+
+        plt.tight_layout()
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}'.format(accuracy, mis_class))
+
         plt.show()
 
     # TODO: Precision, Recall, F1
