@@ -102,7 +102,7 @@ def barplot(x, y, data, groupby=None, method=None, orient='v', stacked=False, ou
         pandas_bokeh.output_file(output_file)
         pandas_bokeh.save(p_bar)
 
-def scatterplot(x: str, y: str, data, category=None, title='Scatterplot', size=8, output_file='', **scatterplot_kwargs):
+def scatterplot(x: str, y: str, data, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
     """
     Plots a scatter plot.
     
@@ -114,6 +114,9 @@ def scatterplot(x: str, y: str, data, category=None, title='Scatterplot', size=8
     y : str
         Y axis column
 
+    data : Dataframe
+        Dataframe
+
     category : str, optional
         Category to group your data, by default None
 
@@ -123,6 +126,9 @@ def scatterplot(x: str, y: str, data, category=None, title='Scatterplot', size=8
     size : int or str, optional
         Size of the circle, can either be a number
         or a column name to scale the size, by default 8
+
+    output_file : str, optional
+        If a name is provided save the plot to an html file, by default ''
     """
 
     fill_alpha = scatterplot_kwargs.pop('fill_alpha', 0.6)
@@ -141,3 +147,39 @@ def scatterplot(x: str, y: str, data, category=None, title='Scatterplot', size=8
     if output_file:
         pandas_bokeh.output_file(output_file)
         pandas_bokeh.save(p_scatter)
+
+def lineplot(x: str, y: list, data, title='Line Plot', output_file='', **lineplot_kwargs):
+    """
+    Plots a line plot.
+    
+    Parameters
+    ----------
+    x : str
+        X axis column
+
+    y : list
+        Y axis column
+
+    data : Dataframe
+        Dataframe
+
+    title : str, optional
+        Title of the plot, by default 'Line Plot'
+
+    output_file : str, optional
+        If a name is provided save the plot to an html file, by default ''
+    """
+
+    data_copy = data[[x] + y].copy()
+    data_copy = data_copy.set_index(x)
+    xlabel = lineplot_kwargs.pop('xlabel', x)
+
+    p_line = data_copy.plot_bokeh.line(
+        title=title,
+        xlabel=xlabel,
+        **lineplot_kwargs
+    )
+
+    if output_file:
+        pandas_bokeh.output_file(output_file)
+        pandas_bokeh.save(p_line)

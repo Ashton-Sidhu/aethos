@@ -178,6 +178,12 @@ class TestModelling(unittest.TestCase):
     def test_model_all_score_metrics(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
             [8, 7, 0], [8, 8, 0], [25, 80, 0]]
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
@@ -185,6 +191,51 @@ class TestModelling(unittest.TestCase):
         model = Model(data=data, target_field='col3', report_name='metric_report')
         model.logistic_regression(random_state=2, penalty='l1')
         model.log_reg.metric('all', metric='all')
+
+        self.assertTrue(True)
+
+    def test_model_report_classificationreport(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', report_name='classification_report')
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.classification_report()
+
+        self.assertTrue(True)
+
+    def test_model_report_modelweights(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', report_name='modelweights')
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.model_weights()
+
+        self.assertTrue(True)
+
+    def test_plot_roccurve(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.roc_curve()
 
         self.assertTrue(True)
 

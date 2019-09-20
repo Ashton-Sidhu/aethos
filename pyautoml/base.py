@@ -7,7 +7,6 @@ import pandas_profiling
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
-
 from pyautoml.data.data import Data
 from pyautoml.util import (_function_input_validation, _get_columns,
                            label_encoder, split_data)
@@ -942,7 +941,7 @@ class MethodBase(object):
             Category to group your data, by default None
 
         title : str, optional
-            Title of the plot, by default 'Scatterplot'
+            Title of the plot, by default 'Scatter Plot'
 
         size : int or str, optional
             Size of the circle, can either be a number
@@ -954,14 +953,79 @@ class MethodBase(object):
         line_color : color value, optional
             Colour or Colour palette to set line colour
 
-        output_file : str
+        output_file : str, optional
             Output html file name for image
+
+        **scatterplot_kwargs : optional
+            See above links for list of possible scatterplot options.
         """
 
         if not self._data_properties.split:
             scatterplot(x_col, y_col, self._data_properties.data, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
         else:
             scatterplot(x_col, y_col, self._data_properties.train_data, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
+
+    def visualize_lineplot(self, x_col: str, *y_cols, title='Line Plot', output_file='', **lineplot_kwargs):
+        """
+        Plots a lineplot for the given x and y columns provided using Bokeh.
+
+        For a list of possible lineplot_kwargs please check out the following links:
+
+        https://github.com/PatrikHlobil/Pandas-Bokeh#lineplot
+
+        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.line 
+        
+        Parameters
+        ----------
+        x_col : str
+            X column name
+
+        y_cols : str or str(s)
+            Column names to plot on the y axis.
+
+        title : str, optional
+            Title of the plot, by default 'Line Plot'
+
+        output_file : str, optional
+            Output html file name for image
+
+        color : str, optional
+            Define a single color for the plot
+
+        colormap : list or Bokeh color palette, optional
+            Can be used to specify multiple colors to plot.
+            Can be either a list of colors or the name of a Bokeh color palette : https://bokeh.pydata.org/en/latest/docs/reference/palettes.html
+
+        rangetool : bool, optional
+            If true, will enable a scrolling range tool.
+
+        xlabel : str, optional
+            Name of the x axis
+
+        ylabel : str, optional
+            Name of the y axis
+
+        xticks : list, optional
+            Explicitly set ticks on x-axis
+
+        yticks : list, optional
+            Explicitly set ticks on y-axis
+
+        xlim : tuple (int or float), optional
+            Set visible range on x axis
+
+        ylim : tuple (int or float), optional
+            Set visible range on y axis.
+
+        **lineplot_kwargs : optional
+            For a list of possible keyword arguments for line plot please see https://github.com/PatrikHlobil/Pandas-Bokeh#lineplot
+            and https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.line 
+        """
+
+        if not self._data_properties.split:
+            lineplot(x_col, list(y_cols), self._data_properties.data, title=title, output_file=output_file, **lineplot_kwargs)
+        else:
+            lineplot(x_col, list(y_cols), self._data_properties.train_data, title=title, output_file=output_file, **lineplot_kwargs)
 
     def _set_item(self, column: str, value: list, train_length: int, test_length: int):
         """

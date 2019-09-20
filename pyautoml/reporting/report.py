@@ -130,9 +130,9 @@ class Report():
             
             self.write_contents('\n')
 
-        # self.write_contents("Detailed classification report:\n")
-        # self.write_contents("The model is trained on the full development set.")
-        # self.write_contents("The scores are computed on the full evaluation set.\n")
-        # y_true, y_pred = y_test, clf.predict(X_test)
-        # print(classification_report(y_true, y_pred))
-        # print()
+    def report_classification_report(self, report):
+
+        self.write_contents("Detailed classification report:\n")
+        self.write_contents("The model is trained on the full training set.")
+        self.write_contents("The scores are computed on the full test set.\n\n")
+        self.write_contents(report)

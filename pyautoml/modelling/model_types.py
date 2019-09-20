@@ -1,10 +1,15 @@
 import itertools
+from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import sklearn
+from bokeh.io import show
+from bokeh.models import BoxSelectTool
+from bokeh.plotting import figure, output_file
+from pyautoml.visualizations.visualize import *
 
 SCORE_METRICS = [
     'accuracy',
@@ -26,6 +31,42 @@ class ModelBase(object):
         self.train_data = model_object._data_properties.train_data
         self.test_data = model_object._data_properties.test_data
         self.report = model_object._data_properties.report
+
+    def model_weights(self):
+        """
+        Prints and logs all the features ranked by importance from most to least important.
+        
+        Returns
+        -------
+        dict
+            Dictionary of features and their corresponding weights
+        
+        Raises
+        ------
+        AttributeError
+            If model does not have coefficients to display
+        """
+
+        report_strings = []
+
+        try:
+            model_dict = dict(zip(self.features, self.model.coef_.flatten()))
+        except Exception as e:
+            raise AttributeError('Model does not have coefficients to view.')
+
+        sorted_features = OrderedDict(sorted(model_dict.items(), key=lambda kv: abs(kv[1]), reverse=True))
+
+        for feature, weight in sorted_features.items():
+            report_string = '\t{} : {:.2f}'.format(feature, weight)
+            report_strings.append(report_string)
+
+            print(report_string.strip())
+
+        if self.report:
+            self.report.log('Features ranked from most to least important:\n')
+            self.report.write_contents("\n".join(report_strings))
+
+        return sorted_features
 
 class TextModel(ModelBase):
 
@@ -85,7 +126,14 @@ class ClassificationModel(ModelBase):
             self.prediction_data = self.test_data[predictions_col]
 
         if self.report:
-            self.report.write_header('Analyzing Model {}'.format(self.model_name))
+            self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))
+
+        if self.target_mapping is None:
+            self.classes = [str(item) for item in np.unique(list(self.target_data) + list(self.prediction_data))]
+        else:
+            self.classes = [str(item) for item in self.target_mapping.values()]
+
+        self.features = self.test_data.columns
 
     def metric(self, *metrics, metric='accuracy', **scoring_kwargs):
         """
@@ -118,23 +166,21 @@ class ClassificationModel(ModelBase):
         y_pred = self.prediction_data
         computed_metrics = []
 
-        try:
-            if metric == 'all' or 'all' in metrics:
-                for met in SCORE_METRICS:
-                    metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
-                    computed_metrics.append(metric_str)
-                    print(metric_str)
-            elif metrics:
-                for met in metrics:
-                    metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
-                    computed_metrics.append(metric_str)
-                    print(metric_str)
-            else:      
-                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred, **scoring_kwargs))
+
+        if metric == 'all' or 'all' in metrics:
+            for met in SCORE_METRICS:
+                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
                 computed_metrics.append(metric_str)
                 print(metric_str)
-        except Exception as e:
-            print('Could not calculate metric, due to {}'.format(e))
+        elif metrics:
+            for met in metrics:
+                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
+                computed_metrics.append(metric_str)
+                print(metric_str)
+        else:      
+            metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred, **scoring_kwargs))
+            computed_metrics.append(metric_str)
+            print(metric_str)
 
         if self.report:
             self.report.log('Metrics:\n')
@@ -186,11 +232,6 @@ class ClassificationModel(ModelBase):
         if figsize:
             plt.figure(figsize=figsize)
 
-        if self.target_mapping is None:
-            classes = np.unique(list(y_true) + list(y_pred))
-        else:
-            classes = self.target_mapping.values()
-
         confusion_matrix = sklearn.metrics.confusion_matrix(y_true, y_pred)
 
         if normalize:
@@ -228,7 +269,7 @@ class ClassificationModel(ModelBase):
             annot = np.zeros_like(confusion_matrix, dtype=str)
 
         df_cm = pd.DataFrame(
-            confusion_matrix, index=classes, columns=classes, 
+            confusion_matrix, index=self.classes, columns=self.classes, 
         )
 
         heatmap = sns.heatmap(df_cm, annot=annot, square=True, cmap=plt.cm.get_cmap(cmap), fmt='')       
@@ -236,24 +277,81 @@ class ClassificationModel(ModelBase):
         plt.tight_layout()
         plt.ylabel('True label', fontsize=text_fontsize)
         plt.xlabel('Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}'.format(accuracy, mis_class), fontsize=text_fontsize)
-        plt.xticks(np.array(classes) + 0.5, classes, rotation=x_tick_rotation)
+        plt.xticks(np.arange(len(self.classes)) + 0.5, self.classes, rotation=x_tick_rotation)
         plt.show()
 
         if self.report:
             self.report.log('CONFUSION MATRIX:\n')
             self.report.log(df_cm.to_string())
 
-    # TODO: Precision, Recall, F1
-    # TODO: ROC Curve
-    # TODO: Model Weights
+    def roc_curve(self, figsize=(450,550), output_file=''):
+        """
+        Plots an ROC curve and displays the ROC statistics (area under the curve).
+
+        Parameters
+        ----------
+        figsize : tuple(int, int), optional
+            Figure size, by default (450,550)
+
+        output_file : str, optional
+            If a name is provided save the plot to an html file, by default ''
+        """
+
+        if len(np.unique(list(self.target_data) + list(self.prediction_data))) > 2:
+            raise NotImplementedError('ROC Curve is currently not implemented for multiclassification problems.')
+
+        y_true = self.target_data
+        y_pred = self.prediction_data
+
+        fpr, tpr, thresholds = sklearn.metrics.roc_curve(y_true, y_pred)
+        roc_auc = sklearn.metrics.roc_auc_score(y_true, y_pred)
+
+        step = 1 / (len(fpr) - 1)
+        random = np.arange(0, 1 + step, step)
+
+        p = figure(plot_width=figsize[0], plot_height=figsize[1], title='ROC Curve (Area = {:.2f})'.format(roc_auc), x_range=[0,1], y_range=[0,1], x_axis_label='False Positive Rate or (1 - Specifity)', y_axis_label='True Positive Rate or (Sensitivity)', tooltips=[('False Positive Rate', '$x'), ('True Positve Rate', '$y')], tools='pan,wheel_zoom,tap,box_zoom,reset', active_drag='box_zoom', active_scroll='wheel_zoom')
+
+        p.line(fpr, tpr, color='blue', alpha=0.8, legend='ROC')
+        p.line(random, random, color='orange', line_dash='dashed', legend='Baseline')
+
+        p.legend.location = "bottom_right"
+        p.legend.click_policy = "hide"
+
+        if output_file:
+            output_file(output_file + '.html', title='ROC Curve (area = {:.2f})'.format(roc_auc))
+
+        show(p)
+
     # TODO: MSFT Interpret
     # TODO: SHAP
-    # TODO: classification report
+    
+    def classification_report(self):
+        """
+        Prints and logs the classification report.
+
+        The classification report displays and logs the information in this format:
+
+                    precision    recall  f1-score   support
+
+                    1       1.00      0.67      0.80         3
+                    2       0.00      0.00      0.00         0
+                    3       0.00      0.00      0.00         0
+
+            micro avg       1.00      0.67      0.80         3
+            macro avg       0.33      0.22      0.27         3
+         weighted avg       1.00      0.67      0.80         3
+        """
+
+        classification_report = sklearn.metrics.classification_report(self.target_data, self.target_data, target_names=self.classes, digits=2)
+
+        if self.report:
+            self.report.report_classification_report(classification_report)
+
+        print(classification_report)        
 
 class RegressionModel(ModelBase):
     # TODO: Summary statistics
     # TODO: Errors
-    # TODO: Model Weights
     # TODO: MSFT Interpret
     # TODO: SHAP
 

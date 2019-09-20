@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml import Clean
 from pyautoml.base import MethodBase
 
@@ -320,6 +319,18 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertDictEqual(clean.target_mapping, {0:'A', 1:'B'})
 
+    def test_lineplot(self):
+
+        np.random.seed(42)
+        df = pd.DataFrame({"Google": np.random.randn(1000)+0.2, 
+                   "Apple": np.random.randn(1000)+0.17, 
+                   "date": pd.date_range('1/1/2000', periods=1000)})
+
+        clean = Clean(data=df, split=False)
+        clean.visualize_lineplot('date', 'Google', 'Apple')
+
+        self.assertTrue(True)
+        
 
 
 if __name__ == "__main__":
