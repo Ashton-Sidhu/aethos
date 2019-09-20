@@ -6,7 +6,7 @@ import pyautoml
 import yaml
 from pyautoml.base import MethodBase
 from pyautoml.modelling.default_gridsearch_params import *
-from pyautoml.modelling.model_types import *
+from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
 from pyautoml.modelling.util import add_to_queue, run_gridsearch
 from pyautoml.util import (_contructor_data_properties, _input_columns,

@@ -9,6 +9,8 @@ import sklearn
 from bokeh.io import show
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
+
+from pyautoml.modelling.model_explanation import Shap
 from pyautoml.visualizations.visualize import *
 
 SCORE_METRICS = [
@@ -22,6 +24,7 @@ SCORE_METRICS = [
     'recall',
     'roc_auc',
 ]
+
 class ModelBase(object):
 
     def __init__(self, model_object, model_name):
@@ -31,6 +34,11 @@ class ModelBase(object):
         self.train_data = model_object._data_properties.train_data
         self.test_data = model_object._data_properties.test_data
         self.report = model_object._data_properties.report
+
+        if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
+            self.shap = Shap(self.model, self.train_data, self.test_data, 'linear')
+        else:
+            self.shap = None
 
     def model_weights(self):
         """
@@ -67,6 +75,34 @@ class ModelBase(object):
             self.report.write_contents("\n".join(report_strings))
 
         return sorted_features
+
+    def summary_plot(self, **summaryplot_kwargs):
+
+        if self.shap is None:
+            raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
+
+        self.shap.summary_plot(**summaryplot_kwargs)
+
+    def decision_plot(self, **decisionplot_kwargs):
+
+        if self.shap is None:
+            raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
+
+        self.shap.decision_plot(**decisionplot_kwargs)
+
+    def force_plot(self, **forceplot_kwargs):
+
+        if self.shap is None:
+            raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
+
+        self.shap.force_plot(**forceplot_kwargs)
+
+    def dependence_plot(self, feature: str, **dependenceplot_kwargs):
+
+        if self.shap is None:
+            raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
+
+        self.shap.dependence_plot(feature, **dependenceplot_kwargs)
 
 class TextModel(ModelBase):
 
@@ -323,7 +359,6 @@ class ClassificationModel(ModelBase):
         show(p)
 
     # TODO: MSFT Interpret
-    # TODO: SHAP
     
     def classification_report(self):
         """
@@ -353,6 +388,5 @@ class RegressionModel(ModelBase):
     # TODO: Summary statistics
     # TODO: Errors
     # TODO: MSFT Interpret
-    # TODO: SHAP
 
     pass
