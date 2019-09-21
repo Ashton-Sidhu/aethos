@@ -93,12 +93,13 @@ class Shap(object):
 
         shap.force_plot(self.expected_value, shap_values[samples], self.train_data.columns, **forceplot_kwargs)
 
-    def dependence_plot(self, feature, **dependenceplot_kwargs):
+    def dependence_plot(self, feature, interaction=None, **dependenceplot_kwargs):
         """
         Plots a SHAP dependence plot.
         """
-
-        shap.dependence_plot(feature, self.shap_values, self.test_data_array, **dependenceplot_kwargs)
+        interaction = dependenceplot_kwargs.pop('interaction_index', interaction)
+        
+        shap.dependence_plot(feature, self.shap_values, self.test_data, interaction_index=interaction, **dependenceplot_kwargs)
 
     def _calculate_misclassified(self) -> list:
         """

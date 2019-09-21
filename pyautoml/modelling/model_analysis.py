@@ -315,12 +315,57 @@ class ModelBase(object):
 
         self.shap.force_plot(sample_no, **forceplot_kwargs)
 
-    def dependence_plot(self, feature: str, **dependenceplot_kwargs):
+    def dependence_plot(self, feature: str, interaction='auto', **dependenceplot_kwargs):
+        """
+        A dependence plot is a scatter plot that shows the effect a single feature has on the predictions made by the mode.
+
+        Explanation:
+            - Each dot is a single prediction (row) from the dataset.
+        
+            - The x-axis is the value of the feature (from the X matrix).
+
+            - The y-axis is the SHAP value for that feature, which represents how much knowing that feature's value changes the output of the model for that sample's prediction.
+
+            - The color corresponds to a second feature that may have an interaction effect with the feature we are plotting (by default this second feature is chosen automatically). 
+            
+            - If an interaction effect is present between this other feature and the feature we are plotting it will show up as a distinct vertical pattern of coloring. 
+        
+        Parameters
+        ----------
+        feature : str
+            Feature who's impact on the model you want to analyze
+
+        interaction : "auto", None, int, or string
+            The index of the feature used to color the plot. The name of a feature can also be passed as a string. If "auto" then shap.common.approximate_interactions is used to pick what seems to be the strongest interaction (note that to find to true stongest interaction you need to compute the SHAP interaction values).
+
+        x_jitter : float (0 - 1)
+            Adds random jitter to feature values. May increase plot readability when feature is discrete.
+
+        alpha : float
+            The transparency of the data points (between 0 and 1). This can be useful to the show density of the data points when using a large dataset.
+
+        xmin : float or string
+            Represents the lower bound of the plot's x-axis. It can be a string of the format "percentile(float)" to denote that percentile of the feature's value used on the x-axis.
+
+        xmax : float or string
+            Represents the upper bound of the plot's x-axis. It can be a string of the format "percentile(float)" to denote that percentile of the feature's value used on the x-axis.
+
+        ax : matplotlib Axes object
+            Optionally specify an existing matplotlib Axes object, into which the plot will be placed. In this case we do not create a Figure, otherwise we do.
+
+        cmap : str or matplotlib.colors.ColorMap 
+            Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
+
+        Raises
+        ------
+        NotImplementedError
+            Currently implemented for Linear and Tree models.
+        """
 
         if self.shap is None:
             raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
 
-        self.shap.dependence_plot(feature, **dependenceplot_kwargs)
+        self.shap.dependence_plot(feature, interaction, **dependenceplot_kwargs)
 
     def shap_get_misclassified_index(self):
         """
