@@ -53,10 +53,8 @@ class Shap(object):
             If return_objects=True (the default). Returns None otherwise.
         """
 
-        expected_value = decisionplot_kwargs.pop('expected_value', self.expected_value)
-        shap_values = decisionplot_kwargs.pop('shap_values', self.shap_values)
-        test_data_array = decisionplot_kwargs.pop('features', self.test_data_array)
         return_objects = decisionplot_kwargs.pop('return_objects', True)
+        highlight = decisionplot_kwargs.pop('highlight', None)
 
         if sample_no is not None:
             if sample_no < 1 or not isinstance(sample_no, int):
@@ -65,15 +63,18 @@ class Shap(object):
             samples = slice(sample_no - 1, sample_no)
         else:
             if num_samples == 'all':
-                samples = slice(0, len(test_data_array))
+                samples = slice(0, len(self.test_data_array))
             elif num_samples <= 0:
                 raise ValueError('Number of samples must be greater than 0. If it is less than 1, it will be treated as a percentage.')
             elif num_samples > 0 and num_samples < 1:
-                samples = slice(0, int(num_samples * len(test_data_array)))
+                samples = slice(0, int(num_samples * len(self.test_data_array)))
             else:
                 samples = slice(0, num_samples)
 
-        return shap.decision_plot(expected_value, shap_values[samples], test_data_array[samples], return_objects=return_objects, **decisionplot_kwargs)
+        if highlight is not None:
+            highlight = highlight[samples]
+
+        return shap.decision_plot(self.expected_value, self.shap_values[samples], self.train_data.columns, return_objects=return_objects, highlight=highlight, **decisionplot_kwargs)
 
     def force_plot(self, **forceplot_kwargs):
         """

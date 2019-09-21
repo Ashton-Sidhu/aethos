@@ -218,8 +218,6 @@ class ModelBase(object):
 
         if highlight_misclassified:
             decisionplot_kwargs['highlight'] = self.shap.misclassfied_values
-            decisionplot_kwargs['shap_values'] = self.shap.shap_values[self.shap.misclassfied_values]
-            decisionplot_kwargs['features'] = self.shap.test_data_array[self.shap.misclassfied_values]
 
         return self.shap.decision_plot(num_samples, sample_no, **decisionplot_kwargs)
 
