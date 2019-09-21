@@ -24,6 +24,10 @@ SCORE_METRICS = [
     'roc_auc',
 ]
 
+SHAP_LEARNERS = {
+    sklearn.linear_model.LogisticRegression : 'linear'
+}
+
 class ModelBase(object):
 
     # TODO: Add more SHAP use cases
@@ -41,7 +45,7 @@ class ModelBase(object):
         self.report = model_object._data_properties.report
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
-            self.shap = Shap(self.model, self.train_data, self.test_data, model_object.target_data, 'linear')
+            self.shap = Shap(self.model, self.train_data, self.test_data, model_object.target_data, SHAP_LEARNERS[type(self.model)])
         else:
             self.shap = None
 
