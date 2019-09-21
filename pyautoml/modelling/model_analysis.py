@@ -1,5 +1,6 @@
 import itertools
 from collections import OrderedDict
+from itertools import compress
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -225,17 +226,46 @@ class ModelBase(object):
 
         return self.shap.decision_plot(num_samples, sample_no, **decisionplot_kwargs)
 
-    def force_plot(self, highlight_misclassified=False, **forceplot_kwargs):
+    def force_plot(self, sample_no=None, misclassified=False, **forceplot_kwargs):
+        """
+        Visualize the given SHAP values with an additive force layout
+        
+        Parameters
+        ----------
+        sample_no : int, optional
+            Sample number to isolate and analyze, by default None
+
+        misclassified : bool, optional
+            True to only show the misclassified results, by default False
+
+        link : "identity" or "logit"
+            The transformation used when drawing the tick mark labels. Using logit will change log-odds numbers
+            into probabilities. 
+
+        matplotlib : bool
+            Whether to use the default Javascript output, or the (less developed) matplotlib output. Using matplotlib
+            can be helpful in scenarios where rendering Javascript/HTML is inconvenient. 
+        
+        Raises
+        ------
+        NotImplementedError
+            Currently implemented for Linear and Tree models.
+
+        Example
+        --------
+        Plot two decision plots using the same feature order and x-axis.
+
+        >>> model.model_name.force_plot() # The entire test dataset
+        >>> model.model_name.forceplot(no_sample=1, misclassified=True) # Analyze the first misclassified result
+        """
 
         if self.shap is None:
             raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
 
-        if highlight_misclassified:
-            forceplot_kwargs['highlight'] = self.shap.misclassfied_values
+        if misclassified:
             forceplot_kwargs['shap_values'] = self.shap.shap_values[self.shap.misclassfied_values]
-            forceplot_kwargs['features'] = self.shap.test_data_array[self.shap.misclassfied_values]
 
-        self.shap.force_plot(**forceplot_kwargs)
+        self.shap.force_plot(sample_no, **forceplot_kwargs)
 
     def dependence_plot(self, feature: str, **dependenceplot_kwargs):
 
@@ -243,6 +273,15 @@ class ModelBase(object):
             raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
 
         self.shap.dependence_plot(feature, **dependenceplot_kwargs)
+
+    def shap_get_misclassified_index(self):
+        """
+        Prints the sample numbers of misclassified samples.
+        """
+
+        sample_list = list(compress(range(len(self.shap.misclassfied_values)), self.shap.misclassfied_values))
+
+        print(", ".join(str(np.array(sample_list) + 1)))
 
 class TextModel(ModelBase):
 

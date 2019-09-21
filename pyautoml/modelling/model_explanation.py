@@ -74,18 +74,24 @@ class Shap(object):
         if highlight is not None:
             highlight = highlight[samples]
 
-        return shap.decision_plot(self.expected_value, self.shap_values[samples], self.train_data.columns, return_objects=return_objects, highlight=highlight, **decisionplot_kwargs)
+        return shap.decision_plot(self.expected_value, self.shap_values[samples], self.train_data.columns, return_objects=return_objects, highlight=highlight, **decisionplot_kwargs) 
 
-    def force_plot(self, **forceplot_kwargs):
+    def force_plot(self, sample_no=None, **forceplot_kwargs):
         """
         Plots a SHAP force plot.
         """
-        
-        expected_value = forceplot_kwargs.pop('expected_value', self.expected_value)
-        shap_values = forceplot_kwargs.pop('shap_values', self.shap_values)
-        test_data_array = forceplot_kwargs.pop('features', self.test_data_array)
 
-        shap.force_plot(expected_value, shap_values, test_data_array, **forceplot_kwargs)
+        shap_values = forceplot_kwargs.pop('shap_values', self.shap_values)
+
+        if sample_no is not None:
+            if sample_no < 1 or not isinstance(sample_no, int):
+                raise ValueError('Sample number must be greater than 1.')
+
+            samples = slice(sample_no - 1, sample_no)
+        else:
+            samples = slice(0, len(shap_values))
+
+        shap.force_plot(self.expected_value, shap_values[samples], self.train_data.columns, **forceplot_kwargs)
 
     def dependence_plot(self, feature, **dependenceplot_kwargs):
         """
