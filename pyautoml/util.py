@@ -318,3 +318,41 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
         return False
 
     return True
+
+def _set_item(train_data, test_data, column: str, value: list, train_length: int, test_length: int):
+    """
+    Utility function for __setitem__ for determining which input is for which dataset
+    and then sets the input to the new column for the correct dataset.
+    
+    Parameters
+    ----------
+    train_data : Dataframe
+        Training Data
+
+    test_data : Dataframe
+        Testing Data
+
+    column : str
+        New column name
+
+    value : list
+        List of values for new column
+
+    train_length : int
+        Length of training data
+        
+    test_length : int
+        Length of training data
+    """
+
+    ## If the training data and testing data have the same number of rows, apply the value to both
+    ## train and test data set
+    if len(value) == train_length and len(value) == test_length:
+        train_data[column] = value
+        test_data[column] = value
+    elif len(value) == train_length:
+        train_data[column] = value
+    else:
+        test_data[column] = value
+
+    return train_data, test_data

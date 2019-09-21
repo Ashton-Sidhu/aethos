@@ -92,7 +92,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data)
         model.kmeans(n_clusters=3, random_state=0)
-        validate = model.train_data.kmeans_clusters is not None and model.test_data.kmeans_clusters is not None
+        validate = model.train_data_results.kmeans_clusters is not None and model.test_data_results.kmeans_clusters is not None
 
         self.assertTrue(validate)
 
@@ -145,7 +145,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3')
         model.logistic_regression(random_state=2, penalty='l1')
-        validate = model.train_data.log_predictions is not None and model.test_data.log_predictions is not None
+        validate = model.train_data_results.log_predictions is not None and model.test_data_results.log_predictions is not None
 
         self.assertTrue(validate)
 
@@ -197,6 +197,12 @@ class TestModelling(unittest.TestCase):
     def test_model_report_classificationreport(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
             [8, 7, 0], [8, 8, 0], [25, 80, 0]]
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
@@ -236,6 +242,64 @@ class TestModelling(unittest.TestCase):
         model = Model(data=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
         model.logistic_regression(random_state=2, penalty='l1')
         model.log_reg.roc_curve()
+
+        self.assertTrue(True)
+    
+    def test_decision_plot(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.5)
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.decision_plot()
+
+        self.assertTrue(True)
+
+    def test_decision_plot_all(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.5)
+        model.logistic_regression(random_state=2, penalty='l1')
+        model.log_reg.decision_plot(num_samples='all')
+
+        self.assertTrue(True)
+
+    def test_decision_plot_sameaxis(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.5)
+        model.logistic_regression(random_state=2, penalty='l1')
+        r = model.log_reg.decision_plot(sample_no=1)
+        model.log_reg.decision_plot(sample_no=2, feature_order=r.feature_idx, xlim=r.xlim)
 
         self.assertTrue(True)
 
