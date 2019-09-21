@@ -87,6 +87,54 @@ class ModelBase(object):
         return sorted_features
 
     def summary_plot(self, **summaryplot_kwargs):
+        """
+        Create a SHAP summary plot, colored by feature values when they are provided.
+
+        For a list of all kwargs please see the Shap documentation : https://shap.readthedocs.io/en/latest/#plots
+
+        Parameters
+        ----------
+        max_display : int
+            How many top features to include in the plot (default is 20, or 7 for interaction plots), by default None
+            
+        plot_type : "dot" (default for single output), "bar" (default for multi-output), "violin", or "compact_dot"
+            What type of summary plot to produce. Note that "compact_dot" is only used for SHAP interaction values.
+
+        color : str or matplotlib.colors.ColorMap 
+            Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
+
+        axis_color : str or int 
+            Color used to draw plot axes.
+
+        title : str 
+            Title of the plot.
+
+        alpha : float 
+            Alpha blending value in [0, 1] used to draw plot lines.
+
+        show : bool 
+            Whether to automatically display the plot.
+
+        sort : bool
+            Whether to sort features by importance, by default True
+
+        color_bar : bool 
+            Whether to draw the color bar.
+
+        auto_size_plot : bool 
+            Whether to automatically size the matplotlib plot to fit the number of features displayed. If False, specify the plot size using matplotlib before calling this function.
+
+        layered_violin_max_num_bins : int
+            Max number of bins, by default 20
+
+        **summaryplot_kwargs
+            For more info see https://shap.readthedocs.io/en/latest/#plots
+        
+        Raises
+        ------
+        NotImplementedError
+            Currently implemented for Linear and Tree models.
+        """
 
         if self.shap is None:
             raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
