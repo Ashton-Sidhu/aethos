@@ -149,7 +149,7 @@ class Model(MethodBase):
             
             return self._target_data
         except Exception as e:
-            print('Target Data does not exist. Please check if target field is set and then recreate the object.')
+            return None
 
     @target_data.setter
     def target_data(self, value):
@@ -171,7 +171,7 @@ class Model(MethodBase):
 
             return self._train_target_data
         except Exception as e:
-            print('Train target Data does not exist. Please check if target field is set and then recreate the object.')
+            return None
 
     @train_target_data.setter
     def train_target_data(self, value):
@@ -193,7 +193,7 @@ class Model(MethodBase):
 
             return self._test_target_data
         except Exception as e:
-            print('Test target Data does not exist. Please check if target field is set and then recreate the object.')
+            return None
 
     @test_target_data.setter
     def test_target_data(self, value):

@@ -10,6 +10,7 @@ import sklearn
 from bokeh.io import show
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
+
 from pyautoml.modelling.model_explanation import Shap
 from pyautoml.visualizations.visualize import *
 
@@ -46,7 +47,7 @@ class ModelBase(object):
         self.report = model_object._data_properties.report
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
-            self.shap = Shap(self.model, self.train_data, self.test_data, model_object.target_data, SHAP_LEARNERS[type(self.model)])
+            self.shap = Shap(self.model, self.train_data, self.test_data, self.target_data, SHAP_LEARNERS[type(self.model)])
         else:
             self.shap = None
 
@@ -270,7 +271,10 @@ class ModelBase(object):
             raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
 
         if highlight_misclassified:
-            decisionplot_kwargs['highlight'] = self.shap.misclassfied_values
+            if not any(self.shap.misclassified_values):
+                raise AttributeError('There are no misclassified values!')
+            
+            decisionplot_kwargs['highlight'] = self.shap.misclassified_values
 
         return self.shap.decision_plot(num_samples, sample_no, **decisionplot_kwargs)
 
@@ -311,9 +315,12 @@ class ModelBase(object):
             raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
 
         if misclassified:
-            forceplot_kwargs['shap_values'] = self.shap.shap_values[self.shap.misclassfied_values]
+            if not any(self.shap.misclassified_values):
+                raise AttributeError('There are no misclassified values!')
+            
+            forceplot_kwargs['shap_values'] = self.shap.shap_values[self.shap.misclassified_values]
 
-        self.shap.force_plot(sample_no, **forceplot_kwargs)
+        return self.shap.force_plot(sample_no, **forceplot_kwargs)
 
     def dependence_plot(self, feature: str, interaction='auto', **dependenceplot_kwargs):
         """
@@ -372,7 +379,7 @@ class ModelBase(object):
         Prints the sample numbers of misclassified samples.
         """
 
-        sample_list = list(compress(range(len(self.shap.misclassfied_values)), self.shap.misclassfied_values))
+        sample_list = list(compress(range(len(self.shap.misclassified_values)), self.shap.misclassified_values))
 
         print(", ".join(str(np.array(sample_list) + 1)))
 
@@ -421,16 +428,16 @@ class ClusterModel(ModelBase):
 class ClassificationModel(ModelBase):
 
     def __init__(self, model_object, model_name, model, predictions_col):
+        
+        self.target_data = model_object.target_data if model_object.target_data else model_object.test_target_data
 
         super().__init__(model_object, model, model_name)
 
         self.target_mapping = model_object.target_mapping
 
-        if self.data is not None:
-            self.target_data = model_object.target_data
+        if self.data is not None:            
             self.prediction_data = self.data_results[predictions_col]
         else:
-            self.target_data = model_object.test_target_data
             self.prediction_data = self.test_data_results[predictions_col]
 
         if self.report:

@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+
 from pyautoml import Model
 
 
@@ -306,19 +307,19 @@ class TestModelling(unittest.TestCase):
     def test_decision_plot_misclassified(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 431], [21, 42, 11], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 0], [8, 83, 0], [125, 80, 0]]
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
-        model.log_reg.decision_plot(0.5, highlight_misclassified=True)
+        model = Model(data=data, target_field='col3', test_split_percentage=0.8)
+        model.logistic_regression(random_state=3)
+        model.log_reg.decision_plot(0.75, highlight_misclassified=True)
 
         self.assertTrue(True)
 
@@ -344,37 +345,18 @@ class TestModelling(unittest.TestCase):
     def test_force_plot_misclassified(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 431], [21, 42, 11], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
-        model.log_reg.force_plot(misclassified=True)
-
-        self.assertTrue(True)
-
-    def test_force_plot_misclassified(self):
-
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
-
-        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
-
-        model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
+        model = Model(data=data, target_field='col3', test_split_percentage=0.75)
+        model.logistic_regression(random_state=3)
         model.log_reg.force_plot(misclassified=True)
 
         self.assertTrue(True)

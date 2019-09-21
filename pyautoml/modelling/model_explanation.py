@@ -1,3 +1,4 @@
+import numpy as np
 import shap
 
 
@@ -19,10 +20,10 @@ class Shap(object):
             raise ValueError('Learner: {} is not supported yet.'.format(learner))
         
         self.expected_value = self.explainer.expected_value
-        self.shap_values = self.explainer.shap_values(self.test_data)
+        self.shap_values = np.array(self.explainer.shap_values(self.test_data)).astype(float)
         
         # Calculate misclassified values
-        self.misclassfied_values = self._calculate_misclassified()
+        self.misclassified_values = self._calculate_misclassified()
 
         # As per SHAP guidelines, test data needs to be dense for plotting functions
         self.test_data_array = self.test_data.values
@@ -91,14 +92,15 @@ class Shap(object):
         else:
             samples = slice(0, len(shap_values))
 
-        shap.force_plot(self.expected_value, shap_values[samples], self.train_data.columns, **forceplot_kwargs)
+        return shap.force_plot(self.expected_value, shap_values[samples], self.train_data.columns, **forceplot_kwargs)
 
     def dependence_plot(self, feature, interaction=None, **dependenceplot_kwargs):
         """
         Plots a SHAP dependence plot.
         """
+
         interaction = dependenceplot_kwargs.pop('interaction_index', interaction)
-        
+
         shap.dependence_plot(feature, self.shap_values, self.test_data, interaction_index=interaction, **dependenceplot_kwargs)
 
     def _calculate_misclassified(self) -> list:
