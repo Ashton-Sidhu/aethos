@@ -307,7 +307,7 @@ class TestModelling(unittest.TestCase):
     def test_decision_plot_misclassified(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [4, 2, 1], [12, 2, 1], [25, 80, 1],
             [14, 23, 1], [215, 15, 1], [2, 33, 1],
             [81, 73, 0], [8, 28, 0], [625, 280, 0],
             [1, 22, 431], [21, 42, 11], [2, 3, 1],
@@ -356,7 +356,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.75)
-        model.logistic_regression(random_state=3)
+        model.logistic_regression(random_state=2)
         model.log_reg.force_plot(misclassified=True)
 
         self.assertTrue(True)
