@@ -1,4 +1,4 @@
 todo:
-  keyword: '# TODO:'
+  keyword: 'TODO'
   reopenClosed: false
   autoassign: false
