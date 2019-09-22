@@ -1,4 +1,5 @@
 import pandas as pd
+import shap
 from bokeh.io import output_notebook
 from IPython import get_ipython
 
@@ -20,3 +21,4 @@ shell = get_ipython().__class__.__name__
 
 if shell == 'ZMQInteractiveShell':
     output_notebook()
+    shap.initjs()

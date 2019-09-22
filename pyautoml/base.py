@@ -8,7 +8,7 @@ from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
-from pyautoml.util import (_function_input_validation, _get_columns,
+from pyautoml.util import (_function_input_validation, _get_columns, _set_item,
                            label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
 
@@ -92,14 +92,16 @@ class MethodBase(object):
                 if len(value) != train_data_length and len(value) != test_data_length:
                     raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(value))))
 
-                self._set_item(column, value, train_data_length, test_data_length)
+                self._data_properties.train_data, self._data_properties.test_data = _set_item(
+                    self._data_properties.train_data, self._data_properties.test_data, column, value, train_data_length, test_data_length)
 
             elif isinstance(value, tuple):
                 for data in value:
                     if len(data) != train_data_length and len(data) != test_data_length:
                         raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
 
-                    self._set_item(column, data, train_data_length, test_data_length)
+                    self._data_properties.train_data, self._data_properties.test_data = _set_item(
+                        self._data_properties.train_data, self._data_properties.test_data, column, data, train_data_length, test_data_length)
 
             else:
                 self._data_properties.train_data[column] = value
@@ -1026,35 +1028,3 @@ class MethodBase(object):
             lineplot(x_col, list(y_cols), self._data_properties.data, title=title, output_file=output_file, **lineplot_kwargs)
         else:
             lineplot(x_col, list(y_cols), self._data_properties.train_data, title=title, output_file=output_file, **lineplot_kwargs)
-
-    def _set_item(self, column: str, value: list, train_length: int, test_length: int):
-        """
-        Utility function for __setitem__ for determining which input is for which dataset
-        and then sets the input to the new column for the correct dataset.
-        
-        Parameters
-        ----------
-        column : str
-            New column name
-
-        value : list
-            List of values for new column
-
-        train_length : int
-            Length of training data
-            
-        test_length : int
-            Length of training data
-        """
-
-        ## If the training data and testing data have the same number of rows, apply the value to both
-        ## train and test data set
-        if len(value) == train_length and len(value) == test_length:
-            self._data_properties.train_data[column] = value
-            self._data_properties.test_data[column] = value
-
-        elif len(value) == train_length:
-            self._data_properties.train_data[column] = value
-
-        else:
-            self._data_properties.test_data[column] = value
