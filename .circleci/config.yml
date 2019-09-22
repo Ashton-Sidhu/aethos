@@ -36,6 +36,7 @@ jobs:
       - run:
           name: install python dependencies
           command: |  # use pipenv to install dependencies
+            pip3 install -U pip setuptools virtualenv
             python3 -m venv venv
             . venv/bin/activate
             pip3 install -r requirements.txt
@@ -62,6 +63,7 @@ jobs:
         - run:
             name: install python dependencies
             command: |  # use pipenv to install dependencies
+              pip3 install -U pip setuptools virtualenv
               python3 -m venv venv
               . venv/bin/activate
               pip3 install -r requirements.txt
@@ -92,6 +94,7 @@ jobs:
       - run:
             name: install python dependencies
             command: |  # use pipenv to install dependencies
+              pip3 install -U pip setuptools virtualenv
               python3 -m venv venv
               . venv/bin/activate
               pip3 install -r requirements.txt
