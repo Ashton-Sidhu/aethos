@@ -1,14 +1,16 @@
 
+import multiprocessing
 import os
 import warnings
 
 import pyautoml
 import yaml
+from pathos.multiprocessing import Pool
 from pyautoml.base import MethodBase
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_types import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import add_to_queue, run_gridsearch
+from pyautoml.modelling.util import _run_models, add_to_queue, run_gridsearch
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _validate_model_name)
 from sklearn.cluster import DBSCAN, KMeans
@@ -40,16 +42,30 @@ class Model(MethodBase):
 
         if self._data_properties.target_field:
             if split:
-                self._train_target_data = self._data_properties.train_data[self._data_properties.target_field]
-                self._test_target_data = self._data_properties.test_data[self._data_properties.target_field]
-                self._data_properties.train_data = self._data_properties.train_data.drop([self._data_properties.target_field], axis=1)
-                self._data_properties.test_data = self._data_properties.test_data.drop([self._data_properties.target_field], axis=1)
+                if isinstance(step, Model):
+                    self._train_target_data = step._train_target_data
+                    self._test_target_data = step._test_target_data
+                    self._data_properties.train_data = step._data_properties.train_data
+                    self._data_properties.test_data = step._data_properties.test_data
+                else:
+                    self._train_target_data = self._data_properties.train_data[self._data_properties.target_field]
+                    self._test_target_data = self._data_properties.test_data[self._data_properties.target_field]
+                    self._data_properties.train_data = self._data_properties.train_data.drop([self._data_properties.target_field], axis=1)
+                    self._data_properties.test_data = self._data_properties.test_data.drop([self._data_properties.target_field], axis=1)
             else:
-                self._target_data = self._data_properties.data[self._data_properties.target_field]
-                self._data_properties.data = self._data_properties.data.drop([self._data_properties.target_field], axis=1)
+                if isinstance(step, Model):
+                    self._target_data = step._target_data
+                    self._data_properties.data = step._data_properties.data
+                else:
+                    self._target_data = self._data_properties.data[self._data_properties.target_field]
+                    self._data_properties.data = self._data_properties.data.drop([self._data_properties.target_field], axis=1)
 
-        self._models = {}
-        self._queued_models = {}
+        if isinstance(step, Model):
+            step._models = {}
+            step._queued_models = {}            
+        else:
+            self._models = {}
+            self._queued_models = {}
 
     def __getitem__(self, key):
 
@@ -131,9 +147,22 @@ class Model(MethodBase):
 
         self._test_target_data = value
 
-    def train_models(self):
-        """ TODO: Implement multi processing running of models """
-        return
+    def run_models(self, location='local'):
+        
+        num_ran_models = len(self._models)
+
+        p = multiprocessing.Pool(multiprocessing.cpu_count())
+
+        p.map(self._run, list(pyautoml.modelling.model.Model(self)._queued_models.values()))
+
+        p.close()
+        p.join()
+
+        if len(self._models) == (num_ran_models + len(self._queued_models)):
+            self._queued_models = {}
+
+    def _run(self, func):
+        func()
 
     def list_models(self):
         """

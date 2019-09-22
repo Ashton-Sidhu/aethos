@@ -1,4 +1,5 @@
 import inspect
+import multiprocessing as mp
 import warnings
 from functools import partial
 
@@ -17,7 +18,6 @@ def add_to_queue(model_function):
         if kwargs['run']:
             return model_function(self, *args, **kwargs)
         else:
-            warnings.warn("Running models all at once not available yet. Please set `run=True` to train your model.")
             kwargs['run'] = True
             self._queued_models[kwargs['model_name']] = partial(model_function, self, *args, **kwargs)
     
@@ -74,3 +74,15 @@ def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str):
     model = GridSearchCV(model, gridsearch_grid, cv=cv, scoring=score)
 
     return model
+
+def _run_models(model_obj):
+
+    p = mp.Pool(mp.cpu_count())
+
+    p.map(_run, list(model_obj._queued_models.values()))
+
+    p.close()
+
+
+def _run(model):
+    model()
