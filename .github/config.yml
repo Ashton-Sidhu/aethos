@@ -1,0 +1,4 @@
+todo:
+  keyword: ['TODO:']
+  reopenClosed: false
+  autoassign : false
