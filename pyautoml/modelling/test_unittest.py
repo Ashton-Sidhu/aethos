@@ -355,7 +355,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        model = Model(data=data, target_field='col3', test_split_percentage=0.75)
+        model = Model(data=data, target_field='col3', test_split_percentage=0.6)
         model.logistic_regression(random_state=2)
         model.log_reg.force_plot(misclassified=True)
 
