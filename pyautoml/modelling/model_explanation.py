@@ -155,7 +155,9 @@ class MSFTInterpret(object):
         """
         Plots an interpretable display of your model based off a performance metric.
 
-        Can either be 'ROC' or 'PR' for precision, recall.
+        Can either be 'ROC' or 'PR' for precision, recall for classification problems.
+
+        Can be 'regperf' for regression problems.
         
         Parameters
         ----------
