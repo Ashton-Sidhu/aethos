@@ -280,6 +280,8 @@ N/A
 
 [@pandas-profiling](https://github.com/pandas-profiling) for their automated [EDA report generation](https://github.com/pandas-profiling/pandas-profiling) library.
 
+[@slundberg](https://github.com/slundberg/) for his [shap](https://github.com/slundberg/shap) model visualization library.
+
 ## For Developers
 
 For python snippets to make deving new techniques either, message me and I can send them.
