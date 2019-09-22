@@ -4,13 +4,13 @@ import warnings
 
 import pyautoml
 import yaml
-from pyautoml.base import MethodBase
+from pyautoml.base import SHELL, MethodBase
 from pyautoml.modelling.default_gridsearch_params import *
-from pyautoml.modelling.model_types import *
+from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
 from pyautoml.modelling.util import add_to_queue, run_gridsearch
 from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _validate_model_name)
+                           _set_item, _validate_model_name)
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.linear_model import LogisticRegression
 
@@ -38,8 +38,12 @@ class Model(MethodBase):
         if self._data_properties.report is not None:
             self.report.write_header("Modelling")
 
+        self._result_data = self._data_properties.data.copy() if self._data_properties.data is not None else None
+        self._train_result_data = self._data_properties.train_data.copy() if self._data_properties.train_data is not None else None
+        self._test_result_data = self._data_properties.test_data.copy() if self._data_properties.train_data is not None else None
+
         if self._data_properties.target_field:
-            if split:
+            if split:        
                 self._train_target_data = self._data_properties.train_data[self._data_properties.target_field]
                 self._test_target_data = self._data_properties.test_data[self._data_properties.target_field]
                 self._data_properties.train_data = self._data_properties.train_data.drop([self._data_properties.target_field], axis=1)
@@ -64,7 +68,75 @@ class Model(MethodBase):
         if key in self._models:
             return self._models[key]
 
-        return super().__getattr__(key)
+        try:
+            if not self._data_properties.split:
+                return self._result_data[key]
+            else:
+                return self._test_result_data[key]
+
+        except Exception as e:
+            raise AttributeError(e)
+
+    def __setattr__(self, key, value):
+        
+        if key not in self.__dict__:       # any normal attributes are handled normally
+            dict.__setattr__(self, key, value)
+        else:
+            self.__setitem__(key, value)
+
+    def __setitem__(self, key, value):
+
+        if key in self.__dict__:
+            dict.__setitem__(self.__dict__, key, value)
+        else:
+            if not self._data_properties.split:
+                self._result_data[key] = value
+
+                return self._result_data.head()
+            else:
+                train_data_length = self._data_properties.train_data.shape[0]
+                test_data_length = self._data_properties.test_data.shape[0]
+
+                if isinstance(value, list):
+                    ## If the number of entries in the list does not match the number of rows in the training or testing
+                    ## set raise a value error
+                    if len(value) != train_data_length and len(value) != test_data_length:
+                        raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(value))))
+
+                    self._train_result_data, self._test_result_data = _set_item(
+                        self._train_result_data, self._test_result_data, key, value, train_data_length, test_data_length)
+
+                elif isinstance(value, tuple):
+                    for data in value:
+                        if len(data) != train_data_length and len(data) != test_data_length:
+                            raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
+
+                        self._train_result_data, self._test_result_data = _set_item(
+                            self._train_result_data, self._test_result_data, key, data, train_data_length, test_data_length)
+
+                else:
+                    self._train_result_data[key] = value
+                    self._test_result_data[key] = value
+
+                return self._test_result_data.head()
+
+    def __repr__(self):
+
+        if SHELL == 'ZMQInteractiveShell':
+            if not self._data_properties.split:
+                display(self._result_data.head()) # Hack for jupyter notebooks
+                
+                return ''
+            else:
+                display(self._train_result_data.head()) # Hack for jupyter notebooks
+
+                return ''
+        
+        else:
+            if not self._data_properties.split:
+                return str(self._result_data.head())
+            else:
+                return str(self._result_data.head())
 
     @property
     def target_data(self):
@@ -73,11 +145,11 @@ class Model(MethodBase):
         """
         try:
             if self._data_properties.data is None:
-                raise AttributeError("There seems to be nothing here. Try .train_data or .test_data")
+                raise AttributeError("There seems to be nothing here. Try .train_target_data or .test_target_data")
             
             return self._target_data
         except Exception as e:
-            print('Target Data does not exist. Please check if target field is set and then recreate the object.')
+            return None
 
     @target_data.setter
     def target_data(self, value):
@@ -95,11 +167,11 @@ class Model(MethodBase):
         
         try:
             if self._data_properties.train_data is None:
-                raise AttributeError("There seems to be nothing here. Try .data")
+                raise AttributeError("There seems to be nothing here. Try .target_data")
 
             return self._train_target_data
         except Exception as e:
-            print('Train target Data does not exist. Please check if target field is set and then recreate the object.')
+            return None
 
     @train_target_data.setter
     def train_target_data(self, value):
@@ -117,11 +189,11 @@ class Model(MethodBase):
 
         try:
             if self._data_properties.train_data is None:
-                raise AttributeError("There seems to be nothing here. Try .data")
+                raise AttributeError("There seems to be nothing here. Try .target_data")
 
             return self._test_target_data
         except Exception as e:
-            print('Test target Data does not exist. Please check if target field is set and then recreate the object.')
+            return None
 
     @test_target_data.setter
     def test_target_data(self, value):
@@ -131,10 +203,67 @@ class Model(MethodBase):
 
         self._test_target_data = value
 
+    @property
+    def data_results(self):
+        """
+        Property function for the results data.
+        """
+
+        if self._data_properties.data is None:
+            raise AttributeError("There seems to be nothing here. Try .train_data_results or .test_data_results")
+        
+        return self._result_data
+
+    @data_results.setter
+    def data_results(self, value):
+        """
+        Setter function for the results data.
+        """
+
+        self._result_data = value
+
+    @property
+    def train_data_results(self):
+        """
+        Property function for the training results data.
+        """
+        
+        if self._data_properties.train_data is None:
+            raise AttributeError("There seems to be nothing here. Try .data_results")
+
+        return self._train_result_data
+
+    @train_data_results.setter
+    def train_data_results(self, value):
+        """
+        Setter function for the training results data.
+        """
+
+        self._train_result_data = value
+        
+    @property
+    def test_data_results(self):
+        """
+        Property function for the test results data.
+        """
+
+        if self._data_properties.train_data is None:
+            raise AttributeError("There seems to be nothing here. Try .data_results")
+
+        return self._test_result_data
+    
+    @test_data_results.setter
+    def test_data_results(self, value):
+        """
+        Setter for the test target data.
+        """
+
+        self._test_result_data = value    
+
     def train_models(self):
         """ TODO: Implement multi processing running of models """
         return
-
+    
     def list_models(self):
         """
         Prints out all queued and ran models.
@@ -202,14 +331,14 @@ class Model(MethodBase):
 
         if not self._data_properties.split:
 
-            self._data_properties.data = gensim_textrank_summarizer(
+            self._result_data = gensim_textrank_summarizer(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data, **summarizer_kwargs)
 
             if self.report is not None:
                 self.report.report_technique(report_info)
             
         else:
-            self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_summarizer(
+            self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **summarizer_kwargs)
 
             if self.report is not None:
@@ -275,14 +404,14 @@ class Model(MethodBase):
 
         if not self._data_properties.split:
 
-            self._data_properties.data = gensim_textrank_keywords(
+            self._result_data = gensim_textrank_keywords(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data, **keyword_kwargs)
 
             if self.report is not None:
                 self.report.report_technique(report_info)
 
         else:
-            self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_keywords(
+            self._train_result_data, self._test_result_data = gensim_textrank_keywords(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **keyword_kwargs)
 
             if self.report is not None:
@@ -353,13 +482,13 @@ class Model(MethodBase):
         if not self._data_properties.split:
             kmeans.fit(self._data_properties.data)
 
-            self._data_properties.data[new_col_name] = kmeans.labels_
+            self._result_data[new_col_name] = kmeans.labels_
 
         else:
             kmeans.fit(self._data_properties.train_data)
 
-            self._data_properties.train_data[new_col_name] = kmeans.labels_
-            self._data_properties.test_data[new_col_name] = kmeans.predict(
+            self._train_result_data[new_col_name] = kmeans.labels_
+            self._test_result_data[new_col_name] = kmeans.predict(
                 self._data_properties.test_data)
 
         if self.report is not None:
@@ -425,17 +554,17 @@ class Model(MethodBase):
 
         if not self._data_properties.split:
             dbscan.fit(self._data_properties.data)
-            self._data_properties.data[new_col_name] = dbscan.labels_
+            self._result_data[new_col_name] = dbscan.labels_
 
         else:
             warnings.warn(
-                'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.data`.')
+                'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.data_results`.')
 
             full_data = self._data_properties.train_data.append(
                 self._data_properties.test_data, ignore_index=True)
             dbscan.fit(full_data)
             full_data[new_col_name] = dbscan.labels_
-            self._data_properties.data = full_data
+            self._result_data = full_data
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -537,18 +666,21 @@ class Model(MethodBase):
 
         if not self._data_properties.split:
             log_reg.fit(self._data_properties.data, self.target_data)      
-            self._data_properties.data[new_col_name] = log_reg.predict(self._data_properties.data)            
+            self._result_data[new_col_name] = log_reg.predict(self._data_properties.data)            
         else:
-            log_reg.fit(self._data_properties.train_data, self.train_target_data)
+            log_reg.fit(self._data_properties.train_data, self._train_target_data)
 
-            self._data_properties.train_data[new_col_name] = log_reg.predict(self._data_properties.train_data)
-            self._data_properties.test_data[new_col_name] = log_reg.predict(self._data_properties.test_data)
+            self._train_result_data[new_col_name] = log_reg.predict(self._data_properties.train_data)
+            self._test_result_data[new_col_name] = log_reg.predict(self._data_properties.test_data)
 
         if self.report is not None:
             if gridsearch:
                 self.report.report_gridsearch(log_reg, verbose)                
         
             self.report.report_technique(report_info)
+
+        if gridsearch:
+            log_reg = log_reg.best_estimator_
 
         self._models[model_name] = ClassificationModel(self, model_name, log_reg, new_col_name)
 
