@@ -1,13 +1,14 @@
 import inspect
 import multiprocessing as mp
 import warnings
-from functools import partial
+from functools import partial, wraps
 
 from pathos.multiprocessing import ProcessingPool
 from sklearn.model_selection import GridSearchCV
 
 
 def add_to_queue(model_function):
+    @wraps(model_function)
     def wrapper(self, *args, **kwargs):
         default_kwargs = get_default_args(model_function)
 
@@ -20,7 +21,7 @@ def add_to_queue(model_function):
             return model_function(self, *args, **kwargs)
         else:
             kwargs['run'] = True
-            self._queued_models[kwargs['model_name']] = partial(model_function, *args, **kwargs)
+            self._queued_models[kwargs['model_name']] = partial(model_function, self, *args, **kwargs)
     
     return wrapper
 
@@ -85,8 +86,8 @@ def _run_models_parallel(model_obj):
     model_obj : Model
         Model object
     """
-    print(type(model_obj.list(model_obj._queued_models.values())[0]()))
-    p = mp.Pool(mp.cpu_count())
+    print(type(list(model_obj._queued_models.values())[0]))
+    p = ProcessingPool(mp.cpu_count())
 
     results = p.map(_run, list(model_obj._queued_models.values()))
 

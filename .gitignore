@@ -122,7 +122,4 @@ datasets/
 #reports
 pyautoml_reports/
 
-#github
-.github/
-
 pyautoml_web/*/sources/*
