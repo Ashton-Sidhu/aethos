@@ -395,6 +395,8 @@ class TextModel(ModelBase):
 
 class ClusterModel(ModelBase):
 
+    # TODO: Add scatterplot of clusters
+
     def __init__(self, model_object, model_name, model, cluster_col):
 
         super().__init__(model_object, model, model_name)
