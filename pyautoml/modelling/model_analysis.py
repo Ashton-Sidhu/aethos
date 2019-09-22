@@ -33,6 +33,8 @@ SHAP_LEARNERS = {
 class ModelBase(object):
 
     # TODO: Add more SHAP use cases
+    # TODO: MSFT Interpret
+    # TODO: Add loss metrics
 
     def __init__(self, model_object, model, model_name):
         
@@ -636,8 +638,6 @@ class ClassificationModel(ModelBase):
             output_file(output_file + '.html', title='ROC Curve (area = {:.2f})'.format(roc_auc))
 
         show(p)
-
-    # TODO: MSFT Interpret
     
     def classification_report(self):
         """
@@ -666,6 +666,5 @@ class ClassificationModel(ModelBase):
 class RegressionModel(ModelBase):
     # TODO: Summary statistics
     # TODO: Errors
-    # TODO: MSFT Interpret
 
     pass
