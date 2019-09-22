@@ -14,7 +14,8 @@ from pyautoml.base import SHELL, MethodBase
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import _run_models, add_to_queue, run_gridsearch
+from pyautoml.modelling.util import (_run_models_parallel, add_to_queue,
+                                     run_gridsearch)
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _set_item, _validate_model_name)
 
@@ -281,24 +282,30 @@ class Model(MethodBase):
 
         self._test_result_data = value    
     
-    def run_models(self, location='local'):
+    def run_models(self, method='parallel'):
+        """
+        Runs all queued models.
+
+        The models can either be run one after the other ('series') or at the same time in parallel.
+
+        Parameters
+        ----------
+        method : str, optional
+            How to run models, can either be in 'series' or in 'parallel', by default 'parallel'
+        """
         
         num_ran_models = len(self._models)
-
-        # p = multiprocessing.Pool(multiprocessing.cpu_count())
         
-        # p.map(self._run, list(pyautoml.modelling.model.Model(self)._queued_models.values()))
-
-        # p.close()
-        # p.join()
-        
-        _run_models(self)
+        if method == 'parallel':
+            _run_models_parallel(self)
+        elif method == 'series':
+            for model in self._queued_models:
+                self._queued_models[model]()
+        else:
+            raise ValueError('Invalid run method, accepted run methods are either "parallel" or "series".')
 
         if len(self._models) == (num_ran_models + len(self._queued_models)):
             self._queued_models = {}
-
-    def _run(self, func):
-        func()
     
     def list_models(self):
         """

@@ -76,7 +76,15 @@ def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str):
 
     return model
 
-def _run_models(model_obj):
+def _run_models_parallel(model_obj):
+    """
+    Runs queued models in parallel
+    
+    Parameters
+    ----------
+    model_obj : Model
+        Model object
+    """
 
     p = ProcessingPool(mp.cpu_count())
 
