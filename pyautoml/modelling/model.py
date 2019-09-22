@@ -3,9 +3,13 @@ import multiprocessing
 import os
 import warnings
 
-import pyautoml
 import yaml
+from IPython import display
 from pathos.multiprocessing import Pool
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.linear_model import LogisticRegression
+
+import pyautoml
 from pyautoml.base import SHELL, MethodBase
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
@@ -13,8 +17,6 @@ from pyautoml.modelling.text import *
 from pyautoml.modelling.util import _run_models, add_to_queue, run_gridsearch
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _set_item, _validate_model_name)
-from sklearn.cluster import DBSCAN, KMeans
-from sklearn.linear_model import LogisticRegression
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -65,8 +67,8 @@ class Model(MethodBase):
                     self._data_properties.data = self._data_properties.data.drop([self._data_properties.target_field], axis=1)
 
         if isinstance(step, Model):
-            step._models = {}
-            step._queued_models = {}            
+            self._models = step._models
+            self._queued_models = step._queued_models            
         else:
             self._models = {}
             self._queued_models = {}
@@ -78,8 +80,11 @@ class Model(MethodBase):
 
         return super().__getitem__(key)
 
-    ## Identical copies are made to avoid infinite recursion loop .. better safe than sorry
     def __getattr__(self, key):
+
+        # For when doing multi processing when pickle is reconstructing the object
+        if key in {'__getstate__', '__setstate__'}:
+            return object.__getattr__(self, key)
 
         if key in self._models:
             return self._models[key]
@@ -152,7 +157,7 @@ class Model(MethodBase):
             if not self._data_properties.split:
                 return str(self._result_data.head())
             else:
-                return str(self._result_data.head())
+                return str(self._train_result_data.head())
 
     @property
     def target_data(self):
@@ -280,12 +285,14 @@ class Model(MethodBase):
         
         num_ran_models = len(self._models)
 
-        p = multiprocessing.Pool(multiprocessing.cpu_count())
+        # p = multiprocessing.Pool(multiprocessing.cpu_count())
+        
+        # p.map(self._run, list(pyautoml.modelling.model.Model(self)._queued_models.values()))
 
-        p.map(self._run, list(pyautoml.modelling.model.Model(self)._queued_models.values()))
-
-        p.close()
-        p.join()
+        # p.close()
+        # p.join()
+        
+        _run_models(self)
 
         if len(self._models) == (num_ran_models + len(self._queued_models)):
             self._queued_models = {}
@@ -686,12 +693,13 @@ class Model(MethodBase):
 
         report_info = technique_reason_repo['model']['classification']['logreg']
         random_state = logreg_kwargs.pop('random_state', 42)
+        solver = logreg_kwargs.pop('solver', 'lbfgs')
 
         if gridsearch:
             log_reg = LogisticRegression(random_state=random_state)
             log_reg = run_gridsearch(log_reg, gridsearch, logreg_gridsearch, gridsearch_cv, gridsearch_score)
         else:
-            log_reg = LogisticRegression(random_state=random_state, **logreg_kwargs)
+            log_reg = LogisticRegression(solver=solver, random_state=random_state, **logreg_kwargs)
 
         if not self._data_properties.split:
             log_reg.fit(self._data_properties.data, self.target_data)      

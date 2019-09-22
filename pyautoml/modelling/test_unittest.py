@@ -145,7 +145,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3')
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         validate = model.train_data_results.log_predictions is not None and model.test_data_results.log_predictions is not None
 
         self.assertTrue(validate)
@@ -158,7 +158,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3')
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.confusion_matrix()
 
         self.assertTrue(True)
@@ -171,7 +171,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', report_name='confusion_report')
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.confusion_matrix()
 
         self.assertTrue(True)
@@ -190,7 +190,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', report_name='metric_report')
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.metric('all', metric='all')
 
         self.assertTrue(True)
@@ -209,7 +209,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', report_name='classification_report')
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.classification_report()
 
         self.assertTrue(True)
@@ -222,7 +222,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', report_name='modelweights')
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.model_weights()
 
         self.assertTrue(True)
@@ -241,7 +241,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.roc_curve()
 
         self.assertTrue(True)
@@ -260,7 +260,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.decision_plot()
 
         self.assertTrue(True)
@@ -279,7 +279,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.decision_plot(num_samples='all')
 
         self.assertTrue(True)
@@ -298,7 +298,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         r = model.log_reg.decision_plot(sample_no=1)
         model.log_reg.decision_plot(sample_no=2, feature_order=r.feature_idx, xlim=r.xlim)
 
@@ -337,7 +337,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.force_plot()
 
         self.assertTrue(True)
@@ -375,7 +375,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.shap_get_misclassified_index()
 
         self.assertTrue(True)
@@ -394,7 +394,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.summary_plot()
 
         self.assertTrue(True)
@@ -413,7 +413,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5)
-        model.logistic_regression(random_state=2, penalty='l1')
+        model.logistic_regression(random_state=2, penalty='l2')
         model.log_reg.dependence_plot('col1')
 
         self.assertTrue(True)    
@@ -421,25 +421,27 @@ class TestModelling(unittest.TestCase):
     def test_local_multiprocessing(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+                [8, 7, 0], [8, 8, 0], [25, 80, 0],
+                [1, 2, 1], [2, 2, 1], [2, 3, 1],
+                [8, 7, 0], [8, 8, 0], [25, 80, 0],
+                [1, 2, 1], [2, 2, 1], [2, 3, 1],
+                [8, 7, 0], [8, 8, 0], [25, 80, 0],
+                [1, 2, 1], [2, 2, 1], [2, 3, 1],
+                [8, 7, 0], [8, 8, 0], [25, 80, 0]]
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
-        model.logistic_regression(random_state=2, penalty='l1', model_name='l1', run=False)
-        model.logistic_regression(random_state=2, penalty='l1', model_name='l2', run=False)
-        model.logistic_regression(random_state=2, penalty='l1', model_name='l3', run=False)
+        model.logistic_regression(random_state=2, penalty='l2', model_name='l1', run=False)
+        model.logistic_regression(random_state=2, penalty='l2', model_name='l2', run=False)
+        model.logistic_regression(random_state=2, penalty='l2', model_name='l3', run=False)
 
         model.run_models()
 
+        print(model._models)
         self.assertTrue(len(model._models) == 3 and len(model._queued_models) == 0)
 
 
 if __name__ == "__main__":
+
     unittest.main()

@@ -12,7 +12,7 @@ class Shap(object):
         self.y_test = y_test
         
         if learner == 'linear':
-            self.explainer = shap.LinearExplainer(self.model, self.train_data)
+            self.explainer = shap.LinearExplainer(self.model, self.train_data, feature_dependence='independent')
         elif learner == 'tree':
             self.explainer = shap.TreeExplainer(self.model)
             self.shap_interaction_values = self.explainer.shap_interaction_values(self.test_data)

@@ -3,6 +3,7 @@ import multiprocessing as mp
 import warnings
 from functools import partial
 
+from pathos.multiprocessing import ProcessingPool
 from sklearn.model_selection import GridSearchCV
 
 
@@ -77,12 +78,16 @@ def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str):
 
 def _run_models(model_obj):
 
-    p = mp.Pool(mp.cpu_count())
+    p = ProcessingPool(mp.cpu_count())
 
-    p.map(_run, list(model_obj._queued_models.values()))
+    results = p.map(_run, list(model_obj._queued_models.values()))
+
+    for result in results:
+        model_obj._models[result.model_name] = result
 
     p.close()
+    p.join()
 
 
 def _run(model):
-    model()
+    return model()
