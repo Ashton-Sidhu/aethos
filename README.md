@@ -280,7 +280,9 @@ N/A
 
 [@pandas-profiling](https://github.com/pandas-profiling) for their automated [EDA report generation](https://github.com/pandas-profiling/pandas-profiling) library.
 
-[@slundberg](https://github.com/slundberg/) for his [shap](https://github.com/slundberg/shap) model visualization library.
+[@slundberg](https://github.com/slundberg/) for his [shap](https://github.com/slundberg/shap) model explanation library.
+
+[@microsoft](https://github.com/microsoft/) for their [interpret](https://github.com/microsoft/interpret) model explanation library.
 
 ## For Developers
 
