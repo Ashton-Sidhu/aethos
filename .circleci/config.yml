@@ -7,15 +7,15 @@ workflows:
             tags:
               only: /.*/
       - test-python-install:
-          version: "3.5-stretch"
+          version: "3.5-browsers"
           requires:
             - build
       - test-python-install:
-          version: "3.6-stretch"
+          version: "3.6-browsers"
           requires:
             - build
       - test-python-install:
-          version: "3.7-stretch"
+          version: "3.7-browsers"
           requires:
             - build
       - deploy:
@@ -30,7 +30,7 @@ jobs:
   build:
     working_directory: ~/py-automl
     docker:
-      - image: circleci/python:3.6.4-stretch
+      - image: circleci/python:3.6.4-browsers
     steps:
       - checkout  # checkout source code to working directory
       - run:

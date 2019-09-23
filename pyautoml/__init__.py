@@ -21,8 +21,6 @@ __all__ = ['Clean',
 
 shell = get_ipython().__class__.__name__
 
-interpret.set_show_addr(('127.0.0.1', 7001))
-
 if shell == 'ZMQInteractiveShell':
     output_notebook()
     shap.initjs()
