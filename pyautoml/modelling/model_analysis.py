@@ -476,7 +476,7 @@ class ModelBase(object):
         else:
             self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=method, predictions=predictions, show=show, **interpret_kwargs)
         
-    def interpret_model_behavior(self, method='all', predictions='default', show=show, **interpret_kwargs):
+    def interpret_model_behavior(self, method='all', predictions='default', show=True, **interpret_kwargs):
         """
         Provides an interpretable summary of your models behaviour based off an explainer.
 
