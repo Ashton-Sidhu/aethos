@@ -2,6 +2,7 @@ import itertools
 from collections import OrderedDict
 from itertools import compress
 
+import interpret
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -10,7 +11,6 @@ import sklearn
 from bokeh.io import show
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
-from interpret import show
 
 from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
                                                   MSFTInterpret, Shap)
@@ -430,7 +430,7 @@ class ModelBase(object):
             for explainer in INTERPRET_EXPLAINERS['problem'][self.interpret.problem]:
                 dashboard.append(self.interpret.blackbox_show_performance(method=explainer, predictions=predictions, show=False, **interpret_kwargs))
 
-            show(dashboard)
+            interpret.show(dashboard)
         else:
             self.interpret.blackbox_show_performance(method=method, predictions=predictions, **interpret_kwargs)
 
@@ -461,10 +461,10 @@ class ModelBase(object):
         dashboard = []
 
         if method == 'all':
-            for explainer in INTERPRET_EXPLAINERS['global']:
+            for explainer in INTERPRET_EXPLAINERS['local']:
                 dashboard.append(self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=explainer, predictions=predictions, **interpret_kwargs))
 
-            show(dashboard)
+            interpret.show(dashboard)
         else:
             self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=method, predictions=predictions, **interpret_kwargs)
         
@@ -488,10 +488,10 @@ class ModelBase(object):
         dashboard = []
 
         if method == 'all':
-            for explainer in INTERPRET_EXPLAINERS['global'][self.interpret.problem]:
+            for explainer in INTERPRET_EXPLAINERS['global']:
                 dashboard.append(self.interpret.blackbox_global_explanation(method=explainer, predictions=predictions, show=False, **interpret_kwargs))
 
-            show(dashboard)
+            interpret.show(dashboard)
         else:
             self.interpret.blackbox_global_explanation(method=method, predictions=predictions, **interpret_kwargs)
         

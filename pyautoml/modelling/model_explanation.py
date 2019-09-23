@@ -1,6 +1,6 @@
+import interpret
 import numpy as np
 import shap
-from interpret import show
 from interpret.blackbox import (LimeTabular, MorrisSensitivity,
                                 PartialDependence, ShapKernel)
 from interpret.perf import PR, ROC, RegressionPerf
@@ -144,14 +144,14 @@ class MSFTInterpret(object):
 
     def __init__(self, model, train_data, test_data, y_test, problem):
 
-        self,model = model
+        self.model = model
         self.x_train = train_data
         self.x_test = test_data
         self.y_test = y_test
         self.problem = problem
         self.trained_blackbox_explainers = {}
 
-    def blackbox_show_performance(self, method,  predictions='default', show=True):
+    def blackbox_show_performance(self, method, predictions='default', show=True):
         """
         Plots an interpretable display of your model based off a performance metric.
 
@@ -181,9 +181,9 @@ class MSFTInterpret(object):
         else:
             predict_fn = self.model.predict
 
-        if self.problem in INTERPRET_EXPLAINERS:
-            if method.lower() in INTERPRET_EXPLAINERS[self.problem]:
-                blackbox_perf = INTERPRET_EXPLAINERS[self.problem][method.lower()](predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
+        if self.problem in INTERPRET_EXPLAINERS['problem']:
+            if method.lower() in INTERPRET_EXPLAINERS['problem'][self.problem]:
+                blackbox_perf = INTERPRET_EXPLAINERS['problem'][self.problem][method.lower()](predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
         # if self.problem == 'classification':
         #     if method.lower() == 'roc':
         #         blackbox_perf = ROC(predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
@@ -197,10 +197,10 @@ class MSFTInterpret(object):
         #     else:
         #         raise ValueError('')
         else:
-            raise ValueError('Supported blackbox explainers are only {} for classification problems and {} for regression problems'.format(",".join(INTERPRET_EXPLAINERS['classification'].keys(), ",".join(INTERPRET_EXPLAINERS['regression'].keys()))))            
+            raise ValueError('Supported blackbox explainers are only {} for classification problems and {} for regression problems'.format(",".join(INTERPRET_EXPLAINERS['problem']['classification'].keys()), ",".join(INTERPRET_EXPLAINERS['problem']['regression'].keys())))
 
         if show:
-            show(blackbox_perf)
+            interpret.show(blackbox_perf)
 
         self.trained_blackbox_explainers[method.lower()] = blackbox_perf
 
@@ -242,7 +242,7 @@ class MSFTInterpret(object):
             predict_fn = self.model.predict
 
         # Determine method
-        if method.lower() in INTERPRET_EXPLAINERS:
+        if method.lower() in INTERPRET_EXPLAINERS['local']:
             if method.lower() == 'lime':
                 data = self.x_train
             elif method.lower() == 'shap':
@@ -250,7 +250,7 @@ class MSFTInterpret(object):
             else:
                 raise ValueError
 
-            explainer = INTERPRET_EXPLAINERS[method.lower()](predict_fn=predict_fn, data=data, **kwargs)
+            explainer = INTERPRET_EXPLAINERS['local'][method.lower()](predict_fn=predict_fn, data=data, **kwargs)
         # if method.lower() == 'lime':
         #     explainer = LimeTabular(predict_fn=predict_fn, data=self.x_train, random_state=42, **kwargs)
         # elif method.lower() == 'shap':
@@ -279,7 +279,7 @@ class MSFTInterpret(object):
         self.trained_blackbox_explainers[method.lower()] = explainer_local
 
         if show:
-            show(explainer_local)
+            interpret.show(explainer_local)
 
         return explainer_local
 
@@ -306,13 +306,20 @@ class MSFTInterpret(object):
             Interpretable dashboard of your model
         """
 
-        if predictions == 'probability':
+        # if predictions == 'probability':
+        #     predict_fn = self.model.predict_proba
+        # else:
+        #     predict_fn = self.model.predict
+
+        # NOTE: Microsoft Interpret morris utility library needs predictions to be float, and .predict for classifiers produce an int array.
+        # So until it gets fixed, if the problem is classification then use .predict_proba
+        if self.problem == 'classification':
             predict_fn = self.model.predict_proba
         else:
             predict_fn = self.model.predict
 
-        if method.lower() in INTERPRET_EXPLAINERS:
-            sensitivity = INTERPRET_EXPLAINERS[method.lower()](predict_fn=predict_fn, data=self.x_train, **kwargs)
+        if method.lower() in INTERPRET_EXPLAINERS['global']:
+            sensitivity = INTERPRET_EXPLAINERS['global'][method.lower()](predict_fn=predict_fn, data=self.x_train, **kwargs)
         # if method == 'morris':
         #     sensitivity = MorrisSensitivity(predict_fn=predict_fn, data=self.x_train, **kwargs)
         # elif method == 'dependence':
@@ -325,7 +332,7 @@ class MSFTInterpret(object):
         self.trained_blackbox_explainers[method.lower()] = sensitivity_global
 
         if show:
-            show(sensitivity_global)
+            interpret.show(sensitivity_global)
 
         return sensitivity_global
 
@@ -339,10 +346,13 @@ class MSFTInterpret(object):
         dashboard_plots = []
 
         for explainer_type in INTERPRET_EXPLAINERS:
-            if explainer_type == 'problem':
-                explainer_type = INTERPRET_EXPLAINERS[self.problem]
 
-            for explainer in explainer_type:
+            if explainer_type == 'problem':
+                temp_explainer_type = INTERPRET_EXPLAINERS[explainer_type][self.problem]
+            else:
+                temp_explainer_type = INTERPRET_EXPLAINERS[explainer_type]
+
+            for explainer in temp_explainer_type:
                 if explainer in self.trained_blackbox_explainers:
                     dashboard_plots.append(self.trained_blackbox_explainers[explainer])
                 else:
@@ -353,4 +363,4 @@ class MSFTInterpret(object):
                     else:
                         dashboard_plots.append(self.blackbox_global_explanation(method=explainer, show=False))
 
-        show(dashboard_plots)
+        interpret.show(dashboard_plots)

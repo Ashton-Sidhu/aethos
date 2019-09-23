@@ -317,7 +317,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        model = Model(data=data, target_field='col3', test_split_percentage=0.75)
+        model = Model(data=data, target_field='col3', test_split_percentage=0.5)
         model.logistic_regression(random_state=2)
         model.log_reg.decision_plot(0.75, highlight_misclassified=True)
 
@@ -462,6 +462,158 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(len(model._models) == 3 and len(model._queued_models) == 0)
 
+    def test_interpretmodel_behaviour_all(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 1], [21, 42, 1], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.4)
+        model.logistic_regression(random_state=2)
+        model.log_reg.interpret_model_behavior()
+
+        self.assertTrue(True)
+
+    def test_interpretmodel_behaviour_dependence(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 1], [21, 42, 1], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.4)
+        model.logistic_regression(random_state=2)
+        model.log_reg.interpret_model_behavior(method='dependence')
+
+        self.assertTrue(True)
+
+    def test_interpretmodel_predictions_all(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 1], [21, 42, 1], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.6)
+        model.logistic_regression(random_state=2)
+        model.log_reg.interpret_predictions()
+
+        self.assertTrue(True)
+
+    def test_interpretmodel_predictions_lime(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 1], [21, 42, 1], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.6)
+        model.logistic_regression(random_state=2)
+        model.log_reg.interpret_predictions(method='lime')
+
+        self.assertTrue(True)
+
+    def test_interpretmodel_performance_all(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 1], [21, 42, 1], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.6)
+        model.logistic_regression(random_state=2)
+        model.log_reg.interpret_model_performance()
+
+        self.assertTrue(True)
+
+    def test_interpretmodel_performance_roc(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 1], [21, 42, 1], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.6)
+        model.logistic_regression(random_state=2)
+        model.log_reg.interpret_model_performance(method='ROC')
+
+        self.assertTrue(True)
+
+    def test_interpret_model(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 1], [21, 42, 1], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.4)
+        model.logistic_regression(random_state=2)
+        model.log_reg.interpret_model()
+
+        self.assertTrue(True)
+
+    def test_interpret_model_prerun(self):
+
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [4, 2, 0], [12, 2, 0], [25, 80, 0],
+            [14, 23, 1], [215, 15, 1], [2, 33, 1],
+            [81, 73, 0], [8, 28, 0], [625, 280, 0],
+            [1, 22, 1], [21, 42, 1], [2, 3, 1],
+            [81, 47, 0], [8, 8, 0], [425, 80, 0],
+            [1, 22, 1], [2, 42, 1], [2, 13, 1],
+            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.4)
+        model.logistic_regression(random_state=2)
+        model.log_reg.interpret_model_performance(method='ROC')
+        model.log_reg.interpret_model()
+
+        self.assertTrue(True)
 
 if __name__ == "__main__":
 
