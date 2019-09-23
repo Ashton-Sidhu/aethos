@@ -241,7 +241,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
         model.logistic_regression(random_state=2, penalty='l2')
-        model.log_reg.roc_curve(show=False)
+        model.log_reg.roc_curve()
 
         self.assertTrue(True)
     
@@ -476,7 +476,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.4)
         model.logistic_regression(random_state=2)
-        model.log_reg.interpret_model_behavior()
+        model.log_reg.interpret_model_behavior(show=False)
 
         self.assertTrue(True)
 
@@ -495,7 +495,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.4)
         model.logistic_regression(random_state=2)
-        model.log_reg.interpret_model_behavior(method='dependence')
+        model.log_reg.interpret_model_behavior(method='dependence', show=False)
 
         self.assertTrue(True)
 
@@ -514,7 +514,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.6)
         model.logistic_regression(random_state=2)
-        model.log_reg.interpret_predictions()
+        model.log_reg.interpret_predictions(show=False)
 
         self.assertTrue(True)
 
@@ -533,7 +533,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.6)
         model.logistic_regression(random_state=2)
-        model.log_reg.interpret_predictions(method='lime')
+        model.log_reg.interpret_predictions(method='lime', show=False)
 
         self.assertTrue(True)
 
@@ -552,7 +552,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.6)
         model.logistic_regression(random_state=2)
-        model.log_reg.interpret_model_performance()
+        model.log_reg.interpret_model_performance(show=False)
 
         self.assertTrue(True)
 
@@ -571,7 +571,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.6)
         model.logistic_regression(random_state=2)
-        model.log_reg.interpret_model_performance(method='ROC')
+        model.log_reg.interpret_model_performance(method='ROC', show=False)
 
         self.assertTrue(True)
 
@@ -590,7 +590,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.4)
         model.logistic_regression(random_state=2)
-        model.log_reg.interpret_model()
+        model.log_reg.interpret_model(show=False)
 
         self.assertTrue(True)
 
@@ -609,8 +609,8 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.4)
         model.logistic_regression(random_state=2)
-        model.log_reg.interpret_model_performance(method='ROC')
-        model.log_reg.interpret_model()
+        model.log_reg.interpret_model_performance(method='ROC', show=False)
+        model.log_reg.interpret_model(show=False)
 
         self.assertTrue(True)
 

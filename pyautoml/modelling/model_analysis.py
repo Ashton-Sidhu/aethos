@@ -391,16 +391,17 @@ class ModelBase(object):
 
         print(", ".join(str(np.array(sample_list) + 1)))
 
-    def interpret_model(self):
+    def interpret_model(self, show=True):
         """
         Displays a dashboard interpreting your model's performance, behaviour and individual predictions.
 
         If you have run any other `interpret` functions, they will be included in the dashboard, otherwise all the other intrepretable methods will be included in the dashboard.
         """
 
-        self.interpret.create_dashboard()
+        if show:
+            self.interpret.create_dashboard()
 
-    def interpret_model_performance(self, method='all', predictions='default', **interpret_kwargs):
+    def interpret_model_performance(self, method='all', predictions='default', show=True, **interpret_kwargs):
         """
         Plots an interpretable display of your model based off a performance metric.
 
@@ -421,6 +422,9 @@ class ModelBase(object):
 
         predictions : str, optional
             Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional 
+            False to not display the plot, by default True
         """
         
         dashboard = []
@@ -429,11 +433,12 @@ class ModelBase(object):
             for explainer in INTERPRET_EXPLAINERS['problem'][self.interpret.problem]:
                 dashboard.append(self.interpret.blackbox_show_performance(method=explainer, predictions=predictions, show=False, **interpret_kwargs))
 
-            interpret.show(dashboard)
+            if show:
+                interpret.show(dashboard)
         else:
-            self.interpret.blackbox_show_performance(method=method, predictions=predictions, **interpret_kwargs)
+            self.interpret.blackbox_show_performance(method=method, predictions=predictions, show=show, **interpret_kwargs)
 
-    def interpret_predictions(self, num_samples=0.25, sample_no=None, method='all', predictions='default', **interpret_kwargs):
+    def interpret_predictions(self, num_samples=0.25, sample_no=None, method='all', predictions='default', show=True, **interpret_kwargs):
         """
         Plots an interpretable display that explains individual predictions of your model.
 
@@ -455,19 +460,23 @@ class ModelBase(object):
 
         predictions : str, optional
             Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional 
+            False to not display the plot, by default True
         """
 
         dashboard = []
 
         if method == 'all':
             for explainer in INTERPRET_EXPLAINERS['local']:
-                dashboard.append(self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=explainer, predictions=predictions, **interpret_kwargs))
+                dashboard.append(self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=explainer, predictions=predictions, show=False, **interpret_kwargs))
 
-            interpret.show(dashboard)
+            if show:
+                interpret.show(dashboard)
         else:
-            self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=method, predictions=predictions, **interpret_kwargs)
+            self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=method, predictions=predictions, show=show, **interpret_kwargs)
         
-    def interpret_model_behavior(self, method='all', predictions='default', **interpret_kwargs):
+    def interpret_model_behavior(self, method='all', predictions='default', show=show, **interpret_kwargs):
         """
         Provides an interpretable summary of your models behaviour based off an explainer.
 
@@ -482,6 +491,9 @@ class ModelBase(object):
 
         predictions : str, optional
             Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional 
+            False to not display the plot, by default True
         """
 
         dashboard = []
@@ -490,9 +502,10 @@ class ModelBase(object):
             for explainer in INTERPRET_EXPLAINERS['global']:
                 dashboard.append(self.interpret.blackbox_global_explanation(method=explainer, predictions=predictions, show=False, **interpret_kwargs))
 
-            interpret.show(dashboard)
+            if show:
+                interpret.show(dashboard)
         else:
-            self.interpret.blackbox_global_explanation(method=method, predictions=predictions, **interpret_kwargs)
+            self.interpret.blackbox_global_explanation(method=method, predictions=predictions, show=show, **interpret_kwargs)
         
 class TextModel(ModelBase):
 
@@ -712,7 +725,7 @@ class ClassificationModel(ModelBase):
             self.report.log('CONFUSION MATRIX:\n')
             self.report.log(df_cm.to_string())
 
-    def roc_curve(self, figsize=(450,550), output_file='', show=True):
+    def roc_curve(self, figsize=(450,550), output_file=''):
         """
         Plots an ROC curve and displays the ROC statistics (area under the curve).
 
@@ -748,8 +761,8 @@ class ClassificationModel(ModelBase):
         if output_file:
             output_file(output_file + '.html', title='ROC Curve (area = {:.2f})'.format(roc_auc))
 
-        if show:
-            bokeh.io.show(p)
+
+        bokeh.io.show(p)
     
     def classification_report(self):
         """
