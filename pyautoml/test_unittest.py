@@ -327,7 +327,7 @@ class Test_TestBase(unittest.TestCase):
                    "date": pd.date_range('1/1/2000', periods=1000)})
 
         clean = Clean(data=df, split=False)
-        clean.visualize_lineplot('date', 'Google', 'Apple')
+        clean.visualize_lineplot('date', 'Google', 'Apple', show_figure=False)
 
         self.assertTrue(True)
         
