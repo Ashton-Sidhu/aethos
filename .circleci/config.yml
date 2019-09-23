@@ -38,7 +38,7 @@ jobs:
           command: |  # use pipenv to install dependencies
             python3 -m venv venv
             . venv/bin/activate
-            pip3 install -U pip
+            pip3 install -U pip setuptools
             pip3 install -r requirements.txt
             python3 -m textblob.download_corpora
             python3 -c 'import nltk; nltk.download("stopwords")'
@@ -65,7 +65,7 @@ jobs:
             command: |  # use pipenv to install dependencies
               python3 -m venv venv
               . venv/bin/activate
-              pip3 install -U pip
+              pip3 install -U pip setuptools
               pip3 install -r requirements.txt
               pip3 install geopandas pyspark
               python3 -m textblob.download_corpora
@@ -96,7 +96,7 @@ jobs:
             command: |  # use pipenv to install dependencies
               python3 -m venv venv
               . venv/bin/activate
-              pip3 install -U pip
+              pip3 install -U pip setuptools
               pip3 install -r requirements.txt
               pip3 install twine
               python3 -m textblob.download_corpora

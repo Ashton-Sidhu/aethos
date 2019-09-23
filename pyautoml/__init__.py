@@ -1,3 +1,4 @@
+import interpret
 import pandas as pd
 import shap
 from bokeh.io import output_notebook

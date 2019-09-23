@@ -1,41 +1,64 @@
+import interpret
 import numpy as np
+import pandas as pd
 import shap
+from interpret.blackbox import (LimeTabular, MorrisSensitivity,
+                                PartialDependence, ShapKernel)
+from interpret.perf import PR, ROC, RegressionPerf
 
-
+INTERPRET_EXPLAINERS = {
+    'problem': {
+        'classification': {
+            'roc': ROC,
+            'pr' : PR,
+        },
+        'regression': {
+            'regperf': RegressionPerf,
+        },
+    },    
+    'local': {
+        'lime': LimeTabular,
+        'shap': ShapKernel,
+    },
+    'global': {
+        'morris': MorrisSensitivity,
+        'dependence': PartialDependence,
+    }
+}
 class Shap(object):
 
     def __init__(self, model, train_data, test_data, y_test, learner: str):
 
         self.model = model
-        self.train_data = train_data
-        self.test_data = test_data
+        self.x_train = train_data
+        self.x_test = test_data
         self.y_test = y_test
         
         if learner == 'linear':
-            self.explainer = shap.LinearExplainer(self.model, self.train_data, feature_dependence='independent')
+            self.explainer = shap.LinearExplainer(self.model, self.x_train, feature_dependence='independent')
         elif learner == 'tree':
             self.explainer = shap.TreeExplainer(self.model)
-            self.shap_interaction_values = self.explainer.shap_interaction_values(self.test_data)
+            self.shap_interaction_values = self.explainer.shap_interaction_values(self.x_test)
         else:
             raise ValueError('Learner: {} is not supported yet.'.format(learner))
         
         self.expected_value = self.explainer.expected_value
-        self.shap_values = np.array(self.explainer.shap_values(self.test_data)).astype(float)
+        self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(float)
         
         # Calculate misclassified values
         self.misclassified_values = self._calculate_misclassified()
 
         # As per SHAP guidelines, test data needs to be dense for plotting functions
-        self.test_data_array = self.test_data.values
+        self.x_test_array = self.x_test.values
 
     def summary_plot(self, **summaryplot_kwargs):
         """
         Plots a SHAP summary plot.
         """
 
-        shap.summary_plot(self.shap_values, self.test_data_array, feature_names=self.train_data.columns, **summaryplot_kwargs)
+        shap.summary_plot(self.shap_values, self.x_test_array, feature_names=self.x_train.columns, **summaryplot_kwargs)
 
-    def decision_plot(self, num_samples=0.6, sample_no=None, **decisionplot_kwargs):
+    def decision_plot(self, num_samples=0.25, sample_no=None, **decisionplot_kwargs):
         """
         Plots a SHAP decision plot.
         
@@ -43,7 +66,7 @@ class Shap(object):
         ----------
         num_samples : int, float, or 'all', optional
             Number of samples to display, if less than 1 it will treat it as a percentage, 'all' will include all samples
-            , by default 0.6
+            , by default 0.25
 
         sample_no : int, optional
             Sample number to isolate and analyze, if provided it overrides num_samples, by default None
@@ -64,18 +87,18 @@ class Shap(object):
             samples = slice(sample_no - 1, sample_no)
         else:
             if num_samples == 'all':
-                samples = slice(0, len(self.test_data_array))
+                samples = slice(0, len(self.x_test_array))
             elif num_samples <= 0:
                 raise ValueError('Number of samples must be greater than 0. If it is less than 1, it will be treated as a percentage.')
             elif num_samples > 0 and num_samples < 1:
-                samples = slice(0, int(num_samples * len(self.test_data_array)))
+                samples = slice(0, int(num_samples * len(self.x_test_array)))
             else:
                 samples = slice(0, num_samples)
 
         if highlight is not None:
             highlight = highlight[samples]
 
-        return shap.decision_plot(self.expected_value, self.shap_values[samples], self.train_data.columns, return_objects=return_objects, highlight=highlight, **decisionplot_kwargs) 
+        return shap.decision_plot(self.expected_value, self.shap_values[samples], self.x_train.columns, return_objects=return_objects, highlight=highlight, **decisionplot_kwargs) 
 
     def force_plot(self, sample_no=None, **forceplot_kwargs):
         """
@@ -92,7 +115,7 @@ class Shap(object):
         else:
             samples = slice(0, len(shap_values))
 
-        return shap.force_plot(self.expected_value, shap_values[samples], self.train_data.columns, **forceplot_kwargs)
+        return shap.force_plot(self.expected_value, shap_values[samples], self.x_train.columns, **forceplot_kwargs)
 
     def dependence_plot(self, feature, interaction=None, **dependenceplot_kwargs):
         """
@@ -101,7 +124,7 @@ class Shap(object):
 
         interaction = dependenceplot_kwargs.pop('interaction_index', interaction)
 
-        shap.dependence_plot(feature, self.shap_values, self.test_data, interaction_index=interaction, **dependenceplot_kwargs)
+        shap.dependence_plot(feature, self.shap_values, self.x_test, interaction_index=interaction, **dependenceplot_kwargs)
 
     def _calculate_misclassified(self) -> list:
         """
@@ -117,3 +140,209 @@ class Shap(object):
         misclassified = y_pred != self.y_test
 
         return misclassified
+
+class MSFTInterpret(object):
+
+    def __init__(self, model, train_data, test_data, y_test, problem):
+
+        self.model = model
+        self.x_train = train_data.apply(pd.to_numeric)
+        self.x_test = test_data.apply(pd.to_numeric)
+        self.y_test = y_test
+        self.problem = problem
+        self.trained_blackbox_explainers = {}
+
+    def blackbox_show_performance(self, method, predictions='default', show=True):
+        """
+        Plots an interpretable display of your model based off a performance metric.
+
+        Can either be 'ROC' or 'PR' for precision, recall for classification problems.
+
+        Can be 'regperf' for regression problems.
+        
+        Parameters
+        ----------
+        method : str
+            Performance metric, either 'roc' or 'PR'
+
+        predictions : str, optional
+            Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional
+            False to not display the plot, by default True
+        
+        Returns
+        -------
+        Interpret
+            Interpretable dashboard of your model
+        """
+
+        if predictions == 'probability':
+            predict_fn = self.model.predict_proba
+        else:
+            predict_fn = self.model.predict
+
+        if self.problem in INTERPRET_EXPLAINERS['problem']:
+            if method.lower() in INTERPRET_EXPLAINERS['problem'][self.problem]:
+                blackbox_perf = INTERPRET_EXPLAINERS['problem'][self.problem][method.lower()](predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
+        else:
+            raise ValueError('Supported blackbox explainers are only {} for classification problems and {} for regression problems'.format(",".join(INTERPRET_EXPLAINERS['problem']['classification'].keys()), ",".join(INTERPRET_EXPLAINERS['problem']['regression'].keys())))
+
+        if show:
+            interpret.show(blackbox_perf)
+
+        self.trained_blackbox_explainers[method.lower()] = blackbox_perf
+
+        return blackbox_perf
+
+    def blackbox_local_explanation(self, num_samples=0.25, sample_no=None, method='lime',  predictions='default', show=True, **kwargs):
+        """
+        Plots an interpretable display that explains individual predictions of your model.
+
+        Supported explainers are either 'lime' or 'shap'.
+        
+        Parameters
+        ----------
+        num_samples : int, float, or 'all', optional
+            Number of samples to display, if less than 1 it will treat it as a percentage, 'all' will include all samples
+            , by default 0.25
+
+        sample_no : int, optional
+            Sample number to isolate and analyze, if provided it overrides num_samples, by default None
+
+        method : str, optional
+            Explainer type, can either be 'lime' or 'shap', by default 'lime'
+
+        predictions : str, optional
+            Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional
+            False to not display the plot, by default True
+        
+        Returns
+        -------
+        Interpret
+            Interpretable dashboard of your model
+        """
+        
+        if predictions == 'probability':
+            predict_fn = self.model.predict_proba
+        else:
+            predict_fn = self.model.predict
+
+        # Determine method
+        if method.lower() in INTERPRET_EXPLAINERS['local']:
+            if method.lower() == 'lime':
+                data = self.x_train
+            elif method.lower() == 'shap':
+                data = np.median(self.x_train, axis=0).reshape(1, -1)
+            else:
+                raise ValueError
+
+            explainer = INTERPRET_EXPLAINERS['local'][method.lower()](predict_fn=predict_fn, data=data, **kwargs)
+
+        else:
+            raise ValueError('Supported blackbox local explainers are only "lime" and "shap".')
+
+        if sample_no is not None:
+            if sample_no < 1 or not isinstance(sample_no, int):
+                raise ValueError('Sample number must be greater than 1.')
+
+            samples = slice(sample_no - 1, sample_no)
+        else:
+            if num_samples == 'all':
+                samples = slice(0, len(self.x_test))
+            elif num_samples <= 0:
+                raise ValueError('Number of samples must be greater than 0. If it is less than 1, it will be treated as a percentage.')
+            elif num_samples > 0 and num_samples < 1:
+                samples = slice(0, int(num_samples * len(self.x_test)))
+            else:
+                samples = slice(0, num_samples)
+
+        explainer_local = explainer.explain_local(self.x_test[samples], self.y_test[samples], name=method.upper())
+
+        self.trained_blackbox_explainers[method.lower()] = explainer_local
+
+        if show:
+            interpret.show(explainer_local)
+
+        return explainer_local
+
+    def blackbox_global_explanation(self, method='morris', predictions='default', show=True, **kwargs):
+        """
+        Provides an interpretable summary of your models behaviour based off an explainer.
+
+        Can either be 'morris' or 'dependence' for Partial Dependence.
+        
+        Parameters
+        ----------
+        method : str, optional
+            Explainer type, can either be 'morris' or 'dependence', by default 'morris'
+
+        predictions : str, optional
+            Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional
+            False to not display the plot, by default True
+        
+        Returns
+        -------
+        Interpret
+            Interpretable dashboard of your model
+        """
+
+        # if predictions == 'probability':
+        #     predict_fn = self.model.predict_proba
+        # else:
+        #     predict_fn = self.model.predict
+
+        # NOTE: Microsoft Interpret morris utility library needs predictions to be float, and .predict for classifiers produce an int array.
+        # So until it gets fixed, if the problem is classification then use .predict_proba
+        if self.problem == 'classification':
+            predict_fn = self.model.predict_proba
+        else:
+            predict_fn = self.model.predict
+
+        if method.lower() in INTERPRET_EXPLAINERS['global']:
+            sensitivity = INTERPRET_EXPLAINERS['global'][method.lower()](predict_fn=predict_fn, data=self.x_train, **kwargs)
+
+        else:
+            raise ValueError('Supported blackbox global explainers are only "morris" and partial "dependence".')
+
+        sensitivity_global = sensitivity.explain_global(name=method.upper())
+
+        self.trained_blackbox_explainers[method.lower()] = sensitivity_global
+
+        if show:
+            interpret.show(sensitivity_global)
+
+        return sensitivity_global
+
+    def create_dashboard(self):
+        """
+        Displays an interpretable dashboard of already created interpretable plots.
+        
+        If a plot hasn't been interpreted yet it is created using default parameters for the dashboard.
+        """
+
+        dashboard_plots = []
+
+        for explainer_type in INTERPRET_EXPLAINERS:
+
+            if explainer_type == 'problem':
+                temp_explainer_type = INTERPRET_EXPLAINERS[explainer_type][self.problem]
+            else:
+                temp_explainer_type = INTERPRET_EXPLAINERS[explainer_type]
+
+            for explainer in temp_explainer_type:
+                if explainer in self.trained_blackbox_explainers:
+                    dashboard_plots.append(self.trained_blackbox_explainers[explainer])
+                else:
+                    if explainer_type == 'problem':
+                        dashboard_plots.append(self.blackbox_show_performance(explainer, show=False))
+                    elif explainer_type == 'local':
+                        dashboard_plots.append(self.blackbox_local_explanation(method=explainer, show=False))
+                    else:
+                        dashboard_plots.append(self.blackbox_global_explanation(method=explainer, show=False))
+
+        interpret.show(dashboard_plots)

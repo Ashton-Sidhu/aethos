@@ -1,5 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/py-automl.svg)](https://badge.fury.io/py/py-automl) [![CircleCI](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop.svg?style=svg)](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop) [![Documentation Status](https://readthedocs.org/projects/py-automl/badge/?version=latest)](https://py-automl.readthedocs.io/en/latest/?badge=latest)
 
+
 # py-automl
 
 <i>"A collection of tools for Data Scientists and ML Engineers for them to focus less on how to do the analysis and instead worry about what are the best analytic tools that will help gain the most insights from their data."</i>
@@ -280,7 +281,9 @@ N/A
 
 [@pandas-profiling](https://github.com/pandas-profiling) for their automated [EDA report generation](https://github.com/pandas-profiling/pandas-profiling) library.
 
-[@slundberg](https://github.com/slundberg/) for his [shap](https://github.com/slundberg/shap) model visualization library.
+[@slundberg](https://github.com/slundberg/) for his [shap](https://github.com/slundberg/shap) model explanation library.
+
+[@microsoft](https://github.com/microsoft/) for their [interpret](https://github.com/microsoft/interpret) model explanation library.
 
 ## For Developers
 

@@ -2,16 +2,17 @@ import itertools
 from collections import OrderedDict
 from itertools import compress
 
+import bokeh
+import interpret
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import sklearn
-from bokeh.io import show
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
-
-from pyautoml.modelling.model_explanation import Shap
+from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
+                                                  MSFTInterpret, Shap)
 from pyautoml.visualizations.visualize import *
 
 SCORE_METRICS = [
@@ -30,10 +31,13 @@ SHAP_LEARNERS = {
     sklearn.linear_model.LogisticRegression : 'linear'
 }
 
+PROBLEM_TYPE = {
+    sklearn.linear_model.LogisticRegression : 'classification'
+}
+
 class ModelBase(object):
 
     # TODO: Add more SHAP use cases
-    # TODO: MSFT Interpret
     # TODO: Add loss metrics
 
     def __init__(self, model_object, model, model_name):
@@ -50,8 +54,10 @@ class ModelBase(object):
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
             self.shap = Shap(self.model, self.train_data, self.test_data, self.target_data, SHAP_LEARNERS[type(self.model)])
+            self.interpret = MSFTInterpret(self.model, self.train_data, self.test_data, self.target_data, PROBLEM_TYPE[type(self.model)])
         else:
             self.shap = None
+            self.interpret = None
 
     def model_weights(self):
         """
@@ -385,6 +391,122 @@ class ModelBase(object):
 
         print(", ".join(str(np.array(sample_list) + 1)))
 
+    def interpret_model(self, show=True):
+        """
+        Displays a dashboard interpreting your model's performance, behaviour and individual predictions.
+
+        If you have run any other `interpret` functions, they will be included in the dashboard, otherwise all the other intrepretable methods will be included in the dashboard.
+        """
+
+        if show:
+            self.interpret.create_dashboard()
+
+    def interpret_model_performance(self, method='all', predictions='default', show=True, **interpret_kwargs):
+        """
+        Plots an interpretable display of your model based off a performance metric.
+
+        Can either be 'ROC' or 'PR' for precision, recall for classification problems.
+
+        Can be 'regperf' for regression problems.
+
+        If 'all' a dashboard is displayed with the corresponding explainers for the problem type.
+
+        ROC: Receiver Operator Characteristic
+        PR: Precision Recall
+        regperf: RegeressionPerf
+        
+        Parameters
+        ----------
+        method : str
+            Performance metric, either 'all', 'roc' or 'PR', by default 'all'
+
+        predictions : str, optional
+            Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional 
+            False to not display the plot, by default True
+        """
+        
+        dashboard = []
+
+        if method == 'all':
+            for explainer in INTERPRET_EXPLAINERS['problem'][self.interpret.problem]:
+                dashboard.append(self.interpret.blackbox_show_performance(method=explainer, predictions=predictions, show=False, **interpret_kwargs))
+
+            if show:
+                interpret.show(dashboard)
+        else:
+            self.interpret.blackbox_show_performance(method=method, predictions=predictions, show=show, **interpret_kwargs)
+
+    def interpret_predictions(self, num_samples=0.25, sample_no=None, method='all', predictions='default', show=True, **interpret_kwargs):
+        """
+        Plots an interpretable display that explains individual predictions of your model.
+
+        Supported explainers are either 'lime' or 'shap'.
+
+        If 'all' a dashboard is displayed with morris and dependence analysis displayed.
+        
+        Parameters
+        ----------
+        num_samples : int, float, or 'all', optional
+            Number of samples to display, if less than 1 it will treat it as a percentage, 'all' will include all samples
+            , by default 0.25
+
+        sample_no : int, optional
+            Sample number to isolate and analyze, if provided it overrides num_samples, by default None
+
+        method : str, optional
+            Explainer type, can either be 'all', 'lime', or 'shap', by default 'all'
+
+        predictions : str, optional
+            Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional 
+            False to not display the plot, by default True
+        """
+
+        dashboard = []
+
+        if method == 'all':
+            for explainer in INTERPRET_EXPLAINERS['local']:
+                dashboard.append(self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=explainer, predictions=predictions, show=False, **interpret_kwargs))
+
+            if show:
+                interpret.show(dashboard)
+        else:
+            self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=method, predictions=predictions, show=show, **interpret_kwargs)
+        
+    def interpret_model_behavior(self, method='all', predictions='default', show=True, **interpret_kwargs):
+        """
+        Provides an interpretable summary of your models behaviour based off an explainer.
+
+        Can either be 'morris' or 'dependence' for Partial Dependence.
+        
+        If 'all' a dashboard is displayed with morris and dependence analysis displayed.
+        
+        Parameters
+        ----------
+        method : str, optional
+            Explainer type, can either be 'all', 'morris' or 'dependence', by default 'all'
+
+        predictions : str, optional
+            Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
+
+        show : bool, optional 
+            False to not display the plot, by default True
+        """
+
+        dashboard = []
+
+        if method == 'all':
+            for explainer in INTERPRET_EXPLAINERS['global']:
+                dashboard.append(self.interpret.blackbox_global_explanation(method=explainer, predictions=predictions, show=False, **interpret_kwargs))
+
+            if show:
+                interpret.show(dashboard)
+        else:
+            self.interpret.blackbox_global_explanation(method=method, predictions=predictions, show=show, **interpret_kwargs)
+        
 class TextModel(ModelBase):
 
     def __init__(self, model_object, model_name):
@@ -639,7 +761,8 @@ class ClassificationModel(ModelBase):
         if output_file:
             output_file(output_file + '.html', title='ROC Curve (area = {:.2f})'.format(roc_auc))
 
-        show(p)
+
+        bokeh.io.show(p)
     
     def classification_report(self):
         """
