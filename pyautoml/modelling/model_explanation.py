@@ -1,5 +1,6 @@
 import interpret
 import numpy as np
+import pandas as pd
 import shap
 from interpret.blackbox import (LimeTabular, MorrisSensitivity,
                                 PartialDependence, ShapKernel)
@@ -145,8 +146,8 @@ class MSFTInterpret(object):
     def __init__(self, model, train_data, test_data, y_test, problem):
 
         self.model = model
-        self.x_train = train_data
-        self.x_test = test_data
+        self.x_train = train_data.apply(pd.to_numeric)
+        self.x_test = test_data.apply(pd.to_numeric)
         self.y_test = y_test
         self.problem = problem
         self.trained_blackbox_explainers = {}
@@ -184,18 +185,6 @@ class MSFTInterpret(object):
         if self.problem in INTERPRET_EXPLAINERS['problem']:
             if method.lower() in INTERPRET_EXPLAINERS['problem'][self.problem]:
                 blackbox_perf = INTERPRET_EXPLAINERS['problem'][self.problem][method.lower()](predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
-        # if self.problem == 'classification':
-        #     if method.lower() == 'roc':
-        #         blackbox_perf = ROC(predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
-        #     elif method.lower() == 'pr':
-        #         blackbox_perf = PR(predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
-        #     else:
-        #         raise ValueError('Supported {} blackbox explainers are only "ROC" and "PR".'.format(problem))
-        # elif self.problem == 'regression':
-        #     if method.lower() == 'regperf':
-        #         blackbox_perf = RegressionPerf(predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
-        #     else:
-        #         raise ValueError('')
         else:
             raise ValueError('Supported blackbox explainers are only {} for classification problems and {} for regression problems'.format(",".join(INTERPRET_EXPLAINERS['problem']['classification'].keys()), ",".join(INTERPRET_EXPLAINERS['problem']['regression'].keys())))
 
@@ -251,11 +240,7 @@ class MSFTInterpret(object):
                 raise ValueError
 
             explainer = INTERPRET_EXPLAINERS['local'][method.lower()](predict_fn=predict_fn, data=data, **kwargs)
-        # if method.lower() == 'lime':
-        #     explainer = LimeTabular(predict_fn=predict_fn, data=self.x_train, random_state=42, **kwargs)
-        # elif method.lower() == 'shap':
-        #     background_val = np.median(self.x_train, axis=0).reshape(1, -1)
-        #     explainer = ShapKernel(predict_fn=predict_fn, data=background_val, feature_names=self.x_train.columns, **kwargs)
+
         else:
             raise ValueError('Supported blackbox local explainers are only "lime" and "shap".')
 
@@ -320,10 +305,7 @@ class MSFTInterpret(object):
 
         if method.lower() in INTERPRET_EXPLAINERS['global']:
             sensitivity = INTERPRET_EXPLAINERS['global'][method.lower()](predict_fn=predict_fn, data=self.x_train, **kwargs)
-        # if method == 'morris':
-        #     sensitivity = MorrisSensitivity(predict_fn=predict_fn, data=self.x_train, **kwargs)
-        # elif method == 'dependence':
-        #     sensitivity = PartialDependence(predict_fn=predict_fn, data=self.x_train, **kwargs)
+
         else:
             raise ValueError('Supported blackbox global explainers are only "morris" and partial "dependence".')
 

@@ -2,16 +2,15 @@ import itertools
 from collections import OrderedDict
 from itertools import compress
 
+import bokeh
 import interpret
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import sklearn
-from bokeh.io import show
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
-
 from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
                                                   MSFTInterpret, Shap)
 from pyautoml.visualizations.visualize import *
@@ -713,7 +712,7 @@ class ClassificationModel(ModelBase):
             self.report.log('CONFUSION MATRIX:\n')
             self.report.log(df_cm.to_string())
 
-    def roc_curve(self, figsize=(450,550), output_file=''):
+    def roc_curve(self, figsize=(450,550), output_file='', show=True):
         """
         Plots an ROC curve and displays the ROC statistics (area under the curve).
 
@@ -749,7 +748,8 @@ class ClassificationModel(ModelBase):
         if output_file:
             output_file(output_file + '.html', title='ROC Curve (area = {:.2f})'.format(roc_auc))
 
-        show(p)
+        if show:
+            bokeh.io.show(p)
     
     def classification_report(self):
         """

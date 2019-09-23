@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from pyautoml import Model
 
 
@@ -242,7 +241,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
         model.logistic_regression(random_state=2, penalty='l2')
-        model.log_reg.roc_curve()
+        model.log_reg.roc_curve(show=False)
 
         self.assertTrue(True)
     

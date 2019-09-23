@@ -1,5 +1,5 @@
 pandas_summary==0.0.7
-matplotlib==3.1.0
+matplotlib<3.2.0
 gensim==3.8.0
 pandas_bokeh==0.3
 ptitprince==0.1.5
