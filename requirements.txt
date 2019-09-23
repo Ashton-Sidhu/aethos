@@ -21,3 +21,4 @@ PyYAML==5.1.2
 SAlib
 dash
 lime
+dash_cytoscape
