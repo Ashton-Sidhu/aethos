@@ -743,6 +743,36 @@ class MethodBase(object):
 
         return self.copy()
 
+    def to_csv(self, name: str, index=False, **kwargs):
+        """
+        Write data to csv with the name and path provided.
+
+        The function will automatically add '.csv' to the end of the name.
+
+        By default it writes 10000 rows at a time to file to consider memory on different machines.
+
+        Training data will end in '_train.csv' andt test data will end in '_test.csv'.
+
+        For a full list of keyword args for writing to csv please see the following link: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html
+        
+        Parameters
+        ----------
+        name : str
+            File path
+        index : bool, optional
+            True to write 'index' column, by default False
+        """
+
+        index = kwargs.pop('index', index)
+        chunksize = kwargs.pop('chunksize', 10000)
+
+        if not self._data_properties.split:
+            self._data_properties.data.to_csv(name + '.csv', index=index, chunksize=chunksize, **kwargs)
+        else:
+            self._data_properties.train_data.to_csv(name + '_train.csv', index=index, chunksize=chunksize, **kwargs)
+            self._data_properties.test_data.to_csv(name + '_test.csv', index=index, chunksize=chunksize, **kwargs)
+
+
     def visualize_raincloud(self, x_col: str, y_col=None, **params):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.

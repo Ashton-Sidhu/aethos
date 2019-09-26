@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import numpy as np
@@ -331,6 +332,36 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
         
+    def test_write_data_tocsv(self):
+
+        np.random.seed(42)
+        df = pd.DataFrame({"Google": np.random.randn(1000)+0.2, 
+                   "Apple": np.random.randn(1000)+0.17, 
+                   "date": pd.date_range('1/1/2000', periods=1000)})
+
+        clean = Clean(data=df, split=False)
+        clean.to_csv('test_write_data')
+        os.remove('test_write_data.csv')
+
+        self.assertTrue(True)
+
+    def test_write_traindata_tocsv(self):
+
+        int_missing_data = [[1, 0, 0],
+                            [0, 2, 3],
+                            [0, 3, 4],
+                            [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(data=data, train_data=None, test_data=None, split=True, target_field='', report_name="test", target_mapping=None, test_split_percentage=0.5)
+
+        base.to_csv('titanic123')
+        os.remove('titanic123_train.csv')
+        os.remove('titanic123_test.csv')
+
+        self.assertTrue(True)
+
 
 
 if __name__ == "__main__":
