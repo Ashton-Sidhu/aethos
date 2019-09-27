@@ -17,7 +17,7 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(data=data, test_split_percentage=0.5, split=False)
+        preprocess = Preprocess(x_train=data, test_split_percentage=0.5, split=False)
         preprocess.normalize_numeric()
         validate = preprocess.x_train.values.tolist()
 
@@ -54,7 +54,7 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.split_sentences('data')
         validate = prep.x_train['data_sentences'].values.tolist()
 
@@ -69,7 +69,7 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.stem_nltk('data')
         validate = prep.x_train.shape[1]
 
@@ -82,7 +82,7 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.split_words_nltk('data')
         validate = prep.x_train.data_tokenized.values.tolist()
 
@@ -95,7 +95,7 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.split_words_nltk('data', regexp=r'\w+\d+')
         validate = prep.x_train.data_tokenized.values.tolist()
 
@@ -108,7 +108,7 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.remove_punctuation('data')
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -122,7 +122,7 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.remove_punctuation('data', regexp=r'\w+\.\w+|\w+')
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -135,7 +135,7 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.remove_punctuation('data', exceptions=['.',  '>'])
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -148,7 +148,7 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.remove_stopwords_nltk('data', custom_stopwords=['please'])
         validate = prep.x_train.data_rem_stop.values.tolist()
 
@@ -162,7 +162,7 @@ class TestPreprocessing(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.encode_labels('col1', 'col2')
         validate = prep.x_train.values.tolist()
 

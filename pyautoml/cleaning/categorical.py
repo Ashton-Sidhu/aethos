@@ -41,7 +41,6 @@ def replace_missing_new_category(x_train, x_test=None, col_to_category=None, con
     Examples
     --------
     >>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
-    
     >>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
     """
 

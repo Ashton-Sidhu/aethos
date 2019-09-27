@@ -353,7 +353,6 @@ class Clean(MethodBase):
         Examples
         --------
         >>> replace_missing_new_category(col_mapping={'col1': "Green", 'col2': "Canada", 'col3': "December"})
-
         >>> replace_missing_new_category('col1', 'col2', 'col3', new_category='Blue')
         """
 
@@ -376,7 +375,7 @@ class Clean(MethodBase):
                                                                                                         )
 
         if self.report is not None:
-            if col_to_category is None:
+            if not col_to_category:
                 self.report.report_technique(report_info, self._data_properties.x_train.columns)
             else:
                 self.report.report_technique(report_info, list(col_to_category))                                                                                                   
@@ -516,7 +515,6 @@ class Clean(MethodBase):
         --------
         >>> For example if your data was [5, 5, NaN, 1, 2]
         >>> There would be a 50% chance that the NaN would be replaced with a 5, a 25% chance for 1 and a 25% chance for 2.
-
         """
     
         report_info = technique_reason_repo['clean']['general']['random_discrete']

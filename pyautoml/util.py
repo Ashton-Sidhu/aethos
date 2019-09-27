@@ -154,7 +154,7 @@ def split_data(df, split_percentage: float):
 
     return x_train, x_test
 
-def _numeric_input_conditions(list_of_cols: list, data, x_train) -> list:
+def _numeric_input_conditions(list_of_cols: list, x_train) -> list:
     """
     Helper function to help set variable values of numeric cleaning method functions.
 
@@ -166,10 +166,7 @@ def _numeric_input_conditions(list_of_cols: list, data, x_train) -> list:
     if list_of_cols:
         list_of_cols = list_of_cols
     else:
-        if data is not None:
-            list_of_cols = data.select_dtypes([np.number]).columns.tolist()
-        else:
-            list_of_cols = x_train.select_dtypes([np.number]).columns.tolist()
+        list_of_cols = x_train.select_dtypes([np.number]).columns.tolist()
 
     return list_of_cols
 

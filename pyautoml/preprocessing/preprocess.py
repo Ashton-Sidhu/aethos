@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -22,15 +23,15 @@ with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
 class Preprocess(MethodBase):
 
     
-    def __init__(self, step=None, data=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(self, step=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
 
         _data_properties = _contructor_data_properties(step)
 
         if _data_properties is None:        
-            super().__init__(data=data, x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.x_train, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
 
@@ -72,31 +73,22 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.x_train = preprocess_normalize(list_of_cols=list_of_cols, **normalize_params, data=self._data_properties.x_train)
-
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train, None)
-                    self.report.report_technique(report_info, list_of_cols)
-            
-            return self.copy()
-
+            self._data_properties.x_train = preprocess_normalize(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, **normalize_params)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = preprocess_normalize(list_of_cols=list_of_cols,
-                                                                                                    **normalize_params,
-                                                                                                    x_train=self._data_properties.x_train,
-                                                                                                    x_test=self._data_properties.x_test)
+            self._data_properties.x_train, self._data_properties.x_test = preprocess_normalize(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                list_of_cols=list_of_cols,
+                                                                                                **normalize_params,
+                                                                                                )
 
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.x_train)
-                    self.report.report_technique(report_info, list_of_cols)
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train)
+                self.report.report_technique(report_info, list_of_cols)
 
-            return self.copy()
+        return self.copy()
 
 
     def split_sentences(self, *list_args, list_of_cols=[], new_col_name='_sentences'):
@@ -127,12 +119,13 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)        
     
         if not self._data_properties.split:    
-            self._data_properties.x_train = split_sentences(list_of_cols, new_col_name=new_col_name, data=self._data_properties.x_train)
+            self._data_properties.x_train = split_sentences(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = split_sentences(list_of_cols,
+            self._data_properties.x_train, self._data_properties.x_test = split_sentences(x_train=self._data_properties.x_train, 
+                                                                                            x_test=self._data_properties.x_test,
+                                                                                            list_of_cols=list_of_cols,
                                                                                             new_col_name=new_col_name,
-                                                                                            x_train=self._data_properties.x_train, 
-                                                                                            x_test=self._data_properties.x_test)
+                                                                                            )
     
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -178,10 +171,10 @@ class Preprocess(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.x_train = nltk_stem(
-                list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name)
         else:
             self._data_properties.x_train, self._data_properties.x_test = nltk_stem(
-                list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -220,10 +213,10 @@ class Preprocess(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.x_train = nltk_word_tokenizer(
-                list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name)
         else:
             self._data_properties.x_train, self._data_properties.x_test = nltk_word_tokenizer(
-                list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -264,10 +257,10 @@ class Preprocess(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.x_train = nltk_remove_stopwords(
-                list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name)
         else:
             self._data_properties.x_train, self._data_properties.x_test = nltk_remove_stopwords(
-                list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -314,10 +307,10 @@ class Preprocess(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.x_train = remove_punctuation(
-                list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name)
         else:
             self._data_properties.x_train, self._data_properties.x_test = remove_punctuation(
-                list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -352,10 +345,10 @@ class Preprocess(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.x_train = label_encoder(
-                list_of_cols, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols)
         else:
             self._data_properties.x_train, self._data_properties.x_test = label_encoder(
-                list_of_cols, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols)
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)

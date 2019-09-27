@@ -50,7 +50,7 @@ def replace_missing_mean_median_mode(x_train, x_test=None, list_of_cols=[], stra
     """
     
     if strategy != 'most_frequent':    
-        list_of_cols = _numeric_input_conditions(list_of_cols, x_train, x_train)
+        list_of_cols = _numeric_input_conditions(list_of_cols, x_train)
     else:
         list_of_cols = _get_columns(list_of_cols, x_train)
     
