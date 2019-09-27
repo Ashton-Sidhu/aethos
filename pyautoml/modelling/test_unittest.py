@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+
 from pyautoml import Model
 
 
@@ -611,6 +612,28 @@ class TestModelling(unittest.TestCase):
         model.logistic_regression(random_state=2)
         model.log_reg.interpret_model_performance(method='ROC', show=False)
         model.log_reg.interpret_model(show=False)
+
+        self.assertTrue(True)
+
+    def test_comparemodels(self):
+        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+        [8, 7, 0], [8, 8, 0], [25, 80, 0],
+        [1, 2, 1], [2, 2, 1], [2, 3, 1],
+        [8, 7, 0], [8, 8, 0], [25, 80, 0],
+        [1, 2, 1], [2, 2, 1], [2, 3, 1],
+        [8, 7, 0], [8, 8, 0], [25, 80, 0],
+        [1, 2, 1], [2, 2, 1], [2, 3, 1],
+        [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(data=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
+        model.logistic_regression(random_state=2, penalty='l2', model_name='l1', run=False)
+        model.logistic_regression(random_state=2, penalty='l2', model_name='l2', run=False)
+        model.logistic_regression(random_state=2, penalty='l2', model_name='l3', run=False)
+
+        model.run_models(method='series')
+        model.compare_models()
 
         self.assertTrue(True)
 

@@ -608,20 +608,16 @@ class ClassificationModel(ModelBase):
         y_pred = self.prediction_data
         computed_metrics = []
 
-
         if metric == 'all' or 'all' in metrics:
             for met in SCORE_METRICS:
-                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
-                computed_metrics.append(metric_str)
+                computed_metrics.append(getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
             index = SCORE_METRICS
         elif metrics:
             for met in metrics:
-                metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
-                computed_metrics.append(metric_str)
+                computed_metrics.append(getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
             index = metrics
         else:      
-            metric_str = '{} : {}'.format(metric, getattr(sklearn.metrics, metric + "_score")(y_true, y_pred, **scoring_kwargs))
-            computed_metrics.append(metric_str)
+            computed_metrics.append(getattr(sklearn.metrics, met + "_score")(y_true, y_pred), **scoring_kwargs)
             index = [metric]
 
         metric_table = pd.DataFrame(index=index, columns=[self.model_name], data=computed_metrics)

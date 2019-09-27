@@ -328,6 +328,24 @@ class Model(MethodBase):
         else:
             print("No ran models.")
 
+    def compare_models(self):
+        """
+        Compare different models across every known metric for that model.
+        
+        Returns
+        -------
+        Dataframe
+            Dataframe of every model and metrics associated for that model
+        """
+        results = []
+        for model in self._models:
+            results.append(self._models[model].metric('all'))
+
+        results_table = pd.concat(results, axis=1, join='inner')
+        results_table.style.highlight_max(axis=0, color='green')
+
+        return results_table
+
     @add_to_queue
     def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=True, **summarizer_kwargs):
         """
