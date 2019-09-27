@@ -7,6 +7,7 @@ import pandas_profiling
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+
 from pyautoml.data.data import Data
 from pyautoml.util import (_function_input_validation, _get_columns, _set_item,
                            label_encoder, split_data)
@@ -18,7 +19,6 @@ class MethodBase(object):
 
     def __init__(self, **kwargs):
 
-        data = kwargs.pop('data')
         x_train = kwargs.pop('x_train')
         x_test = kwargs.pop('x_test')
         split = kwargs.pop('split')
@@ -27,16 +27,15 @@ class MethodBase(object):
         report_name = kwargs.pop('report_name')
         test_split_percentage = kwargs.pop('test_split_percentage')
 
-        if not _function_input_validation(data, x_train, x_test):
-            raise ValueError("Error initialzing constructor, please provide one of either data or x_train and x_test, not both.")
+        # if not _function_input_validation(x_train, x_test):
+        #     raise ValueError("Error initialzing constructor, please provide one of either data or x_train and x_test, not both.")
 
-        self._data_properties = Data(data, x_train, x_test, split=split, target_field=target_field, target_mapping=target_mapping, report_name=report_name)
+        self._data_properties = Data(x_train, x_test, split=split, target_field=target_field, target_mapping=target_mapping, report_name=report_name)
 
-        if data is not None and split:
+        if split:
             # Generate train set and test set.
             # NOTE: Test if setting data to `None` is a good idea.
-            self._data_properties.x_train, self._data_properties.x_test = split_data(self._data_properties.data, test_split_percentage)
-            self._data_properties.data = None
+            self._data_properties.x_train, self._data_properties.x_test = split_data(self._data_properties.x_train, test_split_percentage)
             self._data_properties.x_train.reset_index(drop=True, inplace=True)
             self._data_properties.x_test.reset_index(drop=True, inplace=True)
 
@@ -49,7 +48,7 @@ class MethodBase(object):
 
         if SHELL == 'ZMQInteractiveShell':
             if not self._data_properties.split:
-                display(self._data_properties.data.head()) # Hack for jupyter notebooks
+                display(self._data_properties.x_train.head()) # Hack for jupyter notebooks
                 
                 return ''
             else:
@@ -59,7 +58,7 @@ class MethodBase(object):
         
         else:
             if not self._data_properties.split:
-                return self._data_properties.data.to_string()
+                return self._data_properties.x_train.to_string()
             else:
                 return self._data_properties.x_train.to_string()
 
@@ -68,7 +67,7 @@ class MethodBase(object):
 
         try: 
             if not self._data_properties.split:
-                return self._data_properties.data[column]
+                return self._data_properties.x_train[column]
             else:
                 return self._data_properties.x_train[column]
 
@@ -79,9 +78,9 @@ class MethodBase(object):
     def __setitem__(self, column, value):
 
         if not self._data_properties.split:
-            self._data_properties.data[column] = value
+            self._data_properties.x_train[column] = value
 
-            return self._data_properties.data.head()
+            return self._data_properties.x_train.head()
         else:
             x_train_length = self._data_properties.x_train.shape[0]
             x_test_length = self._data_properties.x_test.shape[0]
@@ -113,7 +112,7 @@ class MethodBase(object):
 
         try:
             if not self._data_properties.split:
-                return self._data_properties.data[column]
+                return self._data_properties.x_train[column]
             else:
                 return self._data_properties.x_train[column]
 
@@ -135,33 +134,13 @@ class MethodBase(object):
         return new_inst
 
     @property
-    def data(self):
-        """
-        Property function for the entire dataset.
-        """
-        
-        if self._data_properties.data is None:
-            return "There seems to be nothing here. Try .x_train or .x_test"
-        
-        return self._data_properties.data
-
-    @data.setter
-    def data(self, value):
-        """
-        Setter function for the entire dataset.
-        """
-
-        self._data_properties.data = value
-
-
-    @property
     def x_train(self):
         """
         Property function for the training dataset.
         """
         
         if self._data_properties.x_train is None:
-            return "There seems to be nothing here. Try .data"
+            return "There seems to be nothing here. Try .x_train"
 
         return self._data_properties.x_train
 
@@ -172,7 +151,7 @@ class MethodBase(object):
         """
 
         if self._data_properties.x_train is None:
-            return "There seems to be nothing here. Try .data"
+            return "There seems to be nothing here. Try .x_train"
 
         self._data_properties.x_train = value
         
@@ -231,7 +210,7 @@ class MethodBase(object):
         """
 
         dataframes = list(filter(lambda x: x is not None, [
-                          self._data_properties.data, self._data_properties.x_train, self._data_properties.x_test]))
+                          self._data_properties.x_train, self._data_properties.x_train, self._data_properties.x_test]))
 
         for dataframe in dataframes:
             if not dataframe.isnull().values.any():            
@@ -279,21 +258,21 @@ class MethodBase(object):
         if replace:
             if not self._data_properties.split:
                 if not not_equal:
-                    self._data_properties.data = self._data_properties.data[self._data_properties.data.isin(list(values)).any(axis=1)]
+                    self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
                 else:
-                    self._data_properties.data = self._data_properties.data[~self._data_properties.data.isin(list(values)).any(axis=1)]
+                    self._data_properties.x_train = self._data_properties.x_train[~self._data_properties.x_train.isin(list(values)).any(axis=1)]
             else:
                 if not_equal:
                     self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
-                    self._data_properties.data.x_test = self._data_properties.x_test[self._data_properties.x_train.isin(list(values)).any(axis=1)]
+                    self._data_properties.x_train.x_test = self._data_properties.x_test[self._data_properties.x_train.isin(list(values)).any(axis=1)]
                 else:
                     self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_test.isin(list(values)).any(axis=1)]
-                    self._data_properties.data.x_test = self._data_properties.x_test[self._data_properties.x_test.isin(list(values)).any(axis=1)]
+                    self._data_properties.x_train.x_test = self._data_properties.x_test[self._data_properties.x_test.isin(list(values)).any(axis=1)]
 
             return self.copy()            
         else:
             if not self._data_properties.split:
-                data = self._data_properties.data.copy()
+                data = self._data_properties.x_train.copy()
             else:
                 data = self._data_properties.x_train.copy()
            
@@ -332,7 +311,7 @@ class MethodBase(object):
         """
 
         if not self._data_properties.split:
-            filtered_data = self._data_properties.data.copy()
+            filtered_data = self._data_properties.x_train.copy()
         else:
             filtered_data = self._data_properties.x_train.copy()
 
@@ -370,15 +349,15 @@ class MethodBase(object):
 
         if replace:
             if not self._data_properties.split:
-                self._data_properties.data = self._data_properties.data.groupby(list(groupby))
+                self._data_properties.x_train = self._data_properties.x_train.groupby(list(groupby))
             else:
                 self._data_properties.x_train = self._data_properties.x_train.groupby(list(groupby))
-                self._data_properties.data.x_test = self._data_properties.x_test.groupby(list(groupby))
+                self._data_properties.x_train.x_test = self._data_properties.x_test.groupby(list(groupby))
 
             return self.copy()            
         else:
             if not self._data_properties.split:
-                data = self._data_properties.data.copy()
+                data = self._data_properties.x_train.copy()
             else:
                 data = self._data_properties.x_train.copy()
 
@@ -429,13 +408,13 @@ class MethodBase(object):
         numeric_analysis = ['count', 'min', 'max', 'mean', 'std', 'var', 'median', ('most_common', lambda x: pd.Series.mode(x)[0]), 'sum', 'mad', 'nunique']
         other_analysis = ['count', ('most_common', lambda x: pd.Series.mode(x)[0]), 'nunique']
 
-        list_of_cols = _get_columns(list(cols), self._data_properties.data, self._data_properties.x_test)
+        list_of_cols = _get_columns(list(cols), self._data_properties.x_train, self._data_properties.x_test)
 
         if isinstance(data_filter, pd.DataFrame):
             data = data_filter
         else:
             if not self._data_properties.split:
-                data = self._data_properties.data.copy()
+                data = self._data_properties.x_train.copy()
             else:
                 data = self._data_properties.x_train.copy()            
 
@@ -485,9 +464,9 @@ class MethodBase(object):
 
         if not self._data_properties.split:
             if SHELL == "ZMQInteractiveShell":
-                report = self._data_properties.data.profile_report(title=title, style={'full_width':True})
+                report = self._data_properties.x_train.profile_report(title=title, style={'full_width':True})
             else:
-                report = self._data_properties.data.profile_report(title=title)
+                report = self._data_properties.x_train.profile_report(title=title)
         else:
             if SHELL == "ZMQInteractiveShell":
                 report = self._data_properties.x_train.profile_report(title=title, style={'full_width':True})
@@ -523,7 +502,7 @@ class MethodBase(object):
         """
 
         if not self._data_properties.split:
-            data_summary = DataFrameSummary(self.data)
+            data_summary = DataFrameSummary(self.x_train)
 
             return data_summary.summary()
         else:
@@ -566,7 +545,7 @@ class MethodBase(object):
         """
 
         if not self._data_properties.split:
-            data_summary = DataFrameSummary(self.data)
+            data_summary = DataFrameSummary(self.x_train)
 
             return data_summary.columns_stats
         else:
@@ -636,7 +615,7 @@ class MethodBase(object):
         """
 
         if not self._data_properties.split:
-            data_summary = DataFrameSummary(self.data)
+            data_summary = DataFrameSummary(self.x_train)
 
             return data_summary[column]
         else:
@@ -680,7 +659,7 @@ class MethodBase(object):
         """
 
         try:
-            data_columns = self.data.columns
+            data_columns = self.x_train.columns
         except:
             data_columns = self.x_train.columns
 
@@ -698,7 +677,7 @@ class MethodBase(object):
         drop_columns = list(set(set(drop_columns).union(regex_columns)).difference(keep))
         
         if not self._data_properties.split:
-            self._data_properties.data = self.data.drop(drop_columns, axis=1)
+            self._data_properties.x_train = self.x_train.drop(drop_columns, axis=1)
 
             if self.report is not None:
                 self.report.log('Dropped columns: {}. {}'.format(", ".join(drop_columns), reason))
@@ -732,8 +711,8 @@ class MethodBase(object):
             raise ValueError('Please set the `target_field` field variable before encoding.')
     
         if not self._data_properties.split:
-            self._data_properties.data, self._data_properties.target_mapping = label_encoder(
-                self._data_properties.target_field, target=True, data=self._data_properties.data)
+            self._data_properties.x_train, self._data_properties.target_mapping = label_encoder(
+                self._data_properties.target_field, target=True, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test, self._data_properties.target_mapping = label_encoder(
                 self._data_properties.target_field, target=True, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
@@ -767,7 +746,7 @@ class MethodBase(object):
         chunksize = kwargs.pop('chunksize', 10000)
 
         if not self._data_properties.split:
-            self._data_properties.data.to_csv(name + '.csv', index=index, chunksize=chunksize, **kwargs)
+            self._data_properties.x_train.to_csv(name + '.csv', index=index, chunksize=chunksize, **kwargs)
         else:
             self._data_properties.x_train.to_csv(name + '_train.csv', index=index, chunksize=chunksize, **kwargs)
             self._data_properties.x_test.to_csv(name + '_test.csv', index=index, chunksize=chunksize, **kwargs)
@@ -898,7 +877,7 @@ class MethodBase(object):
             y_col = self.target_field
 
         if not self._data_properties.split:
-            raincloud(y_col, x_col, self.data)
+            raincloud(y_col, x_col, self.x_train)
         else:
             raincloud(y_col, x_col, self.x_train)
 
@@ -945,7 +924,7 @@ class MethodBase(object):
         """
         
         if not self._data_properties.split:
-            barplot(x_col, list(cols), self._data_properties.data, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
+            barplot(x_col, list(cols), self._data_properties.x_train, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
         else:
             barplot(x_col, list(cols), self._data_properties.x_train, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
 
@@ -993,7 +972,7 @@ class MethodBase(object):
         """
 
         if not self._data_properties.split:
-            scatterplot(x_col, y_col, self._data_properties.data, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
+            scatterplot(x_col, y_col, self._data_properties.x_train, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
         else:
             scatterplot(x_col, y_col, self._data_properties.x_train, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
 
@@ -1055,6 +1034,6 @@ class MethodBase(object):
         """
 
         if not self._data_properties.split:
-            lineplot(x_col, list(y_cols), self._data_properties.data, title=title, output_file=output_file, **lineplot_kwargs)
+            lineplot(x_col, list(y_cols), self._data_properties.x_train, title=title, output_file=output_file, **lineplot_kwargs)
         else:
             lineplot(x_col, list(y_cols), self._data_properties.x_train, title=title, output_file=output_file, **lineplot_kwargs)

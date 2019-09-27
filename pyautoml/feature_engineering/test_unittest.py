@@ -17,7 +17,7 @@ class TestFeatureExtraction(unittest.TestCase):
         feature = Feature(data=data,
                           test_split_percentage=0.5, split=False)
         feature.bag_of_words(keep_col=False)
-        validate = feature.data.values.tolist()
+        validate = feature.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 1, 1, 1, 1],
                                         [1, 0, 0, 1, 1]])
@@ -33,7 +33,7 @@ class TestFeatureExtraction(unittest.TestCase):
         feature = Feature(data=data,
                           test_split_percentage=0.5, split=False)
         feature.bag_of_words(keep_col=True)
-        validate = feature.data.values.tolist()
+        validate = feature.x_train.values.tolist()
 
         self.assertListEqual(validate, [['Hi my name is pyml', 1, 1, 1, 1, 1],
                                         ['Hi name pyml', 1, 0, 0, 1, 1]])
@@ -48,7 +48,7 @@ class TestFeatureExtraction(unittest.TestCase):
         feature = Feature(data=data,
                           test_split_percentage=0.5, split=False)
         feature.tfidf(keep_col=False, lowercase=False, stop_words='english')
-        validate = feature.data.shape[1]
+        validate = feature.x_train.shape[1]
 
         self.assertEqual(validate, 2)
 
@@ -76,7 +76,7 @@ class TestFeatureExtraction(unittest.TestCase):
         feature = Feature(data=data,
                           test_split_percentage=0.5, split=False)
         feature.tfidf(keep_col=True, lowercase=False, stop_words='english')
-        validate = feature.data.shape[1]
+        validate = feature.x_train.shape[1]
 
         self.assertEqual(validate, 3)
 
@@ -91,7 +91,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(data=data, test_split_percentage=0.5, split=False)
         feature.onehot_encode(list_of_cols=["col1", "col3"], keep_col=False)
-        validate = feature.data.values.tolist()
+        validate = feature.x_train.values.tolist()
 
         self.assertListEqual(validate, [["Green", 0, 1, 1, 0],
                                         ["Other", 0, 1, 0, 1],
@@ -107,7 +107,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(data=data, test_split_percentage=0.5, split=False)
         feature.postag_nltk()
-        validate = len(feature.data.columns)
+        validate = len(feature.x_train.columns)
 
         self.assertTrue(validate, 2)
 
@@ -123,7 +123,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(data=data, split=False)
         feature.apply(lambda x: x['col1'] > 0, 'new_col')
-        validate = 'new_col' in feature.data.columns
+        validate = 'new_col' in feature.x_train.columns
 
         self.assertTrue(validate)
 

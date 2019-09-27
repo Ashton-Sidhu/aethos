@@ -45,7 +45,7 @@ class ModelBase(object):
         
         self.model = model
         self.model_name = model_name
-        self.data = model_object._data_properties.data
+        self.x_train = model_object._data_properties.x_train
         self.x_train = model_object._data_properties.x_train
         self.x_test = model_object._data_properties.x_test
         self.data_results = model_object._result_data
@@ -526,7 +526,7 @@ class ClusterModel(ModelBase):
 
         self.cluster_col = cluster_col
 
-        if self.data is not None:
+        if self.x_train is not None:
             self.prediction_data = self.data_results[cluster_col]
         else:
             self.train_prediction_data = self.x_train_results[cluster_col]
@@ -547,7 +547,7 @@ class ClusterModel(ModelBase):
             Filtered data or test dataframe
         """
 
-        if self.data is not None:
+        if self.x_train is not None:
             return self.data_results[self.data_results[self.cluster_col] == cluster_no]
         else:
             return self.x_test_results[self.x_test_results[self.cluster_col] == cluster_no]
@@ -562,7 +562,7 @@ class ClassificationModel(ModelBase):
 
         self.target_mapping = model_object.target_mapping
 
-        if self.data is not None:            
+        if self.x_train is not None:            
             self.prediction_data = self.data_results[predictions_col]
         else:
             self.prediction_data = self.x_test_results[predictions_col]

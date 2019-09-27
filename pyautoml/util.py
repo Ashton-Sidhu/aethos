@@ -167,33 +167,6 @@ def split_data(df, split_percentage: float):
 
     return x_train, x_test
 
-def _function_input_validation(data, x_train, x_test):
-    """
-    Helper function to help determine if input is valid.
-
-    Unacceptable conditions
-    _____________________
-
-        1) No data is provided.
-        2) Full dataset is provided and train or test data is provided.
-        3) Train data is provided and test data is not.
-        4) Test data is provided and test data is not.
-    """
-
-    if data is None and (x_train is None or x_test is None):
-        return False
-
-    if data is not None and (x_train is not None or x_test is not None):
-        return False
-
-    if x_train is not None and x_test is None:
-        return False
-
-    if x_test is not None and x_train is None:
-        return False
-
-    return True
-
 def _numeric_input_conditions(list_of_cols: list, data, x_train) -> list:
     """
     Helper function to help set variable values of numeric cleaning method functions.
@@ -213,7 +186,7 @@ def _numeric_input_conditions(list_of_cols: list, data, x_train) -> list:
 
     return list_of_cols
 
-def _get_columns(list_of_cols, data, x_train) -> list:
+def _get_columns(list_of_cols, x_train) -> list:
     """
     If the list of columns are optional and no columns are provided, the columns are set
     to all the columns in the data.
@@ -222,9 +195,6 @@ def _get_columns(list_of_cols, data, x_train) -> list:
     ----------
     list_of_cols : list
         List of columns to apply method to.
-
-    data : Dataframe or array like - 2d
-        Full dataset
 
     x_train : Dataframe or array like - 2d
         Training Dataset
@@ -238,10 +208,7 @@ def _get_columns(list_of_cols, data, x_train) -> list:
     if list_of_cols:
         list_of_cols = list_of_cols
     else:
-        if data is not None:
-            list_of_cols = data.columns.tolist()
-        else:
-            list_of_cols = x_train.columns.tolist()
+        list_of_cols = x_train.columns.tolist()
 
     return list_of_cols
 
@@ -356,3 +323,7 @@ def _set_item(x_train, x_test, column: str, value: list, train_length: int, test
         x_test[column] = value
 
     return x_train, x_test
+
+
+def _function_input_validation(a,b,c):
+    return

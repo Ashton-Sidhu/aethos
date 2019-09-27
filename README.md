@@ -99,7 +99,7 @@ Target field is the field we are trying to predict in this case, if there is no 
 Now that our data has been loaded, there a few ways we can explore and gain initial insights from our data. To start, at any time and with **ANY** `pyautoml` object (Clean, Preprocess, Feature, etc) you can view your data with the following commands:
 
 ```python
-clean.data # If your data IS NOT split
+clean.x_train # If your data IS NOT split
 clean.x_train # If your data IS split
 clean.x_test # If your data IS split
 ```

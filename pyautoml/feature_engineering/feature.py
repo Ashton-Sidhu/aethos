@@ -31,7 +31,7 @@ class Feature(MethodBase):
             super().__init__(data=data, x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.data, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
+            super().__init__(data=_data_properties.x_train, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
@@ -75,7 +75,7 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = feature_one_hot_encode(list_of_cols=list_of_cols, keep_col=keep_col, data=self._data_properties.data, **onehot_params)
+            self._data_properties.x_train = feature_one_hot_encode(list_of_cols=list_of_cols, keep_col=keep_col, data=self._data_properties.x_train, **onehot_params)
         else:
             self._data_properties.x_train, self._data_properties.x_test = feature_one_hot_encode(list_of_cols=list_of_cols,
                                                                                                     keep_col=keep_col,
@@ -125,8 +125,8 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = feature_tfidf(
-                list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params, data=self._data_properties.data)
+            self._data_properties.x_train = feature_tfidf(
+                list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = feature_tfidf(list_of_cols=list_of_cols,
                                                                                             keep_col = keep_col,
@@ -177,8 +177,8 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = feature_bag_of_words(
-                list_of_cols=list_of_cols, keep_col=keep_col, **bow_params, data=self._data_properties.data)
+            self._data_properties.x_train = feature_bag_of_words(
+                list_of_cols=list_of_cols, keep_col=keep_col, **bow_params, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = feature_bag_of_words(list_of_cols=list_of_cols,
                                                                                                     keep_col=keep_col,
@@ -223,7 +223,7 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = nltk_feature_postag(list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
+            self._data_properties.x_train = nltk_feature_postag(list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = nltk_feature_postag(
                 list_of_cols=list_of_cols, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
@@ -269,7 +269,7 @@ class Feature(MethodBase):
         """
         
         if not self._data_properties.split:    
-            self._data_properties.data = apply(func, output_col, data=self._data_properties.data)        
+            self._data_properties.x_train = apply(func, output_col, data=self._data_properties.x_train)        
         else:
             self._data_properties.x_train, self._data_properties.x_test = apply(func,
                                                                                     output_col,
@@ -308,8 +308,8 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = label_encoder(
-                list_of_cols, data=self._data_properties.data)
+            self._data_properties.x_train = label_encoder(
+                list_of_cols, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = label_encoder(
                 list_of_cols, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)

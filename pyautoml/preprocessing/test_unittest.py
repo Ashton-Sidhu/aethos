@@ -19,7 +19,7 @@ class TestPreprocessing(unittest.TestCase):
 
         preprocess = Preprocess(data=data, test_split_percentage=0.5, split=False)
         preprocess.normalize_numeric()
-        validate = preprocess.data.values.tolist()
+        validate = preprocess.x_train.values.tolist()
 
         self.assertListEqual(validate, [[.375, 1.0, 0.0],
                                         [0, 0.5, 0.0],
@@ -56,7 +56,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.split_sentences('data')
-        validate = prep.data['data_sentences'].values.tolist()
+        validate = prep.x_train['data_sentences'].values.tolist()
 
         self.assertListEqual(validate, [["Hi my name is PyAutoML.", "Please split me."],
                                         ["This function is going to split by sentence.", "Automation is great."]])
@@ -71,7 +71,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.stem_nltk('data')
-        validate = prep.data.shape[1]
+        validate = prep.x_train.shape[1]
 
         self.assertEquals(validate, 2)
 
@@ -84,7 +84,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.split_words_nltk('data')
-        validate = prep.data.data_tokenized.values.tolist()
+        validate = prep.x_train.data_tokenized.values.tolist()
 
         self.assertListEqual(validate, [["Please.exe", "split", "me", "."]])
 
@@ -97,7 +97,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.split_words_nltk('data', regexp=r'\w+\d+')
-        validate = prep.data.data_tokenized.values.tolist()
+        validate = prep.x_train.data_tokenized.values.tolist()
 
         self.assertListEqual(validate, [["Please123"]])
 
@@ -110,7 +110,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.remove_punctuation('data')
-        validate = prep.data.data_rem_punct.values.tolist()
+        validate = prep.x_train.data_rem_punct.values.tolist()
 
         self.assertListEqual(validate, ["Please split me"])
 
@@ -124,7 +124,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.remove_punctuation('data', regexp=r'\w+\.\w+|\w+')
-        validate = prep.data.data_rem_punct.values.tolist()
+        validate = prep.x_train.data_rem_punct.values.tolist()
 
         self.assertListEqual(validate, ["Please.exe split me", "hello it s me testing.dll"])
 
@@ -137,7 +137,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.remove_punctuation('data', exceptions=['.',  '>'])
-        validate = prep.data.data_rem_punct.values.tolist()
+        validate = prep.x_train.data_rem_punct.values.tolist()
 
         self.assertListEqual(validate, ["Please> split me."])
 
@@ -150,7 +150,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.remove_stopwords_nltk('data', custom_stopwords=['please'])
-        validate = prep.data.data_rem_stop.values.tolist()
+        validate = prep.x_train.data_rem_stop.values.tolist()
 
         self.assertListEqual(validate, ["split ."])
     
@@ -164,7 +164,7 @@ class TestPreprocessing(unittest.TestCase):
 
         prep = Preprocess(data=data, split=False)
         prep.encode_labels('col1', 'col2')
-        validate = prep.data.values.tolist()
+        validate = prep.x_train.values.tolist()
 
         self.assertListEqual(validate, [[0, 1, 1],
                                         [1, 1, 1],

@@ -214,9 +214,9 @@ class Test_TestBase(unittest.TestCase):
 
         base = MethodBase(data=int_missing_data, x_train=None, x_test=None, split=False, target_field='', target_mapping=None, report_name="test", test_split_percentage=0.5)
 
-        base.data = int_missing_data_rep
+        base.x_train = int_missing_data_rep
 
-        self.assertEquals(base.data, int_missing_data_rep)
+        self.assertEquals(base.x_train, int_missing_data_rep)
 
     def test_where(self):
 

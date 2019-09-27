@@ -23,15 +23,15 @@ with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
 class Clean(MethodBase):
 
     
-    def __init__(self, step=None, data=None, x_train=None, x_test=None, _data_properties=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):   
+    def __init__(self, step=None, x_train=None, x_test=None, _data_properties=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):   
         
         _data_properties = _contructor_data_properties(step)
 
         if _data_properties is None:        
-            super().__init__(data=data, x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.data, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
         
         if self._data_properties.report is not None:
@@ -60,30 +60,23 @@ class Clean(MethodBase):
 
         if not self._data_properties.split:            
             #Gather original data information
-            original_columns = set(list(self._data_properties.data.columns))
+            original_columns = set(list(self._data_properties.x_train.columns))
 
-            self._data_properties.data = remove_columns_threshold(threshold, data=self._data_properties.data)
-
-            #Write to report
-            if self.report is not None:
-                new_columns = original_columns.difference(self._data_properties.data.columns)
-                self.report.report_technique(report_info, new_columns)
-
-            return self.copy()
+            self._data_properties.x_train = remove_columns_threshold(x_train=self._data_properties.x_train, threshold=threshold)
 
         else:
             #Gather original data information
             original_columns = set(list(self._data_properties.x_train.columns))
 
-            self._data_properties.x_train, self._data_properties.x_test = remove_columns_threshold(threshold,
-                                                                                                        x_train=self._data_properties.x_train,
-                                                                                                        x_test=self._data_properties.x_test)
+            self._data_properties.x_train, self._data_properties.x_test = remove_columns_threshold(x_train=self._data_properties.x_train,
+                                                                                                   x_test=self._data_properties.x_test,
+                                                                                                   threshold=threshold)
 
-            if self.report is not None:
-                new_columns = original_columns.difference(self._data_properties.x_train.columns)
-                self.report.report_technique(report_info, new_columns)
+        if self.report is not None:
+            new_columns = original_columns.difference(self._data_properties.x_train.columns)
+            self.report.report_technique(report_info, new_columns)
 
-            return self.copy()
+        return self.copy()
 
 
     def remove_rows(self, threshold: float):
@@ -107,11 +100,11 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['general']['remove_rows']
 
         if not self._data_properties.split:
-            self._data_properties.data = remove_rows_threshold(threshold, data=self._data_properties.data)
+            self._data_properties.x_train = remove_rows_threshold(x_train=self._data_properties.x_train, threshold=threshold)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = remove_rows_threshold(threshold,
-                                                                                                    x_train=self._data_properties.x_train,
-                                                                                                    x_test=self._data_properties.x_test)
+            self._data_properties.x_train, self._data_properties.x_test = remove_rows_threshold(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                threshold=threshold)
 
         #Write to report
         if self.report is not None:            
@@ -151,32 +144,23 @@ class Clean(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="mean", data=self._data_properties.data)
-
-            #Write to report
-            if self.report is not None:            
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
-                    self.report.report_technique(report_info, list_of_cols)
-
-            return self.copy()
+            self._data_properties.x_train = replace_missing_mean_median_mode(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, strategy="mean")
 
         else:
-            self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
+            self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(x_train=self._data_properties.x_train,
+                                                                                                            x_test=self._data_properties.x_test,
+                                                                                                            list_of_cols=list_of_cols,
                                                                                                             strategy="mean",                                                                                                            
-                                                                                                            x_train=self._data_properties.x_train,
-                                                                                                            x_test=self._data_properties.x_test)
+                                                                                                            )
             
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.x_train)
-                    self.report.report_technique(report_info, list_of_cols)
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train)
+                self.report.report_technique(report_info, list_of_cols)
 
-            return self.copy()
+        return self.copy()
 
     def replace_missing_median(self, *list_args, list_of_cols=[]):
         """
@@ -210,31 +194,23 @@ class Clean(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="median", data=self._data_properties.data)
-            
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
-                    self.report.report_technique(report_info, list_of_cols)
-
-            return self.copy()
+            self._data_properties.x_train = replace_missing_mean_median_mode(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, strategy="median")
 
         else:
-            self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
+            self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(x_train=self._data_properties.x_train,
+                                                                                                            x_test=self._data_properties.x_test,
+                                                                                                            list_of_cols=list_of_cols,
                                                                                                             strategy="median",                                                                                                            
-                                                                                                            x_train=self._data_properties.x_train,
-                                                                                                            x_test=self._data_properties.x_test)
+                                                                                                            )
 
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.x_train)
-                    self.report.report_technique(report_info, list_of_cols)
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train)
+                self.report.report_technique(report_info, list_of_cols)
 
-            return self.copy()
+        return self.copy()
 
     def replace_missing_mostcommon(self, *list_args, list_of_cols=[]):
         """
@@ -266,30 +242,21 @@ class Clean(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = replace_missing_mean_median_mode(list_of_cols=list_of_cols, strategy="most_frequent", data=self._data_properties.data)
-
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
-                    self.report.report_technique(report_info, list_of_cols)
-
-            return self.copy()
-
+            self._data_properties.x_train = replace_missing_mean_median_mode(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, strategy="most_frequent")
         else:
-            self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(list_of_cols=list_of_cols,
+            self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(x_train=self._data_properties.x_train,
+                                                                                                            x_test=self._data_properties.x_test,
+                                                                                                            list_of_cols=list_of_cols,
                                                                                                             strategy="most_frequent",                                                                                                            
-                                                                                                            x_train=self._data_properties.x_train,
-                                                                                                            x_test=self._data_properties.x_test)
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.x_train)
-                    self.report.report_technique(report_info, list_of_cols)
+                                                                                                            )
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train)
+                self.report.report_technique(report_info, list_of_cols)
 
-            return self.copy()
+        return self.copy()
 
     def replace_missing_constant(self, *list_args, list_of_cols=[], constant=0, col_mapping=None):
         """
@@ -323,7 +290,6 @@ class Clean(MethodBase):
         Examples
         --------
         >>> replace_missing_constant(col_mapping={'a': 1, 'b': 2, 'c': 3})
-
         >>> replace_missing_constant('col1', 'col2', constant=2)
         """
 
@@ -332,33 +298,25 @@ class Clean(MethodBase):
         if col_mapping:
             col_to_constant = col_mapping
         else:
-            ## If a list of columns is provided use the list, otherwise use arguemnts.
+            # If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_constant = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = replace_missing_constant(col_to_constant=col_to_constant, constant=constant, data=self._data_properties.data)
-
-            if self.report is not None:
-                if not col_to_constant:
-                    self.report.report_technique(report_info, self._data_properties.data.columns)
-                else:
-                    self.report.report_technique(report_info, list(col_to_constant))
-
-            return self.copy()
-
+            self._data_properties.x_train = replace_missing_constant(x_train=self._data_properties.x_train, col_to_constant=col_to_constant, constant=constant)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = replace_missing_constant(col_to_constant=col_to_constant,
+            self._data_properties.x_train, self._data_properties.x_test = replace_missing_constant(x_train=self._data_properties.x_train,
+                                                                                                    x_test=self._data_properties.x_test,
+                                                                                                    col_to_constant=col_to_constant,
                                                                                                     constant=constant,                                                                                                    
-                                                                                                    x_train=self._data_properties.x_train,
-                                                                                                    x_test=self._data_properties.x_test)
+                                                                                                    )
 
-            if self.report is not None:
-                if not col_to_constant:
-                    self.report.report_technique(report_info, self._data_properties.x_train.columns)
-                else:
-                    self.report.report_technique(report_info, list(col_to_constant))
+        if self.report is not None:
+            if not col_to_constant:
+                self.report.report_technique(report_info, self._data_properties.x_train.columns)
+            else:
+                self.report.report_technique(report_info, list(col_to_constant))
 
-            return self.copy()
+        return self.copy()
 
 
     def replace_missing_new_category(self, *list_args, list_of_cols=[], new_category=None, col_mapping=None):
@@ -401,37 +359,29 @@ class Clean(MethodBase):
 
         report_info = technique_reason_repo['clean']['categorical']['new_category']
         
-        ## If dictionary mapping is provided, use that otherwise use column
+        # If dictionary mapping is provided, use that otherwise use column
         if col_mapping:
             col_to_category = col_mapping
         else:
-            ## If a list of columns is provided use the list, otherwise use arguemnts.
+            # If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_category = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = replace_missing_new_category(col_to_category=col_to_category, constant=new_category, data=self._data_properties.data)
-
-            if self.report is not None:
-                if not col_to_category:
-                    self.report.report_technique(report_info, self._data_properties.data.columns)
-                else:
-                    self.report.report_technique(report_info, list(col_to_category))
-
-            return self.copy()
-
+            self._data_properties.x_train = replace_missing_new_category(x_train=self._data_properties.x_train, col_to_category=col_to_category, constant=new_category)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = replace_missing_new_category(col_to_category=col_to_category,
+            self._data_properties.x_train, self._data_properties.x_test = replace_missing_new_category(x_train=self._data_properties.x_train,
+                                                                                                        x_test=self._data_properties.x_test,
+                                                                                                        col_to_category=col_to_category,
                                                                                                         constant=new_category,                                                                                                                                                                                                            
-                                                                                                        x_train=self._data_properties.x_train,
-                                                                                                        x_test=self._data_properties.x_test)
+                                                                                                        )
 
-            if self.report is not None:
-                if col_to_category is None:
-                    self.report.report_technique(report_info, self._data_properties.x_train.columns)
-                else:
-                    self.report.report_technique(report_info, list(col_to_category))                                                                                                   
+        if self.report is not None:
+            if col_to_category is None:
+                self.report.report_technique(report_info, self._data_properties.x_train.columns)
+            else:
+                self.report.report_technique(report_info, list(col_to_category))                                                                                                   
 
-            return self.copy()
+        return self.copy()
 
 
     def replace_missing_remove_row(self, *list_args, list_of_cols=[]):
@@ -462,11 +412,12 @@ class Clean(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = replace_missing_remove_row(list_of_cols, data=self._data_properties.data)
+            self._data_properties.x_train = replace_missing_remove_row(x_train=self._data_properties.x_train, cols_to_remove=list_of_cols)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = replace_missing_remove_row(list_of_cols,                                                                                                    
-                                                                                                    x_train=self._data_properties.x_train,
-                                                                                                    x_test=self._data_properties.x_test)                                                                                        
+            self._data_properties.x_train, self._data_properties.x_test = replace_missing_remove_row(x_train=self._data_properties.x_train,
+                                                                                                    x_test=self._data_properties.x_test,
+                                                                                                    cols_to_remove=list_of_cols                                                                                           
+                                                                                                    )                                                                                        
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
@@ -504,11 +455,12 @@ class Clean(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
    
         if not self._data_properties.split:
-            self._data_properties.data = remove_duplicate_rows(list_of_cols=list_of_cols, data=self._data_properties.data)    
+            self._data_properties.x_train = remove_duplicate_rows(x_train=self._data_properties.x_train, list_of_cols=list_of_cols)    
         else:
-            self._data_properties.x_train, self._data_properties.x_test = remove_duplicate_rows(list_of_cols=list_of_cols,
-                                                                                                x_train=self._data_properties.x_train,
-                                                                                                x_test=self._data_properties.x_test)
+            self._data_properties.x_train, self._data_properties.x_test = remove_duplicate_rows(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                list_of_cols=list_of_cols,
+                                                                                                )
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
@@ -529,10 +481,10 @@ class Clean(MethodBase):
         report_info = technique_reason_repo['clean']['general']['remove_duplicate_columns']
     
         if not self._data_properties.split:
-            self._data_properties.data = remove_duplicate_columns(data=self._data_properties.data)    
+            self._data_properties.x_train = remove_duplicate_columns(x_train=self._data_properties.x_train)    
         else:
             self._data_properties.x_train, self._data_properties.x_test = remove_duplicate_columns(x_train=self._data_properties.x_train,
-                                                                                                        x_test=self._data_properties.x_test)
+                                                                                                    x_test=self._data_properties.x_test)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -573,11 +525,12 @@ class Clean(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
         
         if not self._data_properties.split:   
-            self._data_properties.data = replace_missing_random_discrete(list_of_cols, data=self._data_properties.data)
+            self._data_properties.x_train = replace_missing_random_discrete(x_train=self._data_properties.x_train, list_of_cols=list_of_cols)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = replace_missing_random_discrete(list_of_cols,
-                                                                                                            x_train=self._data_properties.x_train,
-                                                                                                            x_test=self._data_properties.x_test)
+            self._data_properties.x_train, self._data_properties.x_test = replace_missing_random_discrete(x_train=self._data_properties.x_train,
+                                                                                                        x_test=self._data_properties.x_test,
+                                                                                                        list_of_cols=list_of_cols,
+                                                                                                        )
     
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)

@@ -34,16 +34,16 @@ class Model(MethodBase):
         _data_properties = _contructor_data_properties(step)
 
         if _data_properties is None:        
-            super().__init__(data=data, x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.data, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
             self.report.write_header("Modelling")
 
-        self._result_data = self._data_properties.data.copy() if self._data_properties.data is not None else None
+        self._result_data = self._data_properties.x_train.copy() if self._data_properties.x_train is not None else None
         self._train_result_data = self._data_properties.x_train.copy() if self._data_properties.x_train is not None else None
         self._test_result_data = self._data_properties.x_test.copy() if self._data_properties.x_train is not None else None
 
@@ -62,10 +62,10 @@ class Model(MethodBase):
             else:
                 if isinstance(step, Model):
                     self._y_train = step._y_train
-                    self._data_properties.data = step._data_properties.data
+                    self._data_properties.x_train = step._data_properties.x_train
                 else:
-                    self._y_train = self._data_properties.data[self._data_properties.target_field]
-                    self._data_properties.data = self._data_properties.data.drop([self._data_properties.target_field], axis=1)
+                    self._y_train = self._data_properties.x_train[self._data_properties.target_field]
+                    self._data_properties.x_train = self._data_properties.x_train.drop([self._data_properties.target_field], axis=1)
 
         if isinstance(step, Model):
             self._models = step._models
@@ -166,7 +166,7 @@ class Model(MethodBase):
         Property function for the target data.
         """
         try:
-            if self._data_properties.data is None:
+            if self._data_properties.x_train is None:
                 raise AttributeError("There seems to be nothing here. Try .y_train or .y_test")
             
             return self._y_train
@@ -231,7 +231,7 @@ class Model(MethodBase):
         Property function for the results data.
         """
 
-        if self._data_properties.data is None:
+        if self._data_properties.x_train is None:
             raise AttributeError("There seems to be nothing here. Try .x_train_results or .x_test_results")
         
         return self._result_data
@@ -375,7 +375,7 @@ class Model(MethodBase):
         if not self._data_properties.split:
 
             self._result_data = gensim_textrank_summarizer(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data, **summarizer_kwargs)
+                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.x_train, **summarizer_kwargs)
 
             if self.report is not None:
                 self.report.report_technique(report_info)
@@ -448,7 +448,7 @@ class Model(MethodBase):
         if not self._data_properties.split:
 
             self._result_data = gensim_textrank_keywords(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data, **keyword_kwargs)
+                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.x_train, **keyword_kwargs)
 
             if self.report is not None:
                 self.report.report_technique(report_info)
@@ -523,7 +523,7 @@ class Model(MethodBase):
         report_info = technique_reason_repo['model']['unsupervised']['kmeans']
 
         if not self._data_properties.split:
-            kmeans.fit(self._data_properties.data)
+            kmeans.fit(self._data_properties.x_train)
 
             self._result_data[new_col_name] = kmeans.labels_
 
@@ -596,7 +596,7 @@ class Model(MethodBase):
         report_info = technique_reason_repo['model']['unsupervised']['kmeans']
 
         if not self._data_properties.split:
-            dbscan.fit(self._data_properties.data)
+            dbscan.fit(self._data_properties.x_train)
             self._result_data[new_col_name] = dbscan.labels_
 
         else:
@@ -709,8 +709,8 @@ class Model(MethodBase):
             log_reg = LogisticRegression(solver=solver, random_state=random_state, **logreg_kwargs)
 
         if not self._data_properties.split:
-            log_reg.fit(self._data_properties.data, self.target_data)      
-            self._result_data[new_col_name] = log_reg.predict(self._data_properties.data)            
+            log_reg.fit(self._data_properties.x_train, self.target_data)      
+            self._result_data[new_col_name] = log_reg.predict(self._data_properties.x_train)            
         else:
             log_reg.fit(self._data_properties.x_train, self._y_train)
 

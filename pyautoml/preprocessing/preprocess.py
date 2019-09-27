@@ -30,7 +30,7 @@ class Preprocess(MethodBase):
             super().__init__(data=data, x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.data, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
+            super().__init__(data=_data_properties.x_train, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
 
@@ -72,13 +72,13 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, **normalize_params, data=self._data_properties.data)
+            self._data_properties.x_train = preprocess_normalize(list_of_cols=list_of_cols, **normalize_params, data=self._data_properties.x_train)
 
             if self.report is not None:
                 if list_of_cols:
                     self.report.report_technique(report_info, list_of_cols)
                 else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
+                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train, None)
                     self.report.report_technique(report_info, list_of_cols)
             
             return self.copy()
@@ -127,7 +127,7 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)        
     
         if not self._data_properties.split:    
-            self._data_properties.data = split_sentences(list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
+            self._data_properties.x_train = split_sentences(list_of_cols, new_col_name=new_col_name, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = split_sentences(list_of_cols,
                                                                                             new_col_name=new_col_name,
@@ -177,8 +177,8 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = nltk_stem(
-                list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, data=self._data_properties.data)
+            self._data_properties.x_train = nltk_stem(
+                list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = nltk_stem(
                 list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
@@ -219,8 +219,8 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = nltk_word_tokenizer(
-                list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, data=self._data_properties.data)
+            self._data_properties.x_train = nltk_word_tokenizer(
+                list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = nltk_word_tokenizer(
                 list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
@@ -263,8 +263,8 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = nltk_remove_stopwords(
-                list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, data=self._data_properties.data)
+            self._data_properties.x_train = nltk_remove_stopwords(
+                list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = nltk_remove_stopwords(
                 list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
@@ -313,8 +313,8 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = remove_punctuation(
-                list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, data=self._data_properties.data)
+            self._data_properties.x_train = remove_punctuation(
+                list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = remove_punctuation(
                 list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
@@ -351,8 +351,8 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.data = label_encoder(
-                list_of_cols, data=self._data_properties.data)
+            self._data_properties.x_train = label_encoder(
+                list_of_cols, data=self._data_properties.x_train)
         else:
             self._data_properties.x_train, self._data_properties.x_test = label_encoder(
                 list_of_cols, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
