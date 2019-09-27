@@ -11,6 +11,7 @@ import seaborn as sns
 import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
+
 from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
                                                   MSFTInterpret, Shap)
 from pyautoml.visualizations.visualize import *
@@ -612,20 +613,25 @@ class ClassificationModel(ModelBase):
             for met in SCORE_METRICS:
                 metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
                 computed_metrics.append(metric_str)
-                print(metric_str)
+
+            index = SCORE_METRICS
         elif metrics:
             for met in metrics:
                 metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
                 computed_metrics.append(metric_str)
-                print(metric_str)
+            index = metrics
         else:      
-            metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred, **scoring_kwargs))
+            metric_str = '{} : {}'.format(metric, getattr(sklearn.metrics, metric + "_score")(y_true, y_pred, **scoring_kwargs))
             computed_metrics.append(metric_str)
-            print(metric_str)
+            index = [metric]
+
+        metric_table = pd.DataFrame(index=index, columns=[self.model_name], data=computed_metrics)
 
         if self.report:
             self.report.log('Metrics:\n')
-            self.report.log('\n'.join(computed_metrics))
+            self.report.log(metric_table.to_string())
+
+        return metric_table
 
     def confusion_matrix(self, title=None, normalize=False, hide_counts=False, x_tick_rotation=0, figsize=None, cmap='Blues', title_fontsize="large", text_fontsize="medium"):
         """
