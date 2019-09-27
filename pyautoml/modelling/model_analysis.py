@@ -556,7 +556,7 @@ class ClassificationModel(ModelBase):
 
     def __init__(self, model_object, model_name, model, predictions_col):
         
-        self.target_data = model_object.target_data if model_object.target_data else model_object.y_test
+        self.target_data = model_object.target_data if model_object.target_data is not None else model_object.y_test
 
         super().__init__(model_object, model, model_name)
 

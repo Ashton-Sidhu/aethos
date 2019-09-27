@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+
 from pyautoml import Feature
 
 
@@ -14,7 +15,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(data=data,
+        feature = Feature(x_train=data,
                           test_split_percentage=0.5, split=False)
         feature.bag_of_words(keep_col=False)
         validate = feature.x_train.values.tolist()
@@ -30,7 +31,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(data=data,
+        feature = Feature(x_train=data,
                           test_split_percentage=0.5, split=False)
         feature.bag_of_words(keep_col=True)
         validate = feature.x_train.values.tolist()
@@ -45,7 +46,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(data=data,
+        feature = Feature(x_train=data,
                           test_split_percentage=0.5, split=False)
         feature.tfidf(keep_col=False, lowercase=False, stop_words='english')
         validate = feature.x_train.shape[1]
@@ -59,7 +60,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(data=data,
+        feature = Feature(x_train=data,
                           test_split_percentage=0.5)
         feature.tfidf('text', keep_col=False, lowercase=False, stop_words='english')
         validate = feature.x_train.shape[1]
@@ -73,7 +74,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(data=data,
+        feature = Feature(x_train=data,
                           test_split_percentage=0.5, split=False)
         feature.tfidf(keep_col=True, lowercase=False, stop_words='english')
         validate = feature.x_train.shape[1]
@@ -89,7 +90,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(data=data, test_split_percentage=0.5, split=False)
+        feature = Feature(x_train=data, test_split_percentage=0.5, split=False)
         feature.onehot_encode(list_of_cols=["col1", "col3"], keep_col=False)
         validate = feature.x_train.values.tolist()
 
@@ -105,7 +106,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(data=data, test_split_percentage=0.5, split=False)
+        feature = Feature(x_train=data, test_split_percentage=0.5, split=False)
         feature.postag_nltk()
         validate = len(feature.x_train.columns)
 
@@ -121,7 +122,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(data, columns=columns)
 
-        feature = Feature(data=data, split=False)
+        feature = Feature(x_train=data, split=False)
         feature.apply(lambda x: x['col1'] > 0, 'new_col')
         validate = 'new_col' in feature.x_train.columns
 
@@ -136,7 +137,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(data, columns=columns)
 
-        feature = Feature(data=data, test_split_percentage=0.33)
+        feature = Feature(x_train=data, test_split_percentage=0.33)
         feature.apply(lambda x: x['col1'], 'new_col')
         validate = 'new_col' in feature.x_train.columns and 'new_col' in feature.x_test.columns
 
@@ -150,7 +151,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        feature = Feature(data=data, test_split_percentage=0.33, report_name="test")
+        feature = Feature(x_train=data, test_split_percentage=0.33, report_name="test")
         feature.encode_labels('col1', 'col2')
         
         self.assertTrue(True)

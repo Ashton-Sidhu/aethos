@@ -29,7 +29,7 @@ with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
 
 class Model(MethodBase):
 
-    def __init__(self, step=None, data=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(self, step=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
         
         _data_properties = _contructor_data_properties(step)
 
@@ -145,20 +145,12 @@ class Model(MethodBase):
     def __repr__(self):
 
         if SHELL == 'ZMQInteractiveShell':
-            if not self._data_properties.split:
-                display(self._result_data.head()) # Hack for jupyter notebooks
-                
-                return ''
-            else:
-                display(self._train_result_data.head()) # Hack for jupyter notebooks
+            
+            display(self._train_result_data.head()) # Hack for jupyter notebooks
 
-                return ''
-        
+            return ''
         else:
-            if not self._data_properties.split:
-                return str(self._result_data.head())
-            else:
-                return str(self._train_result_data.head())
+            return str(self._train_result_data.head())
 
     @property
     def target_data(self):

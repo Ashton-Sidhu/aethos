@@ -2,8 +2,9 @@ import copy
 import os
 
 import pandas as pd
-import pyautoml
 import yaml
+
+import pyautoml
 from pyautoml.base import MethodBase
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
@@ -23,15 +24,15 @@ with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
 
 class Feature(MethodBase):
 
-    def __init__(self, step=None, data=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(self, step=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
         
         _data_properties = _contructor_data_properties(step)
 
         if _data_properties is None:        
-            super().__init__(data=data, x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.x_train, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
@@ -75,13 +76,13 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.x_train = feature_one_hot_encode(list_of_cols=list_of_cols, keep_col=keep_col, data=self._data_properties.x_train, **onehot_params)
+            self._data_properties.x_train = feature_one_hot_encode(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, keep_col=keep_col, **onehot_params)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = feature_one_hot_encode(list_of_cols=list_of_cols,
-                                                                                                    keep_col=keep_col,
-                                                                                                    x_train=self._data_properties.x_train,
-                                                                                                    x_test=self._data_properties.x_test,
-                                                                                                    **onehot_params)
+            self._data_properties.x_train, self._data_properties.x_test = feature_one_hot_encode(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                list_of_cols=list_of_cols,
+                                                                                                keep_col=keep_col,
+                                                                                                **onehot_params)
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
@@ -126,14 +127,14 @@ class Feature(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.x_train = feature_tfidf(
-                list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, keep_col=keep_col, **tfidf_params)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = feature_tfidf(list_of_cols=list_of_cols,
-                                                                                            keep_col = keep_col,
-                                                                                           **tfidf_params,
-                                                                                           x_train=self._data_properties.x_train,
-                                                                                           x_test=self._data_properties.x_test,
-                                                                                           )
+            self._data_properties.x_train, self._data_properties.x_test = feature_tfidf(x_train=self._data_properties.x_train,
+                                                                                        x_test=self._data_properties.x_test,
+                                                                                        list_of_cols=list_of_cols,
+                                                                                        keep_col = keep_col,
+                                                                                        **tfidf_params,
+                                                                                        )
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
@@ -178,14 +179,14 @@ class Feature(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.x_train = feature_bag_of_words(
-                list_of_cols=list_of_cols, keep_col=keep_col, **bow_params, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, keep_col=keep_col, **bow_params)
         else:
-            self._data_properties.x_train, self._data_properties.x_test = feature_bag_of_words(list_of_cols=list_of_cols,
-                                                                                                    keep_col=keep_col,
-                                                                                                    **bow_params,
-                                                                                                    x_train=self._data_properties.x_train,
-                                                                                                    x_test=self._data_properties.x_test,
-                                                                                                    )
+            self._data_properties.x_train, self._data_properties.x_test = feature_bag_of_words(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                list_of_cols=list_of_cols,
+                                                                                                keep_col=keep_col,
+                                                                                                **bow_params,
+                                                                                                )
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
@@ -223,10 +224,10 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._data_properties.x_train = nltk_feature_postag(list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.x_train)
+            self._data_properties.x_train = nltk_feature_postag(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name)
         else:
             self._data_properties.x_train, self._data_properties.x_test = nltk_feature_postag(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
@@ -269,12 +270,12 @@ class Feature(MethodBase):
         """
         
         if not self._data_properties.split:    
-            self._data_properties.x_train = apply(func, output_col, data=self._data_properties.x_train)        
+            self._data_properties.x_train = apply(x_train=self._data_properties.x_train, func=func, output_col=output_col)        
         else:
-            self._data_properties.x_train, self._data_properties.x_test = apply(func,
-                                                                                    output_col,
-                                                                                    x_train=self._data_properties.x_train,
-                                                                                    x_test=self._data_properties.x_test)
+            self._data_properties.x_train, self._data_properties.x_test = apply(x_train=self._data_properties.x_train,
+                                                                                func=func,
+                                                                                output_col=output_col,
+                                                                                x_test=self._data_properties.x_test)
     
         if self.report is not None:
             self.report.log("Added feature {}. {}".format(output_col, description))
@@ -309,10 +310,10 @@ class Feature(MethodBase):
 
         if not self._data_properties.split:
             self._data_properties.x_train = label_encoder(
-                list_of_cols, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols)
         else:
             self._data_properties.x_train, self._data_properties.x_test = label_encoder(
-                list_of_cols, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols)
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)

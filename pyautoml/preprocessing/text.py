@@ -47,7 +47,7 @@ def split_sentences(x_train, x_test=None, list_of_cols=[], new_col_name='_senten
 
     if x_test is None:
         for col in list_of_cols:
-            data[col +
+            x_train[col +
                  new_col_name] = pd.Series(map(sent_tokenize, x_train.loc[:, col]))
 
         return x_train
@@ -101,13 +101,13 @@ def nltk_stem(x_train, x_test=None, list_of_cols=[], stemmer='porter', new_col_n
 
     if x_test is None:
         for col in list_of_cols:
-            data.loc[:, col + new_col_name] = list(map(func, x_train[col]))
+            x_train[col + new_col_name] = list(map(func, x_train[col]))
 
         return x_train
     else:
         for col in list_of_cols:
-            x_train.loc[:, col + new_col_name] = map(func, x_train[col])
-            x_test.loc[:, col + new_col_name] = map(func, x_test[col])
+            x_train[col + new_col_name] = map(func, x_train[col])
+            x_test[col + new_col_name] = map(func, x_test[col])
 
         return x_train, x_test
 
@@ -148,24 +148,24 @@ def nltk_word_tokenizer(x_train, x_test=None, list_of_cols=[], regexp='', new_co
     if x_test is None:
         for col in list_of_cols:
             if not regexp:
-                data[col + new_col_name] = list(map(word_tokenize, x_train[col]))
+                x_train[col + new_col_name] = pd.Series(map(word_tokenize, x_train[col]))
             else:
-                data[col +
-                     new_col_name] = list(map(tokenizer.tokenize, x_train[col]))
+                x_train[col +
+                     new_col_name] = pd.Series(map(tokenizer.tokenize, x_train[col]))
 
         return x_train
     else:
         for col in list_of_cols:
             if not regexp:
                 x_train[col +
-                           new_col_name] = list(map(word_tokenize, x_train[col]))
+                           new_col_name] = pd.Series(map(word_tokenize, x_train[col]))
                 x_test[col +
-                          new_col_name] = list(map(word_tokenize, x_test[col]))
+                          new_col_name] = pd.Series(map(word_tokenize, x_test[col]))
             else:
-                x_train[col + new_col_name] = list(
+                x_train[col + new_col_name] = pd.Series(
                     map(tokenizer.tokenize, x_train[col]))
                 x_test[col +
-                          new_col_name] = list(map(tokenizer.tokenize, x_test[col]))
+                          new_col_name] = pd.Series(map(tokenizer.tokenize, x_test[col]))
 
         return x_train, x_test
 
@@ -207,7 +207,7 @@ def nltk_remove_stopwords(x_train, x_test=None, list_of_cols=[], custom_stopword
 
     if x_test is None:
         for col in list_of_cols:
-            data[col + new_col_name] = list(map(lambda x: " ".join(
+            x_train[col + new_col_name] = list(map(lambda x: " ".join(
                 [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_train[col]))
 
         return x_train
@@ -261,10 +261,10 @@ def remove_punctuation(x_train, x_test=None, list_of_cols=[], regexp='', excepti
     if x_test is None:
         for col in list_of_cols:
             if not regexp:
-                data[col + new_col_name] = list(map(lambda x: "".join(
+                x_train[col + new_col_name] = list(map(lambda x: "".join(
                     [letter for letter in x if letter not in delete_punct]), x_train[col]))
             else:
-                data[col + new_col_name] = list(
+                x_train[col + new_col_name] = list(
                     map(lambda x: " ".join(tokenizer.tokenize(x)), x_train[col]))
 
         return x_train

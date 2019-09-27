@@ -28,7 +28,7 @@ class MethodBase(object):
 
         self._data_properties = Data(x_train, x_test, split=split, target_field=target_field, target_mapping=target_mapping, report_name=report_name)
 
-        if split:
+        if split and x_test is None:
             # Generate train set and test set.
             self._data_properties.x_train, self._data_properties.x_test = split_data(self._data_properties.x_train, test_split_percentage)
             self._data_properties.x_train.reset_index(drop=True, inplace=True)

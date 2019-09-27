@@ -10,56 +10,46 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
 
-from pyautoml.util import (_function_input_validation, _get_columns,
-                           drop_replace_columns)
+from pyautoml.util import _get_columns, drop_replace_columns
 
 
-def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
+def feature_bag_of_words(x_train, x_test=None, list_of_cols=[], keep_col=False, **algo_kwargs):
     """
     Creates a matrix of how many times a word appears in a document.
     
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     Parameters
     ----------
-    list_of_cols : list, optional
-        A list of specific columns to apply this technique to., by default []
-
-    algo_kwargs : dict, optional
-        Parameters you would pass into Bag of Words constructor as a dictionary., by default {}
-
-    data : DataFrame
-        Full dataset, by default None
-
     x_train : DataFrame
         Training dataset, by default None
         
     x_test : DataFrame
         Testing dataset, by default None
+
+    list_of_cols : list, optional
+        A list of specific columns to apply this technique to., by default []
+
+    keep_col : bool, optional
+        True if you want to keep the columns passed, otherwise remove it.
+
+    algo_kwargs : dict, optional
+        Parameters you would pass into Bag of Words constructor as a dictionary., by default {}
     
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with the new column.
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
 
-    data = algo_kwargs.pop('data', None)
-    x_train = algo_kwargs.pop('x_train', None)
-    x_test = algo_kwargs.pop('x_test', None)
-
-    if not _function_input_validation(data, x_train, x_test):
-        raise ValueError("Function input is incorrectly provided.")
-
     enc = CountVectorizer(**algo_kwargs)
-    list_of_cols = _get_columns(list_of_cols, data, x_train)
+    list_of_cols = _get_columns(list_of_cols, x_train)
 
-    if data is not None:
+    if x_test is None:
         for col in list_of_cols:
-            enc_data = enc.fit_transform(data[col]).toarray()
+            enc_data = enc.fit_transform(x_train[col]).toarray()
             enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
-            data = drop_replace_columns(data, col, enc_df, keep_col)
+            data = drop_replace_columns(x_train, col, enc_df, keep_col)
 
         return data
 
@@ -78,7 +68,7 @@ def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
         return x_train, x_test
 
 
-def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
+def feature_tfidf(x_train, x_test=None, list_of_cols=[], keep_col=True, **algo_kwargs):
     """
     Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
     
@@ -86,40 +76,37 @@ def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
     
     Parameters
     ----------
-    list_of_cols : list, optional
-        A list of specific columns to apply this technique to, by default []
-    algo_kwargs :  optional
-        Parameters you would pass into TFIDF constructor, by default {}
-    data : DataFrame
-        Full dataset, by default None
     x_train : DataFrame
-        Training dataset, by default None
+        Dataset
+        
     x_test : DataFrame
         Testing dataset, by default None
+
+    list_of_cols : list, optional
+        A list of specific columns to apply this technique to, by default []
+
+    keep_col : bool, optional
+        True if you want to keep the columns passed, otherwise remove it.
+
+    algo_kwargs :  optional
+        Parameters you would pass into TFIDF constructor, by default {}
     
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with the new column
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test data is provided. 
     """
 
-    data = algo_kwargs.pop('data', None)
-    x_train = algo_kwargs.pop('x_train', None)
-    x_test = algo_kwargs.pop('x_test', None)
-
-    if not _function_input_validation(data, x_train, x_test):
-        raise ValueError("Function input is incorrectly provided.")
-
     enc = TfidfVectorizer(**algo_kwargs)
-    list_of_cols = _get_columns(list_of_cols, data, x_train)
+    list_of_cols = _get_columns(list_of_cols, x_train)
 
-    if data is not None:
+    if x_test is None:
         for col in list_of_cols:
-            enc_data = enc.fit_transform(data[col]).toarray()
+            enc_data = enc.fit_transform(x_train[col]).toarray()
             enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
-            data = drop_replace_columns(data, col, enc_df, keep_col)
+            data = drop_replace_columns(x_train, col, enc_df, keep_col)
 
         return data
 
@@ -138,54 +125,43 @@ def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
         return x_train, x_test
 
 
-def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):    
+def nltk_feature_postag(x_train, x_test=None, list_of_cols=[], new_col_name='_postagged'):    
     """
     Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
     Verbs, etc.
 
     This utilizes TextBlob which utlizes the NLTK tagger and is a wrapper for the tagging process.
     
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     Parameters
     ----------
-    list_of_cols : list, optional
-        A list of specific columns to apply this technique to, by default []
-    new_col_name : str, optional
-        New column name to be created when applying this technique, by default `COLUMN_postagged`
-    data : DataFrame
-        Full dataset, by default None
     x_train : DataFrame
-        Training dataset, by default None
+        Dataset
+
     x_test : DataFrame
         Testing dataset, by default None
+
+    list_of_cols : list, optional
+        A list of specific columns to apply this technique to, by default []
+
+    new_col_name : str, optional
+        New column name to be created when applying this technique, by default `COLUMN_postagged`
     
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with the new column.
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
 
-    data = datasets.pop('data', None)
-    x_train = datasets.pop('x_train', None)
-    x_test = datasets.pop('x_test', None)
+    list_of_cols = _get_columns(list_of_cols, x_train)
 
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))    
-
-    if not _function_input_validation(data, x_train, x_test):
-        raise ValueError("Function input is incorrectly provided.")
-
-    list_of_cols = _get_columns(list_of_cols, data, x_train)
-
-    if data is not None:
+    if x_test is None:
         for col in list_of_cols:
-            data[col +
-                 new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, data[col]))
+            x_train[col +
+                 new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_train[col]))
 
-        return data
+        return x_train
 
     else:
         for col in list_of_cols:
