@@ -11,6 +11,7 @@ import seaborn as sns
 import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
+
 from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
                                                   MSFTInterpret, Shap)
 from pyautoml.visualizations.visualize import *
@@ -45,16 +46,16 @@ class ModelBase(object):
         self.model = model
         self.model_name = model_name
         self.data = model_object._data_properties.data
-        self.train_data = model_object._data_properties.train_data
-        self.test_data = model_object._data_properties.test_data
+        self.x_train = model_object._data_properties.x_train
+        self.x_test = model_object._data_properties.x_test
         self.data_results = model_object._result_data
-        self.train_data_results = model_object._train_result_data
-        self.test_data_results = model_object._test_result_data
+        self.x_train_results = model_object._train_result_data
+        self.x_test_results = model_object._test_result_data
         self.report = model_object._data_properties.report
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
-            self.shap = Shap(self.model, self.train_data, self.test_data, self.target_data, SHAP_LEARNERS[type(self.model)])
-            self.interpret = MSFTInterpret(self.model, self.train_data, self.test_data, self.target_data, PROBLEM_TYPE[type(self.model)])
+            self.shap = Shap(self.model, self.x_train, self.x_test, self.target_data, SHAP_LEARNERS[type(self.model)])
+            self.interpret = MSFTInterpret(self.model, self.x_train, self.x_test, self.target_data, PROBLEM_TYPE[type(self.model)])
         else:
             self.shap = None
             self.interpret = None
@@ -528,8 +529,8 @@ class ClusterModel(ModelBase):
         if self.data is not None:
             self.prediction_data = self.data_results[cluster_col]
         else:
-            self.train_prediction_data = self.train_data_results[cluster_col]
-            self.test_prediction_data = self.test_data_results[cluster_col]
+            self.train_prediction_data = self.x_train_results[cluster_col]
+            self.test_prediction_data = self.x_test_results[cluster_col]
 
     def filter_cluster(self, cluster_no: int):
         """
@@ -549,13 +550,13 @@ class ClusterModel(ModelBase):
         if self.data is not None:
             return self.data_results[self.data_results[self.cluster_col] == cluster_no]
         else:
-            return self.test_data_results[self.test_data_results[self.cluster_col] == cluster_no]
+            return self.x_test_results[self.x_test_results[self.cluster_col] == cluster_no]
 
 class ClassificationModel(ModelBase):
 
     def __init__(self, model_object, model_name, model, predictions_col):
         
-        self.target_data = model_object.target_data if model_object.target_data else model_object.test_target_data
+        self.target_data = model_object.target_data if model_object.target_data else model_object.y_test
 
         super().__init__(model_object, model, model_name)
 
@@ -564,7 +565,7 @@ class ClassificationModel(ModelBase):
         if self.data is not None:            
             self.prediction_data = self.data_results[predictions_col]
         else:
-            self.prediction_data = self.test_data_results[predictions_col]
+            self.prediction_data = self.x_test_results[predictions_col]
 
         if self.report:
             self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))
@@ -574,7 +575,7 @@ class ClassificationModel(ModelBase):
         else:
             self.classes = [str(item) for item in self.target_mapping.values()]
 
-        self.features = self.test_data.columns
+        self.features = self.x_test.columns
 
     def metric(self, *metrics, metric='accuracy', **scoring_kwargs):
         """

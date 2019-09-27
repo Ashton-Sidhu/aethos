@@ -62,7 +62,7 @@ class TestFeatureExtraction(unittest.TestCase):
         feature = Feature(data=data,
                           test_split_percentage=0.5)
         feature.tfidf('text', keep_col=False, lowercase=False, stop_words='english')
-        validate = feature.train_data.shape[1]
+        validate = feature.x_train.shape[1]
 
         self.assertEqual(validate, 2)
 
@@ -138,7 +138,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         feature = Feature(data=data, test_split_percentage=0.33)
         feature.apply(lambda x: x['col1'], 'new_col')
-        validate = 'new_col' in feature.train_data.columns and 'new_col' in feature.test_data.columns
+        validate = 'new_col' in feature.x_train.columns and 'new_col' in feature.x_test.columns
 
         self.assertTrue(validate)
 

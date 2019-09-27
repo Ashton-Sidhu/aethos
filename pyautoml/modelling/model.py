@@ -29,42 +29,42 @@ with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
 
 class Model(MethodBase):
 
-    def __init__(self, step=None, data=None, train_data=None, test_data=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(self, step=None, data=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
         
         _data_properties = _contructor_data_properties(step)
 
         if _data_properties is None:        
-            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
+            super().__init__(data=data, x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
+            super().__init__(data=_data_properties.data, x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
             self.report.write_header("Modelling")
 
         self._result_data = self._data_properties.data.copy() if self._data_properties.data is not None else None
-        self._train_result_data = self._data_properties.train_data.copy() if self._data_properties.train_data is not None else None
-        self._test_result_data = self._data_properties.test_data.copy() if self._data_properties.train_data is not None else None
+        self._train_result_data = self._data_properties.x_train.copy() if self._data_properties.x_train is not None else None
+        self._test_result_data = self._data_properties.x_test.copy() if self._data_properties.x_train is not None else None
 
         if self._data_properties.target_field:
             if split:
                 if isinstance(step, Model):
-                    self._train_target_data = step._train_target_data
-                    self._test_target_data = step._test_target_data
-                    self._data_properties.train_data = step._data_properties.train_data
-                    self._data_properties.test_data = step._data_properties.test_data
+                    self._y_train = step._y_train
+                    self._y_test = step._y_test
+                    self._data_properties.x_train = step._data_properties.x_train
+                    self._data_properties.x_test = step._data_properties.x_test
                 else:
-                    self._train_target_data = self._data_properties.train_data[self._data_properties.target_field]
-                    self._test_target_data = self._data_properties.test_data[self._data_properties.target_field]
-                    self._data_properties.train_data = self._data_properties.train_data.drop([self._data_properties.target_field], axis=1)
-                    self._data_properties.test_data = self._data_properties.test_data.drop([self._data_properties.target_field], axis=1)
+                    self._y_train = self._data_properties.x_train[self._data_properties.target_field]
+                    self._y_test = self._data_properties.x_test[self._data_properties.target_field]
+                    self._data_properties.x_train = self._data_properties.x_train.drop([self._data_properties.target_field], axis=1)
+                    self._data_properties.x_test = self._data_properties.x_test.drop([self._data_properties.target_field], axis=1)
             else:
                 if isinstance(step, Model):
-                    self._target_data = step._target_data
+                    self._y_train = step._y_train
                     self._data_properties.data = step._data_properties.data
                 else:
-                    self._target_data = self._data_properties.data[self._data_properties.target_field]
+                    self._y_train = self._data_properties.data[self._data_properties.target_field]
                     self._data_properties.data = self._data_properties.data.drop([self._data_properties.target_field], axis=1)
 
         if isinstance(step, Model):
@@ -116,25 +116,25 @@ class Model(MethodBase):
 
                 return self._result_data.head()
             else:
-                train_data_length = self._data_properties.train_data.shape[0]
-                test_data_length = self._data_properties.test_data.shape[0]
+                x_train_length = self._data_properties.x_train.shape[0]
+                x_test_length = self._data_properties.x_test.shape[0]
 
                 if isinstance(value, list):
                     ## If the number of entries in the list does not match the number of rows in the training or testing
                     ## set raise a value error
-                    if len(value) != train_data_length and len(value) != test_data_length:
+                    if len(value) != x_train_length and len(value) != x_test_length:
                         raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(value))))
 
                     self._train_result_data, self._test_result_data = _set_item(
-                        self._train_result_data, self._test_result_data, key, value, train_data_length, test_data_length)
+                        self._train_result_data, self._test_result_data, key, value, x_train_length, x_test_length)
 
                 elif isinstance(value, tuple):
                     for data in value:
-                        if len(data) != train_data_length and len(data) != test_data_length:
+                        if len(data) != x_train_length and len(data) != x_test_length:
                             raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
 
                         self._train_result_data, self._test_result_data = _set_item(
-                            self._train_result_data, self._test_result_data, key, data, train_data_length, test_data_length)
+                            self._train_result_data, self._test_result_data, key, data, x_train_length, x_test_length)
 
                 else:
                     self._train_result_data[key] = value
@@ -167,9 +167,9 @@ class Model(MethodBase):
         """
         try:
             if self._data_properties.data is None:
-                raise AttributeError("There seems to be nothing here. Try .train_target_data or .test_target_data")
+                raise AttributeError("There seems to be nothing here. Try .y_train or .y_test")
             
-            return self._target_data
+            return self._y_train
         except Exception as e:
             return None
 
@@ -179,51 +179,51 @@ class Model(MethodBase):
         Setter function for the target data.
         """
 
-        self._target_data = value
+        self._y_train = value
 
     @property
-    def train_target_data(self):
+    def y_train(self):
         """
         Property function for the training target data.
         """
         
         try:
-            if self._data_properties.train_data is None:
+            if self._data_properties.x_train is None:
                 raise AttributeError("There seems to be nothing here. Try .target_data")
 
-            return self._train_target_data
+            return self._y_train
         except Exception as e:
             return None
 
-    @train_target_data.setter
-    def train_target_data(self, value):
+    @y_train.setter
+    def y_train(self, value):
         """
         Setter function for the training target data.
         """
 
-        self._train_target_data = value
+        self._y_train = value
         
     @property
-    def test_target_data(self):
+    def y_test(self):
         """
         Property function for the test target data.
         """
 
         try:
-            if self._data_properties.train_data is None:
+            if self._data_properties.x_train is None:
                 raise AttributeError("There seems to be nothing here. Try .target_data")
 
-            return self._test_target_data
+            return self._y_test
         except Exception as e:
             return None
 
-    @test_target_data.setter
-    def test_target_data(self, value):
+    @y_test.setter
+    def y_test(self, value):
         """
         Setter for the test target data.
         """
 
-        self._test_target_data = value
+        self._y_test = value
 
     @property
     def data_results(self):
@@ -232,7 +232,7 @@ class Model(MethodBase):
         """
 
         if self._data_properties.data is None:
-            raise AttributeError("There seems to be nothing here. Try .train_data_results or .test_data_results")
+            raise AttributeError("There seems to be nothing here. Try .x_train_results or .x_test_results")
         
         return self._result_data
 
@@ -245,18 +245,18 @@ class Model(MethodBase):
         self._result_data = value
 
     @property
-    def train_data_results(self):
+    def x_train_results(self):
         """
         Property function for the training results data.
         """
         
-        if self._data_properties.train_data is None:
+        if self._data_properties.x_train is None:
             raise AttributeError("There seems to be nothing here. Try .data_results")
 
         return self._train_result_data
 
-    @train_data_results.setter
-    def train_data_results(self, value):
+    @x_train_results.setter
+    def x_train_results(self, value):
         """
         Setter function for the training results data.
         """
@@ -264,18 +264,18 @@ class Model(MethodBase):
         self._train_result_data = value
         
     @property
-    def test_data_results(self):
+    def x_test_results(self):
         """
         Property function for the test results data.
         """
 
-        if self._data_properties.train_data is None:
+        if self._data_properties.x_train is None:
             raise AttributeError("There seems to be nothing here. Try .data_results")
 
         return self._test_result_data
     
-    @test_data_results.setter
-    def test_data_results(self, value):
+    @x_test_results.setter
+    def x_test_results(self, value):
         """
         Setter for the test target data.
         """
@@ -382,7 +382,7 @@ class Model(MethodBase):
             
         else:
             self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **summarizer_kwargs)
+                list_of_cols=list_of_cols, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, **summarizer_kwargs)
 
             if self.report is not None:
                 self.report.report_technique(report_info)
@@ -455,7 +455,7 @@ class Model(MethodBase):
 
         else:
             self._train_result_data, self._test_result_data = gensim_textrank_keywords(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **keyword_kwargs)
+                list_of_cols=list_of_cols, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, **keyword_kwargs)
 
             if self.report is not None:
                 self.report.report_technique(report_info)
@@ -528,11 +528,11 @@ class Model(MethodBase):
             self._result_data[new_col_name] = kmeans.labels_
 
         else:
-            kmeans.fit(self._data_properties.train_data)
+            kmeans.fit(self._data_properties.x_train)
 
             self._train_result_data[new_col_name] = kmeans.labels_
             self._test_result_data[new_col_name] = kmeans.predict(
-                self._data_properties.test_data)
+                self._data_properties.x_test)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -603,8 +603,8 @@ class Model(MethodBase):
             warnings.warn(
                 'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.data_results`.')
 
-            full_data = self._data_properties.train_data.append(
-                self._data_properties.test_data, ignore_index=True)
+            full_data = self._data_properties.x_train.append(
+                self._data_properties.x_test, ignore_index=True)
             dbscan.fit(full_data)
             full_data[new_col_name] = dbscan.labels_
             self._result_data = full_data
@@ -712,10 +712,10 @@ class Model(MethodBase):
             log_reg.fit(self._data_properties.data, self.target_data)      
             self._result_data[new_col_name] = log_reg.predict(self._data_properties.data)            
         else:
-            log_reg.fit(self._data_properties.train_data, self._train_target_data)
+            log_reg.fit(self._data_properties.x_train, self._y_train)
 
-            self._train_result_data[new_col_name] = log_reg.predict(self._data_properties.train_data)
-            self._test_result_data[new_col_name] = log_reg.predict(self._data_properties.test_data)
+            self._train_result_data[new_col_name] = log_reg.predict(self._data_properties.x_train)
+            self._test_result_data[new_col_name] = log_reg.predict(self._data_properties.x_test)
 
         if self.report is not None:
             if gridsearch:

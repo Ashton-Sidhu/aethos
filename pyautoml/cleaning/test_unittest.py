@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml import Clean
 
 
@@ -44,7 +43,7 @@ class TestCleaning(unittest.TestCase):
 
         clean = Clean(data=dataset)
 
-        self.assertEqual(clean.train_data.shape[0], 4)
+        self.assertEqual(clean.x_train.shape[0], 4)
 
     def test_cleannumeric_mean(self):
         int_missing_data = [[1, 0, 2],
@@ -279,7 +278,7 @@ class TestCleaning(unittest.TestCase):
         clean = Clean(data=data, test_split_percentage=0.5)
         clean.replace_missing_random_discrete("col1", "col2", "col3")
         
-        validate = np.any(clean.train_data.isnull()) and any(clean.test_data.isnull())
+        validate = np.any(clean.x_train.isnull()) and any(clean.x_test.isnull())
 
         self.assertFalse(validate)
 

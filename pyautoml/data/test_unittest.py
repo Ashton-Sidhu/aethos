@@ -10,13 +10,13 @@ from pyautoml.util import *
 class TestData(unittest.TestCase):
 
 
-    def test_data_normalizecolumnames_dfcolumnames(self):
+    def test_normalizecolumnames_dfcolumnames(self):
 
         data = np.zeros((4,4))
         columns = ["PID", "CapsLock", "space column name", "Caps Space"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, split=True, target_field="", target_mapping=None, report_name=None)
+        data = Data(data=dataset, x_train=None, x_test=None, split=True, target_field="", target_mapping=None, report_name=None)
         new_df = data.normalize_column_names(dataset)
 
         self.assertListEqual(new_df.columns.tolist(), ["pid", "capslock", "space_column_name", "caps_space"])
@@ -25,13 +25,13 @@ class TestData(unittest.TestCase):
                                                 ,"space column name": "space_column_name"
                                                 ,"Caps Space": "caps_space"})
 
-    def test_data_normalizecolumnames_colmapping(self):
+    def test_normalizecolumnames_colmapping(self):
 
         data = np.zeros((4,4))
         columns = ["PID", "CapsLock", "space column name", "Caps Space"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, split=True, target_field="", target_mapping=None, report_name=None)
+        data = Data(data=dataset, x_train=None, x_test=None, split=True, target_field="", target_mapping=None, report_name=None)
         new_df = data.normalize_column_names(dataset)
 
         self.assertDictEqual(data.colMapping, {"PID": "pid"
@@ -39,7 +39,7 @@ class TestData(unittest.TestCase):
                                                 ,"space column name": "space_column_name"
                                                 ,"Caps Space": "caps_space"})     
 
-    def test_data_standardizedata(self):
+    def test_standardizedata(self):
 
         data = [[1, 1, 0, "hi my name is pyautoml", "green", 532.1],
                 [2, 0, None, "this is my story", "yellow", 213.5],
@@ -47,12 +47,12 @@ class TestData(unittest.TestCase):
         columns = ["pid","col1", "col2", "col3", "col4", "col5"]
 
         dataset = pd.DataFrame(data, columns=columns)
-        data = Data(data=dataset, train_data=None, test_data=None, split=True, target_field="", target_mapping=None, report_name=None)
+        data = Data(data=dataset, x_train=None, x_test=None, split=True, target_field="", target_mapping=None, report_name=None)
         new_df = data.standardize_data(dataset)
 
         self.assertIsNotNone(new_df)
 
-    def test_datautil_checkmissingdata(self):
+    def testutil_checkmissingdata(self):
         
         data = np.array([(1, 1, 0, "hi my name is pyautoml", "green", 532.1),
                         (2, 0, None, "this is my story", "yellow", 213.5),
@@ -65,7 +65,7 @@ class TestData(unittest.TestCase):
         self.assertTrue(has_null)
 
 
-    def test_datautil_dropandreplacecolumns(self):
+    def testutil_dropandreplacecolumns(self):
         data_zeros = np.zeros((2,2))
         columns_zeros = ["col1", "col2"]
         data_ones = np.ones((2,1))

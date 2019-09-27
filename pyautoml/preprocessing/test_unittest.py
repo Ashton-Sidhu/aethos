@@ -27,22 +27,22 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_preprocess_traindata(self):
 
-        unnormal_train_data = [[5.0, 3, 1],
+        unnormal_x_train = [[5.0, 3, 1],
                             [2.0, 2, 1],
                             [10.0, 1, 1]]
 
-        unnormal_test_data = [[5.0, 3, 1],
+        unnormal_x_test = [[5.0, 3, 1],
                             [2.0, 2, 1],
                             [10.0, 1, 1]]
 
         columns = ["col1", "col2", "col3"]        
-        train_data = pd.DataFrame(unnormal_train_data, columns=columns)
-        test_data = pd.DataFrame(unnormal_test_data, columns=columns)
+        x_train = pd.DataFrame(unnormal_x_train, columns=columns)
+        x_test = pd.DataFrame(unnormal_x_test, columns=columns)
 
-        preprocess = Preprocess(train_data=train_data, test_data=test_data, test_split_percentage=0.5)
+        preprocess = Preprocess(x_train=x_train, x_test=x_test, test_split_percentage=0.5)
         preprocess.normalize_numeric("col1", "col2", "col3")
-        validate_train = preprocess.train_data.values.tolist()
-        validate_test = preprocess.test_data.values.tolist()
+        validate_train = preprocess.x_train.values.tolist()
+        validate_test = preprocess.x_test.values.tolist()
 
         self.assertListEqual(validate_train, validate_test)
 

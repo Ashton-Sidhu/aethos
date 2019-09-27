@@ -31,10 +31,10 @@ def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
         
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -46,14 +46,14 @@ def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
     """
 
     data = algo_kwargs.pop('data', None)
-    train_data = algo_kwargs.pop('train_data', None)
-    test_data = algo_kwargs.pop('test_data', None)
+    x_train = algo_kwargs.pop('x_train', None)
+    x_test = algo_kwargs.pop('x_test', None)
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Function input is incorrectly provided.")
 
     enc = CountVectorizer(**algo_kwargs)
-    list_of_cols = _get_columns(list_of_cols, data, train_data)
+    list_of_cols = _get_columns(list_of_cols, data, x_train)
 
     if data is not None:
         for col in list_of_cols:
@@ -65,17 +65,17 @@ def feature_bag_of_words(list_of_cols=[], keep_col=False, **algo_kwargs):
 
     else:
         for col in list_of_cols:
-            enc_train_data = enc.fit_transform(train_data[col]).toarray()
+            enc_x_train = enc.fit_transform(x_train[col]).toarray()
             enc_train_df = pd.DataFrame(
-                enc_train_data, columns=enc.get_feature_names())
-            train_data = drop_replace_columns(train_data, col, enc_train_df, keep_col)
+                enc_x_train, columns=enc.get_feature_names())
+            x_train = drop_replace_columns(x_train, col, enc_train_df, keep_col)
 
-            enc_test_data = enc.transform(test_data[col]).toarray()
+            enc_x_test = enc.transform(x_test[col]).toarray()
             enc_test_df = pd.DataFrame(
-                enc_test_data, columns=enc.get_features_names())
-            test_data = drop_replace_columns(test_data, col, enc_test_df, keep_col)
+                enc_x_test, columns=enc.get_features_names())
+            x_test = drop_replace_columns(x_test, col, enc_test_df, keep_col)
 
-        return train_data, test_data
+        return x_train, x_test
 
 
 def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
@@ -92,9 +92,9 @@ def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
         Parameters you would pass into TFIDF constructor, by default {}
     data : DataFrame
         Full dataset, by default None
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -106,14 +106,14 @@ def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
     """
 
     data = algo_kwargs.pop('data', None)
-    train_data = algo_kwargs.pop('train_data', None)
-    test_data = algo_kwargs.pop('test_data', None)
+    x_train = algo_kwargs.pop('x_train', None)
+    x_test = algo_kwargs.pop('x_test', None)
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Function input is incorrectly provided.")
 
     enc = TfidfVectorizer(**algo_kwargs)
-    list_of_cols = _get_columns(list_of_cols, data, train_data)
+    list_of_cols = _get_columns(list_of_cols, data, x_train)
 
     if data is not None:
         for col in list_of_cols:
@@ -125,17 +125,17 @@ def feature_tfidf(list_of_cols=[], keep_col=True, **algo_kwargs):
 
     else:
         for col in list_of_cols:
-            enc_train_data = enc.fit_transform(train_data[col]).toarray()
+            enc_x_train = enc.fit_transform(x_train[col]).toarray()
             enc_train_df = pd.DataFrame(
-                enc_train_data, columns=enc.get_feature_names())
-            train_data = drop_replace_columns(train_data, col, enc_train_df, keep_col)
+                enc_x_train, columns=enc.get_feature_names())
+            x_train = drop_replace_columns(x_train, col, enc_train_df, keep_col)
 
-            enc_test_data = enc.transform(test_data[col]).toarray()
+            enc_x_test = enc.transform(x_test[col]).toarray()
             enc_test_df = pd.DataFrame(
-                enc_test_data, columns=enc.get_feature_names())
-            test_data = drop_replace_columns(test_data, col, enc_test_df, keep_col)
+                enc_x_test, columns=enc.get_feature_names())
+            x_test = drop_replace_columns(x_test, col, enc_test_df, keep_col)
 
-        return train_data, test_data
+        return x_train, x_test
 
 
 def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):    
@@ -155,9 +155,9 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
         New column name to be created when applying this technique, by default `COLUMN_postagged`
     data : DataFrame
         Full dataset, by default None
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -169,16 +169,16 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))    
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Function input is incorrectly provided.")
 
-    list_of_cols = _get_columns(list_of_cols, data, train_data)
+    list_of_cols = _get_columns(list_of_cols, data, x_train)
 
     if data is not None:
         for col in list_of_cols:
@@ -189,9 +189,9 @@ def nltk_feature_postag(list_of_cols=[], new_col_name='_postagged', **datasets):
 
     else:
         for col in list_of_cols:
-            train_data[col +
-                       new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, train_data[col]))
-            test_data[col +
-                      new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, test_data[col]))
+            x_train[col +
+                       new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_train[col]))
+            x_test[col +
+                      new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_test[col]))
 
-        return train_data, test_data
+        return x_train, x_test

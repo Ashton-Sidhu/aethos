@@ -7,7 +7,6 @@ replace_missing_remove_row
 
 import numpy as np
 import pandas as pd
-
 from pyautoml.util import _function_input_validation, _get_columns
 
 #TODO: Implement KNN, and replacing with most common category 
@@ -30,10 +29,10 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
 
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -51,17 +50,17 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))    
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Please provide a full data or training and testing data.")
 
     if isinstance(col_to_category, list):
-        col_to_category = _get_columns(col_to_category, data, train_data)
+        col_to_category = _get_columns(col_to_category, data, x_train)
     
     str_missing_categories = ["Other", "Unknown", "MissingDataCategory"]
     num_missing_categories = [-1, -999, -9999]
@@ -75,10 +74,10 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
 
         else:
             for col in col_to_category.keys():
-                train_data[col].fillna(col_to_category[col], inplace=True)
-                test_data[col].fillna(col_to_category[col], inplace=True)
+                x_train[col].fillna(col_to_category[col], inplace=True)
+                x_test[col].fillna(col_to_category[col], inplace=True)
             
-            return train_data, test_data
+            return x_train, x_test
 
     elif isinstance(col_to_category, list) and constant is not None:
         if data is not None:
@@ -89,10 +88,10 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
 
         else:
             for col in col_to_category:
-                train_data[col].fillna(constant, inplace=True)
-                test_data[col].fillna(constant, inplace=True)
+                x_train[col].fillna(constant, inplace=True)
+                x_test[col].fillna(constant, inplace=True)
             
-            return train_data, test_data
+            return x_train, x_test
 
     else:
         if data is not None:
@@ -113,20 +112,20 @@ def replace_missing_new_category(col_to_category=None, constant=None, **datasets
         else:
             for col in col_to_category:                
                 #Check if column is a number
-                if np.issubdtype(train_data[col].dtype, np.number):
-                    new_category_name = _determine_default_category(train_data, col, num_missing_categories)
-                    train_data[col].fillna(new_category_name, inplace=True)
-                    test_data[col].fillna(new_category_name, inplace=True)
+                if np.issubdtype(x_train[col].dtype, np.number):
+                    new_category_name = _determine_default_category(x_train, col, num_missing_categories)
+                    x_train[col].fillna(new_category_name, inplace=True)
+                    x_test[col].fillna(new_category_name, inplace=True)
                     #Convert numeric categorical column to integer
-                    train_data[col] = train_data[col].astype(int)
-                    test_data[col] = test_data[col].astype(int)
+                    x_train[col] = x_train[col].astype(int)
+                    x_test[col] = x_test[col].astype(int)
 
                 else:
-                    new_category_name = _determine_default_category(train_data, col, str_missing_categories)
-                    train_data[col].fillna(new_category_name, inplace=True)
-                    test_data[col].fillna(new_category_name, inplace=True)           
+                    new_category_name = _determine_default_category(x_train, col, str_missing_categories)
+                    x_train[col].fillna(new_category_name, inplace=True)
+                    x_test[col].fillna(new_category_name, inplace=True)           
 
-            return train_data, test_data
+            return x_train, x_test
 
 def replace_missing_remove_row(cols_to_remove: list, **datasets):
     """
@@ -142,10 +141,10 @@ def replace_missing_remove_row(cols_to_remove: list, **datasets):
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
         
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -157,13 +156,13 @@ def replace_missing_remove_row(cols_to_remove: list, **datasets):
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))  
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Please provide a full data or training and testing data.")
 
     if data is not None:
@@ -171,10 +170,10 @@ def replace_missing_remove_row(cols_to_remove: list, **datasets):
 
         return data
     else:
-        train_data = train_data.dropna(axis=0, subset=cols_to_remove)
-        test_data = test_data.dropna(axis=0, subset=cols_to_remove)
+        x_train = x_train.dropna(axis=0, subset=cols_to_remove)
+        x_test = x_test.dropna(axis=0, subset=cols_to_remove)
 
-        return train_data, test_data
+        return x_train, x_test
 
 def _determine_default_category(data, col, replacement_categories):
     """

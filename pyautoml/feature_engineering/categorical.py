@@ -5,10 +5,9 @@ feature_one_hot_encode
 """
 
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
-
 from pyautoml.util import (_function_input_validation, _get_columns,
                            drop_replace_columns)
+from sklearn.preprocessing import OneHotEncoder
 
 
 def feature_one_hot_encode(list_of_cols: list, keep_col=True, **algo_kwargs):
@@ -32,10 +31,10 @@ def feature_one_hot_encode(list_of_cols: list, keep_col=True, **algo_kwargs):
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
 
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -47,14 +46,14 @@ def feature_one_hot_encode(list_of_cols: list, keep_col=True, **algo_kwargs):
     """
 
     data = algo_kwargs.pop('data', None)
-    train_data = algo_kwargs.pop('train_data', None)
-    test_data = algo_kwargs.pop('test_data', None)
+    x_train = algo_kwargs.pop('x_train', None)
+    x_test = algo_kwargs.pop('x_test', None)
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Function input is incorrectly provided.")
 
     enc = OneHotEncoder(handle_unknown='ignore', **algo_kwargs)
-    list_of_cols = _get_columns(list_of_cols, data, train_data)
+    list_of_cols = _get_columns(list_of_cols, data, x_train)
 
     if data is not None:
         
@@ -66,12 +65,12 @@ def feature_one_hot_encode(list_of_cols: list, keep_col=True, **algo_kwargs):
 
     else:        
 
-        enc_train_data = enc.fit_transform(train_data[list_of_cols]).toarray()
-        enc_train_df = pd.DataFrame(enc_train_data, columns=enc.get_feature_names(list_of_cols))
-        train_data = drop_replace_columns(train_data, list_of_cols, enc_train_df, keep_col)
+        enc_x_train = enc.fit_transform(x_train[list_of_cols]).toarray()
+        enc_train_df = pd.DataFrame(enc_x_train, columns=enc.get_feature_names(list_of_cols))
+        x_train = drop_replace_columns(x_train, list_of_cols, enc_train_df, keep_col)
 
-        enc_test_data = enc.transform(test_data[list_of_cols]).toarray()
-        enc_test_df = pd.DataFrame(enc_test_data, columns=enc.get_feature_names(list_of_cols))
-        test_data = drop_replace_columns(test_data, list_of_cols, enc_test_df, keep_col)
+        enc_x_test = enc.transform(x_test[list_of_cols]).toarray()
+        enc_test_df = pd.DataFrame(enc_x_test, columns=enc.get_feature_names(list_of_cols))
+        x_test = drop_replace_columns(x_test, list_of_cols, enc_test_df, keep_col)
 
-        return train_data, test_data
+        return x_train, x_test

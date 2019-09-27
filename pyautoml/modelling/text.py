@@ -28,10 +28,10 @@ def gensim_textrank_summarizer(list_of_cols=[], new_col_name="_summarized", **al
     """
 
     data = algo_kwargs.pop('data', None)
-    train_data = algo_kwargs.pop('train_data', None)
-    test_data = algo_kwargs.pop('test_data', None)
+    x_train = algo_kwargs.pop('x_train', None)
+    x_test = algo_kwargs.pop('x_test', None)
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:
@@ -41,10 +41,10 @@ def gensim_textrank_summarizer(list_of_cols=[], new_col_name="_summarized", **al
         return data
     else:
         for col in list_of_cols:
-            train_data.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), train_data[col]))
-            test_data.loc[:, col + new_col_name]  = list(map(lambda x: summarize(x, **algo_kwargs), test_data[col]))
+            x_train.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), x_train[col]))
+            x_test.loc[:, col + new_col_name]  = list(map(lambda x: summarize(x, **algo_kwargs), x_test[col]))
 
-        return train_data, test_data
+        return x_train, x_test
 
 
 def gensim_textrank_keywords(list_of_cols=[], new_col_name="_extracted_keywords", **algo_kwargs):
@@ -70,10 +70,10 @@ def gensim_textrank_keywords(list_of_cols=[], new_col_name="_extracted_keywords"
     """
 
     data = algo_kwargs.pop('data', None)
-    train_data = algo_kwargs.pop('train_data', None)
-    test_data = algo_kwargs.pop('test_data', None)
+    x_train = algo_kwargs.pop('x_train', None)
+    x_test = algo_kwargs.pop('x_test', None)
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:
@@ -83,7 +83,7 @@ def gensim_textrank_keywords(list_of_cols=[], new_col_name="_extracted_keywords"
         return data
     else:
         for col in list_of_cols:
-            train_data.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), train_data[col]))
-            test_data.loc[:, col + new_col_name]  = list(map(lambda x: keywords(x, **algo_kwargs), test_data[col]))
+            x_train.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), x_train[col]))
+            x_test.loc[:, col + new_col_name]  = list(map(lambda x: keywords(x, **algo_kwargs), x_test[col]))
 
-        return train_data, test_data
+        return x_train, x_test

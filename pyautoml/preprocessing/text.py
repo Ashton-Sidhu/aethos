@@ -35,10 +35,10 @@ def split_sentences(list_of_cols=[], new_col_name='_sentences', **datasets):
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
 
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
 
     Returns
@@ -50,12 +50,12 @@ def split_sentences(list_of_cols=[], new_col_name='_sentences', **datasets):
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:
@@ -66,12 +66,12 @@ def split_sentences(list_of_cols=[], new_col_name='_sentences', **datasets):
         return data
     else:
         for col in list_of_cols:
-            train_data[col +
-                       new_col_name] = pd.Series(map(sent_tokenize, train_data[col]))
-            test_data[col +
-                      new_col_name] = pd.Series(map(sent_tokenize, test_data[col]))
+            x_train[col +
+                       new_col_name] = pd.Series(map(sent_tokenize, x_train[col]))
+            x_test[col +
+                      new_col_name] = pd.Series(map(sent_tokenize, x_test[col]))
 
-        return train_data, test_data
+        return x_train, x_test
 
 
 def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **datasets):
@@ -99,10 +99,10 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
 
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
 
     Returns
@@ -114,13 +114,13 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError('Function input is incorrectly provided.')
 
     stem = NLTK_STEMMERS[stemmer]
@@ -134,10 +134,10 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
         return data
     else:
         for col in list_of_cols:
-            train_data.loc[:, col + new_col_name] = map(func, train_data[col])
-            test_data.loc[:, col + new_col_name] = map(func, test_data[col])
+            x_train.loc[:, col + new_col_name] = map(func, x_train[col])
+            x_test.loc[:, col + new_col_name] = map(func, x_test[col])
 
-        return train_data, test_data
+        return x_train, x_test
 
 
 def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", **datasets):
@@ -160,10 +160,10 @@ def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", *
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
 
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
 
     Returns
@@ -175,13 +175,13 @@ def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", *
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError('Function input is incorrectly provided.')
 
     tokenizer = RegexpTokenizer(regexp)
@@ -198,17 +198,17 @@ def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", *
     else:
         for col in list_of_cols:
             if not regexp:
-                train_data[col +
-                           new_col_name] = list(map(word_tokenize, train_data[col]))
-                test_data[col +
-                          new_col_name] = list(map(word_tokenize, test_data[col]))
+                x_train[col +
+                           new_col_name] = list(map(word_tokenize, x_train[col]))
+                x_test[col +
+                          new_col_name] = list(map(word_tokenize, x_test[col]))
             else:
-                train_data[col + new_col_name] = list(
-                    map(tokenizer.tokenize, train_data[col]))
-                test_data[col +
-                          new_col_name] = list(map(tokenizer.tokenize, test_data[col]))
+                x_train[col + new_col_name] = list(
+                    map(tokenizer.tokenize, x_train[col]))
+                x_test[col +
+                          new_col_name] = list(map(tokenizer.tokenize, x_test[col]))
 
-        return train_data, test_data
+        return x_train, x_test
 
 
 def nltk_remove_stopwords(list_of_cols=[], custom_stopwords=[], new_col_name='_rem_stop', **datasets):
@@ -231,10 +231,10 @@ def nltk_remove_stopwords(list_of_cols=[], custom_stopwords=[], new_col_name='_r
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
 
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
 
     Returns
@@ -246,13 +246,13 @@ def nltk_remove_stopwords(list_of_cols=[], custom_stopwords=[], new_col_name='_r
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError('Invalid parameters passed: {}'.format(str(datasets)))
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError('Function input is incorrectly provided.')
 
     stop_words = stopwords.words('english')
@@ -267,12 +267,12 @@ def nltk_remove_stopwords(list_of_cols=[], custom_stopwords=[], new_col_name='_r
         return data
     else:
         for col in list_of_cols:
-            train_data[col + new_col_name] = list(map(lambda x: " ".join(
-                [word for word in word_tokenize(x.lower()) if word not in stop_list]), train_data[col]))
-            test_data[col + new_col_name] = list(map(lambda x: " ".join(
-                [word for word in word_tokenize(x.lower()) if word not in stop_list]), test_data[col]))
+            x_train[col + new_col_name] = list(map(lambda x: " ".join(
+                [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_train[col]))
+            x_test[col + new_col_name] = list(map(lambda x: " ".join(
+                [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_test[col]))
 
-        return train_data, test_data
+        return x_train, x_test
 
 
 def remove_punctuation(list_of_cols=[], regexp='', exceptions=[], new_col_name='_rem_punct', **datasets):
@@ -298,10 +298,10 @@ def remove_punctuation(list_of_cols=[], regexp='', exceptions=[], new_col_name='
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
 
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
 
     Returns
@@ -313,13 +313,13 @@ def remove_punctuation(list_of_cols=[], regexp='', exceptions=[], new_col_name='
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError('Invalid parameters passed: {}'.format(str(datasets)))
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError('Function input is incorrectly provided.')
 
     delete_punct = set(string.punctuation) - set(exceptions)
@@ -338,17 +338,17 @@ def remove_punctuation(list_of_cols=[], regexp='', exceptions=[], new_col_name='
     else:
         for col in list_of_cols:
             if not regexp:
-                train_data[col + new_col_name] = list(map(lambda x: "".join(
-                    [letter for letter in x if letter not in delete_punct]), train_data[col]))
-                test_data[col + new_col_name] = list(map(lambda x: "".join(
-                    [letter for letter in x if letter not in delete_punct]), test_data[col]))
+                x_train[col + new_col_name] = list(map(lambda x: "".join(
+                    [letter for letter in x if letter not in delete_punct]), x_train[col]))
+                x_test[col + new_col_name] = list(map(lambda x: "".join(
+                    [letter for letter in x if letter not in delete_punct]), x_test[col]))
             else:
-                train_data[col + new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), train_data[col]))
-                test_data[col + new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), test_data[col]))
+                x_train[col + new_col_name] = list(
+                    map(lambda x: " ".join(tokenizer.tokenize(x)), x_train[col]))
+                x_test[col + new_col_name] = list(
+                    map(lambda x: " ".join(tokenizer.tokenize(x)), x_test[col]))
 
-        return train_data, test_data
+        return x_train, x_test
 
 
 def _apply_text_method(text_data, transformer=None):

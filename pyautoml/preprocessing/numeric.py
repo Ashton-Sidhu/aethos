@@ -31,10 +31,10 @@ def preprocess_normalize(list_of_cols=[], **algo_kwargs):
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
         
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -46,13 +46,13 @@ def preprocess_normalize(list_of_cols=[], **algo_kwargs):
     """
 
     data = algo_kwargs.pop('data', None)
-    train_data = algo_kwargs.pop('train_data', None)
-    test_data = algo_kwargs.pop('test_data', None)
+    x_train = algo_kwargs.pop('x_train', None)
+    x_test = algo_kwargs.pop('x_test', None)
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Function input is incorrectly provided.")
 
-    list_of_cols = _numeric_input_conditions(list_of_cols, data, train_data)
+    list_of_cols = _numeric_input_conditions(list_of_cols, data, x_train)
     scaler = MinMaxScaler(**algo_kwargs)
 
     if data is not None:
@@ -63,12 +63,12 @@ def preprocess_normalize(list_of_cols=[], **algo_kwargs):
         return data
     
     else:
-        scaled_train_data = scaler.fit_transform(train_data)
-        scaled_train_df = pd.DataFrame(scaled_train_data, columns=list_of_cols)
-        train_data = drop_replace_columns(train_data, list_of_cols, scaled_train_df)
+        scaled_x_train = scaler.fit_transform(x_train)
+        scaled_train_df = pd.DataFrame(scaled_x_train, columns=list_of_cols)
+        x_train = drop_replace_columns(x_train, list_of_cols, scaled_train_df)
 
-        scaled_test_data = scaler.transform(test_data)
-        scaled_test_df = pd.DataFrame(scaled_test_data, columns=list_of_cols)
-        test_data = drop_replace_columns(test_data, list_of_cols, scaled_test_df)
+        scaled_x_test = scaler.transform(x_test)
+        scaled_test_df = pd.DataFrame(scaled_x_test, columns=list_of_cols)
+        x_test = drop_replace_columns(x_test, list_of_cols, scaled_test_df)
 
-        return train_data, test_data
+        return x_train, x_test

@@ -25,10 +25,10 @@ def apply(func, output_col: str, **datasets):
     data : DataFrame
         Full dataset, by default None
 
-    train_data : DataFrame
+    x_train : DataFrame
         Training dataset, by default None
         
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -40,12 +40,12 @@ def apply(func, output_col: str, **datasets):
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError('Function input is incorrectly provided.')
 
     if data is not None:
@@ -53,7 +53,7 @@ def apply(func, output_col: str, **datasets):
 
         return data
     else:
-        train_data.loc[:, output_col] = train_data.apply(func, axis=1)
-        test_data.loc[:, output_col] = test_data.apply(func, axis=1)
+        x_train.loc[:, output_col] = x_train.apply(func, axis=1)
+        x_test.loc[:, output_col] = x_test.apply(func, axis=1)
 
-        return train_data, test_data
+        return x_train, x_test

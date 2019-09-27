@@ -1,6 +1,7 @@
 import unittest
 
 import pandas as pd
+
 from pyautoml import Model
 
 
@@ -92,7 +93,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data)
         model.kmeans(n_clusters=3, random_state=0)
-        validate = model.train_data_results.kmeans_clusters is not None and model.test_data_results.kmeans_clusters is not None
+        validate = model.x_train_results.kmeans_clusters is not None and model.x_test_results.kmeans_clusters is not None
 
         self.assertTrue(validate)
 
@@ -145,7 +146,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(data=data, target_field='col3')
         model.logistic_regression(random_state=2, penalty='l2')
-        validate = model.train_data_results.log_predictions is not None and model.test_data_results.log_predictions is not None
+        validate = model.x_train_results.log_predictions is not None and model.x_test_results.log_predictions is not None
 
         self.assertTrue(validate)
 

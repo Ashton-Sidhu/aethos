@@ -40,10 +40,10 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
     data: Dataframe or array like - 2d
         Full dataset, by default None.
 
-    train_data: Dataframe or array like - 2d
+    x_train: Dataframe or array like - 2d
         Training dataset, by default None.
 
-    test_data: Dataframe or array like - 2d
+    x_test: Dataframe or array like - 2d
         Testing dataset, by default None.
     
     Returns
@@ -55,19 +55,19 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
     """
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Function input is incorrectly provided.")
     
     if strategy != 'most_frequent':    
-        list_of_cols = _numeric_input_conditions(list_of_cols, data, train_data)
+        list_of_cols = _numeric_input_conditions(list_of_cols, data, x_train)
     else:
-        list_of_cols = _get_columns(list_of_cols, data, train_data)
+        list_of_cols = _get_columns(list_of_cols, data, x_train)
     
     imp = SimpleImputer(strategy=strategy)
     
@@ -78,15 +78,15 @@ def replace_missing_mean_median_mode(list_of_cols=[], strategy='', **datasets):
 
         return data
     else:
-        fit_train_data = imp.fit_transform(train_data[list_of_cols])
-        fit_train_df = pd.DataFrame(fit_train_data, columns=list_of_cols)            
-        train_data = drop_replace_columns(train_data, list_of_cols, fit_train_df)
+        fit_x_train = imp.fit_transform(x_train[list_of_cols])
+        fit_train_df = pd.DataFrame(fit_x_train, columns=list_of_cols)            
+        x_train = drop_replace_columns(x_train, list_of_cols, fit_train_df)
         
-        fit_test_data = imp.transform(test_data[list_of_cols])
-        fit_test_df = pd.DataFrame(fit_test_data, columns=list_of_cols)      
-        test_data = drop_replace_columns(test_data, list_of_cols, fit_test_df)
+        fit_x_test = imp.transform(x_test[list_of_cols])
+        fit_test_df = pd.DataFrame(fit_x_test, columns=list_of_cols)      
+        x_test = drop_replace_columns(x_test, list_of_cols, fit_test_df)
 
-        return train_data, test_data
+        return x_train, x_test
 
 def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
     """
@@ -107,10 +107,10 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
     data: Dataframe or array like - 2d
         Full dataset, by default None.
 
-    train_data: Dataframe or array like - 2d
+    x_train: Dataframe or array like - 2d
         Training dataset, by default None.
         
-    test_data: Dataframe or array like - 2d
+    x_test: Dataframe or array like - 2d
         Testing dataset, by default None.
     
     Returns
@@ -128,13 +128,13 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
     """   
 
     data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = datasets.pop('x_train', None)
+    x_test = datasets.pop('x_test', None)
 
     if datasets:
         raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
 
-    if not _function_input_validation(data, train_data, test_data):
+    if not _function_input_validation(data, x_train, x_test):
         raise ValueError("Function input is incorrectly provided.")
 
     if isinstance(col_to_constant, dict):
@@ -144,9 +144,9 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
             return data
         
         else:
-            train_data, test_data = replace_missing_new_category(col_to_cateogory=col_to_constant, train_data=train_data, test_data=test_data)
+            x_train, x_test = replace_missing_new_category(col_to_cateogory=col_to_constant, x_train=x_train, x_test=x_test)
 
-            return train_data, test_data
+            return x_train, x_test
 
     elif isinstance(col_to_constant, list):
         if data is not None:
@@ -155,9 +155,9 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
             return data
         
         else:
-            train_data, test_data = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, train_data=train_data, test_data=test_data)
+            x_train, x_test = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, x_train=x_train, x_test=x_test)
 
-            return train_data, test_data
+            return x_train, x_test
 
     else:
         if data is not None:
@@ -166,6 +166,6 @@ def replace_missing_constant(col_to_constant=None, constant=0, **datasets):
             return data
         
         else:
-            train_data, test_data = replace_missing_new_category(constant=constant, train_data=train_data, test_data=test_data)
+            x_train, x_test = replace_missing_new_category(constant=constant, x_train=x_train, x_test=x_test)
 
-            return train_data, test_data
+            return x_train, x_test
