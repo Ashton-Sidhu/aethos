@@ -613,7 +613,6 @@ class ClassificationModel(ModelBase):
             for met in SCORE_METRICS:
                 metric_str = '{} : {}'.format(met, getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
                 computed_metrics.append(metric_str)
-
             index = SCORE_METRICS
         elif metrics:
             for met in metrics:
