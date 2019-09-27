@@ -9,8 +9,7 @@ from IPython.display import display
 from pandas_summary import DataFrameSummary
 
 from pyautoml.data.data import Data
-from pyautoml.util import (_function_input_validation, _get_columns, _set_item,
-                           label_encoder, split_data)
+from pyautoml.util import _get_columns, _set_item, label_encoder, split_data
 from pyautoml.visualizations.visualize import *
 
 SHELL = get_ipython().__class__.__name__
@@ -27,14 +26,10 @@ class MethodBase(object):
         report_name = kwargs.pop('report_name')
         test_split_percentage = kwargs.pop('test_split_percentage')
 
-        # if not _function_input_validation(x_train, x_test):
-        #     raise ValueError("Error initialzing constructor, please provide one of either data or x_train and x_test, not both.")
-
         self._data_properties = Data(x_train, x_test, split=split, target_field=target_field, target_mapping=target_mapping, report_name=report_name)
 
         if split:
             # Generate train set and test set.
-            # NOTE: Test if setting data to `None` is a good idea.
             self._data_properties.x_train, self._data_properties.x_test = split_data(self._data_properties.x_train, test_split_percentage)
             self._data_properties.x_train.reset_index(drop=True, inplace=True)
             self._data_properties.x_test.reset_index(drop=True, inplace=True)
@@ -46,30 +41,19 @@ class MethodBase(object):
             
     def __repr__(self):
 
-        if SHELL == 'ZMQInteractiveShell':
-            if not self._data_properties.split:
-                display(self._data_properties.x_train.head()) # Hack for jupyter notebooks
-                
-                return ''
-            else:
-                display(self._data_properties.x_train.head()) # Hack for jupyter notebooks
+        if SHELL == 'ZMQInteractiveShell':            
+            display(self._data_properties.x_train.head()) # Hack for jupyter notebooks
 
-                return ''
+            return ''
         
         else:
-            if not self._data_properties.split:
-                return self._data_properties.x_train.to_string()
-            else:
-                return self._data_properties.x_train.to_string()
+            return self._data_properties.x_train.to_string()
 
 
     def __getitem__(self, column):
 
         try: 
-            if not self._data_properties.split:
-                return self._data_properties.x_train[column]
-            else:
-                return self._data_properties.x_train[column]
+            return self._data_properties.x_train[column]
 
         except Exception as e:
             raise AttributeError(e)
@@ -111,10 +95,7 @@ class MethodBase(object):
     def __getattr__(self, column):
 
         try:
-            if not self._data_properties.split:
-                return self._data_properties.x_train[column]
-            else:
-                return self._data_properties.x_train[column]
+            return self._data_properties.x_train[column]
 
         except Exception as e:
             raise AttributeError(e)
@@ -138,9 +119,6 @@ class MethodBase(object):
         """
         Property function for the training dataset.
         """
-        
-        if self._data_properties.x_train is None:
-            return "There seems to be nothing here. Try .x_train"
 
         return self._data_properties.x_train
 
@@ -149,9 +127,6 @@ class MethodBase(object):
         """
         Setter function for the training dataset.
         """
-
-        if self._data_properties.x_train is None:
-            return "There seems to be nothing here. Try .x_train"
 
         self._data_properties.x_train = value
         
@@ -264,17 +239,14 @@ class MethodBase(object):
             else:
                 if not_equal:
                     self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
-                    self._data_properties.x_train.x_test = self._data_properties.x_test[self._data_properties.x_train.isin(list(values)).any(axis=1)]
+                    self._data_properties.x_test = self._data_properties.x_test[self._data_properties.x_train.isin(list(values)).any(axis=1)]
                 else:
                     self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_test.isin(list(values)).any(axis=1)]
-                    self._data_properties.x_train.x_test = self._data_properties.x_test[self._data_properties.x_test.isin(list(values)).any(axis=1)]
+                    self._data_properties.x_test = self._data_properties.x_test[self._data_properties.x_test.isin(list(values)).any(axis=1)]
 
             return self.copy()            
         else:
-            if not self._data_properties.split:
-                data = self._data_properties.x_train.copy()
-            else:
-                data = self._data_properties.x_train.copy()
+            data = self._data_properties.x_train.copy()
            
             if not not_equal:
                 data = data[data.isin(list(values))].dropna(how='all')
@@ -310,10 +282,7 @@ class MethodBase(object):
         The col1 specifies that this this is the only column you want to see at the output.
         """
 
-        if not self._data_properties.split:
-            filtered_data = self._data_properties.x_train.copy()
-        else:
-            filtered_data = self._data_properties.x_train.copy()
+        filtered_data = self._data_properties.x_train.copy()
 
         for col in columns.keys():
             if isinstance(columns[col], list):
@@ -352,14 +321,11 @@ class MethodBase(object):
                 self._data_properties.x_train = self._data_properties.x_train.groupby(list(groupby))
             else:
                 self._data_properties.x_train = self._data_properties.x_train.groupby(list(groupby))
-                self._data_properties.x_train.x_test = self._data_properties.x_test.groupby(list(groupby))
+                self._data_properties.x_test = self._data_properties.x_test.groupby(list(groupby))
 
             return self.copy()            
         else:
-            if not self._data_properties.split:
-                data = self._data_properties.x_train.copy()
-            else:
-                data = self._data_properties.x_train.copy()
+            data = self._data_properties.x_train.copy()
 
             return data.groupby(list(groupby))
 
@@ -408,15 +374,12 @@ class MethodBase(object):
         numeric_analysis = ['count', 'min', 'max', 'mean', 'std', 'var', 'median', ('most_common', lambda x: pd.Series.mode(x)[0]), 'sum', 'mad', 'nunique']
         other_analysis = ['count', ('most_common', lambda x: pd.Series.mode(x)[0]), 'nunique']
 
-        list_of_cols = _get_columns(list(cols), self._data_properties.x_train, self._data_properties.x_test)
+        list_of_cols = _get_columns(list(cols), self._data_properties.x_train)
 
         if isinstance(data_filter, pd.DataFrame):
             data = data_filter
         else:
-            if not self._data_properties.split:
-                data = self._data_properties.x_train.copy()
-            else:
-                data = self._data_properties.x_train.copy()            
+            data = self._data_properties.x_train.copy()            
 
         for col in list_of_cols:
             if col not in groupby:
@@ -462,16 +425,11 @@ class MethodBase(object):
         HTML display of Exploratory Data Analysis report
         """
 
-        if not self._data_properties.split:
-            if SHELL == "ZMQInteractiveShell":
-                report = self._data_properties.x_train.profile_report(title=title, style={'full_width':True})
-            else:
-                report = self._data_properties.x_train.profile_report(title=title)
+
+        if SHELL == "ZMQInteractiveShell":
+            report = self._data_properties.x_train.profile_report(title=title, style={'full_width':True})
         else:
-            if SHELL == "ZMQInteractiveShell":
-                report = self._data_properties.x_train.profile_report(title=title, style={'full_width':True})
-            else:
-                report = self._data_properties.x_train.profile_report(title=title)
+            report = self._data_properties.x_train.profile_report(title=title)
 
         if output_file:
             report.to_file(output_file=output_file)
@@ -501,19 +459,15 @@ class MethodBase(object):
             Dataframe describing your dataset with basic descriptive info
         """
 
-        if not self._data_properties.split:
-            data_summary = DataFrameSummary(self.x_train)
+       
+        if dataset == 'train':            
+            x_train_summary = DataFrameSummary(self.x_train)
 
-            return data_summary.summary()
+            return x_train_summary.summary()
         else:
-            if dataset == 'train':            
-                x_train_summary = DataFrameSummary(self.x_train)
+            x_test_summary = DataFrameSummary(self.x_test)
 
-                return x_train_summary.summary()
-            else:
-                x_test_summary = DataFrameSummary(self.x_test)
-
-                return x_test_summary.summary()
+            return x_test_summary.summary()
 
 
     def column_info(self, dataset='train'):
@@ -544,20 +498,14 @@ class MethodBase(object):
             Dataframe describing your columns with basic descriptive info
         """
 
-        if not self._data_properties.split:
-            data_summary = DataFrameSummary(self.x_train)
+        if dataset == 'train':            
+            x_train_summary = DataFrameSummary(self.x_train)
 
-            return data_summary.columns_stats
+            return x_train_summary.columns_stats
         else:
-            if dataset == 'train':            
-                x_train_summary = DataFrameSummary(self.x_train)
+            x_test_summary = DataFrameSummary(self.x_test)
 
-                return x_train_summary.columns_stats
-            else:
-                x_test_summary = DataFrameSummary(self.x_test)
-
-                return x_test_summary.columns_stats
-
+            return x_test_summary.columns_stats
 
     def describe_column(self, column, dataset='train'):
         """
@@ -614,20 +562,15 @@ class MethodBase(object):
             Dictionary mapping a statistic and its value for a specific column
         """
 
-        if not self._data_properties.split:
-            data_summary = DataFrameSummary(self.x_train)
+        if dataset == 'train':            
+            x_train_summary = DataFrameSummary(self.x_train)
 
-            return data_summary[column]
+            return x_train_summary[column]
         else:
-            if dataset == 'train':            
-                x_train_summary = DataFrameSummary(self.x_train)
+            x_test_summary = DataFrameSummary(self.x_test)
 
-                return x_train_summary[column]
-            else:
-                x_test_summary = DataFrameSummary(self.x_test)
-
-                return x_test_summary[column]
-                
+            return x_test_summary[column]
+            
 
     def drop(self, *drop_columns, keep=[], regexp='', reason=''):
         """
@@ -658,10 +601,7 @@ class MethodBase(object):
         >>> preprocess.drop('A', 'B')        
         """
 
-        try:
-            data_columns = self.x_train.columns
-        except:
-            data_columns = self.x_train.columns
+        data_columns = self.x_train.columns
 
         if not drop_columns:
             drop_columns = data_columns
@@ -682,7 +622,6 @@ class MethodBase(object):
             if self.report is not None:
                 self.report.log('Dropped columns: {}. {}'.format(", ".join(drop_columns), reason))
 
-            return self.copy()
         else:
             self._data_properties.x_train = self.x_train.drop(drop_columns, axis=1)
             self._data_properties.x_test = self.x_test.drop(drop_columns, axis=1)
@@ -690,7 +629,7 @@ class MethodBase(object):
             if self.report is not None:
                 self.report.log('Dropped columns {} in both train and test set. {}'.format(", ".join(drop_columns), reason))
 
-            return self.copy()
+        return self.copy()
 
     
     def encode_target(self):
@@ -712,10 +651,10 @@ class MethodBase(object):
     
         if not self._data_properties.split:
             self._data_properties.x_train, self._data_properties.target_mapping = label_encoder(
-                self._data_properties.target_field, target=True, data=self._data_properties.x_train)
+                x_train=self._data_properties.x_train, list_of_cols=self._data_properties.target_field, target=True)
         else:
             self._data_properties.x_train, self._data_properties.x_test, self._data_properties.target_mapping = label_encoder(
-                self._data_properties.target_field, target=True, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=self._data_properties.target_field, target=True)
 
         if self.report is not None:
             self.report.log('Encoded the target variable as numeric values.')
@@ -876,10 +815,7 @@ class MethodBase(object):
         if y_col is None:
             y_col = self.target_field
 
-        if not self._data_properties.split:
-            raincloud(y_col, x_col, self.x_train)
-        else:
-            raincloud(y_col, x_col, self.x_train)
+        raincloud(y_col, x_col, self.x_train)
 
     def visualize_barplot(self, x_col, *cols, groupby=None, method=None, orient='v', stacked=False, output_file='', **barplot_kwargs):
         """
@@ -923,10 +859,7 @@ class MethodBase(object):
             by default False
         """
         
-        if not self._data_properties.split:
-            barplot(x_col, list(cols), self._data_properties.x_train, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
-        else:
-            barplot(x_col, list(cols), self._data_properties.x_train, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
+        barplot(x_col, list(cols), self._data_properties.x_train, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
 
     def visualize_scatterplot(self, x_col: str, y_col: str, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
         """
@@ -971,10 +904,7 @@ class MethodBase(object):
             See above links for list of possible scatterplot options.
         """
 
-        if not self._data_properties.split:
-            scatterplot(x_col, y_col, self._data_properties.x_train, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
-        else:
-            scatterplot(x_col, y_col, self._data_properties.x_train, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
+        scatterplot(x_col, y_col, self._data_properties.x_train, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
 
     def visualize_lineplot(self, x_col: str, *y_cols, title='Line Plot', output_file='', **lineplot_kwargs):
         """
@@ -1033,7 +963,4 @@ class MethodBase(object):
             and https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.line 
         """
 
-        if not self._data_properties.split:
-            lineplot(x_col, list(y_cols), self._data_properties.x_train, title=title, output_file=output_file, **lineplot_kwargs)
-        else:
-            lineplot(x_col, list(y_cols), self._data_properties.x_train, title=title, output_file=output_file, **lineplot_kwargs)
+        lineplot(x_col, list(y_cols), self._data_properties.x_train, title=title, output_file=output_file, **lineplot_kwargs)

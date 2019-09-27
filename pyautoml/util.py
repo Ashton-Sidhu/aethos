@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 
-def label_encoder(list_of_cols=[], target=False, **datasets):
+def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
     """
     Label encodes the columns provided.
     
@@ -15,54 +15,41 @@ def label_encoder(list_of_cols=[], target=False, **datasets):
     
     Parameters
     ----------
+    x_train: Dataframe or array like - 2d
+        Dataset.
+
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
     list_of_cols : list, optional
         A list of specific columns to apply this technique to
         If `list_of_cols` is not provided, the strategy will be
         applied to all numeric columns., by default []
 
     target : bool, optional
-            True if the column being encoded is the target variable, by default False
-
-    data: Dataframe or array like - 2d
-        Full dataset, by default None.
-
-    x_train: Dataframe or array like - 2d
-        Training dataset, by default None.
-
-    x_test: Dataframe or array like - 2d
-        Testing dataset, by default None.
+        True if the column being encoded is the target variable, by default False
 
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with rows with a missing values in a specific column are missing
 
-    Returns 2 Dataframes if Train and Test data is provided.  
+    Returns 2 Dataframes x_test is provided.  
     """
-
-    data = datasets.pop('data', None)
-    x_train = datasets.pop('x_train', None)
-    x_test = datasets.pop('x_test', None)
-
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
-
-    if not _function_input_validation(data, x_train, x_test):
-        raise ValueError("Function input is incorrectly provided.")
     
     label_encode = LabelEncoder()
 
-    if data is not None:
+    if x_test is None:
         for col in list_of_cols:
-            data[col] = label_encode.fit_transform(data[col])
+            x_train[col] = label_encode.fit_transform(x_train[col])
 
         if target:
-            target_mapping = dict(zip(data[list_of_cols], label_encode.inverse_transform(data[col])))
+            target_mapping = dict(zip(x_train[list_of_cols], label_encode.inverse_transform(x_train[col])))
             target_mapping = OrderedDict(sorted(target_mapping.items()))
 
-            return data, target_mapping
+            return x_train, target_mapping
 
-        return data
+        return x_train
     else:
         for col in list_of_cols:
             x_train[col] = label_encode.fit_transform(x_train[col])
