@@ -539,8 +539,8 @@ class ClusterModel(ModelBase):
             Filtered data or test dataframe
         """
 
-        if self.x_train is not None:
-            return self.data_results[self.data_results[self.cluster_col] == cluster_no]
+        if self.x_test is None:
+            return self.x_train_results[self.x_train_results[self.cluster_col] == cluster_no]
         else:
             return self.x_test_results[self.x_test_results[self.cluster_col] == cluster_no]
 

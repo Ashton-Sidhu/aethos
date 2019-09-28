@@ -153,6 +153,12 @@ class TestModelling(unittest.TestCase):
     def test_model_confusionmatrix(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
             [8, 7, 0], [8, 8, 0], [25, 80, 0]]
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
@@ -166,6 +172,12 @@ class TestModelling(unittest.TestCase):
     def test_model_report_confusionmatrix(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
+            [8, 7, 0], [8, 8, 0], [25, 80, 0],
+            [1, 2, 1], [2, 2, 1], [2, 3, 1],
             [8, 7, 0], [8, 8, 0], [25, 80, 0]]
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])

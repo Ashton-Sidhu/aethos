@@ -91,7 +91,7 @@ class Model(MethodBase):
 
         try:
             if not self._data_properties.split:
-                return self._result_data[key]
+                return self._train_result_data[key]
             else:
                 return self._test_result_data[key]
 
@@ -111,9 +111,9 @@ class Model(MethodBase):
             dict.__setitem__(self.__dict__, key, value)
         else:
             if not self._data_properties.split:
-                self._result_data[key] = value
+                self._train_result_data[key] = value
 
-                return self._result_data.head()
+                return self._train_result_data.head()
             else:
                 x_train_length = self._data_properties.x_train.shape[0]
                 x_test_length = self._data_properties.x_test.shape[0]
@@ -312,7 +312,7 @@ class Model(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._result_data = gensim_textrank_summarizer(
+            self._train_result_data = gensim_textrank_summarizer(
                 x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name, **summarizer_kwargs)            
         else:
             self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
@@ -380,7 +380,7 @@ class Model(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-            self._result_data = gensim_textrank_keywords(
+            self._train_result_data = gensim_textrank_keywords(
                 x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name, **keyword_kwargs)
         else:
             self._train_result_data, self._test_result_data = gensim_textrank_keywords(
@@ -454,7 +454,7 @@ class Model(MethodBase):
         if not self._data_properties.split:
             kmeans.fit(self._data_properties.x_train)
 
-            self._result_data[new_col_name] = kmeans.labels_
+            self._train_result_data[new_col_name] = kmeans.labels_
 
         else:
             kmeans.fit(self._data_properties.x_train)
@@ -526,17 +526,17 @@ class Model(MethodBase):
 
         if not self._data_properties.split:
             dbscan.fit(self._data_properties.x_train)
-            self._result_data[new_col_name] = dbscan.labels_
+            self._train_result_data[new_col_name] = dbscan.labels_
 
         else:
             warnings.warn(
-                'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.data_results`.')
+                'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.train_result_data`.')
 
             full_data = self._data_properties.x_train.append(
                 self._data_properties.x_test, ignore_index=True)
             dbscan.fit(full_data)
-            full_data[new_col_name] = dbscan.labels_
-            self._result_data = full_data
+            self._train_result_data[new_col_name] = dbscan.labels_
+
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -639,7 +639,7 @@ class Model(MethodBase):
 
         if not self._data_properties.split:
             log_reg.fit(self._data_properties.x_train, self.target_data)      
-            self._result_data[new_col_name] = log_reg.predict(self._data_properties.x_train)            
+            self._train_result_data[new_col_name] = log_reg.predict(self._data_properties.x_train)            
         else:
             log_reg.fit(self._data_properties.x_train, self._y_train)
 
