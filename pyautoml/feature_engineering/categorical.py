@@ -45,7 +45,7 @@ def feature_one_hot_encode(x_train, x_test=None, list_of_cols=[], keep_col=True,
         
     enc_data = enc.fit_transform(x_train[list_of_cols]).toarray()
     enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols))
-    data = drop_replace_columns(x_train, list_of_cols, enc_df, keep_col)
+    x_train = drop_replace_columns(x_train, list_of_cols, enc_df, keep_col)
 
     if x_test is not None:        
         enc_x_test = enc.transform(x_test[list_of_cols]).toarray()

@@ -38,6 +38,7 @@ def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
     """
     
     label_encode = LabelEncoder()
+    target_mapping = None
 
     for col in list_of_cols:
         x_train[col] = label_encode.fit_transform(x_train[col])

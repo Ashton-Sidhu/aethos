@@ -44,7 +44,7 @@ def preprocess_normalize(x_train, x_test=None, list_of_cols=[], **algo_kwargs):
 
     scaled_data = scaler.fit_transform(x_train[list_of_cols])
     scaled_df = pd.DataFrame(scaled_data, columns=list_of_cols)
-    data = drop_replace_columns(x_train, list_of_cols, scaled_df)
+    x_train = drop_replace_columns(x_train, list_of_cols, scaled_df)
     
     if x_test is not None:
         scaled_x_test = scaler.transform(x_test)

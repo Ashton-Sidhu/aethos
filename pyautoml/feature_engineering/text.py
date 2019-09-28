@@ -48,7 +48,7 @@ def feature_bag_of_words(x_train, x_test=None, list_of_cols=[], keep_col=False, 
     for col in list_of_cols:
         enc_data = enc.fit_transform(x_train[col]).toarray()
         enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
-        data = drop_replace_columns(x_train, col, enc_df, keep_col)
+        x_train = drop_replace_columns(x_train, col, enc_df, keep_col)
 
 
         if x_test is not None:
@@ -97,7 +97,7 @@ def feature_tfidf(x_train, x_test=None, list_of_cols=[], keep_col=True, **algo_k
     for col in list_of_cols:
         enc_data = enc.fit_transform(x_train[col]).toarray()
         enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
-        data = drop_replace_columns(x_train, col, enc_df, keep_col)
+        x_train = drop_replace_columns(x_train, col, enc_df, keep_col)
 
         if x_test is not None:
             enc_x_test = enc.transform(x_test[col]).toarray()
