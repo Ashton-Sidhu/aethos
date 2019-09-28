@@ -46,16 +46,14 @@ class ModelBase(object):
         self.model = model
         self.model_name = model_name
         self.x_train = model_object._data_properties.x_train
-        self.x_train = model_object._data_properties.x_train
         self.x_test = model_object._data_properties.x_test
-        self.data_results = model_object._result_data
         self.x_train_results = model_object._train_result_data
         self.x_test_results = model_object._test_result_data
         self.report = model_object._data_properties.report
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
-            self.shap = Shap(self.model, self.x_train, self.x_test, self.target_data, SHAP_LEARNERS[type(self.model)])
-            self.interpret = MSFTInterpret(self.model, self.x_train, self.x_test, self.target_data, PROBLEM_TYPE[type(self.model)])
+            self.shap = Shap(self.model, self.x_train, self.x_test, self.y_test, SHAP_LEARNERS[type(self.model)])
+            self.interpret = MSFTInterpret(self.model, self.x_train, self.x_test, self.y_test, PROBLEM_TYPE[type(self.model)])
         else:
             self.shap = None
             self.interpret = None
@@ -526,12 +524,6 @@ class ClusterModel(ModelBase):
 
         self.cluster_col = cluster_col
 
-        if self.x_train is not None:
-            self.prediction_data = self.data_results[cluster_col]
-        else:
-            self.train_prediction_data = self.x_train_results[cluster_col]
-            self.test_prediction_data = self.x_test_results[cluster_col]
-
     def filter_cluster(self, cluster_no: int):
         """
         Filters data by a cluster number for analysis.
@@ -556,22 +548,23 @@ class ClassificationModel(ModelBase):
 
     def __init__(self, model_object, model_name, model, predictions_col):
         
-        self.target_data = model_object.target_data if model_object.target_data is not None else model_object.y_test
+        self.y_train = model_object.y_train
+        self.y_test = model_object.y_test if model_object.x_test is not None else model_object.y_train
 
         super().__init__(model_object, model, model_name)
 
         self.target_mapping = model_object.target_mapping
 
-        if self.x_train is not None:            
-            self.prediction_data = self.data_results[predictions_col]
+        if self.x_test is None:            
+            self.y_pred = self.x_train_results[predictions_col]
         else:
-            self.prediction_data = self.x_test_results[predictions_col]
+            self.y_pred = self.x_test_results[predictions_col]
 
         if self.report:
             self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))
 
         if self.target_mapping is None:
-            self.classes = [str(item) for item in np.unique(list(self.target_data) + list(self.prediction_data))]
+            self.classes = [str(item) for item in np.unique(list(self.y_train) + list(self.y_test))]
         else:
             self.classes = [str(item) for item in self.target_mapping.values()]
 
@@ -604,8 +597,8 @@ class ClassificationModel(ModelBase):
             Specific type of metric, by default 'accuracy'
         """
 
-        y_true = self.target_data
-        y_pred = self.prediction_data
+        y_true = self.y_test
+        y_pred = self.y_pred
         computed_metrics = []
 
 
@@ -668,8 +661,8 @@ class ClassificationModel(ModelBase):
             Size of the text of the rest of the plot, by default 'medium'        
         """
         
-        y_true = self.target_data
-        y_pred = self.prediction_data
+        y_true = self.y_test
+        y_pred = self.y_pred
 
         if figsize:
             plt.figure(figsize=figsize)
@@ -739,11 +732,11 @@ class ClassificationModel(ModelBase):
             If a name is provided save the plot to an html file, by default ''
         """
 
-        if len(np.unique(list(self.target_data) + list(self.prediction_data))) > 2:
+        if len(np.unique(list(self.y_train) + list(self.y_test))) > 2:
             raise NotImplementedError('ROC Curve is currently not implemented for multiclassification problems.')
 
-        y_true = self.target_data
-        y_pred = self.prediction_data
+        y_true = self.y_test
+        y_pred = self.y_pred
 
         fpr, tpr, thresholds = sklearn.metrics.roc_curve(y_true, y_pred)
         roc_auc = sklearn.metrics.roc_auc_score(y_true, y_pred)
@@ -782,7 +775,7 @@ class ClassificationModel(ModelBase):
          weighted avg       1.00      0.67      0.80         3
         """
 
-        classification_report = sklearn.metrics.classification_report(self.target_data, self.target_data, target_names=self.classes, digits=2)
+        classification_report = sklearn.metrics.classification_report(self.y_test, self.y_pred, target_names=self.classes, digits=2)
 
         if self.report:
             self.report.report_classification_report(classification_report)

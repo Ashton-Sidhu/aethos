@@ -43,9 +43,8 @@ class Model(MethodBase):
         if self._data_properties.report is not None:
             self.report.write_header("Modelling")
 
-        self._result_data = self._data_properties.x_train.copy() if self._data_properties.x_train is not None else None
-        self._train_result_data = self._data_properties.x_train.copy() if self._data_properties.x_train is not None else None
-        self._test_result_data = self._data_properties.x_test.copy() if self._data_properties.x_train is not None else None
+        self._train_result_data = self._data_properties.x_train.copy()
+        self._test_result_data = self._data_properties.x_test.copy() if self._data_properties.x_test is not None else None
 
         if self._data_properties.target_field:
             if split:
@@ -153,39 +152,12 @@ class Model(MethodBase):
             return str(self._train_result_data.head())
 
     @property
-    def target_data(self):
-        """
-        Property function for the target data.
-        """
-        try:
-            if self._data_properties.x_train is None:
-                raise AttributeError("There seems to be nothing here. Try .y_train or .y_test")
-            
-            return self._y_train
-        except Exception as e:
-            return None
-
-    @target_data.setter
-    def target_data(self, value):
-        """
-        Setter function for the target data.
-        """
-
-        self._y_train = value
-
-    @property
     def y_train(self):
         """
         Property function for the training target data.
         """
         
-        try:
-            if self._data_properties.x_train is None:
-                raise AttributeError("There seems to be nothing here. Try .target_data")
-
-            return self._y_train
-        except Exception as e:
-            return None
+        return self._y_train
 
     @y_train.setter
     def y_train(self, value):
@@ -218,32 +190,10 @@ class Model(MethodBase):
         self._y_test = value
 
     @property
-    def data_results(self):
-        """
-        Property function for the results data.
-        """
-
-        if self._data_properties.x_train is None:
-            raise AttributeError("There seems to be nothing here. Try .x_train_results or .x_test_results")
-        
-        return self._result_data
-
-    @data_results.setter
-    def data_results(self, value):
-        """
-        Setter function for the results data.
-        """
-
-        self._result_data = value
-
-    @property
     def x_train_results(self):
         """
         Property function for the training results data.
         """
-        
-        if self._data_properties.x_train is None:
-            raise AttributeError("There seems to be nothing here. Try .data_results")
 
         return self._train_result_data
 
@@ -260,9 +210,6 @@ class Model(MethodBase):
         """
         Property function for the test results data.
         """
-
-        if self._data_properties.x_train is None:
-            raise AttributeError("There seems to be nothing here. Try .data_results")
 
         return self._test_result_data
     
@@ -365,19 +312,14 @@ class Model(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-
             self._result_data = gensim_textrank_summarizer(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.x_train, **summarizer_kwargs)
-
-            if self.report is not None:
-                self.report.report_technique(report_info)
-            
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name, **summarizer_kwargs)            
         else:
             self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, **summarizer_kwargs)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name, **summarizer_kwargs)
 
-            if self.report is not None:
-                self.report.report_technique(report_info)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self, model_name)
 
@@ -438,19 +380,14 @@ class Model(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         if not self._data_properties.split:
-
             self._result_data = gensim_textrank_keywords(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.x_train, **keyword_kwargs)
-
-            if self.report is not None:
-                self.report.report_technique(report_info)
-
+                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name, **keyword_kwargs)
         else:
             self._train_result_data, self._test_result_data = gensim_textrank_keywords(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, **keyword_kwargs)
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name, **keyword_kwargs)
 
-            if self.report is not None:
-                self.report.report_technique(report_info)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self, model_name)
 
