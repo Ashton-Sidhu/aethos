@@ -45,27 +45,19 @@ def feature_bag_of_words(x_train, x_test=None, list_of_cols=[], keep_col=False, 
     enc = CountVectorizer(**algo_kwargs)
     list_of_cols = _get_columns(list_of_cols, x_train)
 
-    if x_test is None:
-        for col in list_of_cols:
-            enc_data = enc.fit_transform(x_train[col]).toarray()
-            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
-            data = drop_replace_columns(x_train, col, enc_df, keep_col)
+    for col in list_of_cols:
+        enc_data = enc.fit_transform(x_train[col]).toarray()
+        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
+        data = drop_replace_columns(x_train, col, enc_df, keep_col)
 
-        return data
 
-    else:
-        for col in list_of_cols:
-            enc_x_train = enc.fit_transform(x_train[col]).toarray()
-            enc_train_df = pd.DataFrame(
-                enc_x_train, columns=enc.get_feature_names())
-            x_train = drop_replace_columns(x_train, col, enc_train_df, keep_col)
-
+        if x_test is not None:
             enc_x_test = enc.transform(x_test[col]).toarray()
             enc_test_df = pd.DataFrame(
                 enc_x_test, columns=enc.get_features_names())
             x_test = drop_replace_columns(x_test, col, enc_test_df, keep_col)
 
-        return x_train, x_test
+    return x_train, x_test
 
 
 def feature_tfidf(x_train, x_test=None, list_of_cols=[], keep_col=True, **algo_kwargs):
@@ -102,27 +94,18 @@ def feature_tfidf(x_train, x_test=None, list_of_cols=[], keep_col=True, **algo_k
     enc = TfidfVectorizer(**algo_kwargs)
     list_of_cols = _get_columns(list_of_cols, x_train)
 
-    if x_test is None:
-        for col in list_of_cols:
-            enc_data = enc.fit_transform(x_train[col]).toarray()
-            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
-            data = drop_replace_columns(x_train, col, enc_df, keep_col)
+    for col in list_of_cols:
+        enc_data = enc.fit_transform(x_train[col]).toarray()
+        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
+        data = drop_replace_columns(x_train, col, enc_df, keep_col)
 
-        return data
-
-    else:
-        for col in list_of_cols:
-            enc_x_train = enc.fit_transform(x_train[col]).toarray()
-            enc_train_df = pd.DataFrame(
-                enc_x_train, columns=enc.get_feature_names())
-            x_train = drop_replace_columns(x_train, col, enc_train_df, keep_col)
-
+        if x_test is not None:
             enc_x_test = enc.transform(x_test[col]).toarray()
             enc_test_df = pd.DataFrame(
                 enc_x_test, columns=enc.get_feature_names())
             x_test = drop_replace_columns(x_test, col, enc_test_df, keep_col)
 
-        return x_train, x_test
+    return x_train, x_test
 
 
 def nltk_feature_postag(x_train, x_test=None, list_of_cols=[], new_col_name='_postagged'):    
@@ -156,18 +139,12 @@ def nltk_feature_postag(x_train, x_test=None, list_of_cols=[], new_col_name='_po
 
     list_of_cols = _get_columns(list_of_cols, x_train)
 
-    if x_test is None:
-        for col in list_of_cols:
-            x_train[col +
-                 new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_train[col]))
+    for col in list_of_cols:
+        x_train[col +
+                new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_train[col]))
 
-        return x_train
-
-    else:
-        for col in list_of_cols:
-            x_train[col +
-                       new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_train[col]))
+        if x_test is not None:
             x_test[col +
                       new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_test[col]))
 
-        return x_train, x_test
+    return x_train, x_test

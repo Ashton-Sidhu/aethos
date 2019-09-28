@@ -42,23 +42,14 @@ def feature_one_hot_encode(x_train, x_test=None, list_of_cols=[], keep_col=True,
 
     enc = OneHotEncoder(handle_unknown='ignore', **algo_kwargs)
     list_of_cols = _get_columns(list_of_cols, x_train)
-
-    if x_test is None:
         
-        enc_data = enc.fit_transform(x_train[list_of_cols]).toarray()
-        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols))
-        data = drop_replace_columns(x_train, list_of_cols, enc_df, keep_col)
+    enc_data = enc.fit_transform(x_train[list_of_cols]).toarray()
+    enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols))
+    data = drop_replace_columns(x_train, list_of_cols, enc_df, keep_col)
 
-        return data
-
-    else:        
-
-        enc_x_train = enc.fit_transform(x_train[list_of_cols]).toarray()
-        enc_train_df = pd.DataFrame(enc_x_train, columns=enc.get_feature_names(list_of_cols))
-        x_train = drop_replace_columns(x_train, list_of_cols, enc_train_df, keep_col)
-
+    if x_test is not None:        
         enc_x_test = enc.transform(x_test[list_of_cols]).toarray()
         enc_test_df = pd.DataFrame(enc_x_test, columns=enc.get_feature_names(list_of_cols))
         x_test = drop_replace_columns(x_test, list_of_cols, enc_test_df, keep_col)
 
-        return x_train, x_test
+    return x_train, x_test

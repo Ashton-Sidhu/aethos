@@ -52,68 +52,45 @@ def replace_missing_new_category(x_train, x_test=None, col_to_category=None, con
 
     if isinstance(col_to_category, dict):        
 
-        if x_test is None:
-            for col in col_to_category.keys():
-                x_train[col].fillna(col_to_category[col], inplace=True)
+        for col in col_to_category.keys():
+            x_train[col].fillna(col_to_category[col], inplace=True)
 
-            return x_train
-
-        else:
-            for col in col_to_category.keys():
-                x_train[col].fillna(col_to_category[col], inplace=True)
+            if x_test is not None:            
                 x_test[col].fillna(col_to_category[col], inplace=True)
-            
-            return x_train, x_test
 
     elif isinstance(col_to_category, list) and constant is not None:
 
-        if x_test is None:
-            for col in col_to_category:
-                x_train[col].fillna(constant, inplace=True)
+        for col in col_to_category:
+            x_train[col].fillna(constant, inplace=True)
 
-            return x_train
-
-        else:
-            for col in col_to_category:
-                x_train[col].fillna(constant, inplace=True)
+            if x_test is not None:
                 x_test[col].fillna(constant, inplace=True)
-            
-            return x_train, x_test
 
     else:
-        if x_test is None:
-            for col in col_to_category:
-                #Check if column is a number
-                if np.issubdtype(x_train[col].dtype, np.number):
-                    new_category_name = _determine_default_category(x_train, col, num_missing_categories)
-                    x_train[col].fillna(new_category_name, inplace=True)
-
-                    #Convert numeric categorical column to integer
-                    x_train[col] = x_train[col].astype(int)
-                else:
-                    new_category_name = _determine_default_category(x_train, col, str_missing_categories)
-                    x_train[col].fillna(new_category_name, inplace=True)           
-
-            return x_train
         
-        else:
-            for col in col_to_category:                
-                # Check if column is a number
-                if np.issubdtype(x_train[col].dtype, np.number):
-                    new_category_name = _determine_default_category(x_train, col, num_missing_categories)
+        for col in col_to_category:
+            #Check if column is a number
+            if np.issubdtype(x_train[col].dtype, np.number):
+                new_category_name = _determine_default_category(x_train, col, num_missing_categories)
+                x_train[col].fillna(new_category_name, inplace=True)
 
-                    x_train[col].fillna(new_category_name, inplace=True)
+                #Convert numeric categorical column to integer
+                x_train[col] = x_train[col].astype(int)
+
+                if x_test is not None:
                     x_test[col].fillna(new_category_name, inplace=True)
                     # Convert numeric categorical column to integer
-                    x_train[col] = x_train[col].astype(int)
                     x_test[col] = x_test[col].astype(int)
+            else:
+                new_category_name = _determine_default_category(x_train, col, str_missing_categories)
+                x_train[col].fillna(new_category_name, inplace=True)
 
-                else:
+                if x_test is not None:
                     new_category_name = _determine_default_category(x_train, col, str_missing_categories)
-                    x_train[col].fillna(new_category_name, inplace=True)
-                    x_test[col].fillna(new_category_name, inplace=True)           
+                    x_test[col].fillna(new_category_name, inplace=True)
 
-            return x_train, x_test
+    return x_train, x_test
+
 
 def replace_missing_remove_row(x_train, x_test=None, cols_to_remove=[]):
     """
@@ -138,15 +115,12 @@ def replace_missing_remove_row(x_train, x_test=None, cols_to_remove=[]):
     Returns 2 Dataframes if x_test is provided.
     """
 
-    if x_test is None:
-        x_train = x_train.dropna(axis=0, subset=cols_to_remove)
+    x_train = x_train.dropna(axis=0, subset=cols_to_remove)
 
-        return x_train
-    else:
-        x_train = x_train.dropna(axis=0, subset=cols_to_remove)
+    if x_test is not None:
         x_test = x_test.dropna(axis=0, subset=cols_to_remove)
 
-        return x_train, x_test
+    return x_train, x_test
 
 def _determine_default_category(x_train, col, replacement_categories):
     """

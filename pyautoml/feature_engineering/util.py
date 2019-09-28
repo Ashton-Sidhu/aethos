@@ -30,12 +30,9 @@ def apply(x_train, func, output_col: str, x_test=None):
     Returns 2 Dataframes if x_test is provided. 
     """
 
-    if x_test is None:
-        x_train.loc[:, output_col] = x_train.apply(func, axis=1)
+    x_train.loc[:, output_col] = x_train.apply(func, axis=1)
 
-        return x_train
-    else:
-        x_train.loc[:, output_col] = x_train.apply(func, axis=1)
+    if x_test is not None:
         x_test.loc[:, output_col] = x_test.apply(func, axis=1)
 
-        return x_train, x_test
+    return x_train, x_test

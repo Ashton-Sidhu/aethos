@@ -56,22 +56,16 @@ def replace_missing_mean_median_mode(x_train, x_test=None, list_of_cols=[], stra
     
     imp = SimpleImputer(strategy=strategy)
     
-    if x_test is None:                
-        fit_data = imp.fit_transform(x_train[list_of_cols])
-        fit_df = pd.DataFrame(fit_data, columns=list_of_cols)
-        x_train = drop_replace_columns(x_train, list_of_cols, fit_df)
+    fit_data = imp.fit_transform(x_train[list_of_cols])
+    fit_df = pd.DataFrame(fit_data, columns=list_of_cols)
+    x_train = drop_replace_columns(x_train, list_of_cols, fit_df)
 
-        return x_train
-    else:
-        fit_x_train = imp.fit_transform(x_train[list_of_cols])
-        fit_train_df = pd.DataFrame(fit_x_train, columns=list_of_cols)            
-        x_train = drop_replace_columns(x_train, list_of_cols, fit_train_df)
-        
+    if x_test is not None:        
         fit_x_test = imp.transform(x_test[list_of_cols])
         fit_test_df = pd.DataFrame(fit_x_test, columns=list_of_cols)      
         x_test = drop_replace_columns(x_test, list_of_cols, fit_test_df)
 
-        return x_train, x_test
+    return x_train, x_test
 
 def replace_missing_constant(x_train, x_test=None, col_to_constant=None, constant=0):
     """
@@ -108,34 +102,10 @@ def replace_missing_constant(x_train, x_test=None, col_to_constant=None, constan
     """   
 
     if isinstance(col_to_constant, dict):
-        if x_test is None:
-            x_train = replace_missing_new_category(col_to_category=col_to_constant, x_train=x_train)
-
-            return x_train
-        
-        else:
-            x_train, x_test = replace_missing_new_category(col_to_cateogory=col_to_constant, x_train=x_train, x_test=x_test)
-
-            return x_train, x_test
-
+        x_train, x_test = replace_missing_new_category(col_to_cateogory=col_to_constant, x_train=x_train, x_test=x_test)
     elif isinstance(col_to_constant, list):
-        if x_test is None:
-            x_train = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, x_train=x_train)
-
-            return x_train
-        
-        else:
-            x_train, x_test = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, x_train=x_train, x_test=x_test)
-
-            return x_train, x_test
-
+        x_train, x_test = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, x_train=x_train, x_test=x_test)
     else:
-        if x_test is None:
-            x_train = replace_missing_new_category(constant=constant, x_train=x_train)
+        x_train, x_test = replace_missing_new_category(constant=constant, x_train=x_train, x_test=x_test)
 
-            return x_train
-        
-        else:
-            x_train, x_test = replace_missing_new_category(constant=constant, x_train=x_train, x_test=x_test)
-
-            return x_train, x_test
+    return x_train, x_test

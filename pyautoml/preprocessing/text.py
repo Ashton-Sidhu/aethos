@@ -45,20 +45,14 @@ def split_sentences(x_train, x_test=None, list_of_cols=[], new_col_name='_senten
     Returns 2 Dataframes if x_test is provided. 
     """
 
-    if x_test is None:
-        for col in list_of_cols:
-            x_train[col +
-                 new_col_name] = pd.Series(map(sent_tokenize, x_train.loc[:, col]))
-
-        return x_train
-    else:
-        for col in list_of_cols:
-            x_train[col +
-                       new_col_name] = pd.Series(map(sent_tokenize, x_train[col]))
+    for col in list_of_cols:
+        x_train[col +
+                    new_col_name] = pd.Series(map(sent_tokenize, x_train[col]))
+        if x_test is not None:
             x_test[col +
-                      new_col_name] = pd.Series(map(sent_tokenize, x_test[col]))
+                        new_col_name] = pd.Series(map(sent_tokenize, x_test[col]))
 
-        return x_train, x_test
+    return x_train, x_test
 
 
 def nltk_stem(x_train, x_test=None, list_of_cols=[], stemmer='porter', new_col_name="_stemmed"):
@@ -99,17 +93,14 @@ def nltk_stem(x_train, x_test=None, list_of_cols=[], stemmer='porter', new_col_n
     # Create partial for speed purposes
     func = partial(_apply_text_method, transformer=stem.stem)
 
-    if x_test is None:
-        for col in list_of_cols:
-            x_train[col + new_col_name] = list(map(func, x_train[col]))
+    
+    for col in list_of_cols:
+        x_train[col + new_col_name] = map(func, x_train[col])
 
-        return x_train
-    else:
-        for col in list_of_cols:
-            x_train[col + new_col_name] = map(func, x_train[col])
+        if x_test is not None:
             x_test[col + new_col_name] = map(func, x_test[col])
 
-        return x_train, x_test
+    return x_train, x_test
 
 
 def nltk_word_tokenizer(x_train, x_test=None, list_of_cols=[], regexp='', new_col_name="_tokenized"):
@@ -145,29 +136,24 @@ def nltk_word_tokenizer(x_train, x_test=None, list_of_cols=[], regexp='', new_co
 
     tokenizer = RegexpTokenizer(regexp)
 
-    if x_test is None:
-        for col in list_of_cols:
-            if not regexp:
-                x_train[col + new_col_name] = pd.Series(map(word_tokenize, x_train[col]))
-            else:
-                x_train[col +
-                     new_col_name] = pd.Series(map(tokenizer.tokenize, x_train[col]))
+   
+    for col in list_of_cols:
+        if not regexp:
+            x_train[col +
+                        new_col_name] = pd.Series(map(word_tokenize, x_train[col]))
 
-        return x_train
-    else:
-        for col in list_of_cols:
-            if not regexp:
-                x_train[col +
-                           new_col_name] = pd.Series(map(word_tokenize, x_train[col]))
+            if x_test is not None:
                 x_test[col +
-                          new_col_name] = pd.Series(map(word_tokenize, x_test[col]))
-            else:
-                x_train[col + new_col_name] = pd.Series(
-                    map(tokenizer.tokenize, x_train[col]))
-                x_test[col +
-                          new_col_name] = pd.Series(map(tokenizer.tokenize, x_test[col]))
+                            new_col_name] = pd.Series(map(word_tokenize, x_test[col]))
+        else:
+            x_train[col + new_col_name] = pd.Series(
+                map(tokenizer.tokenize, x_train[col]))
 
-        return x_train, x_test
+            if x_test is not None:
+                x_test[col +
+                            new_col_name] = pd.Series(map(tokenizer.tokenize, x_test[col]))
+
+    return x_train, x_test
 
 
 def nltk_remove_stopwords(x_train, x_test=None, list_of_cols=[], custom_stopwords=[], new_col_name='_rem_stop'):
@@ -205,20 +191,15 @@ def nltk_remove_stopwords(x_train, x_test=None, list_of_cols=[], custom_stopword
     stop_words.extend(custom_stopwords)
     stop_list = set(stop_words)
 
-    if x_test is None:
-        for col in list_of_cols:
-            x_train[col + new_col_name] = list(map(lambda x: " ".join(
-                [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_train[col]))
-
-        return x_train
-    else:
-        for col in list_of_cols:
-            x_train[col + new_col_name] = list(map(lambda x: " ".join(
-                [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_train[col]))
+    for col in list_of_cols:
+        x_train[col + new_col_name] = list(map(lambda x: " ".join(
+            [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_train[col]))
+        
+        if x_test is not None:
             x_test[col + new_col_name] = list(map(lambda x: " ".join(
                 [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_test[col]))
 
-        return x_train, x_test
+    return x_train, x_test
 
 
 def remove_punctuation(x_train, x_test=None, list_of_cols=[], regexp='', exceptions=[], new_col_name='_rem_punct'):
@@ -258,30 +239,23 @@ def remove_punctuation(x_train, x_test=None, list_of_cols=[], regexp='', excepti
     delete_punct = set(string.punctuation) - set(exceptions)
     tokenizer = RegexpTokenizer(regexp)
 
-    if x_test is None:
-        for col in list_of_cols:
-            if not regexp:
-                x_train[col + new_col_name] = list(map(lambda x: "".join(
-                    [letter for letter in x if letter not in delete_punct]), x_train[col]))
-            else:
-                x_train[col + new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), x_train[col]))
-
-        return x_train
-    else:
-        for col in list_of_cols:
-            if not regexp:
-                x_train[col + new_col_name] = list(map(lambda x: "".join(
-                    [letter for letter in x if letter not in delete_punct]), x_train[col]))
+    for col in list_of_cols:
+        if not regexp:
+            x_train[col + new_col_name] = list(map(lambda x: "".join(
+                [letter for letter in x if letter not in delete_punct]), x_train[col]))
+    
+            if x_test is not None:
                 x_test[col + new_col_name] = list(map(lambda x: "".join(
                     [letter for letter in x if letter not in delete_punct]), x_test[col]))
-            else:
-                x_train[col + new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), x_train[col]))
+        else:
+            x_train[col + new_col_name] = list(
+                map(lambda x: " ".join(tokenizer.tokenize(x)), x_train[col]))
+
+            if x_test is not None:
                 x_test[col + new_col_name] = list(
                     map(lambda x: " ".join(tokenizer.tokenize(x)), x_test[col]))
 
-        return x_train, x_test
+    return x_train, x_test
 
 
 def _apply_text_method(text_data, transformer=None):

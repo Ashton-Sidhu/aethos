@@ -31,7 +31,7 @@ def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
 
     Returns
     -------
-    Dataframe, *Dataframe
+    Dataframe, *Dataframe, dict
         Transformed dataframe with rows with a missing values in a specific column are missing
 
     Returns 2 Dataframes x_test is provided.  
@@ -39,29 +39,18 @@ def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
     
     label_encode = LabelEncoder()
 
-    if x_test is None:
-        for col in list_of_cols:
-            x_train[col] = label_encode.fit_transform(x_train[col])
+    for col in list_of_cols:
+        x_train[col] = label_encode.fit_transform(x_train[col])
 
-        if target:
-            target_mapping = dict(zip(x_train[list_of_cols], label_encode.inverse_transform(x_train[col])))
-            target_mapping = OrderedDict(sorted(target_mapping.items()))
-
-            return x_train, target_mapping
-
-        return x_train
-    else:
-        for col in list_of_cols:
-            x_train[col] = label_encode.fit_transform(x_train[col])
+        if x_test is not None:
             x_test[col] = label_encode.transform(x_test[col])
 
-        if target:
-            target_mapping = dict(zip(x_train[list_of_cols], label_encode.inverse_transform(x_train[col])))
-            target_mapping = OrderedDict(sorted(target_mapping.items()))
+    if target:
+        target_mapping = dict(zip(x_train[list_of_cols], label_encode.inverse_transform(x_train[col])))
+        target_mapping = OrderedDict(sorted(target_mapping.items()))
 
-            return x_train, x_test, target_mapping
+    return x_train, x_test, target_mapping
 
-        return x_train, x_test
 
 def check_missing_data(df) -> bool:
     """

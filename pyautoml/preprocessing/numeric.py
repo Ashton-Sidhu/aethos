@@ -42,20 +42,13 @@ def preprocess_normalize(x_train, x_test=None, list_of_cols=[], **algo_kwargs):
     list_of_cols = _numeric_input_conditions(list_of_cols, x_train)
     scaler = MinMaxScaler(**algo_kwargs)
 
-    if x_test is None:
-        scaled_data = scaler.fit_transform(x_train[list_of_cols])
-        scaled_df = pd.DataFrame(scaled_data, columns=list_of_cols)
-        data = drop_replace_columns(x_train, list_of_cols, scaled_df)
-        
-        return data
+    scaled_data = scaler.fit_transform(x_train[list_of_cols])
+    scaled_df = pd.DataFrame(scaled_data, columns=list_of_cols)
+    data = drop_replace_columns(x_train, list_of_cols, scaled_df)
     
-    else:
-        scaled_x_train = scaler.fit_transform(x_train)
-        scaled_train_df = pd.DataFrame(scaled_x_train, columns=list_of_cols)
-        x_train = drop_replace_columns(x_train, list_of_cols, scaled_train_df)
-
+    if x_test is not None:
         scaled_x_test = scaler.transform(x_test)
         scaled_test_df = pd.DataFrame(scaled_x_test, columns=list_of_cols)
         x_test = drop_replace_columns(x_test, list_of_cols, scaled_test_df)
 
-        return x_train, x_test
+    return x_train, x_test

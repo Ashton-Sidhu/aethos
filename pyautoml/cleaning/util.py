@@ -42,15 +42,12 @@ def remove_columns_threshold(x_train, x_test=None, threshold=0.5):
     if threshold > 1 or threshold < 0:
         raise ValueError("Threshold cannot be greater than 1 or less than 0.")
 
-    if x_test is None:
-        criteria_meeting_columns = x_train.columns[x_train.isnull().mean() < threshold]
+    criteria_meeting_columns = x_train.columns[x_train.isnull().mean() < threshold]
 
-        return x_train[criteria_meeting_columns]
-
-    else:
-        criteria_meeting_columns = x_train.columns(x_train.isnull().mean() < threshold)
-
+    if x_test is not None:
         return x_train[criteria_meeting_columns], x_test[criteria_meeting_columns]
+    else:
+        return x_train[criteria_meeting_columns], None
 
 def remove_rows_threshold(x_train, x_test=None, threshold=0.5):
     """
@@ -81,14 +78,12 @@ def remove_rows_threshold(x_train, x_test=None, threshold=0.5):
     if threshold > 1 or threshold < 0:
         raise ValueError("Threshold cannot be greater than 1 or less than 0.")
 
-    if x_test is None:
-        return x_train.dropna(thresh=round(x_train.shape[1] * threshold), axis=0)
+    x_train = x_train.dropna(thresh=round(x_train.shape[1] * threshold), axis=0)
 
-    else:
-        x_train = x_train.dropna(thresh=round(x_train.shape[1] * threshold), axis=0)
+    if x_test is not None:
         x_test = x_test.dropna(thresh=round(x_test.shape[1] * threshold), axis=0)
 
-        return x_train, x_test
+    return x_train, x_test
 
 def remove_duplicate_rows(x_train, x_test=None, list_of_cols=[]):
     """
@@ -113,14 +108,12 @@ def remove_duplicate_rows(x_train, x_test=None, list_of_cols=[]):
     Returns 2 Dataframes if x_test is provided.
     """
 
-    if x_test is None:        
-        return x_train.drop_duplicates(list_of_cols)
+    x_train = x_train.drop_duplicates(list_of_cols)
 
-    else:
-        x_train = x_train.drop_duplicates(list_of_cols)
+    if x_test is not None:
         x_test = x_test.drop_duplicates(list_of_cols)
 
-        return x_train, x_test
+    return x_train, x_test
 
 def remove_duplicate_columns(x_train, x_test=None):
     """
@@ -142,14 +135,12 @@ def remove_duplicate_columns(x_train, x_test=None):
     Returns 2 Dataframes if x_test is provided.
     """
 
-    if x_test is None:
-        return x_train.T.drop_duplicates().T
-
-    else:
-        x_train = x_train.T.drop_duplicates().T
+    x_train = x_train.T.drop_duplicates().T
+    
+    if x_test is not None:
         x_test = x_test.T.drop_duplicates().T
 
-        return x_train, x_test
+    return x_train, x_test
 
 def replace_missing_random_discrete(x_train, x_test=None, list_of_cols=[]):
     """
@@ -175,23 +166,15 @@ def replace_missing_random_discrete(x_train, x_test=None, list_of_cols=[]):
     Returns 2 Dataframes if x_test is provided.
     """
 
-    if x_test is None:
-        for col in list_of_cols:
-            probabilities = x_train[col].value_counts(normalize=True)
-            missing_data = x_train[col].isnull()
-            x_train.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(x_train[missing_data]), replace=True, p=probabilities.values)
 
-        return x_train
+    for col in list_of_cols:
+        probabilities = x_train[col].value_counts(normalize=True)
 
-    else:
+        missing_data = x_train[col].isnull()
+        x_train.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(x_train[missing_data]), replace=True, p=probabilities.values)
 
-        for col in list_of_cols:
-            probabilities = x_train[col].value_counts(normalize=True)
-
-            missing_data = x_train[col].isnull()
-            x_train.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(x_train[missing_data]), replace=True, p=probabilities.values)
-
+        if x_test is not None:
             missing_data = x_test[col].isnull()
             x_test.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(x_test[missing_data]), replace=True, p=probabilities.values)            
 
-        return x_train, x_test
+    return x_train, x_test

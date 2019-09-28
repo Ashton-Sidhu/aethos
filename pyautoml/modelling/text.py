@@ -31,17 +31,13 @@ def gensim_textrank_summarizer(x_train, x_test=None, list_of_cols=[], new_col_na
     Returns 2 Dataframes if x_test is provided. 
     """
 
-    if x_test is None:
-        for col in list_of_cols:
-            x_train.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), x_train[col]))
+    for col in list_of_cols:
+        x_train.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), x_train[col]))
 
-        return x_train
-    else:
-        for col in list_of_cols:
-            x_train.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), x_train[col]))
+        if x_test is not None:
             x_test.loc[:, col + new_col_name]  = list(map(lambda x: summarize(x, **algo_kwargs), x_test[col]))
 
-        return x_train, x_test
+    return x_train, x_test
 
 
 def gensim_textrank_keywords(x_train, x_test=None, list_of_cols=[], new_col_name="_extracted_keywords", **algo_kwargs):
@@ -72,14 +68,10 @@ def gensim_textrank_keywords(x_train, x_test=None, list_of_cols=[], new_col_name
     Returns 2 Dataframes if x_test is provided. 
     """
 
-    if x_test is None:
-        for col in list_of_cols:
-            x_train.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), x_train[col]))
+    for col in list_of_cols:
+        x_train.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), x_train[col]))
 
-        return x_train
-    else:
-        for col in list_of_cols:
-            x_train.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), x_train[col]))
+        if x_test is not None:
             x_test.loc[:, col + new_col_name]  = list(map(lambda x: keywords(x, **algo_kwargs), x_test[col]))
 
-        return x_train, x_test
+    return x_train, x_test
