@@ -81,7 +81,7 @@ x_train = pd.read_csv('data/train.csv')
 So as is almost always the case, let's start with cleaning the data. We load our data now into the cleaning phase.
 
 ```python
-clean = Clean(data=x_train, target_field='Survived', report_name='Titanic')
+clean = Clean(x_train=x_train, target_field='Survived', report_name='Titanic')
 ```
 
 Couple of key points to note, `Clean` takes in quite a few keyword arguments. Other than `data`, if your data has already been pre-split into training and testing data, you can start the cleaning phase like this:
@@ -90,24 +90,25 @@ Couple of key points to note, `Clean` takes in quite a few keyword arguments. Ot
 clean = Clean(x_train=x_train, x_test=x_test, split=False, target_field='Survived', report_name='Titanic')
 ```
 
-Since our data is not presplit, we use the `data` parameter to indicate that and as a result our data is automatically split to avoid data leakage. Note that the default split percentage is `20%` but is configurable by using the keyword argument `test_split_percentage`.
+Since our data is not presplit, our data is automatically split to avoid data leakage. Note that the default split percentage is `20%` but is configurable by using the keyword argument `test_split_percentage`.
 
-Target field is the field we are trying to predict in this case, if there is no field to predict there is no need to pass in that argument (note: `Survived` is the column name in our dataset). The last keyword argument used is `report_name` and that names our continuously updated and automated report that will be saved in your current working directory. Every technique you apply on your dataset will be logged along with some "reasoning" about why it was done.
+Target field is the field we are trying to predict in this case, if there is no field to predict there is no need to pass in that argument (note: `Survived` is the column name in our dataset). 
 
-**NOTE:** One of the benefits of using `pyautoml` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage. 
+The last keyword argument used is `report_name` and that names our continuously updated and automated report that will be saved in your current working directory. Every technique you apply on your dataset will be logged along with some "reasoning" about why it was done.
+
+**NOTE:** One of the benefits of using `pyautoml` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
 
 Now that our data has been loaded, there a few ways we can explore and gain initial insights from our data. To start, at any time and with **ANY** `pyautoml` object (Clean, Preprocess, Feature, etc) you can view your data with the following commands:
 
 ```python
-clean.x_train # If your data IS NOT split
-clean.x_train # If your data IS split
-clean.x_test # If your data IS split
+clean.x_train
+clean.x_test
 ```
 
-Also you can view a glance of your full data (if it has not been split) or your training dataset at any time by just calling the object (like pandas):
+Also you can view a glance of your training dataset at any time by just calling the object (like pandas):
 
 ```python
-clean # This will give you a glance of your full data or your training data, whichever is provided
+clean # This will give you a glance of your data
 ```
 
 Also note you can interface any of the `pyautoml` objects like pandas, for example if you want to filter by `Age`:
@@ -186,7 +187,7 @@ clean.drop('Cabin')
 
 Columns can also be dropped by defining the columns you want to keep (drop all columns except the ones you want to keep) or by passing in a regex expressions and all columns that match the regex expression will be dropped.
 
-As you've started to notice, alot of tasks to clean the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation). 
+As you've started to notice, alot of tasks to clean the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation).
 
 Creating visualisations has never been easier to, for example viewing the mean survival rate based off the age of the passenger can be done as follows:
 
