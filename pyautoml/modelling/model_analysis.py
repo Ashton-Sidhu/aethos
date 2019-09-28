@@ -555,10 +555,7 @@ class ClassificationModel(ModelBase):
 
         self.target_mapping = model_object.target_mapping
 
-        if self.x_test is None:            
-            self.y_pred = self.x_train_results[predictions_col]
-        else:
-            self.y_pred = self.x_test_results[predictions_col]
+        self.y_pred = self.x_train_results[predictions_col] if self.x_test is None else self.x_test_results[predictions_col]
 
         if self.report:
             self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))

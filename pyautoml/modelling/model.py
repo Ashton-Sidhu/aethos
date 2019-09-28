@@ -174,9 +174,6 @@ class Model(MethodBase):
         """
 
         try:
-            if self._data_properties.x_train is None:
-                raise AttributeError("There seems to be nothing here. Try .target_data")
-
             return self._y_test
         except Exception as e:
             return None
@@ -311,11 +308,7 @@ class Model(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._train_result_data = gensim_textrank_summarizer(
-                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name, **summarizer_kwargs)            
-        else:
-            self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
+        self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
                 x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name, **summarizer_kwargs)
 
         if self.report is not None:
@@ -379,11 +372,7 @@ class Model(MethodBase):
         report_info = technique_reason_repo['model']['text']['textrank_keywords']
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._train_result_data = gensim_textrank_keywords(
-                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name, **keyword_kwargs)
-        else:
-            self._train_result_data, self._test_result_data = gensim_textrank_keywords(
+        self._train_result_data, self._test_result_data = gensim_textrank_keywords(
                 x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name, **keyword_kwargs)
 
         if self.report is not None:
@@ -451,18 +440,13 @@ class Model(MethodBase):
 
         report_info = technique_reason_repo['model']['unsupervised']['kmeans']
 
-        if not self._data_properties.split:
-            kmeans.fit(self._data_properties.x_train)
+        kmeans.fit(self._data_properties.x_train)
 
-            self._train_result_data[new_col_name] = kmeans.labels_
-
-        else:
-            kmeans.fit(self._data_properties.x_train)
-
-            self._train_result_data[new_col_name] = kmeans.labels_
-            self._test_result_data[new_col_name] = kmeans.predict(
-                self._data_properties.x_test)
-
+        self._train_result_data[new_col_name] = kmeans.labels_
+        
+        if self._data_properties.x_test is not None:
+            self._test_result_data[new_col_name] = kmeans.predict(self._data_properties.x_test)
+        
         if self.report is not None:
             self.report.report_technique(report_info)
 
@@ -636,14 +620,12 @@ class Model(MethodBase):
             log_reg = run_gridsearch(log_reg, gridsearch, logreg_gridsearch, gridsearch_cv, gridsearch_score)
         else:
             log_reg = LogisticRegression(solver=solver, random_state=random_state, **logreg_kwargs)
+        
+        log_reg.fit(self._data_properties.x_train, self._y_train)
 
-        if not self._data_properties.split:
-            log_reg.fit(self._data_properties.x_train, self.target_data)      
-            self._train_result_data[new_col_name] = log_reg.predict(self._data_properties.x_train)            
-        else:
-            log_reg.fit(self._data_properties.x_train, self._y_train)
-
-            self._train_result_data[new_col_name] = log_reg.predict(self._data_properties.x_train)
+        self._train_result_data[new_col_name] = log_reg.predict(self._data_properties.x_train)            
+        
+        if self._data_properties.x_test is not None:
             self._test_result_data[new_col_name] = log_reg.predict(self._data_properties.x_test)
 
         if self.report is not None:
