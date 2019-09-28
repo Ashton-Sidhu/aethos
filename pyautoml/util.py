@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 
-def label_encoder(list_of_cols=[], target=False, **datasets):
+def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
     """
     Label encodes the columns provided.
     
@@ -15,66 +15,43 @@ def label_encoder(list_of_cols=[], target=False, **datasets):
     
     Parameters
     ----------
+    x_train: Dataframe or array like - 2d
+        Dataset.
+
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
     list_of_cols : list, optional
         A list of specific columns to apply this technique to
         If `list_of_cols` is not provided, the strategy will be
         applied to all numeric columns., by default []
 
     target : bool, optional
-            True if the column being encoded is the target variable, by default False
-
-    data: Dataframe or array like - 2d
-        Full dataset, by default None.
-
-    train_data: Dataframe or array like - 2d
-        Training dataset, by default None.
-
-    test_data: Dataframe or array like - 2d
-        Testing dataset, by default None.
+        True if the column being encoded is the target variable, by default False
 
     Returns
     -------
-    Dataframe, *Dataframe
+    Dataframe, *Dataframe, dict
         Transformed dataframe with rows with a missing values in a specific column are missing
 
-    Returns 2 Dataframes if Train and Test data is provided.  
+    Returns 2 Dataframes x_test is provided.  
     """
-
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
-
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError("Function input is incorrectly provided.")
     
     label_encode = LabelEncoder()
+    target_mapping = None
 
-    if data is not None:
-        for col in list_of_cols:
-            data[col] = label_encode.fit_transform(data[col])
+    for col in list_of_cols:
+        x_train[col] = label_encode.fit_transform(x_train[col])
 
-        if target:
-            target_mapping = dict(zip(data[list_of_cols], label_encode.inverse_transform(data[col])))
-            target_mapping = OrderedDict(sorted(target_mapping.items()))
+        if x_test is not None:
+            x_test[col] = label_encode.transform(x_test[col])
 
-            return data, target_mapping
+    if target:
+        target_mapping = dict(zip(x_train[list_of_cols], label_encode.inverse_transform(x_train[col])))
+        target_mapping = OrderedDict(sorted(target_mapping.items()))
 
-        return data
-    else:
-        for col in list_of_cols:
-            train_data[col] = label_encode.fit_transform(train_data[col])
-            test_data[col] = label_encode.transform(test_data[col])
+    return x_train, x_test, target_mapping
 
-        if target:
-            target_mapping = dict(zip(train_data[list_of_cols], label_encode.inverse_transform(train_data[col])))
-            target_mapping = OrderedDict(sorted(target_mapping.items()))
-
-            return train_data, test_data, target_mapping
-
-        return train_data, test_data
 
 def check_missing_data(df) -> bool:
     """
@@ -163,38 +140,11 @@ def split_data(df, split_percentage: float):
         Train data and test data.
     """    
 
-    train_data, test_data = train_test_split(df, test_size=split_percentage)
+    x_train, x_test = train_test_split(df, test_size=split_percentage)
 
-    return train_data, test_data
+    return x_train, x_test
 
-def _function_input_validation(data, train_data, test_data):
-    """
-    Helper function to help determine if input is valid.
-
-    Unacceptable conditions
-    _____________________
-
-        1) No data is provided.
-        2) Full dataset is provided and train or test data is provided.
-        3) Train data is provided and test data is not.
-        4) Test data is provided and test data is not.
-    """
-
-    if data is None and (train_data is None or test_data is None):
-        return False
-
-    if data is not None and (train_data is not None or test_data is not None):
-        return False
-
-    if train_data is not None and test_data is None:
-        return False
-
-    if test_data is not None and train_data is None:
-        return False
-
-    return True
-
-def _numeric_input_conditions(list_of_cols: list, data, train_data) -> list:
+def _numeric_input_conditions(list_of_cols: list, x_train) -> list:
     """
     Helper function to help set variable values of numeric cleaning method functions.
 
@@ -206,14 +156,11 @@ def _numeric_input_conditions(list_of_cols: list, data, train_data) -> list:
     if list_of_cols:
         list_of_cols = list_of_cols
     else:
-        if data is not None:
-            list_of_cols = data.select_dtypes([np.number]).columns.tolist()
-        else:
-            list_of_cols = train_data.select_dtypes([np.number]).columns.tolist()
+        list_of_cols = x_train.select_dtypes([np.number]).columns.tolist()
 
     return list_of_cols
 
-def _get_columns(list_of_cols, data, train_data) -> list:
+def _get_columns(list_of_cols, x_train) -> list:
     """
     If the list of columns are optional and no columns are provided, the columns are set
     to all the columns in the data.
@@ -223,10 +170,7 @@ def _get_columns(list_of_cols, data, train_data) -> list:
     list_of_cols : list
         List of columns to apply method to.
 
-    data : Dataframe or array like - 2d
-        Full dataset
-
-    train_data : Dataframe or array like - 2d
+    x_train : Dataframe or array like - 2d
         Training Dataset
     
     Returns
@@ -238,10 +182,7 @@ def _get_columns(list_of_cols, data, train_data) -> list:
     if list_of_cols:
         list_of_cols = list_of_cols
     else:
-        if data is not None:
-            list_of_cols = data.columns.tolist()
-        else:
-            list_of_cols = train_data.columns.tolist()
+        list_of_cols = x_train.columns.tolist()
 
     return list_of_cols
 
@@ -319,17 +260,17 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
 
     return True
 
-def _set_item(train_data, test_data, column: str, value: list, train_length: int, test_length: int):
+def _set_item(x_train, x_test, column: str, value: list, train_length: int, test_length: int):
     """
     Utility function for __setitem__ for determining which input is for which dataset
     and then sets the input to the new column for the correct dataset.
     
     Parameters
     ----------
-    train_data : Dataframe
+    x_train : Dataframe
         Training Data
 
-    test_data : Dataframe
+    x_test : Dataframe
         Testing Data
 
     column : str
@@ -348,11 +289,15 @@ def _set_item(train_data, test_data, column: str, value: list, train_length: int
     ## If the training data and testing data have the same number of rows, apply the value to both
     ## train and test data set
     if len(value) == train_length and len(value) == test_length:
-        train_data[column] = value
-        test_data[column] = value
+        x_train[column] = value
+        x_test[column] = value
     elif len(value) == train_length:
-        train_data[column] = value
+        x_train[column] = value
     else:
-        test_data[column] = value
+        x_test[column] = value
 
-    return train_data, test_data
+    return x_train, x_test
+
+
+def _function_input_validation(a,b,c):
+    return

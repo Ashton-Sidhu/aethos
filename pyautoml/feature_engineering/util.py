@@ -3,32 +3,23 @@ This file contains the following functions:
 
 apply
 """
-
-from pyautoml.util import _function_input_validation
-
-
-def apply(func, output_col: str, **datasets):
+def apply(x_train, func, output_col: str, x_test=None):
     """
     Wrapper for pandas apply function to be used in this library. Applies `func` to the entire data
     or just the trianing and testing data
 
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+
     func : Function pointer
         Function describing the transformation for the new column
 
     output_col : str
         New column name
-
-    data : DataFrame
-        Full dataset, by default None
-
-    train_data : DataFrame
-        Training dataset, by default None
         
-    test_data : DataFrame
+    x_test : DataFrame
         Testing dataset, by default None
     
     Returns
@@ -36,24 +27,12 @@ def apply(func, output_col: str, **datasets):
     Dataframe, *Dataframe
         Transformed dataframe with the new column
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train.loc[:, output_col] = x_train.apply(func, axis=1)
 
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError('Function input is incorrectly provided.')
+    if x_test is not None:
+        x_test.loc[:, output_col] = x_test.apply(func, axis=1)
 
-    if data is not None:
-        data.loc[:, output_col] = data.apply(func, axis=1)
-
-        return data
-    else:
-        train_data.loc[:, output_col] = train_data.apply(func, axis=1)
-        test_data.loc[:, output_col] = test_data.apply(func, axis=1)
-
-        return train_data, test_data
+    return x_train, x_test

@@ -29,19 +29,19 @@ Load your data into pandas.
 
 .. code:: python
 
-    train_data = pd.read_csv('data/train.csv')
+    x_train = pd.read_csv('data/train.csv')
 
 So as is almost always the case, let's start with cleaning the data. We load our data now into the cleaning phase.
 
 .. code:: python
 
-    clean = Clean(data=train_data, target_field='Survived', report_name='Titanic')
+    clean = Clean(data=x_train, target_field='Survived', report_name='Titanic')
 
 Couple of key points to note, ``Clean`` takes in quite a few keyword arguments. Other than ``data``, if your data has already been pre-split into training and testing data, you can start the cleaning phase like this:
 
 .. code:: python
 
-    clean = Clean(train_data=train_data, test_data=test_data, split=False, target_field='Survived', report_name='Titanic')
+    clean = Clean(x_train=x_train, x_test=x_test, split=False, target_field='Survived', report_name='Titanic')
 
 Since our data is not presplit, we use the ``data`` parameter to indicate that and as a result our data is automatically split to avoid data leakage. Note that the default split percentage is ``20%`` but is configurable by using the keyword argument ``test_split_percentage``.
 
@@ -53,9 +53,9 @@ Now that our data has been loaded, there a few ways we can explore and gain init
 
 .. code:: python
 
-    clean.data # If your data IS NOT split
-    clean.train_data # If your data IS split
-    clean.test_data # If your data IS split
+    clean.x_train # If your data IS NOT split
+    clean.x_train # If your data IS split
+    clean.x_test # If your data IS split
 
 Also you can view a glance of your full data (if it has not been split) or your training dataset at any time by just calling the object (like pandas):
 
@@ -82,8 +82,8 @@ You can also create columns how you would in pandas using either dot notation or
 
 .. code:: python
 
-    clean.train_data['new_col'] = YOUR_DATA_HERE
-    clean.test_data['new_col'] = YOUR_DATA_HERE
+    clean.x_train['new_col'] = YOUR_DATA_HERE
+    clean.x_test['new_col'] = YOUR_DATA_HERE
 
 To get a full report of your data at anytime, you can run ``data_report`` and a full report will be generated from your data courtesy of the ``pandas-profiling`` library.
 

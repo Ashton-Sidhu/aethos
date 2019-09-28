@@ -16,9 +16,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.remove_columns(0.5)
-        validate = clean.data.columns.tolist()
+        validate = clean.x_train.columns.tolist()
 
         self.assertListEqual(validate, ["col1"])
 
@@ -30,9 +30,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.remove_rows(0.5)
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 0)]).tolist())
 
@@ -42,9 +42,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4", "col5"]
         dataset = pd.DataFrame(data, columns=columns)
 
-        clean = Clean(data=dataset)
+        clean = Clean(x_train=dataset)
 
-        self.assertEqual(clean.train_data.shape[0], 4)
+        self.assertEqual(clean.x_train.shape[0], 4)
 
     def test_cleannumeric_mean(self):
         int_missing_data = [[1, 0, 2],
@@ -54,9 +54,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_mean()
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 0, 2],
                                         [0, 0, 1],
@@ -70,9 +70,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_median()
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 0, 2],
                                         [0, 0, 1],
@@ -87,9 +87,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_mostcommon()
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, np.array([(1., 0., 2.),
                                                 (1., 0., 1.),
@@ -103,9 +103,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_constant('col1', 'col3', constant=10.5)
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 2),
                                                 (1, None, 1),
@@ -120,9 +120,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_remove_row("col1", "col2")
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 2)]).tolist())
 
@@ -136,9 +136,9 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         category_dict_mapping = {"col1": 2, "col2": "Blue", "col3": 4}
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_new_category(col_mapping=category_dict_mapping)
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1.0, "Green", 2.0],
                                         [1.0, "Blue", 1.0],
@@ -154,9 +154,9 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         list_col = ["col1", "col3"]
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_new_category(list_of_cols=list_col, new_category=0)
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, "Green", 2),
                                                 (1, "Other", 1),
@@ -172,12 +172,12 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         list_col = ["col1", "col2"]
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_new_category(list_of_cols=list_col)
         
         #Replacing NaNs with strings for validations as regular assert does == and to compare NaNs you need `is`
-        clean._data_properties.data = clean.data.fillna("NaN was here")
-        validate = clean.data.values.tolist()
+        clean._data_properties.x_train = clean.x_train.fillna("NaN was here")
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, "Green", 2.0],
                                         [1, "Other", 1.0],
@@ -192,9 +192,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_new_category(new_category=1)
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1.0, "Green", 2],
                                         [1.0, "Other", 1],
@@ -209,9 +209,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.replace_missing_new_category()
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, "Green", 2],
                                         [1, "Other", 1],
@@ -226,9 +226,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.remove_duplicate_rows()
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 0, 2],
                                         [0, 2, 1]])
@@ -242,9 +242,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.remove_duplicate_rows(list_of_cols=columns)
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 0, 2],
                                         [0, 2, 1]])
@@ -258,9 +258,9 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5, split=False)
+        clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
         clean.remove_duplicate_columns()
-        validate = clean.data.values.tolist()
+        validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 0],
                                         [0, 2],
@@ -276,10 +276,10 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(data=data, test_split_percentage=0.5)
+        clean = Clean(x_train=data, test_split_percentage=0.5)
         clean.replace_missing_random_discrete("col1", "col2", "col3")
         
-        validate = np.any(clean.train_data.isnull()) and any(clean.test_data.isnull())
+        validate = np.any(clean.x_train.isnull()) and any(clean.x_test.isnull())
 
         self.assertFalse(validate)
 

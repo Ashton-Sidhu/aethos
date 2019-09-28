@@ -2,10 +2,8 @@
 from gensim.summarization import keywords
 from gensim.summarization.summarizer import summarize
 
-from pyautoml.util import _function_input_validation
 
-
-def gensim_textrank_summarizer(list_of_cols=[], new_col_name="_summarized", **algo_kwargs):
+def gensim_textrank_summarizer(x_train, x_test=None, list_of_cols=[], new_col_name="_summarized", **algo_kwargs):
     """
     Uses Gensim Text Rank summarize to extractively summarize text.
 
@@ -13,6 +11,12 @@ def gensim_textrank_summarizer(list_of_cols=[], new_col_name="_summarized", **al
     
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+
+    x_test : DataFrame
+        Testing dataset, by default None
+
     list_of_cols : list, optional
         Column name(s) of text data that you want to summarize
 
@@ -24,30 +28,19 @@ def gensim_textrank_summarizer(list_of_cols=[], new_col_name="_summarized", **al
     Dataframe, *Dataframe
         Transformed dataframe with the new column.
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
 
-    data = algo_kwargs.pop('data', None)
-    train_data = algo_kwargs.pop('train_data', None)
-    test_data = algo_kwargs.pop('test_data', None)
+    for col in list_of_cols:
+        x_train.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), x_train[col]))
 
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError('Function input is incorrectly provided.')
+        if x_test is not None:
+            x_test.loc[:, col + new_col_name]  = list(map(lambda x: summarize(x, **algo_kwargs), x_test[col]))
 
-    if data is not None:
-        for col in list_of_cols:
-            data.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), data[col]))
-
-        return data
-    else:
-        for col in list_of_cols:
-            train_data.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), train_data[col]))
-            test_data.loc[:, col + new_col_name]  = list(map(lambda x: summarize(x, **algo_kwargs), test_data[col]))
-
-        return train_data, test_data
+    return x_train, x_test
 
 
-def gensim_textrank_keywords(list_of_cols=[], new_col_name="_extracted_keywords", **algo_kwargs):
+def gensim_textrank_keywords(x_train, x_test=None, list_of_cols=[], new_col_name="_extracted_keywords", **algo_kwargs):
     """
     Uses Gensim Text Rank summarize to extract keywords.
 
@@ -55,6 +48,12 @@ def gensim_textrank_keywords(list_of_cols=[], new_col_name="_extracted_keywords"
     
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+
+    x_test : DataFrame
+        Testing dataset, by default None
+
     list_of_cols : list, optional
         Column name(s) of text data that you want to summarize
 
@@ -66,24 +65,13 @@ def gensim_textrank_keywords(list_of_cols=[], new_col_name="_extracted_keywords"
     Dataframe, *Dataframe
         Transformed dataframe with the new column.
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
 
-    data = algo_kwargs.pop('data', None)
-    train_data = algo_kwargs.pop('train_data', None)
-    test_data = algo_kwargs.pop('test_data', None)
+    for col in list_of_cols:
+        x_train.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), x_train[col]))
 
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError('Function input is incorrectly provided.')
+        if x_test is not None:
+            x_test.loc[:, col + new_col_name]  = list(map(lambda x: keywords(x, **algo_kwargs), x_test[col]))
 
-    if data is not None:
-        for col in list_of_cols:
-            data.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), data[col]))
-
-        return data
-    else:
-        for col in list_of_cols:
-            train_data.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), train_data[col]))
-            test_data.loc[:, col + new_col_name]  = list(map(lambda x: keywords(x, **algo_kwargs), test_data[col]))
-
-        return train_data, test_data
+    return x_train, x_test

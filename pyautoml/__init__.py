@@ -11,8 +11,6 @@ from .preprocessing import Preprocess
 
 pd.options.mode.chained_assignment = None
 
-#TODO: Rename variables to x_test, y_test, etc for easier referencing throughout the project
-
 __all__ = ['Clean',
          'Feature',
          'Model',

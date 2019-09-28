@@ -27,11 +27,11 @@ INTERPRET_EXPLAINERS = {
 }
 class Shap(object):
 
-    def __init__(self, model, train_data, test_data, y_test, learner: str):
+    def __init__(self, model, x_train, x_test, y_test, learner: str):
 
         self.model = model
-        self.x_train = train_data
-        self.x_test = test_data
+        self.x_train = x_train
+        self.x_test = x_test
         self.y_test = y_test
         
         if learner == 'linear':
@@ -143,11 +143,11 @@ class Shap(object):
 
 class MSFTInterpret(object):
 
-    def __init__(self, model, train_data, test_data, y_test, problem):
+    def __init__(self, model, x_train, x_test, y_test, problem):
 
         self.model = model
-        self.x_train = train_data.apply(pd.to_numeric)
-        self.x_test = test_data.apply(pd.to_numeric)
+        self.x_train = x_train.apply(pd.to_numeric)
+        self.x_test = x_test.apply(pd.to_numeric)
         self.y_test = y_test
         self.problem = problem
         self.trained_blackbox_explainers = {}

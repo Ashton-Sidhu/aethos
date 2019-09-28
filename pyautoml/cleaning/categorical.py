@@ -8,175 +8,121 @@ replace_missing_remove_row
 import numpy as np
 import pandas as pd
 
-from pyautoml.util import _function_input_validation, _get_columns
+from pyautoml.util import _get_columns
 
 #TODO: Implement KNN, and replacing with most common category 
 
-def replace_missing_new_category(col_to_category=None, constant=None, **datasets):
+def replace_missing_new_category(x_train, x_test=None, col_to_category=None, constant=None):
     """
     Replaces missing values in categorical column with its own category. The categories can be autochosen
     from the defaults set.
-
-    Either the full data or training data plus testing data MUST be provided, not both.
     
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+        
+    x_test : DataFrame
+        Testing Dataset, by default None
+        
     col_to_category : list or dict, optional
         A dictionary mapping column name to the category name you want to replace , by default None
 
     constant : str, int or float, optional
         Category placeholder value for missing values, by default None
-
-    data : DataFrame
-        Full dataset, by default None
-
-    train_data : DataFrame
-        Training dataset, by default None
-
-    test_data : DataFrame
-        Testing dataset, by default None
     
     Returns
     -------
     Dataframe, *Dataframe:
-        Cleaned columns of the dataframe(s) provides with the provided constant.
+        Cleaned columns of the Dataframe(s) provides with the provided constant.
         
-    Returns 2 Dataframes if Train and Test data is provided.
+    Returns 2 Dataframes if x_test is provided.
 
     Examples
     --------
     >>> ReplaceMissingCategory({'a': "Green", 'b': "Canada", 'c': "December"})
-    
     >>> ReplaceMissingCategory("Blue", ['a', 'b', 'c'])
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))    
-
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError("Please provide a full data or training and testing data.")
-
     if isinstance(col_to_category, list):
-        col_to_category = _get_columns(col_to_category, data, train_data)
+        col_to_category = _get_columns(col_to_category, x_train)
     
-    str_missing_categories = ["Other", "Unknown", "MissingDataCategory"]
+    str_missing_categories = ["Other", "Unknown", "Missingx_trainCategory"]
     num_missing_categories = [-1, -999, -9999]
 
     if isinstance(col_to_category, dict):        
-        if data is not None:
-            for col in col_to_category.keys():
-                data[col].fillna(col_to_category[col], inplace=True)
 
-            return data
+        for col in col_to_category.keys():
+            x_train[col].fillna(col_to_category[col], inplace=True)
 
-        else:
-            for col in col_to_category.keys():
-                train_data[col].fillna(col_to_category[col], inplace=True)
-                test_data[col].fillna(col_to_category[col], inplace=True)
-            
-            return train_data, test_data
+            if x_test is not None:            
+                x_test[col].fillna(col_to_category[col], inplace=True)
 
     elif isinstance(col_to_category, list) and constant is not None:
-        if data is not None:
-            for col in col_to_category:
-                data[col].fillna(constant, inplace=True)
 
-            return data
+        for col in col_to_category:
+            x_train[col].fillna(constant, inplace=True)
 
-        else:
-            for col in col_to_category:
-                train_data[col].fillna(constant, inplace=True)
-                test_data[col].fillna(constant, inplace=True)
-            
-            return train_data, test_data
+            if x_test is not None:
+                x_test[col].fillna(constant, inplace=True)
 
     else:
-        if data is not None:
-            for col in col_to_category:
-                #Check if column is a number
-                if np.issubdtype(data[col].dtype, np.number):
-                    new_category_name = _determine_default_category(data, col, num_missing_categories)
-                    data[col].fillna(new_category_name, inplace=True)
-
-                    #Convert numeric categorical column to integer
-                    data[col] = data[col].astype(int)
-                else:
-                    new_category_name = _determine_default_category(data, col, str_missing_categories)
-                    data[col].fillna(new_category_name, inplace=True)           
-
-            return data
         
-        else:
-            for col in col_to_category:                
-                #Check if column is a number
-                if np.issubdtype(train_data[col].dtype, np.number):
-                    new_category_name = _determine_default_category(train_data, col, num_missing_categories)
-                    train_data[col].fillna(new_category_name, inplace=True)
-                    test_data[col].fillna(new_category_name, inplace=True)
-                    #Convert numeric categorical column to integer
-                    train_data[col] = train_data[col].astype(int)
-                    test_data[col] = test_data[col].astype(int)
+        for col in col_to_category:
+            #Check if column is a number
+            if np.issubdtype(x_train[col].dtype, np.number):
+                new_category_name = _determine_default_category(x_train, col, num_missing_categories)
+                x_train[col].fillna(new_category_name, inplace=True)
 
-                else:
-                    new_category_name = _determine_default_category(train_data, col, str_missing_categories)
-                    train_data[col].fillna(new_category_name, inplace=True)
-                    test_data[col].fillna(new_category_name, inplace=True)           
+                #Convert numeric categorical column to integer
+                x_train[col] = x_train[col].astype(int)
 
-            return train_data, test_data
+                if x_test is not None:
+                    x_test[col].fillna(new_category_name, inplace=True)
+                    # Convert numeric categorical column to integer
+                    x_test[col] = x_test[col].astype(int)
+            else:
+                new_category_name = _determine_default_category(x_train, col, str_missing_categories)
+                x_train[col].fillna(new_category_name, inplace=True)
 
-def replace_missing_remove_row(cols_to_remove: list, **datasets):
+                if x_test is not None:
+                    new_category_name = _determine_default_category(x_train, col, str_missing_categories)
+                    x_test[col].fillna(new_category_name, inplace=True)
+
+    return x_train, x_test
+
+
+def replace_missing_remove_row(x_train, x_test=None, cols_to_remove=[]):
     """
     Remove rows where the value of a column for those rows is missing.
-    
-    Either the full data or training data plus testing data MUST be provided, not both.
-    
+        
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+        
+    x_test : DataFrame
+        Testing Dataset, by default None
+
     cols_to_remove : list
         List of columns you want to check to see if they have missing values in a row
 
-    data : DataFrame
-        Full dataset, by default None
-
-    train_data : DataFrame
-        Training dataset, by default None
-        
-    test_data : DataFrame
-        Testing dataset, by default None
-    
     Returns
     -------
     Dataframe, *Dataframe:
-        Cleaned columns of the dataframe(s) provides with the provided constant.
+        Cleaned columns of the Dataframe(s) provides with the provided constant.
         
-    Returns 2 Dataframes if Train and Test data is provided.        
+    Returns 2 Dataframes if x_test is provided.
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    x_train = x_train.dropna(axis=0, subset=cols_to_remove)
 
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))  
+    if x_test is not None:
+        x_test = x_test.dropna(axis=0, subset=cols_to_remove)
 
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError("Please provide a full data or training and testing data.")
+    return x_train, x_test
 
-    if data is not None:
-        data = data.dropna(axis=0, subset=cols_to_remove)
-
-        return data
-    else:
-        train_data = train_data.dropna(axis=0, subset=cols_to_remove)
-        test_data = test_data.dropna(axis=0, subset=cols_to_remove)
-
-        return train_data, test_data
-
-def _determine_default_category(data, col, replacement_categories):
+def _determine_default_category(x_train, col, replacement_categories):
     """
     A utility function to help determine the default category name for a column that has missing
     categorical values. 
@@ -185,7 +131,7 @@ def _determine_default_category(data, col, replacement_categories):
     that is not a value in the column is the category that will be used to replace missing values.
     """
 
-    unique_vals_col = data[col].unique()
+    unique_vals_col = x_train[col].unique()
     for potential_category in replacement_categories:
 
         #If the potential category is not already a category, it becomes the default missing category 

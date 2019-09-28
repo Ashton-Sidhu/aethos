@@ -1,21 +1,21 @@
-pyautoml.data package
+pyautoml.x_train package
 =====================
 
 Submodules
 ----------
 
-pyautoml.data.data module
+pyautoml.x_train.x_train module
 -------------------------
 
-.. automodule:: pyautoml.data.data
+.. automodule:: pyautoml.x_train.x_train
    :members:
    :undoc-members:
    :show-inheritance:
 
-pyautoml.data.datavalidation module
+pyautoml.x_train.datavalidation module
 -----------------------------------
 
-.. automodule:: pyautoml.data.datavalidation
+.. automodule:: pyautoml.x_train.datavalidation
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ pyautoml.data.datavalidation module
 Module contents
 ---------------
 
-.. automodule:: pyautoml.data
+.. automodule:: pyautoml.x_train
    :members:
    :undoc-members:
    :show-inheritance:
