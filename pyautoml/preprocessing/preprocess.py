@@ -72,14 +72,11 @@ class Preprocess(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.x_train = preprocess_normalize(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, **normalize_params)
-        else:
-            self._data_properties.x_train, self._data_properties.x_test = preprocess_normalize(x_train=self._data_properties.x_train,
-                                                                                                x_test=self._data_properties.x_test,
-                                                                                                list_of_cols=list_of_cols,
-                                                                                                **normalize_params,
-                                                                                                )
+        self._data_properties.x_train, self._data_properties.x_test = preprocess_normalize(x_train=self._data_properties.x_train,
+                                                                                            x_test=self._data_properties.x_test,
+                                                                                            list_of_cols=list_of_cols,
+                                                                                            **normalize_params,
+                                                                                            )
 
         if self.report is not None:
             if list_of_cols:
@@ -118,14 +115,11 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)        
     
-        if not self._data_properties.split:    
-            self._data_properties.x_train = split_sentences(x_train=self._data_properties.x_train, list_of_cols=list_of_cols, new_col_name=new_col_name)
-        else:
-            self._data_properties.x_train, self._data_properties.x_test = split_sentences(x_train=self._data_properties.x_train, 
-                                                                                            x_test=self._data_properties.x_test,
-                                                                                            list_of_cols=list_of_cols,
-                                                                                            new_col_name=new_col_name,
-                                                                                            )
+        self._data_properties.x_train, self._data_properties.x_test = split_sentences(x_train=self._data_properties.x_train, 
+                                                                                        x_test=self._data_properties.x_test,
+                                                                                        list_of_cols=list_of_cols,
+                                                                                        new_col_name=new_col_name,
+                                                                                        )
     
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -169,11 +163,7 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.x_train = nltk_stem(
-                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name)
-        else:
-            self._data_properties.x_train, self._data_properties.x_test = nltk_stem(
+        self._data_properties.x_train, self._data_properties.x_test = nltk_stem(
                 x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name)
 
         if self.report is not None:
@@ -211,11 +201,7 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.x_train = nltk_word_tokenizer(
-                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name)
-        else:
-            self._data_properties.x_train, self._data_properties.x_test = nltk_word_tokenizer(
+        self._data_properties.x_train, self._data_properties.x_test = nltk_word_tokenizer(
                 x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name)
 
         if self.report is not None:
@@ -255,11 +241,7 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.x_train = nltk_remove_stopwords(
-                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name)
-        else:
-            self._data_properties.x_train, self._data_properties.x_test = nltk_remove_stopwords(
+        self._data_properties.x_train, self._data_properties.x_test = nltk_remove_stopwords(
                 x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name)
 
         if self.report is not None:
@@ -305,12 +287,8 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.x_train = remove_punctuation(
-                x_train=self._data_properties.x_train, list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name)
-        else:
-            self._data_properties.x_train, self._data_properties.x_test = remove_punctuation(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name)
+        self._data_properties.x_train, self._data_properties.x_test = remove_punctuation(
+            x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -343,11 +321,7 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.x_train = label_encoder(
-                x_train=self._data_properties.x_train, list_of_cols=list_of_cols)
-        else:
-            self._data_properties.x_train, self._data_properties.x_test = label_encoder(
+        self._data_properties.x_train, self._data_properties.x_test, _ = label_encoder(
                 x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols)
 
         if self.report is not None:
