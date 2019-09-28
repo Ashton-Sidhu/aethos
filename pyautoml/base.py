@@ -227,21 +227,21 @@ class MethodBase(object):
             Whether to permanently transform your data, by default False
         """
 
+        # TODO: Refactor this to take in boolean expressions
+
         if not values:
             return ValueError("Please provided columns to groupby.")        
 
         if replace:
-            if not self._data_properties.split:
-                if not not_equal:
-                    self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
-                else:
-                    self._data_properties.x_train = self._data_properties.x_train[~self._data_properties.x_train.isin(list(values)).any(axis=1)]
+            if not_equal:
+                self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
+                
+                if self._data_properties.x_test is not None:
+                    self._data_properties.x_test = self._data_properties.x_test[self._data_properties.x_test.isin(list(values)).any(axis=1)]
             else:
-                if not_equal:
-                    self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
-                    self._data_properties.x_test = self._data_properties.x_test[self._data_properties.x_train.isin(list(values)).any(axis=1)]
-                else:
-                    self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_test.isin(list(values)).any(axis=1)]
+                self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
+                
+                if self._data_properties.x_test is not None:
                     self._data_properties.x_test = self._data_properties.x_test[self._data_properties.x_test.isin(list(values)).any(axis=1)]
 
             return self.copy()            
@@ -317,10 +317,9 @@ class MethodBase(object):
             return ValueError("Please provided columns to groupby.")
 
         if replace:
-            if not self._data_properties.split:
-                self._data_properties.x_train = self._data_properties.x_train.groupby(list(groupby))
-            else:
-                self._data_properties.x_train = self._data_properties.x_train.groupby(list(groupby))
+            self._data_properties.x_train = self._data_properties.x_train.groupby(list(groupby))
+
+            if self._data_properties.x_test is not None:
                 self._data_properties.x_test = self._data_properties.x_test.groupby(list(groupby))
 
             return self.copy()            
@@ -616,18 +615,13 @@ class MethodBase(object):
 
         drop_columns = list(set(set(drop_columns).union(regex_columns)).difference(keep))
         
-        if not self._data_properties.split:
-            self._data_properties.x_train = self.x_train.drop(drop_columns, axis=1)
+        self._data_properties.x_train = self.x_train.drop(drop_columns, axis=1)
 
-            if self.report is not None:
-                self.report.log('Dropped columns: {}. {}'.format(", ".join(drop_columns), reason))
-
-        else:
-            self._data_properties.x_train = self.x_train.drop(drop_columns, axis=1)
+        if self._data_properties.x_test is not None:
             self._data_properties.x_test = self.x_test.drop(drop_columns, axis=1)
 
-            if self.report is not None:
-                self.report.log('Dropped columns {} in both train and test set. {}'.format(", ".join(drop_columns), reason))
+        if self.report is not None:
+            self.report.log('Dropped columns: {}. {}'.format(", ".join(drop_columns), reason))
 
         return self.copy()
 
@@ -649,11 +643,7 @@ class MethodBase(object):
         if not self._data_properties.target_field:
             raise ValueError('Please set the `target_field` field variable before encoding.')
     
-        if not self._data_properties.split:
-            self._data_properties.x_train, self._data_properties.target_mapping = label_encoder(
-                x_train=self._data_properties.x_train, list_of_cols=self._data_properties.target_field, target=True)
-        else:
-            self._data_properties.x_train, self._data_properties.x_test, self._data_properties.target_mapping = label_encoder(
+        self._data_properties.x_train, self._data_properties.x_test, self._data_properties.target_mapping = label_encoder(
                 x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=self._data_properties.target_field, target=True)
 
         if self.report is not None:
@@ -684,10 +674,9 @@ class MethodBase(object):
         index = kwargs.pop('index', index)
         chunksize = kwargs.pop('chunksize', 10000)
 
-        if not self._data_properties.split:
-            self._data_properties.x_train.to_csv(name + '.csv', index=index, chunksize=chunksize, **kwargs)
-        else:
-            self._data_properties.x_train.to_csv(name + '_train.csv', index=index, chunksize=chunksize, **kwargs)
+        self._data_properties.x_train.to_csv(name + '_train.csv', index=index, chunksize=chunksize, **kwargs)
+
+        if self._data_properties.x_test is not None:
             self._data_properties.x_test.to_csv(name + '_test.csv', index=index, chunksize=chunksize, **kwargs)
 
 

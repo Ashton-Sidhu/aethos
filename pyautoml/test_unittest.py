@@ -342,7 +342,7 @@ class Test_TestBase(unittest.TestCase):
 
         clean = Clean(x_train=df, split=False)
         clean.to_csv('test_write_data')
-        os.remove('test_write_data.csv')
+        os.remove('test_write_data_train.csv')
 
         self.assertTrue(True)
 
