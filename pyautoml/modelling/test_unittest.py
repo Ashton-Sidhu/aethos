@@ -639,7 +639,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        model = Model(data=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
+        model = Model(x_train=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
         model.logistic_regression(random_state=2, penalty='l2', model_name='l1', run=False)
         model.logistic_regression(random_state=2, penalty='l2', model_name='l2', run=False)
         model.logistic_regression(random_state=2, penalty='l2', model_name='l3', run=False)
