@@ -7,6 +7,11 @@ from datetime import datetime
 class Report():
 
     def __init__(self, report_name):
+        
+        #TODO: Move making the directory on first time run to some config file
+        if not os.path.exists("pyautoml_reports/"):
+            os.makedirs("pyautoml_reports")
+
         self.report_name = report_name
 
         if os.path.exists(self.report_name):
@@ -14,10 +19,6 @@ class Report():
         else:
             self.filename = 'pyautoml_reports/{}{}.txt'.format(report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p"))
             self.report_environtment()
-
-        #TODO: Move making the directory on first time run to some config file
-        if not os.path.exists("pyautoml_reports/"):
-            os.makedirs("pyautoml_reports")
 
     def write_header(self, header: str):
         """
