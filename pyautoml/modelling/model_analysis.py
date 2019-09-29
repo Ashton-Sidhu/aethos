@@ -1,4 +1,5 @@
 import itertools
+import warnings
 from collections import OrderedDict
 from itertools import compress
 
@@ -567,6 +568,215 @@ class ClassificationModel(ModelBase):
 
         self.features = self.x_test.columns
 
+    def accuracy(self, **kwargs):
+        """
+        [summary]
+        
+        Returns
+        -------
+        float
+            Accuracy
+        """
+
+        return sklearn.metrics.accuracy_score(self.y_test, self.y_pred, **kwargs)
+
+    def balanced_accuracy(self, **kwargs):
+        """
+        The balanced accuracy in binary and multiclass classification problems to deal with imbalanced datasets. It is defined as the average of recall obtained on each class.
+
+        The best value is 1 and the worst value is 0 when adjusted=False.
+        
+        Returns
+        -------
+        float
+            Balanced accuracy
+        """
+
+        return sklearn.metrics.balanced_accuracy_score(self.y_test, self.y_pred, **kwargs)
+
+    def average_precision(self, **kwargs):
+
+        #TODO: Fix this when predicting probabilities are implemented
+        warnings.warn('Average precision is not correctly implemented yet as it needs continuous scoring values.')
+        # return sklearn.metrics.average_precision_score(self.y_test, self.y_pred, **kwargs)
+
+        return -999
+
+    def roc_auc(self, **kwargs):
+        """
+        [summary]
+        
+        Returns
+        -------
+        float
+            ROC AUC Score
+        """
+
+        fpr, tpr, thresholds = sklearn.metrics.roc_curve(self.y_test, self.y_pred, **kwargs)
+
+        return sklearn.metrics.auc(fpr, tpr, **kwargs)
+
+    def zero_one_loss(self, **kwargs):
+        """
+        [summary]
+        
+        Returns
+        -------
+        float
+            Zero one loss
+        """
+
+        return sklearn.metrics.zero_one_loss(self.y_test, self.y_test, **kwargs)
+
+    def recall(self, **kwargs):
+        """
+        The recall is the ratio tp / (tp + fn) where tp is the number of true positives and fn the number of false negatives. 
+        
+        The recall is intuitively the ability of the classifier to find all the positive samples.
+
+        The best value is 1 and the worst value is 0.
+        
+        Returns
+        -------
+        float
+            Recall
+        """
+
+        return sklearn.metrics.recall_score(self.y_test, self.y_pred, **kwargs)
+
+    def precision(self, **kwargs):
+        """
+        The precision is the ratio tp / (tp + fp) where tp is the number of true positives and fp the number of false positives.
+        
+        The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
+
+        The best value is 1 and the worst value is 0.
+        
+        Returns
+        -------
+        float
+            Precision
+        """
+
+        return sklearn.metrics.precision_score(self.y_test, self.y_pred, **kwargs)
+
+    def matthews_corr_coef(self, **kwargs):
+        """
+        The Matthews correlation coefficient is used in machine learning as a measure of the quality of binary and multiclass classifications.
+        It takes into account true and false positives and negatives and is generally regarded as a balanced measure which can be used even if the classes are of very different sizes.
+        The MCC is in essence a correlation coefficient value between -1 and +1. 
+        A coefficient of +1 represents a perfect prediction, 0 an average random prediction and -1 an inverse prediction.
+        The statistic is also known as the phi coefficient. 
+        
+        Returns
+        -------
+        float
+            Matthews Correlation Coefficient
+        """
+
+        return sklearn.metrics.matthews_corrcoef(self.y_test, self.y_pred, **kwargs)
+
+    def log_loss(self, **kwargs):
+
+        #TODO: Fix this when predicting probabilities are implemented
+        warnings.warn('Log loss is not correctly implemented yet as it needs class prediction probabilities.')
+        # return sklearn.metrics.log_loss(self.y_test, self.y_pred, **kwargs)
+
+        return -999
+
+    def jaccard(self, **kwargs):
+        """
+        The Jaccard index, or Jaccard similarity coefficient,
+        defined as the size of the intersection divided by the size of the union of two label sets,
+        is used to compare set of predicted labels for a sample to the corresponding set of labels in y_true.
+        
+        Returns
+        -------
+        float
+            Jaccard Score
+        """
+
+        return sklearn.metrics.jaccard_score(self.y_test, self.y_pred, **kwargs)
+
+    def hinge_loss(self, **kwargs):
+        
+        #TODO: Fix this when we gather decision function values
+        warnings.warn('Hinge Loss is not correctly implemented as it needs decision function values')
+        # return sklearn.metrics.hinge_loss(self.y_true, self.y_pred, **kwargs)
+        return -999
+
+    def hamming_loss(self, **kwargs):
+        """
+        The Hamming loss is the fraction of labels that are incorrectly predicted.
+        
+        Returns
+        -------
+        float
+            Hamming loss
+        """
+
+        return sklearn.metrics.hamming_loss(self.y_test, self.y_pred, **kwargs)
+
+    def fbeta(self, beta=0.5, **kwargs):
+        """
+        The F-beta score is the weighted harmonic mean of precision and recall, reaching its optimal value at 1 and its worst value at 0.
+        The beta parameter determines the weight of recall in the combined score.
+        Beta < 1 lends more weight to precision, while beta > 1 favors recall (beta -> 0 considers only precision, beta -> inf only recall).
+        
+        Parameters
+        ----------
+        beta : float, optional
+            [description], by default 0.5
+        
+        Returns
+        -------
+        float
+            Fbeta score
+        """
+
+        return sklearn.metrics.fbeta_score(self.y_test, self.y_pred, beta, **kwargs)
+
+    def f1(self, **kwargs):
+        """
+        The F1 score can be interpreted as a weighted average of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0. The relative contribution of precision and recall to the F1 score are equal. The formula for the F1 score is:
+
+        F1 = 2 * (precision * recall) / (precision + recall)
+
+        In the multi-class and multi-label case, this is the average of the F1 score of each class with weighting depending on the average parameter.
+        
+        Returns
+        -------
+        float
+            F1 Score
+        """
+
+        return sklearn.metrics.f1_score(self.y_test, self.y_pred, **kwargs)
+
+    # TODO: Implement Cohen Kappa Score
+
+    def cohen_kappa(self, **kwargs):
+
+        warnings.warning('Cohen Kappa score is not implemented yet.')
+
+        return -999
+
+    def brier_loss(self, **kwargs):
+        """
+        Compute the Brier score. The smaller the Brier score, the better, hence the naming with “loss”.  
+        Across all items in a set N predictions, the Brier score measures the mean squared difference between (1) the predicted probability assigned to the possible outcomes for item i, and (2) the actual outcome.
+        Therefore, the lower the Brier score is for a set of predictions, the better the predictions are calibrated.
+        
+        The Brier score is appropriate for binary and categorical outcomes that can be structured as true or false,
+        but is inappropriate for ordinal variables which can take on three or more values (this is because the Brier score assumes that all possible outcomes are equivalently “distant” from one another)
+        Returns
+        -------
+        float
+            Brier loss
+        """
+
+        return sklearn.metrics.brier_score_loss(self.y_test, self.y_pred, **kwargs)
+
+    
     def metric(self, *metrics, metric='accuracy', **scoring_kwargs):
         """
         Measures how well your model performed based off a certain metric. It can be any combination of the ones below or 'all' for 
