@@ -1,15 +1,13 @@
 
 import multiprocessing
-import os
 import warnings
 
-import yaml
 from IPython import display
 from pathos.multiprocessing import Pool
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.linear_model import LogisticRegression
 
-import pyautoml
+from pyautoml import technique_reason_repo
 from pyautoml.base import SHELL, MethodBase
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
@@ -19,13 +17,7 @@ from pyautoml.modelling.util import (_run_models_parallel, add_to_queue,
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _set_item, _validate_model_name)
 
-pkg_directory = os.path.dirname(pyautoml.__file__)
-
-with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
-    try:
-        technique_reason_repo = yaml.safe_load(stream)
-    except yaml.YAMLError as e:
-        print("Could not load yaml file.")
+# TODO: For classification implement probability predictions
 
 class Model(MethodBase):
 

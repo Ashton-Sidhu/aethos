@@ -1,10 +1,6 @@
-import copy
-import os
-
 import pandas as pd
-import yaml
 
-import pyautoml
+from pyautoml import technique_reason_repo
 from pyautoml.base import MethodBase
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
@@ -12,13 +8,6 @@ from pyautoml.preprocessing.text import *
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _numeric_input_conditions, label_encoder)
 
-pkg_directory = os.path.dirname(pyautoml.__file__)
-
-with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
-    try:
-        technique_reason_repo = yaml.safe_load(stream)
-    except yaml.YAMLError as e:
-        print("Could not load yaml file.")
 
 class Preprocess(MethodBase):
 
