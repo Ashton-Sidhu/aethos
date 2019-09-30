@@ -796,6 +796,7 @@ class ClassificationModel(ModelBase):
             Specific type of metrics to view
         """
 
+        # TODO: Add metric descriptions.
         metrics = {'Accuracy': self.accuracy(),
                 'Balanced Accuracy': self.balanced_accuracy(),
                 'Average Precision': self.average_precision(),
