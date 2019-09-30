@@ -38,7 +38,7 @@ jobs:
           command: |  # use pipenv to install dependencies
             python3 -m venv venv
             . venv/bin/activate
-            pip3 install -U pip setuptools
+            pip3 install -U pip setuptools coverage
             pip3 install -r requirements.txt
             python3 -m textblob.download_corpora
             python3 -c 'import nltk; nltk.download("stopwords")'
@@ -50,7 +50,13 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python3 -m unittest discover pyautoml/
+            coverage run -m unittest discover pyautoml/
+            coverage report
+            coverage html
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: htmlcov
   test-python-install:
       parameters:
         version:
@@ -65,7 +71,7 @@ jobs:
             command: |  # use pipenv to install dependencies
               python3 -m venv venv
               . venv/bin/activate
-              pip3 install -U pip setuptools
+              pip3 install -U pip setuptools coverage
               pip3 install -r requirements.txt
               pip3 install geopandas pyspark
               python3 -m textblob.download_corpora
@@ -78,12 +84,18 @@ jobs:
             name: run tests
             command: |
               . venv/bin/activate
-              python3 -m unittest discover pyautoml/
+              coverage run -m unittest discover pyautoml/
+              coverage report
+              coverage html
         - run:
             name: Smoke Test Install 
             command: |
               python --version
               sudo pip3 install py-automl
+        - store_test_results:
+            path: test-results
+        - store_artifacts:
+            path: htmlcov
   deploy:
     docker:
       - image: circleci/python:3.6
