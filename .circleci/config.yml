@@ -38,7 +38,7 @@ jobs:
           command: |  # use pipenv to install dependencies
             python3 -m venv venv
             . venv/bin/activate
-            pip3 install -U pip setuptools codecov
+            pip3 install -U pip setuptools codecov coverage
             pip3 install -r requirements.txt
             python3 -m textblob.download_corpora
             python3 -c 'import nltk; nltk.download("stopwords")'
@@ -50,7 +50,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python3 -m unittest discover pyautoml/
+            coverage run -m unittest discover
             codecov -F
       - store_test_results:
           path: test-results
@@ -68,7 +68,7 @@ jobs:
             command: |  # use pipenv to install dependencies
               python3 -m venv venv
               . venv/bin/activate
-              pip3 install -U pip setuptools codecov
+              pip3 install -U pip setuptools codecov coverage
               pip3 install -r requirements.txt
               pip3 install geopandas pyspark
               python3 -m textblob.download_corpora
@@ -81,7 +81,7 @@ jobs:
             name: run tests
             command: |
               . venv/bin/activate
-              python3 -m unittest discover pyautoml/
+              coverage run -m unittest discover
               codecov -F
         - run:
             name: Smoke Test Install 
