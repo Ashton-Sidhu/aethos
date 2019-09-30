@@ -266,10 +266,20 @@ class Model(MethodBase):
         """
         results = []
         for model in self._models:
-            results.append(self._models[model].metric('all'))
+            results.append(self._models[model].metrics())
 
         results_table = pd.concat(results, axis=1, join='inner')
-        results_table.style.highlight_max(axis=0, color='green')
+
+        def _highlight_optimal(x):
+            
+            if 'loss' in x.name.lower():
+                is_min = x == x.min()
+                return ['background-color: green' if v else '' for v in is_min]
+            else:
+                is_max = x == x.max()
+                return ['background-color: green' if v else '' for v in is_max]
+
+        results_table.style.apply(_highlight_optimal)
 
         return results_table
 
