@@ -52,8 +52,6 @@ jobs:
             . venv/bin/activate
             coverage run -m unittest discover
             codecov -F --required || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required)
-      - store_test_results:
-          path: test-results
   test-python-install:
       parameters:
         version:
@@ -68,7 +66,7 @@ jobs:
             command: |  # use pipenv to install dependencies
               python3 -m venv venv
               . venv/bin/activate
-              pip3 install -U pip setuptools codecov coverage
+              pip3 install -U pip setuptools
               pip3 install -r requirements.txt
               pip3 install geopandas pyspark
               python3 -m textblob.download_corpora
@@ -81,15 +79,12 @@ jobs:
             name: run tests
             command: |
               . venv/bin/activate
-              coverage run -m unittest discover
-              codecov -F --required || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required)
+              python3 -m unittest discover
         - run:
             name: Smoke Test Install 
             command: |
               python --version
               sudo pip3 install py-automl
-        - store_test_results:
-            path: test-results
   deploy:
     docker:
       - image: circleci/python:3.6
