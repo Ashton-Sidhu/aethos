@@ -219,7 +219,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field='col3', report_name='metric_report')
         model.logistic_regression(random_state=2, penalty='l2')
-        model.log_reg.metric('all', metric='all')
+        model.log_reg.metrics()
 
         self.assertTrue(True)
 

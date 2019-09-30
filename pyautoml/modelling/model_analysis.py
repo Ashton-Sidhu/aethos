@@ -17,18 +17,6 @@ from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
                                                   MSFTInterpret, Shap)
 from pyautoml.visualizations.visualize import *
 
-SCORE_METRICS = [
-    'accuracy',
-    'average_precision',
-    'balanced_accuracy',
-    'cohen_kappa',
-    'f1',
-    'jaccard',
-    'precision',
-    'recall',
-    'roc_auc',
-]
-
 SHAP_LEARNERS = {
     sklearn.linear_model.LogisticRegression : 'linear'
 }
@@ -753,10 +741,9 @@ class ClassificationModel(ModelBase):
         return sklearn.metrics.f1_score(self.y_test, self.y_pred, **kwargs)
 
     # TODO: Implement Cohen Kappa Score
-
     def cohen_kappa(self, **kwargs):
 
-        warnings.warning('Cohen Kappa score is not implemented yet.')
+        warnings.warn('Cohen Kappa score is not implemented yet.')
 
         return -999
 
@@ -777,56 +764,64 @@ class ClassificationModel(ModelBase):
         return sklearn.metrics.brier_score_loss(self.y_test, self.y_pred, **kwargs)
 
     
-    def metric(self, *metrics, metric='accuracy', **scoring_kwargs):
+    def metrics(self, *metrics):
         """
-        Measures how well your model performed based off a certain metric. It can be any combination of the ones below or 'all' for 
-        every metric listed below. The default measure is accuracy.
+        Measures how well your model performed against certain metrics.
 
         For more detailed information and parameters please see the following link: https://scikit-learn.org/stable/modules/classes.html#classification-metrics
-
+        
+        TODO: Improve documentation about what each metric does.
         Supported metrics are:
 
-            all : Everything below.
-            accuracy : Accuracy classification score.
-            average_precision : Compute average precision (AP) from prediction scores
-            balanced_accuracy : Compute the balanced accuracy
-            cohen_kappa : Cohen’s kappa: a statistic that measures inter-annotator agreement.
-            f1 : Compute the F1 score, also known as balanced F-score or F-measure
-            fbeta : Compute the F-beta score
-            jaccard : Jaccard similarity coefficient score
-            precision : Compute the precision
-            recall : Compute the recall
-            roc_auc : Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
+            Accuracy : Accuracy classification score.
+            Balanced Accuracy : Compute the balanced accuracy
+            Average Precision : Compute average precision (AP) from prediction scores
+            ROC AUC : Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
+            Zero One Loss : Computes Zero One Loss
+            Precision : Compute the precision
+            Recall : Compute the recall
+            Matthews Correlation Coefficient : Computes MCC
+            Log Loss : Computes log loss
+            Jaccard : Jaccard similarity coefficient score
+            Hinge Loss : Computes Hinge Loss
+            Hamming Loss: Computes Hamming Loss
+            F-Beta : Compute the F-beta score
+            F1 : Compute the F1 score, also known as balanced F-score or F-measure
+            Cohen Kappa : Cohen’s kappa: a statistic that measures inter-annotator agreement.
+            Brier Loss : Computes Brier Loss
         
         Parameters
         ----------
-        metric : str, optional
-            Specific type of metric, by default 'accuracy'
+        metrics : str(s), optional
+            Specific type of metrics to view
         """
 
-        y_true = self.y_test
-        y_pred = self.y_pred
-        computed_metrics = []
+        metrics = {'Accuracy': self.accuracy(),
+                'Balanced Accuracy': self.balanced_accuracy(),
+                'Average Precision': self.average_precision(),
+                'ROC AUC': self.roc_auc(),
+                'Zero One Loss': self.zero_one_loss(),
+                'Precision': self.precision(),
+                'Recall': self.recall(),
+                'Matthews Correlation Coefficient': self.matthews_corr_coef(),
+                'Log Loss': self.log_loss(),
+                'Jaccard': self.jaccard(),
+                'Hinge Loss': self.hinge_loss(),
+                'Hamming Loss': self.hamming_loss(),
+                'F-Beta': self.fbeta(),
+                'F1': self.f1(),
+                'Cohen Kappa': self.cohen_kappa(),
+                'Brier Loss': self.brier_loss()}
 
-        if metric == 'all' or 'all' in metrics:
-            for met in SCORE_METRICS:
-                computed_metrics.append(getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
-            index = SCORE_METRICS
-        elif metrics:
-            for met in metrics:
-                computed_metrics.append(getattr(sklearn.metrics, met + "_score")(y_true, y_pred))
-            index = metrics
-        else:      
-            computed_metrics.append(getattr(sklearn.metrics, met + "_score")(y_true, y_pred), **scoring_kwargs)
-            index = [metric]
+        metric_table = pd.DataFrame(index=metrics.keys(), columns=[self.model_name], data=metrics.values())
 
-        metric_table = pd.DataFrame(index=index, columns=[self.model_name], data=computed_metrics)
+        filt_metrics = list(metrics) if metrics else metric_table.index
 
         if self.report:
             self.report.log('Metrics:\n')
-            self.report.log(metric_table.to_string())
+            self.report.log(metric_table.loc[filt_metrics, :].to_string())
 
-        return metric_table
+        return metric_table.loc[filt_metrics, :]
 
     def confusion_matrix(self, title=None, normalize=False, hide_counts=False, x_tick_rotation=0, figsize=None, cmap='Blues', title_fontsize="large", text_fontsize="medium"):
         """
