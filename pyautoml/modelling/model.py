@@ -7,8 +7,7 @@ from pathos.multiprocessing import Pool
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.linear_model import LogisticRegression
 
-from pyautoml import technique_reason_repo
-from pyautoml.base import SHELL, MethodBase
+from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *

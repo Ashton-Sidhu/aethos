@@ -1,18 +1,31 @@
 import copy
+import os
 import re
 
 import numpy as np
 import pandas as pd
 import pandas_profiling
+import yaml
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
 
+import pyautoml
 from pyautoml.data.data import Data
 from pyautoml.util import _get_columns, _set_item, label_encoder, split_data
 from pyautoml.visualizations.visualize import *
 
+# TODO: Move to a config file
+
 SHELL = get_ipython().__class__.__name__
+
+pkg_directory = os.path.dirname(pyautoml.__file__)
+
+with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
+    try:
+        technique_reason_repo = yaml.safe_load(stream)
+    except yaml.YAMLError as e:
+        print("Could not load yaml file.")
 
 class MethodBase(object):
 

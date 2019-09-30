@@ -1,7 +1,6 @@
 import pandas as pd
 
-from pyautoml import technique_reason_repo
-from pyautoml.base import MethodBase
+from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
