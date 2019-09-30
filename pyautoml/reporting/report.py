@@ -1,5 +1,6 @@
 import os
 import platform
+import subprocess
 import sys
 from datetime import datetime
 
@@ -155,7 +156,7 @@ class Report():
         self.log('Machine             : {}'.format(platform.machine()))
 
         if system == 'Windows':
-            memory = os.popen('wmic memorychip get capacity').read()
+            memory = subprocess.check_output('wmic memorychip get capacity', shell=True, universal_newlines=True)
             total_mem = 0
             for m in memory.split("  \r\n")[1:-1]:
                 total_mem += int(m)
@@ -163,16 +164,17 @@ class Report():
             self.log('Processor           : {}'.format(platform.processor()))
             self.log('Memory              : {:.2f} GB'.format(round(total_mem / (1024**2))))
         elif platform.system() == 'Darwin':
-            command = '/usr/sbin/sysctl -n machdep.cpu.brand_string'
-            self.log('Processor           : {}'.format(os.popen(command).read().strip()))
-            self.log('Memory              : {}'.format(round(int(os.popen('sysctl -n hw.memsize').read().strip()) / (1024**2))))
+            processor = subprocess.check_output('/usr/sbin/sysctl -n machdep.cpu.brand_string', shell=True, universal_newlines=True)
+            memory = subprocess.check_output('sysctl -n hw.memsize', shell=True, universal_newlines=True)
+            self.log('Processor           : {}'.format(processor.strip()))
+            self.log('Memory              : {}'.format(round(int(memory.strip()) / (1024**2))))
         elif platform.system() == 'Linux':
-            command = "cat /proc/cpuinfo | grep 'model name'"
+            processor = subprocess.check_output("cat /proc/cpuinfo | grep 'model name'", shell=True, universal_newlines=True)
             with open("/proc/meminfo", "r") as f:
                 lines = f.readlines()
             
             memory = [int(s) for s in lines[0].split() if s.isdigit()][0]
-            processor = os.popen(command).read().replace('\t', '').split('model name:')[1].strip()
+            processor = processor.replace('\t', '').split('model name:')[1].strip()
             self.log('Processor           : {}'.format(processor))
             self.log('Memory              : {:.2f} GB'.format(round(memory / (1024 ** 2))))
 
