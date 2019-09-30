@@ -87,11 +87,6 @@ jobs:
               coverage run -m unittest discover pyautoml/
               coverage report
               coverage html
-        - run:
-            name: Smoke Test Install 
-            command: |
-              python --version
-              sudo pip3 install py-automl
         - store_test_results:
             path: test-results
         - store_artifacts:
