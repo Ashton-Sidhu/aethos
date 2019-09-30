@@ -279,7 +279,7 @@ class Model(MethodBase):
                 is_max = x == x.max()
                 return ['background-color: green' if v else '' for v in is_max]
 
-        results_table.style.apply(_highlight_optimal)
+        results_table = results_table.style.apply(_highlight_optimal, axis=1)
 
         return results_table
 
