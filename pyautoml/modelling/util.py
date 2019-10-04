@@ -5,6 +5,7 @@ from functools import partial, wraps
 
 from pathos.multiprocessing import ProcessingPool
 from sklearn.model_selection import GridSearchCV
+from yellowbrick.model_selection import CVScores, LearningCurve
 
 
 def add_to_queue(model_function):
@@ -38,7 +39,8 @@ def get_default_args(func):
         if v.default is not inspect.Parameter.empty
     }
 
-def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str):
+# TODO: add ability to take in cv objects
+def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str, **gridsearch_kwargs):
     """
     Runs Gridsearch on a model
     
@@ -73,9 +75,27 @@ def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str):
     else:
         raise ValueError("Invalid Gridsearch input.")
 
-    model = GridSearchCV(model, gridsearch_grid, cv=cv, scoring=score)
+    model = GridSearchCV(model, gridsearch_grid, cv=cv, scoring=score, **gridsearch_kwargs)
 
     return model
+
+def run_crossvalidation(model, x_train, y_train, cv=12, scoring='accuracy', learning_curve=False, **kwargs):
+
+    if isinstance(cv, int):
+        cv = cv
+    else:
+        cv = cv(**kwargs)
+
+    visualizer_scores = CVScores(model, cv=cv, scoring=scoring)
+    visualizer_scores.fit(x_train, y_train)
+    visualizer_scores.poof()
+
+    if learning_curve:
+        visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring)
+        visualizer_lcurve.fit(x_train, y_train)
+        visualizer_lcurve.poof()
+
+    return visualizer_scores.cv_scores_
 
 def _run_models_parallel(model_obj):
     """
@@ -86,7 +106,7 @@ def _run_models_parallel(model_obj):
     model_obj : Model
         Model object
     """
-    print(type(list(model_obj._queued_models.values())[0]))
+
     p = ProcessingPool(mp.cpu_count())
 
     results = p.map(_run, list(model_obj._queued_models.values()))
@@ -96,7 +116,6 @@ def _run_models_parallel(model_obj):
 
     p.close()
     p.join()
-
 
 def _run(model):
     return model()

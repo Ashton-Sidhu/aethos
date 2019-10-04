@@ -12,7 +12,7 @@ from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
 from pyautoml.modelling.util import (_run_models_parallel, add_to_queue,
-                                     run_gridsearch)
+                                     run_crossvalidation, run_gridsearch)
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _set_item, _validate_model_name)
 
@@ -283,8 +283,10 @@ class Model(MethodBase):
 
         return results_table
 
+    # TODO: Abstract these functions out to a more general template
+
     @add_to_queue
-    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=True, **summarizer_kwargs):
+    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=False, **summarizer_kwargs):
         """
         Summarize bodies of text using Gensim's Text Rank algorith. Note that it uses a Text Rank variant as stated here:
         https://radimrehurek.com/gensim/summarization/summariser.html
@@ -338,7 +340,7 @@ class Model(MethodBase):
         return self._models[model_name]        
 
     @add_to_queue
-    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=True, **keyword_kwargs):
+    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=False, **keyword_kwargs):
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
 
@@ -402,7 +404,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=True, **kmeans_kwargs):
+    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=False, **kmeans_kwargs):
         """
         K-means clustering is one of the simplest and popular unsupervised machine learning algorithms.
 
@@ -474,7 +476,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=True, **dbscan_kwargs):
+    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=False, **dbscan_kwargs):
         """
         Based on a set of points (let’s think in a bidimensional space as exemplified in the figure), 
         DBSCAN groups together points that are close to each other based on a distance measurement (usually Euclidean distance) and a minimum number of points.
@@ -549,7 +551,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def logistic_regression(self, gridsearch=False, gridsearch_cv=3, gridsearch_score='accuracy', model_name="log_reg", new_col_name="log_predictions", run=True, verbose=False, **logreg_kwargs):
+    def logistic_regression(self, cv=False, gridsearch=False, cv_type=12, score='accuracy', learning_curve=False, model_name="log_reg", new_col_name="log_predictions", run=False, verbose=2, **logreg_kwargs):
         """
         Trains a logistic regression model.
 
@@ -576,9 +578,9 @@ class Model(MethodBase):
             - ‘f1_weighted’ 	
             - ‘f1_samples’ 	
             - ‘neg_log_loss’ 	
-            - ‘precision’ etc. 	
-            - ‘recall’ etc. 	
-            - ‘jaccard’ etc. 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
             - ‘roc_auc’
         
         Parameters
@@ -633,12 +635,13 @@ class Model(MethodBase):
         report_info = technique_reason_repo['model']['classification']['logreg']
         random_state = logreg_kwargs.pop('random_state', 42)
         solver = logreg_kwargs.pop('solver', 'lbfgs')
+        log_reg = LogisticRegression(solver=solver, random_state=random_state, **logreg_kwargs)
+
+        if cv:
+            cv_scores = run_crossvalidation(log_reg, self._data_properties.x_train, self._y_train, cv=cv_type, scoring=score, learning_curve=learning_curve)
 
         if gridsearch:
-            log_reg = LogisticRegression(random_state=random_state)
-            log_reg = run_gridsearch(log_reg, gridsearch, logreg_gridsearch, gridsearch_cv, gridsearch_score)
-        else:
-            log_reg = LogisticRegression(solver=solver, random_state=random_state, **logreg_kwargs)
+            log_reg = run_gridsearch(log_reg, gridsearch, logreg_gridsearch, cv_type, score, verbose=verbose)
         
         log_reg.fit(self._data_properties.x_train, self._y_train)
 
