@@ -5,6 +5,7 @@ from functools import partial, wraps
 
 from pathos.multiprocessing import ProcessingPool
 from sklearn.model_selection import GridSearchCV
+
 from yellowbrick.model_selection import CVScores, LearningCurve
 
 
@@ -40,7 +41,7 @@ def get_default_args(func):
     }
 
 # TODO: add ability to take in cv objects
-def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str, **gridsearch_kwargs):
+def run_gridsearch(model, gridsearch, grid_params, cv=12, scoring='accuracy', **gridsearch_kwargs):
     """
     Runs Gridsearch on a model
     
@@ -49,16 +50,16 @@ def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str, **gridse
     model : Model
         Model to run gridsearch on
 
-    gridsearch : bool or dist
+    gridsearch : bool or dict
         True, False or custom grid to test
 
     grid_params : dict
         Dictionary of model params and values to test
 
-    cv : int
-        Number of folds for cross validation
+    cv : int, Crossvalidation Generator, optional
+        Cross validation method, by default 12
     
-    score : str
+    scoring : str
         Scoring metric to use when evaluating models
     
     Returns
@@ -75,11 +76,39 @@ def run_gridsearch(model, gridsearch, grid_params, cv: int, score: str, **gridse
     else:
         raise ValueError("Invalid Gridsearch input.")
 
-    model = GridSearchCV(model, gridsearch_grid, cv=cv, scoring=score, **gridsearch_kwargs)
-
+    model = GridSearchCV(model, gridsearch_grid, cv=cv, scoring=scoring, **gridsearch_kwargs)
+    
     return model
 
 def run_crossvalidation(model, x_train, y_train, cv=12, scoring='accuracy', learning_curve=False, **kwargs):
+    """
+    Runs cross validation on a certain model.
+    
+    Parameters
+    ----------
+    model : Model
+        Model to cross validate
+
+    x_train : nd-array
+        Training data
+
+    y_train : nd-array
+        Testing data
+
+    cv : int, Crossvalidation Generator, optional
+        Cross validation method, by default 12
+
+    scoring : str, optional
+        Scoring method, by default 'accuracy'
+
+    learning_curve : bool, optional
+        If true plot learning curve, by default False
+    
+    Returns
+    -------
+    list
+        List of cross validation curves
+    """
 
     if isinstance(cv, int):
         cv = cv

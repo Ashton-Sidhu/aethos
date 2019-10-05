@@ -551,7 +551,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def logistic_regression(self, cv=False, gridsearch=False, cv_type=12, score='accuracy', learning_curve=False, model_name="log_reg", new_col_name="log_predictions", run=False, verbose=2, **logreg_kwargs):
+    def logistic_regression(self, cv=False, gridsearch=False, cv_type=12, score='accuracy', learning_curve=False, model_name="log_reg", new_col_name="log_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a logistic regression model.
 
@@ -585,11 +585,14 @@ class Model(MethodBase):
         
         Parameters
         ----------
+        cv : bool, optional
+            If True run crossvalidation on the model.
+
         gridsearch : bool or dict, optional
             Parameters to gridsearch, if True, the default parameters would be used, by default False
 
-        gridsearch_cv : int, optional
-            Number of folds to cross validate model, by default 3
+        cv_type : int, Crossvalidation Generator, optional
+            Cross validation method, by default 12
 
         gridsearch_score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -633,9 +636,9 @@ class Model(MethodBase):
         """
 
         report_info = technique_reason_repo['model']['classification']['logreg']
-        random_state = logreg_kwargs.pop('random_state', 42)
-        solver = logreg_kwargs.pop('solver', 'lbfgs')
-        log_reg = LogisticRegression(solver=solver, random_state=random_state, **logreg_kwargs)
+        random_state = kwargs.pop('random_state', 42)
+        solver = kwargs.pop('solver', 'lbfgs')
+        log_reg = LogisticRegression(solver=solver, random_state=random_state, **kwargs)
 
         if cv:
             cv_scores = run_crossvalidation(log_reg, self._data_properties.x_train, self._y_train, cv=cv_type, scoring=score, learning_curve=learning_curve)
