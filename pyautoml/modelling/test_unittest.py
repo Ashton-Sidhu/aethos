@@ -362,9 +362,12 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_behaviour_all(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
 
-        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+        train_data = np.random.random_sample(size=(1000,2))
+        label_data = np.random.random_integers(0, 1, size=(1000,1))
+
+        data = pd.DataFrame(data=train_data, columns=['col1', 'col2'])
+        data['col3'] = label_data
 
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
         model.logistic_regression(random_state=2, run=True)
@@ -375,7 +378,6 @@ class TestModelling(unittest.TestCase):
     def test_interpretmodel_behaviour_dependence(self):
 
         data = np.random.random_integers(0, 1, size=(1000,3))
-
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.4)
