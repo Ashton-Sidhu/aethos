@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml import Model
 
 
@@ -140,8 +139,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_logisticregression(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -153,14 +151,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_confusionmatrix(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -172,22 +163,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_report_confusionmatrix(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -199,22 +175,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_all_score_metrics(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -226,22 +187,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_report_classificationreport(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -252,9 +198,8 @@ class TestModelling(unittest.TestCase):
         self.assertTrue(True)
 
     def test_model_report_modelweights(self):
-
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -266,14 +211,7 @@ class TestModelling(unittest.TestCase):
 
     def test_plot_roccurve(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -285,14 +223,7 @@ class TestModelling(unittest.TestCase):
     
     def test_decision_plot(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -304,14 +235,7 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_all(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -323,14 +247,7 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_sameaxis(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -343,14 +260,7 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_misclassified(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 1], [12, 2, 1], [25, 80, 1],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 0], [8, 83, 0], [125, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -362,14 +272,7 @@ class TestModelling(unittest.TestCase):
 
     def test_force_plot(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -381,14 +284,7 @@ class TestModelling(unittest.TestCase):
 
     def test_force_plot_misclassified(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -400,14 +296,7 @@ class TestModelling(unittest.TestCase):
 
     def test_get_misclassified(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -419,14 +308,7 @@ class TestModelling(unittest.TestCase):
 
     def test_summaryplot(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -438,14 +320,7 @@ class TestModelling(unittest.TestCase):
 
     def test_dependence_plot(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0],
-            [1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -457,14 +332,7 @@ class TestModelling(unittest.TestCase):
 
     def test_local_multiprocessing(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-                [8, 7, 0], [8, 8, 0], [25, 80, 0],
-                [1, 2, 1], [2, 2, 1], [2, 3, 1],
-                [8, 7, 0], [8, 8, 0], [25, 80, 0],
-                [1, 2, 1], [2, 2, 1], [2, 3, 1],
-                [8, 7, 0], [8, 8, 0], [25, 80, 0],
-                [1, 2, 1], [2, 2, 1], [2, 3, 1],
-                [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -479,14 +347,7 @@ class TestModelling(unittest.TestCase):
 
     def test_local_seriesprocessing(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-                [8, 7, 0], [8, 8, 0], [25, 80, 0],
-                [1, 2, 1], [2, 2, 1], [2, 3, 1],
-                [8, 7, 0], [8, 8, 0], [25, 80, 0],
-                [1, 2, 1], [2, 2, 1], [2, 3, 1],
-                [8, 7, 0], [8, 8, 0], [25, 80, 0],
-                [1, 2, 1], [2, 2, 1], [2, 3, 1],
-                [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -501,14 +362,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_behaviour_all(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -520,14 +374,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_behaviour_dependence(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -539,14 +386,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_predictions_all(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -558,14 +398,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_predictions_lime(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -577,14 +410,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_performance_all(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -596,14 +422,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_performance_roc(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -615,14 +434,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpret_model(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -634,14 +446,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpret_model_prerun(self):
 
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-            [4, 2, 0], [12, 2, 0], [25, 80, 0],
-            [14, 23, 1], [215, 15, 1], [2, 33, 1],
-            [81, 73, 0], [8, 28, 0], [625, 280, 0],
-            [1, 22, 1], [21, 42, 1], [2, 3, 1],
-            [81, 47, 0], [8, 8, 0], [425, 80, 0],
-            [1, 22, 1], [2, 42, 1], [2, 13, 1],
-            [83, 73, 1], [8, 83, 1], [125, 80, 1]]
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -653,14 +458,8 @@ class TestModelling(unittest.TestCase):
         self.assertTrue(True)
 
     def test_comparemodels(self):
-        data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
-        [8, 7, 0], [8, 8, 0], [25, 80, 0],
-        [1, 2, 1], [2, 2, 1], [2, 3, 1],
-        [8, 7, 0], [8, 8, 0], [25, 80, 0],
-        [1, 2, 1], [2, 2, 1], [2, 3, 1],
-        [8, 7, 0], [8, 8, 0], [25, 80, 0],
-        [1, 2, 1], [2, 2, 1], [2, 3, 1],
-        [8, 7, 0], [8, 8, 0], [25, 80, 0]]
+
+        data = np.random.random_integers(0, 1, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
