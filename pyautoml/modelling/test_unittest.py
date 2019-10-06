@@ -680,9 +680,30 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
-        model.logistic_regression(cv=True, cv_type=2, random_state=2, learning_curve=True, run=True)
+        model.logistic_regression(cv=True, cv_type=2, random_state=2, learning_curve=True)
 
         self.assertTrue(True)
+
+    def test_stratified_cv(self):
+
+        data = np.random.random_integers(0, 1, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+        model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
+        cv_values = model.logistic_regression(cv=True, cv_type='strat-kfold', random_state=2, learning_curve=True, run=False)
+
+        self.assertIsNotNone(len(cv_values) == 5)
+
+    def test_del_model(self):
+
+        data = np.random.random_integers(0, 1, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+        model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
+        model.logistic_regression(random_state=2, run=True)
+        model.delete_model('log_reg')
+
+        self.assertTrue(len(model._models) == 0)
 
 if __name__ == "__main__":
 
