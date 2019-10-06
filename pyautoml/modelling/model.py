@@ -1,55 +1,68 @@
 
-import os
+import multiprocessing
 import warnings
 
-import pyautoml
-import yaml
-from pyautoml.base import MethodBase
+from IPython import display
+from pathos.multiprocessing import Pool
+from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
-from pyautoml.modelling.model_types import *
+from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import add_to_queue, run_gridsearch
+from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
+                                     add_to_queue, run_crossvalidation,
+                                     run_gridsearch)
 from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _validate_model_name)
+                           _set_item, _validate_model_name)
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.linear_model import LogisticRegression
 
-pkg_directory = os.path.dirname(pyautoml.__file__)
-
-with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
-    try:
-        technique_reason_repo = yaml.safe_load(stream)
-    except yaml.YAMLError as e:
-        print("Could not load yaml file.")
+# TODO: For classification implement probability predictions
 
 class Model(MethodBase):
 
-    def __init__(self, step=None, data=None, train_data=None, test_data=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(self, step=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
         
         _data_properties = _contructor_data_properties(step)
 
         if _data_properties is None:        
-            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
         if self._data_properties.report is not None:
             self.report.write_header("Modelling")
 
+        self._train_result_data = self._data_properties.x_train.copy()
+        self._test_result_data = self._data_properties.x_test.copy() if self._data_properties.x_test is not None else None
+
         if self._data_properties.target_field:
             if split:
-                self._train_target_data = self._data_properties.train_data[self._data_properties.target_field]
-                self._test_target_data = self._data_properties.test_data[self._data_properties.target_field]
-                self._data_properties.train_data = self._data_properties.train_data.drop([self._data_properties.target_field], axis=1)
-                self._data_properties.test_data = self._data_properties.test_data.drop([self._data_properties.target_field], axis=1)
+                if isinstance(step, Model):
+                    self._y_train = step._y_train
+                    self._y_test = step._y_test
+                    self._data_properties.x_train = step._data_properties.x_train
+                    self._data_properties.x_test = step._data_properties.x_test
+                else:
+                    self._y_train = self._data_properties.x_train[self._data_properties.target_field]
+                    self._y_test = self._data_properties.x_test[self._data_properties.target_field]
+                    self._data_properties.x_train = self._data_properties.x_train.drop([self._data_properties.target_field], axis=1)
+                    self._data_properties.x_test = self._data_properties.x_test.drop([self._data_properties.target_field], axis=1)
             else:
-                self._target_data = self._data_properties.data[self._data_properties.target_field]
-                self._data_properties.data = self._data_properties.data.drop([self._data_properties.target_field], axis=1)
+                if isinstance(step, Model):
+                    self._y_train = step._y_train
+                    self._data_properties.x_train = step._data_properties.x_train
+                else:
+                    self._y_train = self._data_properties.x_train[self._data_properties.target_field]
+                    self._data_properties.x_train = self._data_properties.x_train.drop([self._data_properties.target_field], axis=1)
 
-        self._models = {}
-        self._queued_models = {}
+        if isinstance(step, Model):
+            self._models = step._models
+            self._queued_models = step._queued_models            
+        else:
+            self._models = {}
+            self._queued_models = {}
 
     def __getitem__(self, key):
 
@@ -58,83 +71,169 @@ class Model(MethodBase):
 
         return super().__getitem__(key)
 
-    ## Identical copies are made to avoid infinite recursion loop .. better safe than sorry
     def __getattr__(self, key):
+
+        # For when doing multi processing when pickle is reconstructing the object
+        if key in {'__getstate__', '__setstate__'}:
+            return object.__getattr__(self, key)
 
         if key in self._models:
             return self._models[key]
 
-        return super().__getattr__(key)
-
-    @property
-    def target_data(self):
-        """
-        Property function for the target data.
-        """
         try:
-            if self._data_properties.data is None:
-                raise AttributeError("There seems to be nothing here. Try .train_data or .test_data")
-            
-            return self._target_data
+            if not self._data_properties.split:
+                return self._train_result_data[key]
+            else:
+                return self._test_result_data[key]
+
         except Exception as e:
-            print('Target Data does not exist. Please check if target field is set and then recreate the object.')
+            raise AttributeError(e)
 
-    @target_data.setter
-    def target_data(self, value):
-        """
-        Setter function for the target data.
-        """
+    def __setattr__(self, key, value):
+        
+        if key not in self.__dict__:       # any normal attributes are handled normally
+            dict.__setattr__(self, key, value)
+        else:
+            self.__setitem__(key, value)
 
-        self._target_data = value
+    def __setitem__(self, key, value):
+
+        if key in self.__dict__:
+            dict.__setitem__(self.__dict__, key, value)
+        else:
+            if not self._data_properties.split:
+                self._train_result_data[key] = value
+
+                return self._train_result_data.head()
+            else:
+                x_train_length = self._data_properties.x_train.shape[0]
+                x_test_length = self._data_properties.x_test.shape[0]
+
+                if isinstance(value, list):
+                    ## If the number of entries in the list does not match the number of rows in the training or testing
+                    ## set raise a value error
+                    if len(value) != x_train_length and len(value) != x_test_length:
+                        raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(value))))
+
+                    self._train_result_data, self._test_result_data = _set_item(
+                        self._train_result_data, self._test_result_data, key, value, x_train_length, x_test_length)
+
+                elif isinstance(value, tuple):
+                    for data in value:
+                        if len(data) != x_train_length and len(data) != x_test_length:
+                            raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
+
+                        self._train_result_data, self._test_result_data = _set_item(
+                            self._train_result_data, self._test_result_data, key, data, x_train_length, x_test_length)
+
+                else:
+                    self._train_result_data[key] = value
+                    self._test_result_data[key] = value
+
+                return self._test_result_data.head()
+
+    def __repr__(self):
+
+        if SHELL == 'ZMQInteractiveShell':
+            
+            display(self._train_result_data.head()) # Hack for jupyter notebooks
+
+            return ''
+        else:
+            return str(self._train_result_data.head())
 
     @property
-    def train_target_data(self):
+    def y_train(self):
         """
         Property function for the training target data.
         """
         
-        try:
-            if self._data_properties.train_data is None:
-                raise AttributeError("There seems to be nothing here. Try .data")
+        return self._y_train
 
-            return self._train_target_data
-        except Exception as e:
-            print('Train target Data does not exist. Please check if target field is set and then recreate the object.')
-
-    @train_target_data.setter
-    def train_target_data(self, value):
+    @y_train.setter
+    def y_train(self, value):
         """
         Setter function for the training target data.
         """
 
-        self._train_target_data = value
+        self._y_train = value
         
     @property
-    def test_target_data(self):
+    def y_test(self):
         """
         Property function for the test target data.
         """
 
         try:
-            if self._data_properties.train_data is None:
-                raise AttributeError("There seems to be nothing here. Try .data")
-
-            return self._test_target_data
+            return self._y_test
         except Exception as e:
-            print('Test target Data does not exist. Please check if target field is set and then recreate the object.')
+            return None
 
-    @test_target_data.setter
-    def test_target_data(self, value):
+    @y_test.setter
+    def y_test(self, value):
         """
         Setter for the test target data.
         """
 
-        self._test_target_data = value
+        self._y_test = value
 
-    def train_models(self):
-        """ TODO: Implement multi processing running of models """
-        return
+    @property
+    def x_train_results(self):
+        """
+        Property function for the training results data.
+        """
 
+        return self._train_result_data
+
+    @x_train_results.setter
+    def x_train_results(self, value):
+        """
+        Setter function for the training results data.
+        """
+
+        self._train_result_data = value
+        
+    @property
+    def x_test_results(self):
+        """
+        Property function for the test results data.
+        """
+
+        return self._test_result_data
+    
+    @x_test_results.setter
+    def x_test_results(self, value):
+        """
+        Setter for the test target data.
+        """
+
+        self._test_result_data = value    
+    
+    def run_models(self, method='parallel'):
+        """
+        Runs all queued models.
+
+        The models can either be run one after the other ('series') or at the same time in parallel.
+
+        Parameters
+        ----------
+        method : str, optional
+            How to run models, can either be in 'series' or in 'parallel', by default 'parallel'
+        """
+        
+        num_ran_models = len(self._models)
+        
+        if method == 'parallel':
+            _run_models_parallel(self)
+        elif method == 'series':
+            for model in self._queued_models:
+                self._queued_models[model]()
+        else:
+            raise ValueError('Invalid run method, accepted run methods are either "parallel" or "series".')
+
+        if len(self._models) == (num_ran_models + len(self._queued_models)):
+            self._queued_models = {}
+    
     def list_models(self):
         """
         Prints out all queued and ran models.
@@ -156,8 +255,59 @@ class Model(MethodBase):
         else:
             print("No ran models.")
 
+    def delete_model(self, name):
+        """
+        Deletes a model, specified by it's name - can be viewed by calling list_models.
+
+        Will look in both queued and ran models and delete where it's found.
+
+        Parameters
+        ----------
+        name : str
+            Name of the model
+        """
+
+        if name in self._queued_models:
+            del self._queued_models[name]
+        elif name in self._models:
+            del self._models[name]
+        else:
+            raise ValueError('Model {} does not exist'.format(name))
+
+        self.list_models()
+
+    def compare_models(self):
+        """
+        Compare different models across every known metric for that model.
+        
+        Returns
+        -------
+        Dataframe
+            Dataframe of every model and metrics associated for that model
+        """
+        results = []
+        for model in self._models:
+            results.append(self._models[model].metrics())
+
+        results_table = pd.concat(results, axis=1, join='inner')
+
+        def _highlight_optimal(x):
+            
+            if 'loss' in x.name.lower():
+                is_min = x == x.min()
+                return ['background-color: green' if v else '' for v in is_min]
+            else:
+                is_max = x == x.max()
+                return ['background-color: green' if v else '' for v in is_max]
+
+        results_table = results_table.style.apply(_highlight_optimal, axis=1)
+
+        return results_table
+
+    # TODO: Abstract these functions out to a more general template
+
     @add_to_queue
-    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=True, **summarizer_kwargs):
+    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=False, **summarizer_kwargs):
         """
         Summarize bodies of text using Gensim's Text Rank algorith. Note that it uses a Text Rank variant as stated here:
         https://radimrehurek.com/gensim/summarization/summariser.html
@@ -200,27 +350,18 @@ class Model(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
+        self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name, **summarizer_kwargs)
 
-            self._data_properties.data = gensim_textrank_summarizer(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data, **summarizer_kwargs)
-
-            if self.report is not None:
-                self.report.report_technique(report_info)
-            
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_summarizer(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **summarizer_kwargs)
-
-            if self.report is not None:
-                self.report.report_technique(report_info)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self, model_name)
 
         return self._models[model_name]        
 
     @add_to_queue
-    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=True, **keyword_kwargs):
+    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=False, **keyword_kwargs):
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
 
@@ -273,27 +414,18 @@ class Model(MethodBase):
         report_info = technique_reason_repo['model']['text']['textrank_keywords']
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
+        self._train_result_data, self._test_result_data = gensim_textrank_keywords(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name, **keyword_kwargs)
 
-            self._data_properties.data = gensim_textrank_keywords(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, data=self._data_properties.data, **keyword_kwargs)
-
-            if self.report is not None:
-                self.report.report_technique(report_info)
-
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = gensim_textrank_keywords(
-                list_of_cols=list_of_cols, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data, **keyword_kwargs)
-
-            if self.report is not None:
-                self.report.report_technique(report_info)
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self, model_name)
 
         return self._models[model_name]
 
     @add_to_queue
-    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=True, **kmeans_kwargs):
+    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=False, **kmeans_kwargs):
         """
         K-means clustering is one of the simplest and popular unsupervised machine learning algorithms.
 
@@ -350,18 +482,13 @@ class Model(MethodBase):
 
         report_info = technique_reason_repo['model']['unsupervised']['kmeans']
 
-        if not self._data_properties.split:
-            kmeans.fit(self._data_properties.data)
+        kmeans.fit(self._data_properties.x_train)
 
-            self._data_properties.data[new_col_name] = kmeans.labels_
-
-        else:
-            kmeans.fit(self._data_properties.train_data)
-
-            self._data_properties.train_data[new_col_name] = kmeans.labels_
-            self._data_properties.test_data[new_col_name] = kmeans.predict(
-                self._data_properties.test_data)
-
+        self._train_result_data[new_col_name] = kmeans.labels_
+        
+        if self._data_properties.x_test is not None:
+            self._test_result_data[new_col_name] = kmeans.predict(self._data_properties.x_test)
+        
         if self.report is not None:
             self.report.report_technique(report_info)
 
@@ -370,7 +497,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=True, **dbscan_kwargs):
+    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=False, **dbscan_kwargs):
         """
         Based on a set of points (let’s think in a bidimensional space as exemplified in the figure), 
         DBSCAN groups together points that are close to each other based on a distance measurement (usually Euclidean distance) and a minimum number of points.
@@ -424,18 +551,18 @@ class Model(MethodBase):
         report_info = technique_reason_repo['model']['unsupervised']['kmeans']
 
         if not self._data_properties.split:
-            dbscan.fit(self._data_properties.data)
-            self._data_properties.data[new_col_name] = dbscan.labels_
+            dbscan.fit(self._data_properties.x_train)
+            self._train_result_data[new_col_name] = dbscan.labels_
 
         else:
             warnings.warn(
-                'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.data`.')
+                'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.train_result_data`.')
 
-            full_data = self._data_properties.train_data.append(
-                self._data_properties.test_data, ignore_index=True)
+            full_data = self._data_properties.x_train.append(
+                self._data_properties.x_test, ignore_index=True)
             dbscan.fit(full_data)
-            full_data[new_col_name] = dbscan.labels_
-            self._data_properties.data = full_data
+            self._train_result_data[new_col_name] = dbscan.labels_
+
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -444,12 +571,19 @@ class Model(MethodBase):
 
         return self._models[model_name]
 
+    # NOTE: This entire process may need to be reworked.
     @add_to_queue
-    def logistic_regression(self, gridsearch=False, gridsearch_cv=3, gridsearch_score='accuracy', model_name="log_reg", new_col_name="log_predictions", run=True, verbose=False, **logreg_kwargs):
+    def logistic_regression(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="log_reg", new_col_name="log_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a logistic regression model.
 
         If no Logistic Regression parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         If using GridSearch and no grid is specified the following default grid is used:
             'penalty': ['l1', 'l2']
@@ -458,8 +592,6 @@ class Model(MethodBase):
             'warm_start': [True, False]
             'C': [1e-2, 0.1, 1, 5, 10]
             'solver': ['liblinear']
-
-        For more Logistic Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -472,18 +604,26 @@ class Model(MethodBase):
             - ‘f1_weighted’ 	
             - ‘f1_samples’ 	
             - ‘neg_log_loss’ 	
-            - ‘precision’ etc. 	
-            - ‘recall’ etc. 	
-            - ‘jaccard’ etc. 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
             - ‘roc_auc’
+
+        For more Logistic Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
         
         Parameters
         ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default False.
+
         gridsearch : bool or dict, optional
             Parameters to gridsearch, if True, the default parameters would be used, by default False
 
-        gridsearch_cv : int, optional
-            Number of folds to cross validate model, by default 3
+        cv_type : int, Crossvalidation Generator, optional
+            Cross validation method, by default 5
+
+        n_splits : int, optional
+            Default cross validation splits, default 5
 
         gridsearch_score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -525,31 +665,40 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-
+ 
+        random_state = kwargs.pop('random_state', 42)
+        solver = kwargs.pop('solver', 'lbfgs')
         report_info = technique_reason_repo['model']['classification']['logreg']
-        random_state = logreg_kwargs.pop('random_state', 42)
+        cv_type, kwargs = _get_cv_type(cv_type, random_state, **kwargs)
+
+        model = LogisticRegression(solver=solver, random_state=random_state, **kwargs)
+
+        if cv:
+            cv_scores = run_crossvalidation(model, self._data_properties.x_train, self._y_train, cv=cv_type, scoring=score, learning_curve=learning_curve)
+
+            # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
+            if not run:
+                return cv_scores
 
         if gridsearch:
-            log_reg = LogisticRegression(random_state=random_state)
-            log_reg = run_gridsearch(log_reg, gridsearch, logreg_gridsearch, gridsearch_cv, gridsearch_score)
-        else:
-            log_reg = LogisticRegression(random_state=random_state, **logreg_kwargs)
+            model = run_gridsearch(model, gridsearch, logreg_gridsearch, cv_type, score, verbose=verbose)
+        
+        model.fit(self._data_properties.x_train, self._y_train)
 
-        if not self._data_properties.split:
-            log_reg.fit(self._data_properties.data, self.target_data)      
-            self._data_properties.data[new_col_name] = log_reg.predict(self._data_properties.data)            
-        else:
-            log_reg.fit(self._data_properties.train_data, self.train_target_data)
-
-            self._data_properties.train_data[new_col_name] = log_reg.predict(self._data_properties.train_data)
-            self._data_properties.test_data[new_col_name] = log_reg.predict(self._data_properties.test_data)
+        self._train_result_data[new_col_name] = model.predict(self._data_properties.x_train)            
+        
+        if self._data_properties.x_test is not None:
+            self._test_result_data[new_col_name] = model.predict(self._data_properties.x_test)
 
         if self.report is not None:
             if gridsearch:
-                self.report.report_gridsearch(log_reg, verbose)                
+                self.report.report_gridsearch(model, verbose)                
         
             self.report.report_technique(report_info)
 
-        self._models[model_name] = ClassificationModel(self, model_name, log_reg, new_col_name)
+        if gridsearch:
+            model = model.best_estimator_
+
+        self._models[model_name] = ClassificationModel(self, model_name, model, new_col_name)
 
         return self._models[model_name]

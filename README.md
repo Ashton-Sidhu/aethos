@@ -1,4 +1,7 @@
-[![PyPI version](https://badge.fury.io/py/py-automl.svg)](https://badge.fury.io/py/py-automl) [![CircleCI](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop.svg?style=svg)](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop) [![Documentation Status](https://readthedocs.org/projects/py-automl/badge/?version=latest)](https://py-automl.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/py-automl.svg)](https://badge.fury.io/py/py-automl) [![CircleCI](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop.svg?style=svg)](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop) [![Documentation Status](https://readthedocs.org/projects/py-automl/badge/?version=latest)](https://py-automl.readthedocs.io/en/latest/?badge=latest) [![codecov](https://codecov.io/gh/Ashton-Sidhu/py-automl/branch/develop/graph/badge.svg)](https://codecov.io/gh/Ashton-Sidhu/py-automl)
+
+
+
 
 # py-automl
 
@@ -74,39 +77,40 @@ import pandas as pd
 Load your data into pandas.
 
 ```python
-train_data = pd.read_csv('data/train.csv')
+x_train = pd.read_csv('data/train.csv')
 ```
 
 So as is almost always the case, let's start with cleaning the data. We load our data now into the cleaning phase.
 
 ```python
-clean = Clean(data=train_data, target_field='Survived', report_name='Titanic')
+clean = Clean(x_train=x_train, target_field='Survived', report_name='Titanic')
 ```
 
 Couple of key points to note, `Clean` takes in quite a few keyword arguments. Other than `data`, if your data has already been pre-split into training and testing data, you can start the cleaning phase like this:
 
 ```python
-clean = Clean(train_data=train_data, test_data=test_data, split=False, target_field='Survived', report_name='Titanic')
+clean = Clean(x_train=x_train, x_test=x_test, split=False, target_field='Survived', report_name='Titanic')
 ```
 
-Since our data is not presplit, we use the `data` parameter to indicate that and as a result our data is automatically split to avoid data leakage. Note that the default split percentage is `20%` but is configurable by using the keyword argument `test_split_percentage`.
+Since our data is not presplit, our data is automatically split to avoid data leakage. Note that the default split percentage is `20%` but is configurable by using the keyword argument `test_split_percentage`.
 
-Target field is the field we are trying to predict in this case, if there is no field to predict there is no need to pass in that argument (note: `Survived` is the column name in our dataset). The last keyword argument used is `report_name` and that names our continuously updated and automated report that will be saved in your current working directory. Every technique you apply on your dataset will be logged along with some "reasoning" about why it was done.
+Target field is the field we are trying to predict in this case, if there is no field to predict there is no need to pass in that argument (note: `Survived` is the column name in our dataset). 
 
-**NOTE:** One of the benefits of using `pyautoml` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage. 
+The last keyword argument used is `report_name` and that names our continuously updated and automated report that will be saved in your current working directory. Every technique you apply on your dataset will be logged along with some "reasoning" about why it was done.
+
+**NOTE:** One of the benefits of using `pyautoml` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
 
 Now that our data has been loaded, there a few ways we can explore and gain initial insights from our data. To start, at any time and with **ANY** `pyautoml` object (Clean, Preprocess, Feature, etc) you can view your data with the following commands:
 
 ```python
-clean.data # If your data IS NOT split
-clean.train_data # If your data IS split
-clean.test_data # If your data IS split
+clean.x_train
+clean.x_test
 ```
 
-Also you can view a glance of your full data (if it has not been split) or your training dataset at any time by just calling the object (like pandas):
+Also you can view a glance of your training dataset at any time by just calling the object (like pandas):
 
 ```python
-clean # This will give you a glance of your full data or your training data, whichever is provided
+clean # This will give you a glance of your data
 ```
 
 Also note you can interface any of the `pyautoml` objects like pandas, for example if you want to filter by `Age`:
@@ -127,8 +131,8 @@ clean['new_col'] = YOUR_DATA_HERE
 **NOTE:** If you are providing a list or a Series and your data is split into train and test, the new column is created in the dataset that matches the length of the data provided. If the length of the data provided matches both train and test data it is added to both. To individually add new columns you can do the following:
 
 ```python
-clean.train_data['new_col'] = YOUR_DATA_HERE
-clean.test_data['new_col'] = YOUR_DATA_HERE
+clean.x_train['new_col'] = YOUR_DATA_HERE
+clean.x_test['new_col'] = YOUR_DATA_HERE
 ```
 
 To get a full report of your data at anytime, you can run `data_report` and a full report will be generated from your data courtesy of the `pandas-profiling` library.
@@ -185,7 +189,7 @@ clean.drop('Cabin')
 
 Columns can also be dropped by defining the columns you want to keep (drop all columns except the ones you want to keep) or by passing in a regex expressions and all columns that match the regex expression will be dropped.
 
-As you've started to notice, alot of tasks to clean the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation). 
+As you've started to notice, alot of tasks to clean the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation).
 
 Creating visualisations has never been easier to, for example viewing the mean survival rate based off the age of the passenger can be done as follows:
 
@@ -229,8 +233,8 @@ Currently working on condas implementation.
   - [x]	Reporting V1
 
 #### Phase 2
-  - [ ]	Data visualizations - IPR
-  - [ ]	Models and Evaluation - IPR
+  - [x]	Data visualizations
+  - [x]	Models and Evaluation
   - [ ]	Reporting V2
 
 #### Phase 3
@@ -279,6 +283,12 @@ N/A
 [@PatrikHlobil](https://github.com/PatrikHlobil) for his [Pandas-Bokeh](https://github.com/PatrikHlobil/Pandas-Bokeh) library.
 
 [@pandas-profiling](https://github.com/pandas-profiling) for their automated [EDA report generation](https://github.com/pandas-profiling/pandas-profiling) library.
+
+[@slundberg](https://github.com/slundberg/) for his [shap](https://github.com/slundberg/shap) model explanation library.
+
+[@microsoft](https://github.com/microsoft/) for their [interpret](https://github.com/microsoft/interpret) model explanation library.
+
+[@DistrictDataLabs](https://github.com/DistrictDataLabs?type=source) for their [yellowbrick](https://github.com/DistrictDataLabs/yellowbrick) visual analysis and model diagnostic tool.
 
 ## For Developers
 

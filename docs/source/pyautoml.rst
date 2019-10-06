@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
 
    pyautoml.cleaning
-   pyautoml.data
+   pyautoml.x_train
    pyautoml.feature_engineering
    pyautoml.preprocessing
    pyautoml.modelling

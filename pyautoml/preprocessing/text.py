@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import PorterStemmer
 from nltk.tokenize import RegexpTokenizer, word_tokenize
+
 from pyautoml.util import _function_input_validation
 
 NLTK_STEMMERS = {
@@ -18,70 +19,54 @@ NLTK_LEMMATIZERS = {
 }
 
 
-def split_sentences(list_of_cols=[], new_col_name='_sentences', **datasets):
+def split_sentences(x_train, x_test=None, list_of_cols=[], new_col_name='_sentences'):
     """
     Splits text by its sentences and then saves that list in a new column.
 
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+
+    x_test : DataFrame
+        Testing dataset, by default None
+
     list_of_cols : list, optional
         Column name(s) of text data that you want to separate into sentences
 
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_sentences`
 
-    data : DataFrame
-        Full dataset, by default None
-
-    train_data : DataFrame
-        Training dataset, by default None
-
-    test_data : DataFrame
-        Testing dataset, by default None
-
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with the new column
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
 
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
+    for col in list_of_cols:
+        x_train[col +
+                    new_col_name] = pd.Series(map(sent_tokenize, x_train[col]))
+        if x_test is not None:
+            x_test[col +
+                        new_col_name] = pd.Series(map(sent_tokenize, x_test[col]))
 
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError('Function input is incorrectly provided.')
-
-    if data is not None:
-        for col in list_of_cols:
-            data[col +
-                 new_col_name] = pd.Series(map(sent_tokenize, data.loc[:, col]))
-
-        return data
-    else:
-        for col in list_of_cols:
-            train_data[col +
-                       new_col_name] = pd.Series(map(sent_tokenize, train_data[col]))
-            test_data[col +
-                      new_col_name] = pd.Series(map(sent_tokenize, test_data[col]))
-
-        return train_data, test_data
+    return x_train, x_test
 
 
-def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **datasets):
+def nltk_stem(x_train, x_test=None, list_of_cols=[], stemmer='porter', new_col_name="_stemmed"):
     """
     Stems all the text in a column.
 
-    Either the full data or training data plus testing data MUST be provided, not both.
-
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+
+    x_test : DataFrame
+        Testing dataset, by default None
+
     list_of_cols : list, optional
         Column name(s) of text data that you want to stem
 
@@ -96,51 +81,29 @@ def nltk_stem(list_of_cols=[], stemmer='porter', new_col_name="_stemmed", **data
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_stemmed`
 
-    data : DataFrame
-        Full dataset, by default None
-
-    train_data : DataFrame
-        Training dataset, by default None
-
-    test_data : DataFrame
-        Testing dataset, by default None
-
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with the new column.
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
-
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
-
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError('Function input is incorrectly provided.')
 
     stem = NLTK_STEMMERS[stemmer]
     # Create partial for speed purposes
     func = partial(_apply_text_method, transformer=stem.stem)
 
-    if data is not None:
-        for col in list_of_cols:
-            data.loc[:, col + new_col_name] = list(map(func, data[col]))
+    
+    for col in list_of_cols:
+        x_train[col + new_col_name] = map(func, x_train[col])
 
-        return data
-    else:
-        for col in list_of_cols:
-            train_data.loc[:, col + new_col_name] = map(func, train_data[col])
-            test_data.loc[:, col + new_col_name] = map(func, test_data[col])
+        if x_test is not None:
+            x_test[col + new_col_name] = map(func, x_test[col])
 
-        return train_data, test_data
+    return x_train, x_test
 
 
-def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", **datasets):
+def nltk_word_tokenizer(x_train, x_test=None, list_of_cols=[], regexp='', new_col_name="_tokenized"):
     """
     Splits text into its words. 
 
@@ -148,6 +111,12 @@ def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", *
 
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+        
+    x_test : DataFrame
+        Testing dataset, by default None
+
     list_of_cols : list, optional
         Column name(s) of text data that you want to stem
 
@@ -157,61 +126,37 @@ def nltk_word_tokenizer(list_of_cols=[], regexp='', new_col_name="_tokenized", *
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_tokenized`
 
-    data : DataFrame
-        Full dataset, by default None
-
-    train_data : DataFrame
-        Training dataset, by default None
-
-    test_data : DataFrame
-        Testing dataset, by default None
-
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with the new column.
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
-
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError("Invalid parameters passed: {}".format(str(datasets)))
-
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError('Function input is incorrectly provided.')
 
     tokenizer = RegexpTokenizer(regexp)
 
-    if data is not None:
-        for col in list_of_cols:
-            if not regexp:
-                data[col + new_col_name] = list(map(word_tokenize, data[col]))
-            else:
-                data[col +
-                     new_col_name] = list(map(tokenizer.tokenize, data[col]))
+   
+    for col in list_of_cols:
+        if not regexp:
+            x_train[col +
+                        new_col_name] = pd.Series(map(word_tokenize, x_train[col]))
 
-        return data
-    else:
-        for col in list_of_cols:
-            if not regexp:
-                train_data[col +
-                           new_col_name] = list(map(word_tokenize, train_data[col]))
-                test_data[col +
-                          new_col_name] = list(map(word_tokenize, test_data[col]))
-            else:
-                train_data[col + new_col_name] = list(
-                    map(tokenizer.tokenize, train_data[col]))
-                test_data[col +
-                          new_col_name] = list(map(tokenizer.tokenize, test_data[col]))
+            if x_test is not None:
+                x_test[col +
+                            new_col_name] = pd.Series(map(word_tokenize, x_test[col]))
+        else:
+            x_train[col + new_col_name] = pd.Series(
+                map(tokenizer.tokenize, x_train[col]))
 
-        return train_data, test_data
+            if x_test is not None:
+                x_test[col +
+                            new_col_name] = pd.Series(map(tokenizer.tokenize, x_test[col]))
+
+    return x_train, x_test
 
 
-def nltk_remove_stopwords(list_of_cols=[], custom_stopwords=[], new_col_name='_rem_stop', **datasets):
+def nltk_remove_stopwords(x_train, x_test=None, list_of_cols=[], custom_stopwords=[], new_col_name='_rem_stop'):
     """
     Removes stopwords following the nltk English stopwords list.
 
@@ -219,6 +164,12 @@ def nltk_remove_stopwords(list_of_cols=[], custom_stopwords=[], new_col_name='_r
 
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+        
+    x_test : DataFrame
+        Testing dataset, by default None
+
     list_of_cols : list, optional
         Column name(s) of text data that you want to stem
 
@@ -228,54 +179,30 @@ def nltk_remove_stopwords(list_of_cols=[], custom_stopwords=[], new_col_name='_r
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_rem_words`
 
-    data : DataFrame
-        Full dataset, by default None
-
-    train_data : DataFrame
-        Training dataset, by default None
-
-    test_data : DataFrame
-        Testing dataset, by default None
-
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with the new column.
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
-
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError('Invalid parameters passed: {}'.format(str(datasets)))
-
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError('Function input is incorrectly provided.')
 
     stop_words = stopwords.words('english')
     stop_words.extend(custom_stopwords)
     stop_list = set(stop_words)
 
-    if data is not None:
-        for col in list_of_cols:
-            data[col + new_col_name] = list(map(lambda x: " ".join(
-                [word for word in word_tokenize(x.lower()) if word not in stop_list]), data[col]))
+    for col in list_of_cols:
+        x_train[col + new_col_name] = list(map(lambda x: " ".join(
+            [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_train[col]))
+        
+        if x_test is not None:
+            x_test[col + new_col_name] = list(map(lambda x: " ".join(
+                [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_test[col]))
 
-        return data
-    else:
-        for col in list_of_cols:
-            train_data[col + new_col_name] = list(map(lambda x: " ".join(
-                [word for word in word_tokenize(x.lower()) if word not in stop_list]), train_data[col]))
-            test_data[col + new_col_name] = list(map(lambda x: " ".join(
-                [word for word in word_tokenize(x.lower()) if word not in stop_list]), test_data[col]))
-
-        return train_data, test_data
+    return x_train, x_test
 
 
-def remove_punctuation(list_of_cols=[], regexp='', exceptions=[], new_col_name='_rem_punct', **datasets):
+def remove_punctuation(x_train, x_test=None, list_of_cols=[], regexp='', exceptions=[], new_col_name='_rem_punct'):
     """
     Removes punctuation from a string.
 
@@ -283,6 +210,12 @@ def remove_punctuation(list_of_cols=[], regexp='', exceptions=[], new_col_name='
 
     Parameters
     ----------
+    x_train : DataFrame
+        Dataset
+
+    x_test : DataFrame
+        Testing dataset, by default None
+
     list_of_cols : list, optional
         Column name(s) of text data that you want to stem
 
@@ -295,60 +228,34 @@ def remove_punctuation(list_of_cols=[], regexp='', exceptions=[], new_col_name='
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `_rem_punct`
 
-    data : DataFrame
-        Full dataset, by default None
-
-    train_data : DataFrame
-        Training dataset, by default None
-
-    test_data : DataFrame
-        Testing dataset, by default None
-
     Returns
     -------
     Dataframe, *Dataframe
         Transformed dataframe with the new column.
 
-    Returns 2 Dataframes if Train and Test data is provided. 
+    Returns 2 Dataframes if x_test is provided. 
     """
-
-    data = datasets.pop('data', None)
-    train_data = datasets.pop('train_data', None)
-    test_data = datasets.pop('test_data', None)
-
-    if datasets:
-        raise TypeError('Invalid parameters passed: {}'.format(str(datasets)))
-
-    if not _function_input_validation(data, train_data, test_data):
-        raise ValueError('Function input is incorrectly provided.')
 
     delete_punct = set(string.punctuation) - set(exceptions)
     tokenizer = RegexpTokenizer(regexp)
 
-    if data is not None:
-        for col in list_of_cols:
-            if not regexp:
-                data[col + new_col_name] = list(map(lambda x: "".join(
-                    [letter for letter in x if letter not in delete_punct]), data[col]))
-            else:
-                data[col + new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), data[col]))
+    for col in list_of_cols:
+        if not regexp:
+            x_train[col + new_col_name] = list(map(lambda x: "".join(
+                [letter for letter in x if letter not in delete_punct]), x_train[col]))
+    
+            if x_test is not None:
+                x_test[col + new_col_name] = list(map(lambda x: "".join(
+                    [letter for letter in x if letter not in delete_punct]), x_test[col]))
+        else:
+            x_train[col + new_col_name] = list(
+                map(lambda x: " ".join(tokenizer.tokenize(x)), x_train[col]))
 
-        return data
-    else:
-        for col in list_of_cols:
-            if not regexp:
-                train_data[col + new_col_name] = list(map(lambda x: "".join(
-                    [letter for letter in x if letter not in delete_punct]), train_data[col]))
-                test_data[col + new_col_name] = list(map(lambda x: "".join(
-                    [letter for letter in x if letter not in delete_punct]), test_data[col]))
-            else:
-                train_data[col + new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), train_data[col]))
-                test_data[col + new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), test_data[col]))
+            if x_test is not None:
+                x_test[col + new_col_name] = list(
+                    map(lambda x: " ".join(tokenizer.tokenize(x)), x_test[col]))
 
-        return train_data, test_data
+    return x_train, x_test
 
 
 def _apply_text_method(text_data, transformer=None):

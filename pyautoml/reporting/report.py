@@ -1,20 +1,25 @@
 import os
+import platform
+import subprocess
+import sys
 from datetime import datetime
 
 
 class Report():
 
     def __init__(self, report_name):
+        
+        #TODO: Move making the directory on first time run to some config file
+        if not os.path.exists("pyautoml_reports/"):
+            os.makedirs("pyautoml_reports")
+
         self.report_name = report_name
 
         if os.path.exists(self.report_name):
             self.filename = self.report_name
         else:
             self.filename = 'pyautoml_reports/{}{}.txt'.format(report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p"))
-
-        #TODO: Move making the directory on first time run to some config file
-        if not os.path.exists("pyautoml_reports/"):
-            os.makedirs("pyautoml_reports")
+            self.report_environtment()
 
     def write_header(self, header: str):
         """
@@ -130,9 +135,51 @@ class Report():
             
             self.write_contents('\n')
 
-        # self.write_contents("Detailed classification report:\n")
-        # self.write_contents("The model is trained on the full development set.")
-        # self.write_contents("The scores are computed on the full evaluation set.\n")
-        # y_true, y_pred = y_test, clf.predict(X_test)
-        # print(classification_report(y_true, y_pred))
-        # print()
+    def report_classification_report(self, report):
+
+        self.write_contents("Detailed classification report:\n")
+        self.write_contents("The model is trained on the full training set.")
+        self.write_contents("The scores are computed on the full test set.\n\n")
+        self.write_contents(report)
+
+    def report_environtment(self):
+        """
+        Reports local environment info.
+        """
+        
+        system = platform.system()
+
+        self.write_header('Environment')
+
+        self.log('OS Version          : {}'.format(platform.platform()))
+        self.log('System              : {}'.format(system))
+        self.log('Machine             : {}'.format(platform.machine()))
+
+        if system == 'Windows':
+            memory = subprocess.check_output('wmic memorychip get capacity', shell=True, universal_newlines=True)
+            total_mem = 0
+            for m in memory.split("  \r\n")[1:-1]:
+                total_mem += int(m)
+
+            self.log('Processor           : {}'.format(platform.processor()))
+            self.log('Memory              : {:.2f} GB'.format(round(total_mem / (1024**2))))
+        elif platform.system() == 'Darwin':
+            processor = subprocess.check_output('/usr/sbin/sysctl -n machdep.cpu.brand_string', shell=True, universal_newlines=True)
+            memory = subprocess.check_output('sysctl -n hw.memsize', shell=True, universal_newlines=True)
+            self.log('Processor           : {}'.format(processor.strip()))
+            self.log('Memory              : {}'.format(round(int(memory.strip()) / (1024**2))))
+        elif platform.system() == 'Linux':
+            processor = subprocess.check_output("cat /proc/cpuinfo | grep 'model name'", shell=True, universal_newlines=True)
+            with open("/proc/meminfo", "r") as f:
+                lines = f.readlines()
+            
+            memory = [int(s) for s in lines[0].split() if s.isdigit()][0]
+            processor = processor.replace('\t', '').split('model name:')[1].strip()
+            self.log('Processor           : {}'.format(processor))
+            self.log('Memory              : {:.2f} GB'.format(round(memory / (1024 ** 2))))
+
+        self.log('CPU Count           : {}'.format(os.cpu_count()))
+        
+        self.log('Python Version      : {}'.format(platform.python_version()))
+        self.log('Python Compiler     : {}'.format(platform.python_compiler()))
+        self.log('Python Build        : {}'.format(platform.python_build()))

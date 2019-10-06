@@ -1,36 +1,26 @@
-import copy
-import os
-
 import pandas as pd
-import pyautoml
-import yaml
-from pyautoml.base import MethodBase
+
+from pyautoml import *
+from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _numeric_input_conditions, label_encoder)
 
-pkg_directory = os.path.dirname(pyautoml.__file__)
-
-with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
-    try:
-        technique_reason_repo = yaml.safe_load(stream)
-    except yaml.YAMLError as e:
-        print("Could not load yaml file.")
 
 class Preprocess(MethodBase):
 
     
-    def __init__(self, step=None, data=None, train_data=None, test_data=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(self, step=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
 
         _data_properties = _contructor_data_properties(step)
 
         if _data_properties is None:        
-            super().__init__(data=data, train_data=train_data, test_data=test_data, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
                         split=split, target_field=target_field, target_mapping=None, report_name=report_name)
         else:
-            super().__init__(data=_data_properties.data, train_data=_data_properties.train_data, test_data=_data_properties.test_data, test_split_percentage=test_split_percentage,
+            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
                         split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
                         
 
@@ -71,32 +61,20 @@ class Preprocess(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.data = preprocess_normalize(list_of_cols=list_of_cols, **normalize_params, data=self._data_properties.data)
+        self._data_properties.x_train, self._data_properties.x_test = preprocess_normalize(x_train=self._data_properties.x_train,
+                                                                                            x_test=self._data_properties.x_test,
+                                                                                            list_of_cols=list_of_cols,
+                                                                                            **normalize_params,
+                                                                                            )
 
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.data, None)
-                    self.report.report_technique(report_info, list_of_cols)
-            
-            return self.copy()
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train)
+                self.report.report_technique(report_info, list_of_cols)
 
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = preprocess_normalize(list_of_cols=list_of_cols,
-                                                                                                    **normalize_params,
-                                                                                                    train_data=self._data_properties.train_data,
-                                                                                                    test_data=self._data_properties.test_data)
-
-            if self.report is not None:
-                if list_of_cols:
-                    self.report.report_technique(report_info, list_of_cols)
-                else:
-                    list_of_cols = _numeric_input_conditions(list_of_cols, None, self._data_properties.train_data)
-                    self.report.report_technique(report_info, list_of_cols)
-
-            return self.copy()
+        return self.copy()
 
 
     def split_sentences(self, *list_args, list_of_cols=[], new_col_name='_sentences'):
@@ -126,13 +104,11 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)        
     
-        if not self._data_properties.split:    
-            self._data_properties.data = split_sentences(list_of_cols, new_col_name=new_col_name, data=self._data_properties.data)
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = split_sentences(list_of_cols,
-                                                                                            new_col_name=new_col_name,
-                                                                                            train_data=self._data_properties.train_data, 
-                                                                                            test_data=self._data_properties.test_data)
+        self._data_properties.x_train, self._data_properties.x_test = split_sentences(x_train=self._data_properties.x_train, 
+                                                                                        x_test=self._data_properties.x_test,
+                                                                                        list_of_cols=list_of_cols,
+                                                                                        new_col_name=new_col_name,
+                                                                                        )
     
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -176,12 +152,8 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.data = nltk_stem(
-                list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, data=self._data_properties.data)
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = nltk_stem(
-                list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+        self._data_properties.x_train, self._data_properties.x_test = nltk_stem(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -218,12 +190,8 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.data = nltk_word_tokenizer(
-                list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, data=self._data_properties.data)
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = nltk_word_tokenizer(
-                list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+        self._data_properties.x_train, self._data_properties.x_test = nltk_word_tokenizer(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -262,12 +230,8 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.data = nltk_remove_stopwords(
-                list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, data=self._data_properties.data)
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = nltk_remove_stopwords(
-                list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+        self._data_properties.x_train, self._data_properties.x_test = nltk_remove_stopwords(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -312,12 +276,8 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.data = remove_punctuation(
-                list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, data=self._data_properties.data)
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = remove_punctuation(
-                list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+        self._data_properties.x_train, self._data_properties.x_test = remove_punctuation(
+            x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name)
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -350,12 +310,8 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        if not self._data_properties.split:
-            self._data_properties.data = label_encoder(
-                list_of_cols, data=self._data_properties.data)
-        else:
-            self._data_properties.train_data, self._data_properties.test_data = label_encoder(
-                list_of_cols, train_data=self._data_properties.train_data, test_data=self._data_properties.test_data)
+        self._data_properties.x_train, self._data_properties.x_test, _ = label_encoder(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols)
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)

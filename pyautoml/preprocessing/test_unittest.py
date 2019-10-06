@@ -17,9 +17,9 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]        
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(data=data, test_split_percentage=0.5, split=False)
+        preprocess = Preprocess(x_train=data, test_split_percentage=0.5, split=False)
         preprocess.normalize_numeric()
-        validate = preprocess.data.values.tolist()
+        validate = preprocess.x_train.values.tolist()
 
         self.assertListEqual(validate, [[.375, 1.0, 0.0],
                                         [0, 0.5, 0.0],
@@ -27,22 +27,22 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_preprocess_traindata(self):
 
-        unnormal_train_data = [[5.0, 3, 1],
+        unnormal_x_train = [[5.0, 3, 1],
                             [2.0, 2, 1],
                             [10.0, 1, 1]]
 
-        unnormal_test_data = [[5.0, 3, 1],
+        unnormal_x_test = [[5.0, 3, 1],
                             [2.0, 2, 1],
                             [10.0, 1, 1]]
 
         columns = ["col1", "col2", "col3"]        
-        train_data = pd.DataFrame(unnormal_train_data, columns=columns)
-        test_data = pd.DataFrame(unnormal_test_data, columns=columns)
+        x_train = pd.DataFrame(unnormal_x_train, columns=columns)
+        x_test = pd.DataFrame(unnormal_x_test, columns=columns)
 
-        preprocess = Preprocess(train_data=train_data, test_data=test_data, test_split_percentage=0.5)
+        preprocess = Preprocess(x_train=x_train, x_test=x_test, test_split_percentage=0.5)
         preprocess.normalize_numeric("col1", "col2", "col3")
-        validate_train = preprocess.train_data.values.tolist()
-        validate_test = preprocess.test_data.values.tolist()
+        validate_train = preprocess.x_train.values.tolist()
+        validate_test = preprocess.x_test.values.tolist()
 
         self.assertListEqual(validate_train, validate_test)
 
@@ -54,9 +54,9 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.split_sentences('data')
-        validate = prep.data['data_sentences'].values.tolist()
+        validate = prep.x_train['data_sentences'].values.tolist()
 
         self.assertListEqual(validate, [["Hi my name is PyAutoML.", "Please split me."],
                                         ["This function is going to split by sentence.", "Automation is great."]])
@@ -69,9 +69,9 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.stem_nltk('data')
-        validate = prep.data.shape[1]
+        validate = prep.x_train.shape[1]
 
         self.assertEquals(validate, 2)
 
@@ -82,9 +82,9 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.split_words_nltk('data')
-        validate = prep.data.data_tokenized.values.tolist()
+        validate = prep.x_train.data_tokenized.values.tolist()
 
         self.assertListEqual(validate, [["Please.exe", "split", "me", "."]])
 
@@ -95,9 +95,9 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.split_words_nltk('data', regexp=r'\w+\d+')
-        validate = prep.data.data_tokenized.values.tolist()
+        validate = prep.x_train.data_tokenized.values.tolist()
 
         self.assertListEqual(validate, [["Please123"]])
 
@@ -108,9 +108,9 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.remove_punctuation('data')
-        validate = prep.data.data_rem_punct.values.tolist()
+        validate = prep.x_train.data_rem_punct.values.tolist()
 
         self.assertListEqual(validate, ["Please split me"])
 
@@ -122,9 +122,9 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.remove_punctuation('data', regexp=r'\w+\.\w+|\w+')
-        validate = prep.data.data_rem_punct.values.tolist()
+        validate = prep.x_train.data_rem_punct.values.tolist()
 
         self.assertListEqual(validate, ["Please.exe split me", "hello it s me testing.dll"])
 
@@ -135,9 +135,9 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.remove_punctuation('data', exceptions=['.',  '>'])
-        validate = prep.data.data_rem_punct.values.tolist()
+        validate = prep.x_train.data_rem_punct.values.tolist()
 
         self.assertListEqual(validate, ["Please> split me."])
 
@@ -148,9 +148,9 @@ class TestPreprocessing(unittest.TestCase):
                     ]
         data = pd.DataFrame(data=text_data, columns=['data'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.remove_stopwords_nltk('data', custom_stopwords=['please'])
-        validate = prep.data.data_rem_stop.values.tolist()
+        validate = prep.x_train.data_rem_stop.values.tolist()
 
         self.assertListEqual(validate, ["split ."])
     
@@ -162,9 +162,9 @@ class TestPreprocessing(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        prep = Preprocess(data=data, split=False)
+        prep = Preprocess(x_train=data, split=False)
         prep.encode_labels('col1', 'col2')
-        validate = prep.data.values.tolist()
+        validate = prep.x_train.values.tolist()
 
         self.assertListEqual(validate, [[0, 1, 1],
                                         [1, 1, 1],

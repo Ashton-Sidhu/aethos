@@ -1,4 +1,6 @@
+import interpret
 import pandas as pd
+import shap
 from bokeh.io import output_notebook
 from IPython import get_ipython
 
@@ -8,7 +10,6 @@ from .modelling import Model
 from .preprocessing import Preprocess
 
 pd.options.mode.chained_assignment = None
-
 
 __all__ = ['Clean',
          'Feature',
@@ -20,3 +21,4 @@ shell = get_ipython().__class__.__name__
 
 if shell == 'ZMQInteractiveShell':
     output_notebook()
+    shap.initjs()
