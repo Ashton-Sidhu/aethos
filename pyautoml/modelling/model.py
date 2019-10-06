@@ -4,9 +4,6 @@ import warnings
 
 from IPython import display
 from pathos.multiprocessing import Pool
-from sklearn.cluster import DBSCAN, KMeans
-from sklearn.linear_model import LogisticRegression
-
 from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
@@ -16,6 +13,8 @@ from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
                                      run_gridsearch)
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _set_item, _validate_model_name)
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.linear_model import LogisticRegression
 
 # TODO: For classification implement probability predictions
 
@@ -610,7 +609,7 @@ class Model(MethodBase):
             - ‘jaccard’ 	
             - ‘roc_auc’
 
-        For more Logistic Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
+        For more Logistic Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
         
         Parameters
         ----------
