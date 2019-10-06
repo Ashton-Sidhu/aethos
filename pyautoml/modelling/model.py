@@ -4,17 +4,17 @@ import warnings
 
 from IPython import display
 from pathos.multiprocessing import Pool
-from sklearn.cluster import DBSCAN, KMeans
-from sklearn.linear_model import LogisticRegression
-
 from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import (_run_models_parallel, add_to_queue,
+from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
+                                     add_to_queue, run_crossvalidation,
                                      run_gridsearch)
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _set_item, _validate_model_name)
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.linear_model import LogisticRegression
 
 # TODO: For classification implement probability predictions
 
@@ -255,6 +255,27 @@ class Model(MethodBase):
         else:
             print("No ran models.")
 
+    def delete_model(self, name):
+        """
+        Deletes a model, specified by it's name - can be viewed by calling list_models.
+
+        Will look in both queued and ran models and delete where it's found.
+
+        Parameters
+        ----------
+        name : str
+            Name of the model
+        """
+
+        if name in self._queued_models:
+            del self._queued_models[name]
+        elif name in self._models:
+            del self._models[name]
+        else:
+            raise ValueError('Model {} does not exist'.format(name))
+
+        self.list_models()
+
     def compare_models(self):
         """
         Compare different models across every known metric for that model.
@@ -283,8 +304,10 @@ class Model(MethodBase):
 
         return results_table
 
+    # TODO: Abstract these functions out to a more general template
+
     @add_to_queue
-    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=True, **summarizer_kwargs):
+    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=False, **summarizer_kwargs):
         """
         Summarize bodies of text using Gensim's Text Rank algorith. Note that it uses a Text Rank variant as stated here:
         https://radimrehurek.com/gensim/summarization/summariser.html
@@ -338,7 +361,7 @@ class Model(MethodBase):
         return self._models[model_name]        
 
     @add_to_queue
-    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=True, **keyword_kwargs):
+    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=False, **keyword_kwargs):
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
 
@@ -402,7 +425,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=True, **kmeans_kwargs):
+    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=False, **kmeans_kwargs):
         """
         K-means clustering is one of the simplest and popular unsupervised machine learning algorithms.
 
@@ -474,7 +497,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=True, **dbscan_kwargs):
+    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=False, **dbscan_kwargs):
         """
         Based on a set of points (let’s think in a bidimensional space as exemplified in the figure), 
         DBSCAN groups together points that are close to each other based on a distance measurement (usually Euclidean distance) and a minimum number of points.
@@ -548,12 +571,19 @@ class Model(MethodBase):
 
         return self._models[model_name]
 
+    # NOTE: This entire process may need to be reworked.
     @add_to_queue
-    def logistic_regression(self, gridsearch=False, gridsearch_cv=3, gridsearch_score='accuracy', model_name="log_reg", new_col_name="log_predictions", run=True, verbose=False, **logreg_kwargs):
+    def logistic_regression(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="log_reg", new_col_name="log_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a logistic regression model.
 
         If no Logistic Regression parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         If using GridSearch and no grid is specified the following default grid is used:
             'penalty': ['l1', 'l2']
@@ -562,8 +592,6 @@ class Model(MethodBase):
             'warm_start': [True, False]
             'C': [1e-2, 0.1, 1, 5, 10]
             'solver': ['liblinear']
-
-        For more Logistic Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -576,18 +604,26 @@ class Model(MethodBase):
             - ‘f1_weighted’ 	
             - ‘f1_samples’ 	
             - ‘neg_log_loss’ 	
-            - ‘precision’ etc. 	
-            - ‘recall’ etc. 	
-            - ‘jaccard’ etc. 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
             - ‘roc_auc’
+
+        For more Logistic Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
         
         Parameters
         ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default False.
+
         gridsearch : bool or dict, optional
             Parameters to gridsearch, if True, the default parameters would be used, by default False
 
-        gridsearch_cv : int, optional
-            Number of folds to cross validate model, by default 3
+        cv_type : int, Crossvalidation Generator, optional
+            Cross validation method, by default 5
+
+        n_splits : int, optional
+            Default cross validation splits, default 5
 
         gridsearch_score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -629,33 +665,40 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-
+ 
+        random_state = kwargs.pop('random_state', 42)
+        solver = kwargs.pop('solver', 'lbfgs')
         report_info = technique_reason_repo['model']['classification']['logreg']
-        random_state = logreg_kwargs.pop('random_state', 42)
-        solver = logreg_kwargs.pop('solver', 'lbfgs')
+        cv_type, kwargs = _get_cv_type(cv_type, random_state, **kwargs)
+
+        model = LogisticRegression(solver=solver, random_state=random_state, **kwargs)
+
+        if cv:
+            cv_scores = run_crossvalidation(model, self._data_properties.x_train, self._y_train, cv=cv_type, scoring=score, learning_curve=learning_curve)
+
+            # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
+            if not run:
+                return cv_scores
 
         if gridsearch:
-            log_reg = LogisticRegression(random_state=random_state)
-            log_reg = run_gridsearch(log_reg, gridsearch, logreg_gridsearch, gridsearch_cv, gridsearch_score)
-        else:
-            log_reg = LogisticRegression(solver=solver, random_state=random_state, **logreg_kwargs)
+            model = run_gridsearch(model, gridsearch, logreg_gridsearch, cv_type, score, verbose=verbose)
         
-        log_reg.fit(self._data_properties.x_train, self._y_train)
+        model.fit(self._data_properties.x_train, self._y_train)
 
-        self._train_result_data[new_col_name] = log_reg.predict(self._data_properties.x_train)            
+        self._train_result_data[new_col_name] = model.predict(self._data_properties.x_train)            
         
         if self._data_properties.x_test is not None:
-            self._test_result_data[new_col_name] = log_reg.predict(self._data_properties.x_test)
+            self._test_result_data[new_col_name] = model.predict(self._data_properties.x_test)
 
         if self.report is not None:
             if gridsearch:
-                self.report.report_gridsearch(log_reg, verbose)                
+                self.report.report_gridsearch(model, verbose)                
         
             self.report.report_technique(report_info)
 
         if gridsearch:
-            log_reg = log_reg.best_estimator_
+            model = model.best_estimator_
 
-        self._models[model_name] = ClassificationModel(self, model_name, log_reg, new_col_name)
+        self._models[model_name] = ClassificationModel(self, model_name, model, new_col_name)
 
         return self._models[model_name]

@@ -291,14 +291,7 @@ class MSFTInterpret(object):
             Interpretable dashboard of your model
         """
 
-        # if predictions == 'probability':
-        #     predict_fn = self.model.predict_proba
-        # else:
-        #     predict_fn = self.model.predict
-
-        # NOTE: Microsoft Interpret morris utility library needs predictions to be float, and .predict for classifiers produce an int array.
-        # So until it gets fixed, if the problem is classification then use .predict_proba
-        if self.problem == 'classification':
+        if predictions == 'probability':
             predict_fn = self.model.predict_proba
         else:
             predict_fn = self.model.predict
