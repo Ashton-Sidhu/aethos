@@ -233,8 +233,8 @@ Currently working on condas implementation.
   - [x]	Reporting V1
 
 #### Phase 2
-  - [ ]	Data visualizations - IPR
-  - [ ]	Models and Evaluation - IPR
+  - [x]	Data visualizations
+  - [x]	Models and Evaluation
   - [ ]	Reporting V2
 
 #### Phase 3
@@ -287,6 +287,8 @@ N/A
 [@slundberg](https://github.com/slundberg/) for his [shap](https://github.com/slundberg/shap) model explanation library.
 
 [@microsoft](https://github.com/microsoft/) for their [interpret](https://github.com/microsoft/interpret) model explanation library.
+
+[@DistrictDataLabs](https://github.com/DistrictDataLabs?type=source) for their [yellowbrick](https://github.com/DistrictDataLabs/yellowbrick) visual analysis and model diagnostic tool.
 
 ## For Developers
 
