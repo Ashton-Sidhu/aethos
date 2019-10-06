@@ -12,7 +12,6 @@ import seaborn as sns
 import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
-
 from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
                                                   MSFTInterpret, Shap)
 from pyautoml.visualizations.visualize import *
@@ -763,7 +762,7 @@ class ClassificationModel(ModelBase):
 
         return sklearn.metrics.brier_score_loss(self.y_test, self.y_pred, **kwargs)
 
-    
+    # TODO: Add sorting
     def metrics(self, *metrics):
         """
         Measures how well your model performed against certain metrics.
