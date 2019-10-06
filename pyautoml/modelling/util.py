@@ -107,14 +107,15 @@ def run_crossvalidation(model, x_train, y_train, cv=5, scoring='accuracy', learn
         List of cross validation curves
     """
 
+    # TODO: Make curves slightly bigger
     visualizer_scores = CVScores(model, cv=cv, scoring=scoring)
     visualizer_scores.fit(x_train, y_train)
-    visualizer_scores.poof()
+    visualizer_scores.show()
 
     if learning_curve:
         visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring)
         visualizer_lcurve.fit(x_train, y_train)
-        visualizer_lcurve.poof()
+        visualizer_lcurve.show()
 
     return visualizer_scores.cv_scores_
 
