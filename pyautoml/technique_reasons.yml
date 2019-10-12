@@ -5,7 +5,7 @@ clean:
       contain enough information.
 
     remove_columns: >
-      Removed column column_name_placeholder because it had too many missing values and didn't
+      Removed column(s) column_name_placeholder because it had too many missing values and didn't
       contain enough information.
 
     remove_duplicate_rows: >
@@ -15,12 +15,28 @@ clean:
       Removed columns of which whos values are exact duplicates of each other to reduce redundancy.
 
     random_discrete: >
-      Replaced missing values in column column_name_placeholder with random values that follow the datas distribution,
+      Replaced missing values in column(s) column_name_placeholder with random values that follow the datas distribution,
       as observed in nature, to better simulate the missing data points
+    
+    knn: >
+      Replaced missing values using K Nearest Neighbours, with values from other rows that are similar to the rows
+      containing the missing data.
+
+    interpolate: >
+      Replaced missing values in column(s) column_name_placeholder using interpolation.
+
+    bfill: >
+      Replaced missing values in column(s) column_name_placeholder with future known values.
+
+    ffill: >
+      Replaced missing values in column(s) column_name_placeholder with past known values.
+
+    indicator: >
+      Added a new column representing missing values in column(s) column_name_placeholder, due to the missing data being important.
 
   categorical:
     new_category: >
-      Replaced missing values in column column_name_placeholder with its own category name because
+      Replaced missing values in column(s) column_name_placeholder with its own category name because
       the missing values have meaning that should be captured.
 
     remove_rows: >
@@ -29,16 +45,16 @@ clean:
 
   numeric:
     mean: >
-      Replaced missing values in column column_name_placeholder with the average of the values in the column.
+      Replaced missing values in column(s) column_name_placeholder with the average of the values in the column.
 
     median: >
-      Replaced missing values in column column_name_placeholder with the middlemost value in the column.
+      Replaced missing values in column(s) column_name_placeholder with the middlemost value in the column.
 
     mode: >
-      Replaced missing values in column column_name_placeholder with the most frequent value in the column.
+      Replaced missing values in column(s) column_name_placeholder with the most frequent value in the column.
 
     constant: >
-      Replaced missing values in column column_name_placeholder with the constant.
+      Replaced missing values in column(s) column_name_placeholder with a constant.
 
   text:
 
@@ -51,7 +67,7 @@ preprocess:
 
   numeric:
     standardize: >
-      Standardized the values in column column_name_placeholder between 0 and 1 so all values in every column are in the same
+      Standardized the values in column(s) column_name_placeholder between 0 and 1 so all values in every column are in the same
       domain and range does not effect model weights.
 
   text:
@@ -76,7 +92,7 @@ feature:
 
   categorical:
     onehotencode: >
-      Converted the categories in column column_name_placeholder into its own feature where the value is 1 if the category exists
+      Converted the categories in column(S) column_name_placeholder into its own feature where the value is 1 if the category exists
       in the record, 0 otherwise.
 
   numeric:

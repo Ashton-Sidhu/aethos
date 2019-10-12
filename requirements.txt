@@ -19,6 +19,7 @@ ipython==7.8.0
 interpret==0.1.17
 scikit_learn==0.21.3
 PyYAML==5.1.2
+impyute==0.0.8
 SAlib
 dash
 lime
