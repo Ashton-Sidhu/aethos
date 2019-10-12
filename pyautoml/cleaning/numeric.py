@@ -6,14 +6,10 @@ replace_missing_constant
 '''
 
 import pandas as pd
-from sklearn.impute import SimpleImputer
-
 from pyautoml.cleaning.categorical import replace_missing_new_category
 from pyautoml.util import (_get_columns, _numeric_input_conditions,
                            drop_replace_columns)
-
-#TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing x_train
-
+from sklearn.impute import SimpleImputer
 
 
 def replace_missing_mean_median_mode(x_train, x_test=None, list_of_cols=[], strategy=''):

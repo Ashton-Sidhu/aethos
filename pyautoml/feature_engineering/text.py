@@ -7,10 +7,9 @@ nltk_feature_postag
 """
 
 import pandas as pd
+from pyautoml.util import _get_columns, drop_replace_columns
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from textblob import TextBlob
-
-from pyautoml.util import _get_columns, drop_replace_columns
 
 
 def feature_bag_of_words(x_train, x_test=None, list_of_cols=[], keep_col=False, **algo_kwargs):
