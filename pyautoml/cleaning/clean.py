@@ -1,5 +1,4 @@
 import pandas as pd
-
 from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
@@ -480,6 +479,218 @@ class Clean(MethodBase):
                                                                                                     list_of_cols=list_of_cols,
                                                                                                     )
     
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def replace_missing_knn(self, k=5, **knn_kwargs):
+        """
+        Replaces missing data with data from similar records based off a distance metric.
+
+        For more info see: https://impyute.readthedocs.io/en/master/api/cross_sectional_imputation.html, fast_knn
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        k : int, optional
+            Number of rows around the missing data to look at, by default 5
+
+        eps: nonnegative float, optional
+            Return approximate nearest neighbors;
+            The kth returned value is guaranteed to be no further than (1+eps) times the distance to the real kth nearest neighbor
+        
+        p : float, 1<=p<=infinity, optional
+            Which Minkowski p-norm to use. 
+            1 is the sum-of-absolute-values Manhattan distance
+            2 is the usual Euclidean distance
+            infinity is the maximum-coordinate-difference distance
+
+        distance_upper_bound: nonnegative float, optional
+            Return only neighbors within this distance.
+            This is used to prune tree searches, so if you are doing a series of nearest-neighbor queries, it may help to supply the distance to the nearest neighbor of the most recent point.
+            
+        Returns
+        -------
+        Clean:
+            Returns a deep copy of the Clean object.
+        """
+
+        report_info = technique_reason_repo['clean']['general']['knn']
+
+        self._data_properties.x_train, self._data_properties.x_test = replace_missing_knn(x_train=self._data_properties.x_train,
+                                                                                        x_test=self._data_properties.x_test,
+                                                                                        k=k,
+                                                                                        **knn_kwargs)
+    
+        if self.report is not None:
+            self.report.report_technique(report_info)
+
+        return self.copy()
+
+    def replace_missing_interpolate(self, *list_args, list_of_cols=[], method='linear', **inter_kwargs):
+        """
+        Replaces missing values with an interpolation method and possible extrapolation.
+
+        The possible interpolation methods are:
+           
+            - 'linear': Ignore the index and treat the values as equally spaced. This is the only method supported on MultiIndexes.
+            - 'time': Works on daily and higher resolution data to interpolate given length of interval.
+            - 'index', ‘values’: use the actual numerical values of the index.
+            - 'pad': Fill in NaNs using existing values.
+            - 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'spline', ‘barycentric’, ‘polynomial’: Passed to scipy.interpolate.interp1d.
+                - These methods use the numerical values of the index. Both ‘polynomial’ and ‘spline’ require that you also specify an order (int), e.g. df.interpolate(method='polynomial', order=5).
+            - 'krogh', 'piecewise_polynomial', 'spline', 'pchip', 'akima': Wrappers around the SciPy interpolation methods of similar names.
+            - 'from_derivatives': Refers to scipy.interpolate.BPoly.from_derivatives which replaces ‘piecewise_polynomial’ interpolation method in scipy 0.18.
+
+        For more information see: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.interpolate.html or https://docs.scipy.org/doc/scipy/reference/interpolate.html.
+
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+            
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        method : str, optional
+            Interpolation method, by default 'linear'
+
+        limit : int, optional
+            Maximum number of consecutive NaNs to fill. Must be greater than 0.
+
+        limit_area : {None, ‘inside’, ‘outside’}, default None
+            If limit is specified, consecutive NaNs will be filled with this restriction.
+
+            None: No fill restriction.
+            ‘inside’: Only fill NaNs surrounded by valid values (interpolate).
+            ‘outside’: Only fill NaNs outside valid values (extrapolate).
+        
+        Returns
+        -------
+        Clean:
+            Returns a deep copy of the Clean object.
+        """
+        
+        report_info = technique_reason_repo['clean']['general']['interpolate']
+
+        self._data_properties.x_train, self._data_properties.x_test = replace_missing_interpolate(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                list_of_cols=list_of_cols,
+                                                                                                method=method,
+                                                                                                **inter_kwargs)
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def replace_missing_backfill(self, *list_args, list_of_cols=[], **extra_kwargs):
+        """
+        Replaces missing values in a column with the next known data point.
+
+        This is useful when dealing with timeseries data and you want to replace data in the past with data from the future.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+            
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        
+        Returns
+        -------
+        Clean:
+            Returns a deep copy of the Clean object.
+        """
+
+        report_info = technique_reason_repo['clean']['general']['bfill']
+
+        self._data_properties.x_train, self._data_properties.x_test = replace_missing_fill(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                list_of_cols=list_of_cols,
+                                                                                                method='bfill',
+                                                                                                **extra_kwargs)
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def replace_missing_forwardfill(self, *list_args, list_of_cols=[], **extra_kwargs):
+        """
+        Replaces missing values in a column with the last known data point.
+
+        This is useful when dealing with timeseries data and you want to replace future missing data with the past.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+            
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        
+        Returns
+        -------
+        Clean:
+            Returns a deep copy of the Clean object.
+        """
+
+        report_info = technique_reason_repo['clean']['general']['ffill']
+
+        self._data_properties.x_train, self._data_properties.x_test = replace_missing_fill(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                list_of_cols=list_of_cols,
+                                                                                                method='ffill',
+                                                                                                **extra_kwargs)
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def replace_missing_indicator(self, *list_args, list_of_cols=[], missing_indicator=1, valid_indicator=0, keep_col=True):
+        """
+        Adds a new column describing whether data is missing for each record in a column.
+
+        This is useful if the missing data has meaning, aka not random.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+            
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        missing_indicator : int, optional
+            Value to indicate missing data, by default 1
+
+        valid_indicator : int, optional
+            Value to indicate non missing data, by default 0
+
+        keep_col : bool, optional
+            True to keep column, False to replace it, by default False
+        
+        Returns
+        -------
+        Clean:
+            Returns a deep copy of the Clean object.
+        """
+
+        report_info = technique_reason_repo['clean']['general']['indicator']
+
+        self._data_properties.x_train, self._data_properties.x_test = replace_missing_indicator(x_train=self._data_properties.x_train,
+                                                                                                x_test=self._data_properties.x_test,
+                                                                                                list_of_cols=list_of_cols,
+                                                                                                missing_indicator=missing_indicator,
+                                                                                                valid_indicator=valid_indicator,
+                                                                                                keep_col=keep_col)
+
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
