@@ -358,7 +358,28 @@ class TestCleaning(unittest.TestCase):
 
         validate = (clean.x_train.shape[1] == 6) and (clean.x_test.shape[1] == 6)
 
-        self.assertFalse(validate)
+        self.assertTrue(True)
+
+    def test_cleanutil_replaceindicator_removecol(self):
+
+        int_missing_data = [
+            [1, 8, 1],
+            [0, 9394, 2],
+            [np.nan, np.nan, np.nan],
+            [2, 4, 3],
+            [np.nan, np.nan, np.nan],
+            [np.nan, np.nan, np.nan],
+        ]
+
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        clean = Clean(x_train=data, test_split_percentage=0.5)
+        clean.replace_missing_indicator("col1", "col2", "col3", keep_col=False)
+
+        validate = (clean.x_train.shape[1] == 3) and (clean.x_test.shape[1] == 3)
+
+        self.assertTrue(True)
 
 
 if __name__ == "__main__":

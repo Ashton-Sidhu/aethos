@@ -367,9 +367,9 @@ def replace_missing_indicator(
                 x_train[col].isnull(),
             )
         )
-        x_train = drop_replace_columns(
-            x_train, col, x_train[col + "_missing"], keep_col
-        )
+
+        if not keep_col:
+            x_train = x_train.drop([col], axis=1)
 
         if x_test is not None:
             x_test[col + "_missing"] = list(
@@ -378,8 +378,8 @@ def replace_missing_indicator(
                     x_test[col].isnull(),
                 )
             )
-            x_test = drop_replace_columns(
-                x_test, col, x_test[col + "_missing"], keep_col
-            )
+
+            if not keep_col:
+                x_test = x_test.drop([col], axis=1)
 
     return x_train, x_test
