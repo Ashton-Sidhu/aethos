@@ -6,6 +6,10 @@ remove_rows_threshold
 remove_duplicate_rows
 remove_duplicate_columns
 replace_missing_random_discrete
+replace_missing_knn
+replace_missing_interpolate
+replace_missing_fill
+replace_missing_indicator
 """
 import warnings
 

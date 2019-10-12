@@ -295,7 +295,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5)
-        clean.replace_missing_interpolate("col1", "col2", "col3")
+        clean.replace_missing_interpolate("col1", "col2", "col3", limit_direction='both')
 
         validate = np.any(clean.x_train.isnull()) and np.any(clean.x_test.isnull())
 
