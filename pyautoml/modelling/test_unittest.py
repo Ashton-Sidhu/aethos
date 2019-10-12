@@ -68,7 +68,7 @@ class TestModelling(unittest.TestCase):
         model.summarize_gensim('data', ratio=0.5, run=False)
         validate = len(model._queued_models)
 
-        self.assertEquals(validate, 2)
+        self.assertEqual(validate, 2)
 
     def test_model_kmeans(self):
 
@@ -139,7 +139,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_logisticregression(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -151,7 +151,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_confusionmatrix(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -163,7 +163,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_report_confusionmatrix(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -175,7 +175,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_all_score_metrics(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -187,7 +187,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_report_classificationreport(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -199,7 +199,7 @@ class TestModelling(unittest.TestCase):
 
     def test_model_report_modelweights(self):
         
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -211,7 +211,7 @@ class TestModelling(unittest.TestCase):
 
     def test_plot_roccurve(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -223,7 +223,7 @@ class TestModelling(unittest.TestCase):
     
     def test_decision_plot(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -235,7 +235,7 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_all(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -247,7 +247,7 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_sameaxis(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -260,7 +260,7 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_misclassified(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -272,7 +272,7 @@ class TestModelling(unittest.TestCase):
 
     def test_force_plot(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -284,7 +284,7 @@ class TestModelling(unittest.TestCase):
 
     def test_force_plot_misclassified(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -296,7 +296,7 @@ class TestModelling(unittest.TestCase):
 
     def test_get_misclassified(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -308,7 +308,7 @@ class TestModelling(unittest.TestCase):
 
     def test_summaryplot(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -320,7 +320,7 @@ class TestModelling(unittest.TestCase):
 
     def test_dependence_plot(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -332,7 +332,7 @@ class TestModelling(unittest.TestCase):
 
     def test_local_multiprocessing(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -347,7 +347,7 @@ class TestModelling(unittest.TestCase):
 
     def test_local_seriesprocessing(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -364,7 +364,7 @@ class TestModelling(unittest.TestCase):
 
 
         train_data = np.random.random_sample(size=(1000,2))
-        label_data = np.random.random_integers(0, 1, size=(1000,1))
+        label_data = np.random.randint(0, 2, size=(1000,1))
 
         data = pd.DataFrame(data=train_data, columns=['col1', 'col2'])
         data['col3'] = label_data
@@ -377,7 +377,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_behaviour_dependence(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.4)
@@ -388,7 +388,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_predictions_all(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -400,7 +400,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_predictions_lime(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -412,7 +412,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_performance_all(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -424,7 +424,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_performance_roc(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -436,7 +436,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpret_model(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -448,7 +448,7 @@ class TestModelling(unittest.TestCase):
 
     def test_interpret_model_prerun(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -461,7 +461,7 @@ class TestModelling(unittest.TestCase):
 
     def test_comparemodels(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
@@ -477,7 +477,7 @@ class TestModelling(unittest.TestCase):
 
     def test_cv(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
@@ -487,7 +487,7 @@ class TestModelling(unittest.TestCase):
 
     def test_stratified_cv(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
@@ -497,7 +497,7 @@ class TestModelling(unittest.TestCase):
 
     def test_del_model(self):
 
-        data = np.random.random_integers(0, 1, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)

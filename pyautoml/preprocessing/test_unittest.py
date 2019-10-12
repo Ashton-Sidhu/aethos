@@ -73,7 +73,7 @@ class TestPreprocessing(unittest.TestCase):
         prep.stem_nltk('data')
         validate = prep.x_train.shape[1]
 
-        self.assertEquals(validate, 2)
+        self.assertEqual(validate, 2)
 
     def test_preprocess_nltksplit(self):
 

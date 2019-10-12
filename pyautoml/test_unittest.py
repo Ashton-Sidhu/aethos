@@ -199,7 +199,7 @@ class Test_TestBase(unittest.TestCase):
         base = MethodBase(x_train=data, x_test=None, split=True, target_field='', report_name="test", target_mapping=None, test_split_percentage=0.5)
         base._data_properties.target_field = "col3"
 
-        self.assertEquals('col3', base.target_field)
+        self.assertEqual('col3', base.target_field)
 
     def test_setter(self):
 
@@ -217,7 +217,7 @@ class Test_TestBase(unittest.TestCase):
 
         base.x_train = int_missing_data_rep
 
-        self.assertEquals(base.x_train, int_missing_data_rep)
+        self.assertEqual(base.x_train, int_missing_data_rep)
 
     def test_where(self):
 
