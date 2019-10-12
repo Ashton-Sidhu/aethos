@@ -3,11 +3,8 @@ from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
-from pyautoml.util import (
-    _contructor_data_properties,
-    _input_columns,
-    _numeric_input_conditions,
-)
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _numeric_input_conditions)
 
 
 class Clean(MethodBase):
@@ -646,6 +643,8 @@ class Clean(MethodBase):
         Replaces missing values in a column with the next known data point.
 
         This is useful when dealing with timeseries data and you want to replace data in the past with data from the future.
+
+        For more info view the following link: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.fillna.html
         
         Parameters
         ----------
@@ -682,6 +681,8 @@ class Clean(MethodBase):
         Replaces missing values in a column with the last known data point.
 
         This is useful when dealing with timeseries data and you want to replace future missing data with the past.
+
+        For more info view the following link: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.fillna.html
         
         Parameters
         ----------
