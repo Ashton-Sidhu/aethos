@@ -70,6 +70,10 @@ preprocess:
       Standardized the values in column(s) column_name_placeholder between 0 and 1 so all values in every column are in the same
       domain and range does not effect model weights.
 
+    robust: >
+      Standardized the values in column(s) column_name_placeholder between quantile ranges. This method removes the median and scales
+       the data according to the quantile range.
+
   text:
     split_sentence: >
       Text data was split into sentences to be used for futher analysis.

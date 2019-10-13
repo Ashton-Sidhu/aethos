@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml import Preprocess
 
 
@@ -18,12 +17,29 @@ class TestPreprocessing(unittest.TestCase):
         data = pd.DataFrame(unnormal_data, columns=columns)
 
         preprocess = Preprocess(x_train=data, test_split_percentage=0.5, split=False)
-        preprocess.normalize_numeric()
+        preprocess.normalize_numeric(keep_col=False)
         validate = preprocess.x_train.values.tolist()
 
         self.assertListEqual(validate, [[.375, 1.0, 0.0],
                                         [0, 0.5, 0.0],
                                         [1.0, 0, 0.0]])
+
+    def test_preprocessnumeric_robust(self):
+
+        unnormal_data = [[ 1., -2.,  2.],
+                        [ -2.,  1.,  3.],
+                        [ 4.,  1., -2.]]
+
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(unnormal_data, columns=columns)
+
+        preprocess = Preprocess(x_train=data, test_split_percentage=0.5, split=False)
+        preprocess.normalize_quantile_range(keep_col=False)
+        validate = preprocess.x_train.values.tolist()
+
+        self.assertListEqual(validate, [[ 0.,-2., 0.],
+                                        [-1., 0., 0.4],
+                                        [ 1., 0., -1.6]])
 
     def test_preprocess_traindata(self):
 

@@ -1,5 +1,4 @@
 import pandas as pd
-
 from pyautoml import *
 from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.preprocessing.categorical import *
@@ -28,13 +27,15 @@ class Preprocess(MethodBase):
             self.report.write_header("Preprocessing")
 
         
-    def normalize_numeric(self, *list_args, list_of_cols=[], **normalize_params):
+    def normalize_numeric(self, *list_args, list_of_cols=[], keep_col=True, **normalize_params):
         """
-        Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
+        Function that normalizes all numeric values between 2 values to bring features into same domain.
         
         If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
 
         If a list of columns is provided use the list, otherwise use arguments.
+
+        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html#sklearn.preprocessing.MinMaxScaler 
 
         This function can be found in `preprocess/numeric.py`     
         
@@ -46,9 +47,11 @@ class Preprocess(MethodBase):
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
 
+        feature_range : tuple(int or float, int or float), optional
+            Min and max range to normalize values to, by default (0, 1)
+
         normalize_params : dict, optional
-            Parmaters to pass into MinMaxScaler() constructor
-            from Scikit-Learn, by default {}
+            Parmaters to pass into MinMaxScaler() constructor from Scikit-Learn
         
         Returns
         -------
@@ -58,13 +61,83 @@ class Preprocess(MethodBase):
 
         report_info = technique_reason_repo['preprocess']['numeric']['standardize']
         
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = preprocess_normalize(x_train=self._data_properties.x_train,
+        self._data_properties.x_train, self._data_properties.x_test = scale(x_train=self._data_properties.x_train,
                                                                                             x_test=self._data_properties.x_test,
                                                                                             list_of_cols=list_of_cols,
+                                                                                            method='minmax',
+                                                                                            keep_col=keep_col,
                                                                                             **normalize_params,
+                                                                                            )
+
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train)
+                self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def normalize_quantile_range(self, *list_args, list_of_cols=[], keep_col=True, **robust_params):
+        """
+        Scale features using statistics that are robust to outliers.
+
+        This Scaler removes the median and scales the data according to the quantile range (defaults to IQR: Interquartile Range).
+        The IQR is the range between the 1st quartile (25th quantile) and the 3rd quartile (75th quantile).
+
+        Standardization of a dataset is a common requirement for many machine learning estimators.
+        Typically this is done by removing the mean and scaling to unit variance.
+        However, outliers can often influence the sample mean / variance in a negative way.
+        In such cases, the median and the interquartile range often give better results.
+        
+        If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
+
+        If a list of columns is provided use the list, otherwise use arguments.
+
+        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html#sklearn.preprocessing.RobustScaler
+
+        This function can be found in `preprocess/numeric.py`     
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        with_centering : boolean, True by default
+            If True, center the data before scaling.
+            This will cause transform to raise an exception when attempted on sparse matrices,
+            because centering them entails building a dense matrix which in common use cases is likely to be too large to fit in memory.
+        
+        with_scaling : boolean, True by default
+            If True, scale the data to interquartile range.
+
+        quantile_range : tuple (q_min, q_max), 0.0 < q_min < q_max < 100.0
+            Default: (25.0, 75.0) = (1st quantile, 3rd quantile) = IQR Quantile range used to calculate scale_.
+
+        robust_params : dict, optional
+            Parmaters to pass into MinMaxScaler() constructor from Scikit-Learn
+        
+        Returns
+        -------
+        Preprocess:
+            Returns a deep copy of the Preprocess object.
+        """
+
+        report_info = technique_reason_repo['preprocess']['numeric']['robust']
+        
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = scale(x_train=self._data_properties.x_train,
+                                                                                            x_test=self._data_properties.x_test,
+                                                                                            list_of_cols=list_of_cols,
+                                                                                            method='robust',
+                                                                                            keep_col=keep_col,
+                                                                                            **robust_params,
                                                                                             )
 
         if self.report is not None:
