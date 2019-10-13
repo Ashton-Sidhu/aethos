@@ -149,6 +149,47 @@ class Preprocess(MethodBase):
 
         return self.copy()
 
+    def normalize_log(self, *list_args, list_of_cols=[], base=1):
+        """
+        Scales data logarithmically.
+
+        Options are 1 for natural log, 2 for base2, 10 for base10.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        base : str, optional
+            Base to logarithmically scale by, by default ''
+        
+        Returns
+        -------
+        Preprocess:
+            Returns a deep copy of the Preprocess object.
+        """
+
+        report_info = technique_reason_repo['preprocess']['numeric']['log']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = log_scale(x_train=self._data_properties.x_train,
+                                                                                x_test=self._data_properties.x_test,
+                                                                                list_of_cols=list_of_cols,
+                                                                                base=base
+                                                                                )       
+
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train)
+                self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
 
     def split_sentences(self, *list_args, list_of_cols=[], new_col_name='_sentences'):
         """

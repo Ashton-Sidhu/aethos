@@ -74,6 +74,9 @@ preprocess:
       Standardized the values in column(s) column_name_placeholder between quantile ranges. This method removes the median and scales
        the data according to the quantile range.
 
+    log: >
+      Standardized the values in column(s) column_name_placeholder logarithmically.
+
   text:
     split_sentence: >
       Text data was split into sentences to be used for futher analysis.
