@@ -1,4 +1,5 @@
 import pandas as pd
+
 from pyautoml import *
 from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.preprocessing.categorical import *
@@ -412,7 +413,7 @@ class Preprocess(MethodBase):
         list_of_cols=[],
         regexp="",
         exceptions=[],
-        new_col_name="_rem_punct",
+        new_col_name="_rem_punct"
     ):
         """
         Removes punctuation from every string entry.
