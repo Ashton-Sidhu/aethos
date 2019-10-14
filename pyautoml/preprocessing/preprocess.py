@@ -4,12 +4,8 @@ from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import (
-    _contructor_data_properties,
-    _input_columns,
-    _numeric_input_conditions,
-    label_encoder,
-)
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _numeric_input_conditions, label_encoder)
 
 
 class Preprocess(MethodBase):
@@ -262,7 +258,7 @@ class Preprocess(MethodBase):
         )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -314,7 +310,7 @@ class Preprocess(MethodBase):
         )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -359,7 +355,7 @@ class Preprocess(MethodBase):
         )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -406,7 +402,7 @@ class Preprocess(MethodBase):
         )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -465,7 +461,7 @@ class Preprocess(MethodBase):
         )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 

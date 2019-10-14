@@ -103,6 +103,8 @@ feature:
       in the record, 0 otherwise.
 
   numeric:
+    poly: >
+      Derived polynomial features from column(s) column_name_placeholder.
 
   text:
     tfidf: >

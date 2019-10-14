@@ -26,7 +26,7 @@ class Feature(MethodBase):
             self.report.write_header("Feature Engineering")
 
 
-    def onehot_encode(self, *list_args, list_of_cols=[], keep_col=True, **onehot_params):
+    def onehot_encode(self, *list_args, list_of_cols=[], keep_col=True, **onehot_kwargs):
         """
         Creates a matrix of converted categorical columns into binary columns of ones and zeros.
 
@@ -44,7 +44,7 @@ class Feature(MethodBase):
             A parameter to specify whether to drop the column being transformed, by default
             keep the column, True
 
-        params : optional
+        onehot_kwargs : optional
             Parameters you would pass into Bag of Words constructor as a dictionary, by default handle_unknown=ignore}
         
         Returns
@@ -66,14 +66,14 @@ class Feature(MethodBase):
                                                                                             x_test=self._data_properties.x_test,
                                                                                             list_of_cols=list_of_cols,
                                                                                             keep_col=keep_col,
-                                                                                            **onehot_params)
+                                                                                            **onehot_kwargs)
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
 
-    def tfidf(self, *list_args, list_of_cols=[], keep_col=True, **tfidf_params):
+    def tfidf(self, *list_args, list_of_cols=[], keep_col=True, **tfidf_kwargs):
         """
         Creates a matrix of the tf-idf score for every word in the corpus as it pertains to each document.
 
@@ -95,7 +95,7 @@ class Feature(MethodBase):
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
 
-        tfidf_params : optional
+        tfidf_kwargs : optional
             Parameters you would pass into TFIDF constructor as a dictionary, by default {}
         
         Returns
@@ -113,7 +113,7 @@ class Feature(MethodBase):
                                                                                     x_test=self._data_properties.x_test,
                                                                                     list_of_cols=list_of_cols,
                                                                                     keep_col = keep_col,
-                                                                                    **tfidf_params,
+                                                                                    **tfidf_kwargs,
                                                                                     )
 
         if self.report is not None:
@@ -122,7 +122,7 @@ class Feature(MethodBase):
         return self.copy()
 
 
-    def bag_of_words(self, *list_args, list_of_cols=[], keep_col=True, **bow_params):
+    def bag_of_words(self, *list_args, list_of_cols=[], keep_col=True, **bow_kwargs):
         """
         Creates a matrix of how many times a word appears in a document.
 
@@ -143,7 +143,7 @@ class Feature(MethodBase):
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
 
-        bow_params : dict, optional
+        bow_kwargs : dict, optional
             Parameters you would pass into Bag of Words constructor, by default {}
         
         Returns
@@ -161,14 +161,13 @@ class Feature(MethodBase):
                                                                                             x_test=self._data_properties.x_test,
                                                                                             list_of_cols=list_of_cols,
                                                                                             keep_col=keep_col,
-                                                                                            **bow_params,
+                                                                                            **bow_kwargs,
                                                                                             )
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
 
         return self.copy()
-
 
     def postag_nltk(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
         """
@@ -207,6 +206,50 @@ class Feature(MethodBase):
 
         return self.copy()
 
+    def polynomial_features(self, *list_args, list_of_cols=[], **poly_kwargs):
+        """
+        Generate polynomial and interaction features.
+
+        Generate a new feature matrix consisting of all polynomial combinations of the features with degree less than or equal to the specified degree.
+        
+        For example, if an input sample is two dimensional and of the form [a, b], the degree-2 polynomial features are [1, a, b, a^2, ab, b^2].
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        degree : int
+            Degree of the polynomial features, by default 2
+
+        interaction_only : boolean, 
+            If true, only interaction features are produced: features that are products of at most degree distinct input features (so not x[1] ** 2, x[0] * x[2] ** 3, etc.).
+            by default = False
+        
+        Returns
+        -------
+        Feature:
+            Returns a deep copy of the Feature object.
+        """
+
+        report_info = technique_reason_repo['feature']['numeric']['poly']
+
+        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = polynomial_features(x_train=self._data_properties.x_train,
+                                                                                            x_test=self._data_properties.x_test,
+                                                                                            list_of_cols=list_of_cols,
+                                                                                            **poly_kwargs,
+                                                                                            )
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
 
     def apply(self, func, output_col: str, description=''):
         """

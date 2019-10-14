@@ -1,7 +1,7 @@
 import unittest
 
+import numpy as np
 import pandas as pd
-
 from pyautoml import Feature
 
 
@@ -155,6 +155,20 @@ class TestFeatureExtraction(unittest.TestCase):
         feature.encode_labels('col1', 'col2')
         
         self.assertTrue(True)
+
+    def test_feature_polynomial(self):
+
+        data = np.arange(6).reshape(3, 2)
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2',])
+
+        feature = Feature(x_train=data, test_split_percentage=0.33)
+        feature.polynomial_features()
+
+        validate = feature.x_train.shape[1] == 6 and feature.x_test.shape[1] == 6
+
+        self.assertTrue(validate)
+
 
 if __name__ == "__main__":
     unittest.main()
