@@ -42,6 +42,7 @@ jobs:
             pip3 install -r requirements.txt
             python3 -m textblob.download_corpora
             python3 -c 'import nltk; nltk.download("stopwords")'
+            python3 -m spacy download en
       - save_cache:
           key: v1-dependency-cache-{{ checksum "setup.py" }}
           paths:
@@ -71,6 +72,7 @@ jobs:
               pip3 install geopandas pyspark
               python3 -m textblob.download_corpora
               python3 -c 'import nltk; nltk.download("stopwords")'
+              python3 -m spacy download en
         - save_cache:
             key: v1-dependency-cache-{{ checksum "setup.py" }}
             paths:
@@ -102,6 +104,7 @@ jobs:
               pip3 install twine
               python3 -m textblob.download_corpora
               python3 -c 'import nltk; nltk.download("stopwords")'
+              python3 -m spacy download en
       - save_cache:
           key: v1-dependency-cache-{{ checksum "setup.py" }}
           paths:
