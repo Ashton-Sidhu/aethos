@@ -1,8 +1,45 @@
 """
 This file contains the following functions:
 
+pca
 apply
 """
+
+from sklearn.decomposition import PCA
+
+
+def pca(x_train, x_test=None, **pca_kwargs):
+    """
+    Performs Principal Component Analysis on a dataset.
+    
+    Parameters
+    ----------
+    x_train : DataFrame
+        Dataset
+
+    x_test : DataFrame
+        Testing dataset, by default None
+
+    pca_kwargs : dict or key word args
+        PCA properties
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with the new column
+
+    Returns 2 Dataframes if x_test is provided. 
+    """
+
+    pca = PCA(**pca_kwargs)
+
+    x_train = pca.fit_transform(x_train)
+
+    if x_test is not None:
+        x_test = pca.transform(x_test)
+
+    return x_train, x_test
+
 def apply(x_train, func, output_col: str, x_test=None):
     """
     Wrapper for pandas apply function to be used in this library. Applies `func` to the entire data

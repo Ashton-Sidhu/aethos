@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from pyautoml import Feature
 
 
@@ -98,7 +99,7 @@ class TestFeatureExtraction(unittest.TestCase):
                                         ["Other", 0, 1, 0, 1],
                                         ["Other", 1, 0, 0, 1]])
 
-    def test_featureextractiontext_postag(self):
+    def test_featureextractiontext_nltkpostag(self):
 
         normal_data = ["hi welcome to PyAutoML.",
                        "This application automates common Data Science/ML analysis tasks."]
@@ -106,9 +107,9 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5, split=False)
+        feature = Feature(x_train=data, test_split_percentage=0.5)
         feature.postag_nltk()
-        validate = len(feature.x_train.columns)
+        validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
         self.assertTrue(validate, 2)
 
@@ -166,6 +167,75 @@ class TestFeatureExtraction(unittest.TestCase):
         feature.polynomial_features()
 
         validate = feature.x_train.shape[1] == 6 and feature.x_test.shape[1] == 6
+
+        self.assertTrue(validate)
+
+    def test_featureextractiontext_spacypostag(self):
+
+        normal_data = ["hi welcome to PyAutoML.",
+                       "This application automates common Data Science/ML analysis tasks."]
+
+        columns = ["text"]
+        data = pd.DataFrame(normal_data, columns=columns)
+
+        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature.postag_spacy()
+        validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
+
+        self.assertTrue(validate, 2)
+
+    def test_featureextractiontext_spacyphrases(self):
+
+        normal_data = ["hi welcome to PyAutoML.",
+                       "This application automates common Data Science/ML analysis tasks."]
+
+        columns = ["text"]
+        data = pd.DataFrame(normal_data, columns=columns)
+
+        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature.nounphrases_spacy()
+        validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
+
+        self.assertTrue(validate, 2)
+
+    def test_featureextractiontext_nltkphrases(self):
+
+        normal_data = ["hi welcome to PyAutoML.",
+                       "This application automates common Data Science/ML analysis tasks."]
+
+        columns = ["text"]
+        data = pd.DataFrame(normal_data, columns=columns)
+
+        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature.nounphrases_nltk()
+        validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
+
+        self.assertTrue(validate, 2)
+
+    def test_featureextractiontext_hash_keepcol(self):
+
+        list_of_sentences = ['Hi my name is pyml',
+                             'Hi name pyml']
+
+        columns = ["text"]
+        data = pd.DataFrame(list_of_sentences, columns=columns)
+
+        feature = Feature(x_train=data,
+                          test_split_percentage=0.5)
+        feature.text_hash(keep_col=True, n_features=5)
+
+        self.assertTrue(True)
+
+    def test_feature_pca(self):
+
+        data = np.arange(6).reshape(3, 2)
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2',])
+
+        feature = Feature(x_train=data, test_split_percentage=0.33)
+        feature.pca(n_components=2)
+
+        validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
         self.assertTrue(validate)
 

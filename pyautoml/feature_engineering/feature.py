@@ -30,7 +30,7 @@ class Feature(MethodBase):
         """
         Creates a matrix of converted categorical columns into binary columns of ones and zeros.
 
-        If a list of columns is provided use the list, otherwise use arguemnts.
+        If a list of columns is provided use the list, otherwise use arguments.
     
         Parameters
         ----------
@@ -80,7 +80,7 @@ class Feature(MethodBase):
         The higher the score the more important a word is to a document, the lower the score (relative to the other scores)
         the less important a word is to a document.
 
-        If a list of columns is provided use the list, otherwise use arguemnts.
+        If a list of columns is provided use the list, otherwise use arguments.
 
         This function exists in `feature-extraction/text.py`
         
@@ -128,7 +128,7 @@ class Feature(MethodBase):
 
         The premise is that the more times a word appears the more the word represents that document.
 
-        If a list of columns is provided use the list, otherwise use arguemnts.
+        If a list of columns is provided use the list, otherwise use arguments.
 
         This function exists in `feature-extraction/text.py`
         
@@ -169,13 +169,74 @@ class Feature(MethodBase):
 
         return self.copy()
 
+    def text_hash(self, *list_args, list_of_cols=[], keep_col=True, **hash_kwargs):
+        """
+        Creates a matrix of how many times a word appears in a document. It can possibly normalized as token frequencies if norm=’l1’ or projected on the euclidean unit sphere if norm=’l2’.
+
+        The premise is that the more times a word appears the more the word represents that document.
+
+        This text vectorizer implementation uses the hashing trick to find the token string name to feature integer index mapping.
+
+        This strategy has several advantages:
+
+            It is very low memory scalable to large datasets as there is no need to store a vocabulary dictionary in memory
+            It is fast to pickle and un-pickle as it holds no state besides the constructor parameters
+            It can be used in a streaming (partial fit) or parallel pipeline as there is no state computed during fit.
+
+        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.HashingVectorizer.html
+
+        If a list of columns is provided use the list, otherwise use arguments.
+
+        This function exists in `feature-extraction/text.py`
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        keep_col : bool, optional
+            True if you want to keep the column(s) or False if you want to drop the column(s)
+
+        n_features : integer, default=(2 ** 20)
+            The number of features (columns) in the output matrices.
+            Small numbers of features are likely to cause hash collisions, but large numbers will cause larger coefficient dimensions in linear learners.
+
+        hash_kwargs : dict, optional
+            Parameters you would pass into Bag of Words constructor, by default {}
+        
+        Returns
+        -------
+        Feature:
+            Returns a deep copy of the Feature object.
+        """
+
+        report_info = technique_reason_repo['feature']['text']['hash']
+
+        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = feature_hash_vectorizer(x_train=self._data_properties.x_train,
+                                                                                            x_test=self._data_properties.x_test,
+                                                                                            list_of_cols=list_of_cols,
+                                                                                            keep_col=keep_col,
+                                                                                            **hash_kwargs,
+                                                                                            )
+
+        if self.report is not None:
+            self.report.report_technique(report_info, [])
+
+        return self.copy()
+
     def postag_nltk(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
         """
-        Tag documents with their respective "Part of Speech" tag. These tags classify a word as a
-        noun, verb, adjective, etc. A full list and their meaning can be found here:
+        Tag documents with their respective "Part of Speech" tag with the Textblob package which utilizes the NLTK NLP engine and Penn Treebank tag set.
+        These tags classify a word as a noun, verb, adjective, etc. A full list and their meaning can be found here:
         https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
 
-        If a list of columns is provided use the list, otherwise use arguemnts.
+        If a list of columns is provided use the list, otherwise use arguments.
         
         Parameters
         ----------
@@ -194,7 +255,7 @@ class Feature(MethodBase):
             Returns a deep copy of the Feature object.
         """
         
-        report_info = technique_reason_repo['feature']['text']['postag']
+        report_info = technique_reason_repo['feature']['text']['nltk_postag']
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
@@ -203,6 +264,113 @@ class Feature(MethodBase):
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
+
+        return self.copy()
+
+    def postag_spacy(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
+        """
+        Tag documents with their respective "Part of Speech" tag with the Spacy NLP engine and the Universal Dependencies scheme.
+        These tags classify a word as a noun, verb, adjective, etc. A full list and their meaning can be found here:
+        https://spacy.io/api/annotation#pos-tagging 
+
+        If a list of columns is provided use the list, otherwise use arguments.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_postagged`
+
+        Returns
+        -------
+        Feature:
+            Returns a deep copy of the Feature object.
+        """
+        
+        report_info = technique_reason_repo['feature']['text']['spacy_postag']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = spacy_feature_postag(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name)
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def nounphrases_nltk(self, *list_args, list_of_cols=[], new_col_name='_phrases'):
+        """
+        Extract noun phrases from text using the Textblob packages which uses the NLTK NLP engine.
+
+        If a list of columns is provided use the list, otherwise use arguments.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_phrases`
+
+        Returns
+        -------
+        Feature:
+            Returns a deep copy of the Feature object.
+        """
+        
+        report_info = technique_reason_repo['feature']['text']['nltk_np']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = nltk_feature_noun_phrases(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name)
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def nounphrases_spacy(self, *list_args, list_of_cols=[], new_col_name='_phrases'):
+        """
+        Extract noun phrases from text using the Textblob packages which uses the NLTK NLP engine.
+
+        If a list of columns is provided use the list, otherwise use arguments.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_phrases`
+
+        Returns
+        -------
+        Feature:
+            Returns a deep copy of the Feature object.
+        """
+        
+        report_info = technique_reason_repo['feature']['text']['spacy_np']
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = spacy_feature_noun_phrases(
+                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name)
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -326,5 +494,70 @@ class Feature(MethodBase):
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def pca(self, **pca_kwargs):
+        """
+        Reduces the dimensionality of the data using Principal Component Analysis.
+
+        This can be used to reduce complexity as well as speed up computation.
+
+        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html 
+
+        This function exists in `feature-extraction/util.py`
+        
+        Parameters
+        ----------
+        n_components : int, float, None or string
+            Number of components to keep.
+            
+            If n_components is not set all components are kept.
+            If n_components == 'mle' and svd_solver == 'full', Minka’s MLE is used to guess the dimension.
+            Use of n_components == 'mle' will interpret svd_solver == 'auto' as svd_solver == 'full'
+            If 0 < n_components < 1 and svd_solver == 'full', select the number of components such that the amount of variance that needs to be explained is greater than the percentage specified by n_components
+            If svd_solver == 'arpack', the number of components must be strictly less than the minimum of n_features and n_samples
+
+        whiten : bool, optional (default False)
+            When True (False by default) the components_ vectors are multiplied by the square root of n_samples and then divided by the singular values to ensure uncorrelated outputs with unit component-wise variances.
+            Whitening will remove some information from the transformed signal (the relative variance scales of the components) but can sometime improve the predictive accuracy of the downstream estimators by making their data respect some hard-wired assumptions.
+
+        svd_solver : string {‘auto’, ‘full’, ‘arpack’, ‘randomized’}
+            auto :
+                the solver is selected by a default policy based on X.shape and n_components: if the input data is larger than 500x500 and the number of components to extract is lower than 80% of the smallest dimension of the data, then the more efficient ‘randomized’ method is enabled. Otherwise the exact full SVD is computed and optionally truncated afterwards.
+            full :
+                run exact full SVD calling the standard LAPACK solver via scipy.linalg.svd and select the components by postprocessing
+            arpack :
+                run SVD truncated to n_components calling ARPACK solver via scipy.sparse.linalg.svds. It requires strictly 0 < n_components < min(X.shape)
+            randomized :
+                run randomized SVD by the method of Halko et al.
+
+        tol : float >= 0, optional (default .0)
+            Tolerance for singular values computed by svd_solver == ‘arpack’.
+
+        iterated_power : int >= 0, or ‘auto’, (default ‘auto’)
+            Number of iterations for the power method computed by svd_solver == ‘randomized’.
+
+        random_state : int, RandomState instance or None, optional (default None)
+            If int, random_state is the seed used by the random number generator;
+            If RandomState instance, random_state is the random number generator;
+            If None, the random number generator is the RandomState instance used by np.random.
+            Used when svd_solver == ‘arpack’ or ‘randomized’.
+        
+        Returns
+        -------
+        Feature:
+            Returns a deep copy of the Feature object.
+        """
+
+        report_info = technique_reason_repo['feature']['general']['pca']
+
+        self._data_properties.x_train, self._data_properties.x_test = pca(x_train=self._data_properties.x_train,
+                                                                                            x_test=self._data_properties.x_test,
+                                                                                            **pca_kwargs,
+                                                                                            )
+
+        if self.report is not None:
+            self.report.report_technique(report_info, [])
 
         return self.copy()
