@@ -96,6 +96,8 @@ preprocess:
 
 feature:
   general:
+    pca: >
+      Reduced the dimension of the data using Principal Component Analysis to speed up computation and reduce model complexity.
 
   categorical:
     onehotencode: >
@@ -114,9 +116,27 @@ feature:
     bow: >
       Converted text to a numeric representation where each number represents how many times a word occurs in a sample.
 
-    postag: >
-      Tagged each word with its Part of Speech tag where the tag represents whether a word is a Noun, Verb, Adjective, etc.
+    nltk_postag: >
+      Tagged each word with its Part of Speech tag where the tag represents whether a word is a Noun, Verb, Adjective, etc using the NLTK NLP engine.
 
+    spacy_postag: >
+      Tagged each word with its Part of Speech tag where the tag represents whether a word is a Noun, Verb, Adjective, etc using the Spacy NLP engine.
+
+    nltk_np : >
+      Extracted noun phrases using the NLTK NLP engine.
+
+    spacy_np : >
+      Extracted noun phrases using the Spacy NLP engine.
+
+    hash: >
+      Transformed text data using a hash.
+
+    w2v: >
+      Embedded the text data to capture the semantic relationships each word has with each other.
+
+    d2v: >
+      Embedded the text data to capture the semantic relationships each document has with each other.
+      
 model:
   text:
     textrank_keywords: >

@@ -20,6 +20,7 @@ interpret==0.1.17
 scikit_learn==0.21.3
 PyYAML==5.1.2
 impyute==0.0.8
+spacy==2.2.1
 SAlib
 dash
 lime
