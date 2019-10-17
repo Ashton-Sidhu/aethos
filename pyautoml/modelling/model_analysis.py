@@ -12,16 +12,78 @@ import seaborn as sns
 import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
+
 from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
                                                   MSFTInterpret, Shap)
 from pyautoml.visualizations.visualize import *
 
 SHAP_LEARNERS = {
-    sklearn.linear_model.LogisticRegression : 'linear'
+    sklearn.linear_model.LogisticRegression: 'linear',
+    sklearn.linear_model.BayesianRidge: 'linear',
+    sklearn.linear_model.ElasticNet: 'linear',
+    sklearn.linear_model.Lasso: 'linear',
+    sklearn.linear_model.LinearRegression: 'linear',
+    sklearn.linear_model.Ridge: 'linear',
+    sklearn.linear_model.RidgeClassifier: 'linear',
+    sklearn.linear_model.SGDClassifier: 'linear',
+    sklearn.linear_model.SGDRegressor: 'linear',
+    sklearn.ensemble.AdaBoostClassifier:,
+    sklearn.ensemble.AdaBoostRegressor:,
+    sklearn.ensemble.BaggingClassifier:,
+    sklearn.ensemble.BaggingRegressor:,
+    sklearn.ensemble.GradientBoostingClassifier:,
+    sklearn.ensemble.GradientBoostingRegressor:,
+    sklearn.ensemble.IsolationForest:,
+    sklearn.ensemble.RandomForestClassifier:,
+    sklearn.ensemble.RandomForestRegressor:,
+    sklearn.naive_bayes.BernoulliNB:,
+    sklearn.naive_bayes.GaussianNB:,
+    sklearn.naive_bayes.MultinomialNB:,
+    sklearn.tree.DecisionTreeClassifier:,
+    sklearn.tree.DecisionTreeRegressor:,
+    sklearn.svm.LinearSVC:,
+    sklearn.svm.LinearSVR:,
+    sklearn.svm.OneClassSVM:,
+    sklearn.svm.SVC:,
+    sklearn.svm.SVR:,
+
+
+
+        
 }
 
 PROBLEM_TYPE = {
-    sklearn.linear_model.LogisticRegression : 'classification'
+    sklearn.linear_model.LogisticRegression: 'classification',
+    sklearn.linear_model.BayesianRidge:,
+    sklearn.linear_model.ElasticNet:,
+    sklearn.linear_model.Lasso:,
+    sklearn.linear_model.LinearRegression: 'regression',
+    sklearn.linear_model.Ridge:,
+    sklearn.linear_model.RidgeClassifier: 'classification',
+    sklearn.linear_model.SGDClassifier: 'classification',
+    sklearn.linear_model.SGDRegressor: 'regression',
+    sklearn.ensemble.AdaBoostClassifier: 'classification',
+    sklearn.ensemble.AdaBoostRegressor: 'regression',
+    sklearn.ensemble.BaggingClassifier: 'classification',
+    sklearn.ensemble.BaggingRegressor: 'regression',
+    sklearn.ensemble.GradientBoostingClassifier: 'classification',
+    sklearn.ensemble.GradientBoostingRegressor: 'regression',
+    sklearn.ensemble.IsolationForest: ,
+    sklearn.ensemble.RandomForestClassifier: 'classification',
+    sklearn.ensemble.RandomForestRegressor: 'regression',
+    sklearn.naive_bayes.BernoulliNB:,
+    sklearn.naive_bayes.GaussianNB:,
+    sklearn.naive_bayes.MultinomialNB:,
+    sklearn.tree.DecisionTreeClassifier: 'classification',
+    sklearn.tree.DecisionTreeRegressor: 'regression',
+    sklearn.svm.LinearSVC: 'classification',
+    sklearn.svm.LinearSVR: 'regression',
+    sklearn.svm.OneClassSVM:,
+    sklearn.svm.SVC: 'classification',
+    sklearn.svm.SVR: 'regression',
+
+
+        
 }
 
 class ModelBase(object):
@@ -30,7 +92,6 @@ class ModelBase(object):
     # TODO: Add loss metrics
 
     def __init__(self, model_object, model, model_name):
-        
         self.model = model
         self.model_name = model_name
         self.x_train = model_object._data_properties.x_train
@@ -45,6 +106,10 @@ class ModelBase(object):
         else:
             self.shap = None
             self.interpret = None
+
+        for method in dir(self.model):
+            if not method.startswith('_') and not method.startswith('predict'):
+                self.__setattr__(getattr(self.model, method))
 
     def model_weights(self):
         """
