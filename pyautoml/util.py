@@ -297,7 +297,3 @@ def _set_item(x_train, x_test, column: str, value: list, train_length: int, test
         x_test[column] = value
 
     return x_train, x_test
-
-
-def _function_input_validation(a,b,c):
-    return

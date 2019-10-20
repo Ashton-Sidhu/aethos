@@ -8,8 +8,6 @@ from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import PorterStemmer
 from nltk.tokenize import RegexpTokenizer, word_tokenize
 
-from pyautoml.util import _function_input_validation
-
 NLTK_STEMMERS = {"porter": PorterStemmer()}
 
 NLTK_LEMMATIZERS = {"wordnet": WordNetLemmatizer()}
