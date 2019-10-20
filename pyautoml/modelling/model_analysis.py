@@ -46,10 +46,6 @@ SHAP_LEARNERS = {
     sklearn.svm.OneClassSVM:,
     sklearn.svm.SVC:,
     sklearn.svm.SVR:,
-
-
-
-        
 }
 
 PROBLEM_TYPE = {

@@ -4,6 +4,9 @@ import warnings
 
 from IPython import display
 from pathos.multiprocessing import Pool
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.linear_model import LogisticRegression
+
 from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
@@ -13,8 +16,6 @@ from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
                                      run_gridsearch)
 from pyautoml.util import (_contructor_data_properties, _input_columns,
                            _set_item, _validate_model_name)
-from sklearn.cluster import DBSCAN, KMeans
-from sklearn.linear_model import LogisticRegression
 
 # TODO: For classification implement probability predictions
 
@@ -669,9 +670,18 @@ class Model(MethodBase):
         random_state = kwargs.pop('random_state', 42)
         solver = kwargs.pop('solver', 'lbfgs')
         report_info = technique_reason_repo['model']['classification']['logreg']
-        cv_type, kwargs = _get_cv_type(cv_type, random_state, **kwargs)
 
         model = LogisticRegression(solver=solver, random_state=random_state, **kwargs)
+        self._run_model(LogisticRegression, model_name, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, solver=solver, random_state=random_state, **kwargs)
+
+
+    def _run_model(self, model_type, model_name, new_col_name, report_info, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, run=False, verbose=2, **model_kwargs):
+
+
+        random_state = model_kwargs.pop('random_state', 42)
+        cv_type, kwargs = _get_cv_type(cv_type, random_state, **kwargs)
+        
+        model = model_type(**model_kwargs)
 
         if cv:
             cv_scores = run_crossvalidation(model, self._data_properties.x_train, self._y_train, cv=cv_type, scoring=score, learning_curve=learning_curve)
