@@ -672,17 +672,20 @@ class Model(MethodBase):
         report_info = technique_reason_repo['model']['classification']['logreg']
 
         model = LogisticRegression(solver=solver, random_state=random_state, **kwargs)
-        self._run_model(LogisticRegression, model_name, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, solver=solver, random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, logreg_gridsearch, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
 
 
-    def _run_model(self, model_type, model_name, new_col_name, report_info, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, run=False, verbose=2, **model_kwargs):
+    def _run_model(self, model, model_name, model_type, new_col_name, default_gridsearch, report_info, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, run=False, verbose=2, **kwargs):
+        """
+        Helper function that generalizes model orchestration.
+        """
 
-
-        random_state = model_kwargs.pop('random_state', 42)
+        random_state = kwargs.pop('random_state', 42)
         cv_type, kwargs = _get_cv_type(cv_type, random_state, **kwargs)
         
-        model = model_type(**model_kwargs)
-
         if cv:
             cv_scores = run_crossvalidation(model, self._data_properties.x_train, self._y_train, cv=cv_type, scoring=score, learning_curve=learning_curve)
 
@@ -691,7 +694,7 @@ class Model(MethodBase):
                 return cv_scores
 
         if gridsearch:
-            model = run_gridsearch(model, gridsearch, logreg_gridsearch, cv_type, score, verbose=verbose)
+            model = run_gridsearch(model, gridsearch, default_gridsearch, cv_type, score, verbose=verbose)
         
         model.fit(self._data_properties.x_train, self._y_train)
 
@@ -709,6 +712,6 @@ class Model(MethodBase):
         if gridsearch:
             model = model.best_estimator_
 
-        self._models[model_name] = ClassificationModel(self, model_name, model, new_col_name)
+        self._models[model_name] = model_type(self, model_name, model, new_col_name)
 
         return self._models[model_name]

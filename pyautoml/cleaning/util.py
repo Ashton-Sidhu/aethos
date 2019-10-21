@@ -16,9 +16,8 @@ import warnings
 import numpy as np
 import pandas as pd
 from impyute.imputation.cs import fast_knn
+from pyautoml.util import drop_replace_columns
 from sklearn.impute import MissingIndicator
-
-from pyautoml.utilimport import drop_replace_columns
 
 
 def remove_columns_threshold(x_train, x_test=None, threshold=0.5):

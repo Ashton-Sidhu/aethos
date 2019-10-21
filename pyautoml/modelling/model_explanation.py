@@ -39,6 +39,15 @@ class Shap(object):
         elif learner == 'tree':
             self.explainer = shap.TreeExplainer(self.model)
             self.shap_interaction_values = self.explainer.shap_interaction_values(self.x_test)
+        elif learner == 'kernel':
+            med = self.x_train.median().values.reshape((1, self.x_train.shape[1]))
+
+            if hasattr(self.model, 'predict_proba'):
+                func = self.model.predict_proba
+            else:
+                func = self.model.predict
+
+            self.explainer = shap.KernelExplainer(func, med, link='logit')
         else:
             raise ValueError('Learner: {} is not supported yet.'.format(learner))
         

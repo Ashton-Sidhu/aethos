@@ -12,6 +12,7 @@ import seaborn as sns
 import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
+from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 
 from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
                                                   MSFTInterpret, Shap)
@@ -27,34 +28,34 @@ SHAP_LEARNERS = {
     sklearn.linear_model.RidgeClassifier: 'linear',
     sklearn.linear_model.SGDClassifier: 'linear',
     sklearn.linear_model.SGDRegressor: 'linear',
-    sklearn.ensemble.AdaBoostClassifier:,
-    sklearn.ensemble.AdaBoostRegressor:,
-    sklearn.ensemble.BaggingClassifier:,
-    sklearn.ensemble.BaggingRegressor:,
-    sklearn.ensemble.GradientBoostingClassifier:,
-    sklearn.ensemble.GradientBoostingRegressor:,
-    sklearn.ensemble.IsolationForest:,
-    sklearn.ensemble.RandomForestClassifier:,
-    sklearn.ensemble.RandomForestRegressor:,
-    sklearn.naive_bayes.BernoulliNB:,
-    sklearn.naive_bayes.GaussianNB:,
-    sklearn.naive_bayes.MultinomialNB:,
-    sklearn.tree.DecisionTreeClassifier:,
-    sklearn.tree.DecisionTreeRegressor:,
-    sklearn.svm.LinearSVC:,
-    sklearn.svm.LinearSVR:,
-    sklearn.svm.OneClassSVM:,
-    sklearn.svm.SVC:,
-    sklearn.svm.SVR:,
+    sklearn.ensemble.AdaBoostClassifier: 'kernel',
+    sklearn.ensemble.AdaBoostRegressor: 'kernel',
+    sklearn.ensemble.BaggingClassifier: 'kernel',
+    sklearn.ensemble.BaggingRegressor: 'kernel',
+    sklearn.ensemble.GradientBoostingClassifier: 'tree',
+    sklearn.ensemble.GradientBoostingRegressor: 'tree',
+    sklearn.ensemble.IsolationForest: 'tree',
+    sklearn.ensemble.RandomForestClassifier: 'tree',
+    sklearn.ensemble.RandomForestRegressor: 'tree',
+    BernoulliNB: 'kernel',
+    GaussianNB: 'kernel',
+    MultinomialNB: 'kernel',
+    sklearn.tree.DecisionTreeClassifier: 'tree',
+    sklearn.tree.DecisionTreeRegressor: 'tree',
+    sklearn.svm.LinearSVC: 'kernel',
+    sklearn.svm.LinearSVR: 'kernel',
+    sklearn.svm.OneClassSVM: 'kernel',
+    sklearn.svm.SVC: 'kernel',
+    sklearn.svm.SVR: 'kernel',
 }
 
 PROBLEM_TYPE = {
     sklearn.linear_model.LogisticRegression: 'classification',
-    sklearn.linear_model.BayesianRidge:,
-    sklearn.linear_model.ElasticNet:,
-    sklearn.linear_model.Lasso:,
+    sklearn.linear_model.BayesianRidge: 'regression',
+    sklearn.linear_model.ElasticNet: 'regression',
+    sklearn.linear_model.Lasso: 'regression',
     sklearn.linear_model.LinearRegression: 'regression',
-    sklearn.linear_model.Ridge:,
+    sklearn.linear_model.Ridge: 'regression',
     sklearn.linear_model.RidgeClassifier: 'classification',
     sklearn.linear_model.SGDClassifier: 'classification',
     sklearn.linear_model.SGDRegressor: 'regression',
@@ -64,22 +65,19 @@ PROBLEM_TYPE = {
     sklearn.ensemble.BaggingRegressor: 'regression',
     sklearn.ensemble.GradientBoostingClassifier: 'classification',
     sklearn.ensemble.GradientBoostingRegressor: 'regression',
-    sklearn.ensemble.IsolationForest: ,
+    sklearn.ensemble.IsolationForest: 'classification',
     sklearn.ensemble.RandomForestClassifier: 'classification',
     sklearn.ensemble.RandomForestRegressor: 'regression',
-    sklearn.naive_bayes.BernoulliNB:,
-    sklearn.naive_bayes.GaussianNB:,
-    sklearn.naive_bayes.MultinomialNB:,
+    sklearn.naive_bayes.BernoulliNB: 'classification',
+    sklearn.naive_bayes.GaussianNB: 'classification',
+    sklearn.naive_bayes.MultinomialNB: 'classification',
     sklearn.tree.DecisionTreeClassifier: 'classification',
     sklearn.tree.DecisionTreeRegressor: 'regression',
     sklearn.svm.LinearSVC: 'classification',
     sklearn.svm.LinearSVR: 'regression',
-    sklearn.svm.OneClassSVM:,
+    sklearn.svm.OneClassSVM: 'classification',
     sklearn.svm.SVC: 'classification',
-    sklearn.svm.SVR: 'regression',
-
-
-        
+    sklearn.svm.SVR: 'regression',       
 }
 
 class ModelBase(object):
@@ -105,7 +103,7 @@ class ModelBase(object):
 
         for method in dir(self.model):
             if not method.startswith('_') and not method.startswith('predict'):
-                self.__setattr__(getattr(self.model, method))
+                self.__setattr__(method, getattr(self.model, method))
 
     def model_weights(self):
         """
