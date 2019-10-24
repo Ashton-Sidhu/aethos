@@ -152,4 +152,87 @@ model:
       Ran DBSCAN clustering.
   classification:
     logreg: >
-      Ran Logistic Regression model.
+      Trained a Logistic Regression model.
+      
+    ridge_cls: >
+      Trained a Ridge Classification model.
+      
+    sgd_cls: >
+      Trained a classifier using SGD as the optimizer.
+      
+    ada_cls: >
+      Trained a ADABoosting Classifier.
+      
+    bag_cls: >
+      Trained a Bagging Classifier.
+      
+    grad_cls: >
+      Trained a Gradient Boosting Classifier.
+      
+    iso_forest: >
+      Trained an Isolation Forest model.
+      
+    rf_cls: >
+      Trained a Random Forest classifier.
+      
+    bern: >
+      Trained a Naive Bayes Bernoulli classififier.
+      
+    gauss: >
+      Trained a Naive Bayes Gaussian classifier.
+      
+    multi: >
+      Trained a Naive Bayes Multinomial classifier.
+      
+    dt_cls: >
+      Trained a Decision Tree Classifier.
+      
+    linsvc_cls: >
+      Trained a linear Support Vector Classifier.
+      
+    oneclass_cls: >
+      Trained a One Class Support Vector Machine.
+      
+    svc_cls: >
+      Trained a Support Vector Classifier.
+     
+  regression:
+    linreg: >
+      Trained a Linear Regression model.
+      
+    bay_reg: >
+      Trained a Bayesian Ridge Regression model.
+      
+    el_net: >
+      Trained an Elastic Net Regression model.
+      
+    lasso: >
+      Trained a Lasso Regression model.
+      
+    ridge_reg: >
+      Trained a Ridge Regression model.
+      
+    sgd_reg: >
+      Trained a regressor using SGD as the optimizer.
+      
+    ada_reg: >
+      Trained a ADABoosting Regressor.
+      
+    bag_reg: >
+      Trained a Bagging Regressor.
+      
+    grad_reg: >
+      Trained a Gradient Boosting Regressor.
+      
+    rf_reg: >
+      Trained a Random Forest Regressor.
+      
+    dt_reg: >
+      Trained a Decision Tree Regressor.
+      
+    linsvc_reg: >
+      Trained a linear Support Vector Regressor.
+      
+    svr_reg: >
+      Trained a Support Vector Regressor    
+
