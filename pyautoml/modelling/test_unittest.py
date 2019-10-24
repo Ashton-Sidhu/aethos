@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from pyautoml import Model
 
 
@@ -133,7 +134,11 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(x_train=data, target_field='col3', report_name='gridsearch_test')
-        model.logistic_regression(gridsearch=True, cv_type=2, run=True)
+        
+        gridsearch_params = {
+            'C': [0.2, 1]
+        }
+        model.logistic_regression(gridsearch=gridsearch_params, cv_type=2, run=True)
 
         self.assertTrue(True)
 
@@ -481,7 +486,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
-        model.logistic_regression(cv=True, cv_type=2, random_state=2, learning_curve=True)
+        model.logistic_regression(cv=2, random_state=2, learning_curve=True)
 
         self.assertTrue(True)
 
@@ -491,7 +496,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
-        cv_values = model.logistic_regression(cv=True, cv_type='strat-kfold', random_state=2, learning_curve=True, run=False)
+        cv_values = model.logistic_regression(cv='strat-kfold', random_state=2, learning_curve=True, run=False)
 
         self.assertIsNotNone(len(cv_values) == 5)
 

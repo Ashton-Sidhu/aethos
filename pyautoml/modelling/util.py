@@ -38,7 +38,7 @@ def get_default_args(func):
         if v.default is not inspect.Parameter.empty
     }
 
-def run_gridsearch(model, gridsearch, grid_params, cv=5, scoring='accuracy', **gridsearch_kwargs):
+def run_gridsearch(model, gridsearch, cv=5, scoring='accuracy', **gridsearch_kwargs):
     """
     Runs Gridsearch on a model
     
@@ -49,9 +49,6 @@ def run_gridsearch(model, gridsearch, grid_params, cv=5, scoring='accuracy', **g
 
     gridsearch : bool or dict
         True, False or custom grid to test
-
-    grid_params : dict
-        Dictionary of model params and values to test
 
     cv : int, Crossvalidation Generator, optional
         Cross validation method, by default 12
@@ -67,9 +64,7 @@ def run_gridsearch(model, gridsearch, grid_params, cv=5, scoring='accuracy', **g
 
     if isinstance(gridsearch, dict):
         gridsearch_grid = gridsearch
-    elif gridsearch == True:
-        gridsearch_grid = grid_params
-        print("Gridsearching with the following parameters: {}".format(grid_params))
+        print("Gridsearching with the following parameters: {}".format(gridsearch_grid))
     else:
         raise ValueError("Invalid Gridsearch input.")
 
@@ -156,8 +151,9 @@ def _get_cv_type(cv_type, random_state, **kwargs):
     
     Parameters
     ----------
-    cv_type : int or str
+    cv_type : int, str or None
         Crossvalidation type
+
     random_state : int
         Random seed
     
@@ -166,6 +162,9 @@ def _get_cv_type(cv_type, random_state, **kwargs):
     Cross Validation Generator
         CV Generator
     """
+
+    if not cv_type:
+        return None
             
     if isinstance(cv_type, int):
         cv_type = cv_type

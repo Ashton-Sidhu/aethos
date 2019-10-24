@@ -584,27 +584,17 @@ class Model(MethodBase):
 
     # NOTE: This entire process may need to be reworked.
     @add_to_queue
-    def logistic_regression(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="log_reg", new_col_name="log_predictions", run=False, verbose=2, **kwargs):
+    def logistic_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="log_reg", new_col_name="log_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a logistic regression model.
 
         For more Logistic Regression info, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
-
-        If no Logistic Regression parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
 
         If running cross-validation, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        If using GridSearch and no grid is specified the following default grid is used:
-            'penalty': ['l1', 'l2']
-            'max_iter': [100, 300, 1000]
-            'tol': [1e-4, 1e-3, 1e-2]
-            'warm_start': [True, False]
-            'C': [1e-2, 0.1, 1, 5, 10]
-            'solver': ['liblinear']
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -624,14 +614,11 @@ class Model(MethodBase):
         
         Parameters
         ----------
-        cv : bool, optional
-            If True run crossvalidation on the model, by default False.
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
 
-        gridsearch : bool or dict, optional
-            Parameters to gridsearch, if True, the default parameters would be used, by default False
-
-        cv_type : int, Crossvalidation Generator, optional
-            Cross validation method, by default 5
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -675,30 +662,22 @@ class Model(MethodBase):
 
         model = LogisticRegression(solver=solver, random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
 
         return model
 
     @add_to_queue
-    def ridge_classification(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="ridge_cls", new_col_name="ridge_cls_predictions", run=False, verbose=2, **kwargs):
+    def ridge_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ridge_cls", new_col_name="ridge_cls_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a Ridge Classification model.
 
-        For more Ridge Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html#sklearn.linear_model.RidgeClassifier
-
-        If no parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
+        For more Ridge Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html#sklearn.linear_model.RidgeClassifier        
 
         If running cross-validation, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        If using GridSearch and no grid is specified the following default grid is used:
-            'alpha': [1e-5, 1e-4, 1e-3, 1e-2, 0.1, 1, 3, 10]
-            'max_iter': [100, 300, 1000]
-            'tol': [1e-4, 1e-3, 1e-2]
-            'normalize': [True, False]
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -718,14 +697,11 @@ class Model(MethodBase):
         
         Parameters
         ----------
-        cv : bool, optional
-            If True run crossvalidation on the model, by default False.
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
 
-        gridsearch : bool or dict, optional
-            Parameters to gridsearch, if True, the default parameters would be used, by default False
-
-        cv_type : int, Crossvalidation Generator, optional
-            Cross validation method, by default 5
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -775,34 +751,22 @@ class Model(MethodBase):
 
         model = RidgeClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
 
         return model
 
     @add_to_queue
-    def sgd_classification(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="sgd_cls", new_col_name="sgd_cls_predictions", run=False, verbose=2, **kwargs):
+    def sgd_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="sgd_cls", new_col_name="sgd_cls_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a Linear classifier (SVM, logistic regression, a.o.) with SGD training.
 
         For more info please view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html#sklearn.linear_model.RidgeClassifier
-
-        If no parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
 
         If running cross-validation, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        If using GridSearch and no grid is specified the following default grid is used:
-            'alpha': [1e-5, 1e-4, 1e-3, 1e-2, 0.1, 1, 3, 10]
-            'max_iter': [100, 300, 1000]
-            'tol': [1e-4, 1e-3, 1e-2]
-            'warm_start': 'warm_start': [True, False],
-            'penalty': ['l1', 'l2', 'elasticnet'],
-            'learning_rate': ['invscaling', 'adaptive'],
-            'eta0': [1e-4, 1e-3, 1e-2, 0.1],
-            'epsilon': [1e-3, 1e-2, 0.1, 0]
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -822,14 +786,11 @@ class Model(MethodBase):
         
         Parameters
         ----------
-        cv : bool, optional
-            If True run crossvalidation on the model, by default False.
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
 
-        gridsearch : bool or dict, optional
-            Parameters to gridsearch, if True, the default parameters would be used, by default False
-
-        cv_type : int, Crossvalidation Generator, optional
-            Cross validation method, by default 5
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -944,28 +905,25 @@ class Model(MethodBase):
 
         model = SGDClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
 
         return model
 
     @add_to_queue
-    def adaboost_classification(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="ada_cls", new_col_name="ada_cls_predictions", run=False, verbose=2, **kwargs):
+    def adaboost_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ada_cls", new_col_name="ada_cls_predictions", run=False, verbose=2, **kwargs):
         """
         Trains an AdaBoost classification model.
 
-        For more AdaBoost info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html#sklearn.ensemble.AdaBoostClassifier
+        An AdaBoost [1] classifier is a meta-estimator that begins by fitting a classifier on the original dataset and then fits additional copies of the classifier on the same dataset
+        but where the weights of incorrectly classified instances are adjusted such that subsequent classifiers focus more on difficult cases.
 
-        If no parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
+        For more AdaBoost info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html#sklearn.ensemble.AdaBoostClassifier
 
         If running cross-validation, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        If using GridSearch and no grid is specified the following default grid is used:
-            'n_estimators': [2, 3, 5, 10, 25, 50, 100],
-            'learning_rate': [1e-5, 1e-4, 1e-3, 1e-2, 0.1, 1, 3, 10]
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -985,14 +943,11 @@ class Model(MethodBase):
         
         Parameters
         ----------
-        cv : bool, optional
-            If True run crossvalidation on the model, by default False.
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
 
-        gridsearch : bool or dict, optional
-            Parameters to gridsearch, if True, the default parameters would be used, by default False
-
-        cv_type : int, Crossvalidation Generator, optional
-            Cross validation method, by default 5
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -1033,33 +988,25 @@ class Model(MethodBase):
 
         model = AdaBoostClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
 
         return model
 
     @add_to_queue
-    def bagging_classification(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="bag_cls", new_col_name="bag_cls_predictions", run=False, verbose=2, **kwargs):
+    def bagging_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="bag_cls", new_col_name="bag_cls_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a Bagging classification model.
 
-        For more Bagging Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier
+        A Bagging classifier is an ensemble meta-estimator that fits base classifiers each on random subsets of the original dataset and then aggregate their individual predictions (either by voting or by averaging) to form a final prediction.
+        Such a meta-estimator can typically be used as a way to reduce the variance of a black-box estimator (e.g., a decision tree), by introducing randomization into its construction procedure and then making an ensemble out of it.
 
-        If no parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
+        For more Bagging Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier
 
         If running cross-validation, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        If using GridSearch and no grid is specified the following default grid is used:
-            'n_estimators': [2, 3, 5, 10, 25, 50, 100],
-            'max_samples': [0.1, 0.3, 0.5, 0.7, 1],
-            'max_features': [0.1, 0.3, 0.5, 0.7, 1],
-            'bootstrap': [True, False],
-            'bootstrap_features': [True, False],
-            'oob_score': [True, False],
-            'warm_start': [True, False]
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1079,14 +1026,11 @@ class Model(MethodBase):
         
         Parameters
         ----------
-        cv : bool, optional
-            If True run crossvalidation on the model, by default False.
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
 
-        gridsearch : bool or dict, optional
-            Parameters to gridsearch, if True, the default parameters would be used, by default False
-
-        cv_type : int, Crossvalidation Generator, optional
-            Cross validation method, by default 5
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -1146,33 +1090,26 @@ class Model(MethodBase):
 
         model = BaggingClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
 
         return model
 
     @add_to_queue
-    def gradient_boosting_classification(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="grad_cls", new_col_name="grad_cls_predictions", run=False, verbose=2, **kwargs):
+    def gradient_boosting_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="grad_cls", new_col_name="grad_cls_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a Gradient Boosting classification model.
 
-        For more Gradient Boosting Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier
+        GB builds an additive model in a forward stage-wise fashion; it allows for the optimization of arbitrary differentiable loss functions.
+        In each stage n_classes_ regression trees are fit on the negative gradient of the binomial or multinomial deviance loss function. 
+        Binary classification is a special case where only a single regression tree is induced.
 
-        If no parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
+        For more Gradient Boosting Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier   
 
         If running cross-validation, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        If using GridSearch and no grid is specified the following default grid is used:
-            'n_estimators': [2, 3, 5, 10, 25, 50, 100],
-            'max_samples': [0.1, 0.3, 0.5, 0.7, 1],
-            'max_features': [0.1, 0.3, 0.5, 0.7, 1],
-            'bootstrap': [True, False],
-            'bootstrap_features': [True, False],
-            'oob_score': [True, False],
-            'warm_start': [True, False]
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1193,22 +1130,19 @@ class Model(MethodBase):
         Parameters
         ----------
         cv : bool, optional
-            If True run crossvalidation on the model, by default False.
+            If True run crossvalidation on the model, by default None.
 
-        gridsearch : bool or dict, optional
-            Parameters to gridsearch, if True, the default parameters would be used, by default False
-
-        cv_type : int, Crossvalidation Generator, optional
-            Cross validation method, by default 5
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
         model_name : str, optional
-            Name for this model, by default "bag_cls"
+            Name for this model, by default "grad_cls"
 
         new_col_name : str, optional
-            Name of column for labels that are generated, by default "bag_cls_predictions"
+            Name of column for labels that are generated, by default "grad_cls_predictions"
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
@@ -1258,7 +1192,6 @@ class Model(MethodBase):
             The maximum depth limits the number of nodes in the tree.
             Tune this parameter for best performance; the best value depends on the interaction of the input variables.
 
-    
         max_features : int, float, string or None, optional (default=None)
             The number of features to consider when looking for the best split:
 
@@ -1302,34 +1235,28 @@ class Model(MethodBase):
 
         model = GradientBoostingClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
 
         return model
 
     @add_to_queue
-    def isolation_forest(self, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, model_name="iso_forest", new_col_name="iso_predictions", run=False, verbose=2, **kwargs):
+    def isolation_forest(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="iso_forest", new_col_name="iso_predictions", run=False, verbose=2, **kwargs):
         """
         Isolation Forest Algorithm
 
         Return the anomaly score of each sample using the IsolationForest algorithm
 
-        For more Isolation Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html#sklearn.ensemble.IsolationForest
+        Return the anomaly score of each sample using the IsolationForest algorithm
 
-        If no parameters are provided the random state is set to 42 so model results are consistent across multiple runs.
+        The IsolationForest ‘isolates’ observations by randomly selecting a feature and then randomly selecting a split value between the maximum and minimum values of the selected feature.
+
+        For more Isolation Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html#sklearn.ensemble.IsolationForest
 
         If running cross-validation, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        If using GridSearch and no grid is specified the following default grid is used:
-            'n_estimators': [2, 3, 5, 10, 25, 50, 100],
-            'max_features': [0.1, 0.3, 0.5, 0.7, 1],
-            'max_samples': [0.1, 0.3, 0.5, 0.7, 1],
-            'bootstrap': [True, False],
-            'contamination: [0, 1e-5, 1e-3, 0.1, 0.5],
-            'warm_start': [True, False]
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1349,14 +1276,11 @@ class Model(MethodBase):
         
         Parameters
         ----------
-        cv : bool, optional
-            If True run crossvalidation on the model, by default False.
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
 
-        gridsearch : bool or dict, optional
-            Parameters to gridsearch, if True, the default parameters would be used, by default False
-
-        cv_type : int, Crossvalidation Generator, optional
-            Cross validation method, by default 5
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
@@ -1415,28 +1339,875 @@ class Model(MethodBase):
 
         model = IsolationForest(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, cv_type=cv_type, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
 
         return model
 
+    @add_to_queue
+    def random_forest_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="rf_cls", new_col_name="rf_cls_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Random Forest classification model.
 
-    def _run_model(self, model, model_name, model_type, new_col_name, report_info, cv=False, gridsearch=False, cv_type=5, score='accuracy', learning_curve=False, run=False, verbose=2, **kwargs):
+        A random forest is a meta estimator that fits a number of decision tree classifiers on various sub-samples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting. 
+        The sub-sample size is always the same as the original input sample size but the samples are drawn with replacement if bootstrap=True (default).
+
+        For more Random Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "rf_cls"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "rf_cls_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+        
+        n_estimators : integer, optional (default=10)
+            The number of trees in the forest.
+
+        criterion : string, optional (default=”gini”)
+            The function to measure the quality of a split.
+            Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.
+            
+            Note: this parameter is tree-specific.
+
+        max_depth : integer or None, optional (default=None)
+            The maximum depth of the tree.
+            If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.
+
+        min_samples_split : int, float, optional (default=2)
+            The minimum number of samples required to split an internal node:
+
+                If int, then consider min_samples_split as the minimum number.
+                If float, then min_samples_split is a fraction and ceil(min_samples_split * n_samples) are the minimum number of samples for each split.
+
+        min_samples_leaf : int, float, optional (default=1)
+            The minimum number of samples required to be at a leaf node. A split point at any depth will only be considered if it leaves at least min_samples_leaf training samples in each of the left and right branches. This may have the effect of smoothing the model, especially in regression.
+
+                If int, then consider min_samples_leaf as the minimum number.
+                If float, then min_samples_leaf is a fraction and ceil(min_samples_leaf * n_samples) are the minimum number of samples for each node.
+
+        max_features : int, float, string or None, optional (default=”auto”)
+            The number of features to consider when looking for the best split:
+
+                If int, then consider max_features features at each split.
+                If float, then max_features is a fraction and int(max_features * n_features) features are considered at each split.
+                If “auto”, then max_features=sqrt(n_features).
+                If “sqrt”, then max_features=sqrt(n_features) (same as “auto”).
+                If “log2”, then max_features=log2(n_features).
+                If None, then max_features=n_features.
+
+            Note: the search for a split does not stop until at least one valid partition of the node samples is found, even if it requires to effectively inspect more than max_features features.
+        
+        max_leaf_nodes : int or None, optional (default=None)
+            Grow trees with max_leaf_nodes in best-first fashion.
+            Best nodes are defined as relative reduction in impurity. If None then unlimited number of leaf nodes.
+
+        min_impurity_decrease : float, optional (default=0.)
+            A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
+
+            The weighted impurity decrease equation is the following:
+
+            N_t / N * (impurity - N_t_R / N_t * right_impurity
+                                - N_t_L / N_t * left_impurity)
+
+            where N is the total number of samples, N_t is the number of samples at the current node, N_t_L is the number of samples in the left child, and N_t_R is the number of samples in the right child.
+
+            N, N_t, N_t_R and N_t_L all refer to the weighted sum, if sample_weight is passed.
+
+        bootstrap : boolean, optional (default=True)
+            Whether bootstrap samples are used when building trees. If False, the whole datset is used to build each tree.
+
+        oob_score : bool (default=False)
+            Whether to use out-of-bag samples to estimate the generalization accuracy.
+
+        class_weight : dict, list of dicts, “balanced”, “balanced_subsample” or None, optional (default=None)
+            Weights associated with classes in the form {class_label: weight}. If not given, all classes are supposed to have weight one. For multi-output problems, a list of dicts can be provided in the same order as the columns of y.
+            Note that for multioutput (including multilabel) weights should be defined for each class of every column in its own dict. For example, for four-class multilabel classification weights should be [{0: 1, 1: 1}, {0: 1, 1: 5}, {0: 1, 1: 1}, {0: 1, 1: 1}] instead of [{1:1}, {2:5}, {3:1}, {4:1}].
+            The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))
+            The “balanced_subsample” mode is the same as “balanced” except that weights are computed based on the bootstrap sample for every tree grown.
+            For multi-output, the weights of each column of y will be multiplied.
+
+            Note that these weights will be multiplied with sample_weight (passed through the fit method) if sample_weight is specified.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['classification']['rf_cls']
+
+        model = RandomForestClassifier(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def nb_bernoulli_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="bern", new_col_name="bern_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Bernoulli Naive Bayes classification model.
+
+        Like MultinomialNB, this classifier is suitable for discrete data.
+        The difference is that while MultinomialNB works with occurrence counts, BernoulliNB is designed for binary/boolean features.
+
+        For more Bernoulli Naive Bayes info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html#sklearn.naive_bayes.BernoulliNB
+        and https://scikit-learn.org/stable/modules/naive_bayes.html#gaussian-naive-bayes 
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default False.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "bern"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "bern_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+        
+        alpha : float, optional (default=1.0)
+            Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).
+
+        binarize : float or None, optional (default=0.0)
+            Threshold for binarizing (mapping to booleans) of sample features. If None, input is presumed to already consist of binary vectors.
+
+        fit_prior : boolean, optional (default=True)
+            Whether to learn class prior probabilities or not. If false, a uniform prior will be used.
+
+        class_prior : array-like, size=[n_classes,], optional (default=None)
+            Prior probabilities of the classes. If specified the priors are not adjusted according to the data.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+
+        report_info = technique_reason_repo['model']['classification']['bern']
+
+        model = BernoulliNB(**kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def nb_gaussian_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="gauss", new_col_name="gauss_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Gaussian Naive Bayes classification model.
+
+        For more Gaussian Naive Bayes info, you can view it here: https://scikit-learn.org/stable/modules/naive_bayes.html#gaussian-naive-bayes
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default False.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "gauss"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "gauss_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        priors : array-like, shape (n_classes,)
+            Prior probabilities of the classes. If specified the priors are not adjusted according to the data.
+
+        var_smoothing : float, optional (default=1e-9)
+            Portion of the largest variance of all features that is added to variances for calculation stability.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+                 
+        report_info = technique_reason_repo['model']['classification']['gauss']
+
+        model = GaussianNB(**kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def nb_multinomial_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="multi", new_col_name="multi_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Multinomial Naive Bayes classification model.
+
+        The multinomial Naive Bayes classifier is suitable for classification with discrete features (e.g., word counts for text classification). The multinomial distribution normally requires integer feature counts.
+        However, in practice, fractional counts such as tf-idf may also work.
+
+        For more Multinomial Naive Bayes info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html#sklearn.naive_bayes.MultinomialNB
+        and https://scikit-learn.org/stable/modules/naive_bayes.html#multinomial-naive-bayes 
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default False.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "multi"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "multi_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        alpha : float, optional (default=1.0)
+            Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).
+
+        fit_prior : boolean, optional (default=True)
+            Whether to learn class prior probabilities or not. If false, a uniform prior will be used.
+
+        class_prior : array-like, size (n_classes,), optional (default=None)
+            Prior probabilities of the classes. If specified the priors are not adjusted according to the data.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+        
+        report_info = technique_reason_repo['model']['classification']['multi']
+
+        model = MultinomialNB(**kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def decision_tree_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="dt_cls", new_col_name="dt_cls_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Decision Tree classification model.
+
+        For more Decision Tree info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html#sklearn.tree.DecisionTreeClassifier
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "dt_cls"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "dt_cls_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False   
+        	
+        criterion : string, optional (default=”gini”)
+            The function to measure the quality of a split.
+            Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.
+
+        splitter : string, optional (default=”best”)
+            The strategy used to choose the split at each node.
+            Supported strategies are “best” to choose the best split and “random” to choose the best random split.
+
+        max_depth : int or None, optional (default=None)
+            The maximum depth of the tree.
+            If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.
+
+        min_samples_split : int, float, optional (default=2)
+            The minimum number of samples required to split an internal node:
+
+                If int, then consider min_samples_split as the minimum number.
+                If float, then min_samples_split is a fraction and ceil(min_samples_split * n_samples) are the minimum number of samples for each split.
+
+        min_samples_leaf : int, float, optional (default=1)
+            The minimum number of samples required to be at a leaf node. A split point at any depth will only be considered if it leaves at least min_samples_leaf training samples in each of the left and right branches. This may have the effect of smoothing the model, especially in regression.
+
+                If int, then consider min_samples_leaf as the minimum number.
+                If float, then min_samples_leaf is a fraction and ceil(min_samples_leaf * n_samples) are the minimum number of samples for each node.
+
+        max_features : int, float, string or None, optional (default=None)
+            The number of features to consider when looking for the best split:
+
+                    If int, then consider max_features features at each split.
+                    If float, then max_features is a fraction and int(max_features * n_features) features are considered at each split.
+                    If “auto”, then max_features=sqrt(n_features).
+                    If “sqrt”, then max_features=sqrt(n_features).
+                    If “log2”, then max_features=log2(n_features).
+                    If None, then max_features=n_features.
+
+            Note: the search for a split does not stop until at least one valid partition of the node samples is found, even if it requires to effectively inspect more than max_features features.
+
+        max_leaf_nodes : int or None, optional (default=None)
+            Grow a tree with max_leaf_nodes in best-first fashion.
+            Best nodes are defined as relative reduction in impurity.
+            If None then unlimited number of leaf nodes.
+
+        min_impurity_decrease : float, optional (default=0.)
+            A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
+
+            The weighted impurity decrease equation is the following:
+
+            N_t / N * (impurity - N_t_R / N_t * right_impurity
+                                - N_t_L / N_t * left_impurity)
+
+            where N is the total number of samples, N_t is the number of samples at the current node, N_t_L is the number of samples in the left child, and N_t_R is the number of samples in the right child.
+
+            N, N_t, N_t_R and N_t_L all refer to the weighted sum, if sample_weight is passed.
+
+        min_impurity_split : float, (default=1e-7)
+            Threshold for early stopping in tree growth.
+            A node will split if its impurity is above the threshold, otherwise it is a leaf.
+
+        class_weight : dict, list of dicts, “balanced” or None, default=None
+            Weights associated with classes in the form {class_label: weight}.
+            If not given, all classes are supposed to have weight one.
+            For multi-output problems, a list of dicts can be provided in the same order as the columns of y.
+
+            Note that for multioutput (including multilabel) weights should be defined for each class of every column in its own dict.
+            For example, for four-class multilabel classification weights should be [{0: 1, 1: 1}, {0: 1, 1: 5}, {0: 1, 1: 1}, {0: 1, 1: 1}] instead of [{1:1}, {2:5}, {3:1}, {4:1}].
+
+            The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))
+
+            For multi-output, the weights of each column of y will be multiplied.
+
+            Note that these weights will be multiplied with sample_weight (passed through the fit method) if sample_weight is specified.
+
+        presort : bool, optional (default=False)
+            Whether to presort the data to speed up the finding of best splits in fitting.
+            For the default settings of a decision tree on large datasets, setting this to true may slow down the training process.
+            When using either a smaller dataset or a restricted depth, this may speed up the training.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['classification']['dt_cls']
+
+        model = DecisionTreeClassifier(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def linearsvc(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="linsvc_cls", new_col_name="linsvc_cls_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Linear Support Vector classification model.
+
+        Supports multi classification.
+
+        Similar to SVC with parameter kernel=’linear’, but implemented in terms of liblinear rather than libsvm, so it has more flexibility in the choice of penalties and loss functions and should scale better to large numbers of samples.
+        This class supports both dense and sparse input and the multiclass support is handled according to a one-vs-the-rest scheme.
+
+        For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html#sklearn.svm.LinearSVC
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "linsvc_cls"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "linsvc_cls_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        penalty : string, ‘l1’ or ‘l2’ (default=’l2’)
+            Specifies the norm used in the penalization.
+            The ‘l2’ penalty is the standard used in SVC.
+            The ‘l1’ leads to coef_ vectors that are sparse.
+
+        loss : string, ‘hinge’ or ‘squared_hinge’ (default=’squared_hinge’)
+            Specifies the loss function.            
+            ‘hinge’ is the standard SVM loss (used e.g. by the SVC class) while ‘squared_hinge’ is the square of the hinge loss.
+
+        dual : bool, (default=True)
+            Select the algorithm to either solve the dual or primal optimization problem.
+            Prefer dual=False when n_samples > n_features.
+
+        tol : float, optional (default=1e-4)
+            Tolerance for stopping criteria.
+
+        C : float, optional (default=1.0)
+            Penalty parameter C of the error term.
+
+        multi_class : string, ‘ovr’ or ‘crammer_singer’ (default=’ovr’)
+            Determines the multi-class strategy if y contains more than two classes.
+            "ovr" trains n_classes one-vs-rest classifiers, while "crammer_singer" optimizes a joint objective over all classes.
+            While crammer_singer is interesting from a theoretical perspective as it is consistent, it is seldom used in practice as it rarely leads to better accuracy and is more expensive to compute.
+            If "crammer_singer" is chosen, the options loss, penalty and dual will be ignored.
+
+        fit_intercept : boolean, optional (default=True)
+            Whether to calculate the intercept for this model.
+            If set to false, no intercept will be used in calculations (i.e. data is expected to be already centered).
+
+        intercept_scaling : float, optional (default=1)
+            When self.fit_intercept is True, instance vector x becomes [x, self.intercept_scaling], i.e. a “synthetic” feature with constant value equals to intercept_scaling is appended to the instance vector.
+            The intercept becomes intercept_scaling * synthetic feature weight Note! the synthetic feature weight is subject to l1/l2 regularization as all other features.
+            To lessen the effect of regularization on synthetic feature weight (and therefore on the intercept) intercept_scaling has to be increased.
+
+        class_weight : {dict, ‘balanced’}, optional
+            Set the parameter C of class i to class_weight[i]*C for SVC.
+            If not given, all classes are supposed to have weight one.
+            The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))
+       
+        max_iter : int, (default=1000)
+            The maximum number of iterations to be run.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['classification']['linsvc_cls']
+
+        model = LinearSVC(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+    
+    # TODO: Move this to an unsupervised model
+    @add_to_queue
+    def oneclass_svm(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ocsvm", new_col_name="ocsvm_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a One Class SVM model.
+
+        Unsupervised Outlier Detection.
+
+        For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html#sklearn.svm.OneClassSVM
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "ocsvm"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "ocsvm_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        kernel : string, optional (default=’rbf’)
+            Specifies the kernel type to be used in the algorithm.
+            It must be one of ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’ or a callable.
+            If none is given, ‘rbf’ will be used.
+            If a callable is given it is used to precompute the kernel matrix.
+
+        degree : int, optional (default=3)
+            Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
+
+        gamma : float, optional (default=’auto’)
+            Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.
+            Current default is ‘auto’ which uses 1 / n_features, if gamma='scale' is passed then it uses 1 / (n_features * X.var()) as value of gamma.
+
+        coef0 : float, optional (default=0.0)
+            Independent term in kernel function. It is only significant in ‘poly’ and ‘sigmoid’.
+
+        tol : float, optional
+            Tolerance for stopping criterion.
+
+        nu : float, optional
+            An upper bound on the fraction of training errors and a lower bound of the fraction of support vectors.
+            Should be in the interval (0, 1]. By default 0.5 will be taken.
+
+        shrinking : boolean, optional
+            Whether to use the shrinking heuristic.
+
+        cache_size : float, optional
+            Specify the size of the kernel cache (in MB).
+        
+        max_iter : int, optional (default=-1)
+            Hard limit on iterations within solver, or -1 for no limit.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+                 
+        report_info = technique_reason_repo['model']['classification']['oneclass_cls']
+
+        model = OneClassSVM(**kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def svc(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="svc", new_col_name="svc_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a C-Support Vector classification model.
+
+        Supports multi classification.
+
+        The fit time scales at least quadratically with the number of samples and may be impractical beyond tens of thousands of samples.
+        For large datasets consider using model.linearsvc or model.sgd_classification instead
+
+        The multiclass support is handled according to a one-vs-one scheme.
+
+        For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "linsvc_cls"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "linsvc_cls_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        C : float, optional (default=1.0)
+            Penalty parameter C of the error term.
+
+        kernel : string, optional (default=’rbf’)
+            Specifies the kernel type to be used in the algorithm.
+            It must be one of ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’ or a callable.
+            If none is given, ‘rbf’ will be used.
+            If a callable is given it is used to pre-compute the kernel matrix from data matrices; that matrix should be an array of shape (n_samples, n_samples).
+
+        degree : int, optional (default=3)
+            Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
+
+        gamma : float, optional (default=’auto’)
+            Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.
+            Current default is ‘auto’ which uses 1 / n_features, if gamma='scale' is passed then it uses 1 / (n_features * X.var()) as value of gamma.
+
+        coef0 : float, optional (default=0.0)
+            Independent term in kernel function. It is only significant in ‘poly’ and ‘sigmoid’.
+
+        shrinking : boolean, optional (default=True)
+            Whether to use the shrinking heuristic.
+
+        probability : boolean, optional (default=False)
+            Whether to enable probability estimates. This must be enabled prior to calling fit, and will slow down that method.
+
+        tol : float, optional (default=1e-3)
+            Tolerance for stopping criterion.
+
+        cache_size : float, optional
+            Specify the size of the kernel cache (in MB).
+
+        class_weight : {dict, ‘balanced’}, optional
+            Set the parameter C of class i to class_weight[i]*C for SVC.
+            If not given, all classes are supposed to have weight one.
+            The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))
+
+        max_iter : int, optional (default=-1)
+            Hard limit on iterations within solver, or -1 for no limit.
+
+        decision_function_shape : ‘ovo’, ‘ovr’, default=’ovr’
+            Whether to return a one-vs-rest (‘ovr’) decision function of shape (n_samples, n_classes) as all other classifiers,
+            or the original one-vs-one (‘ovo’) decision function of libsvm which has shape (n_samples, n_classes * (n_classes - 1) / 2).
+            However, one-vs-one (‘ovo’) is always used as multi-class strategy.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['classification']['svc_cls']
+
+        model = SVC(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    def _run_model(self, model, model_name, model_type, new_col_name, report_info, cv=None, gridsearch=None, score='accuracy', learning_curve=False, run=False, verbose=2, **kwargs):
         """
         Helper function that generalizes model orchestration.
         """
 
         random_state = kwargs.pop('random_state', 42)
-        cv_type, kwargs = _get_cv_type(cv_type, random_state, **kwargs)
+        cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
         
         if cv:
-            cv_scores = run_crossvalidation(model, self._data_properties.x_train, self._y_train, cv=cv_type, scoring=score, learning_curve=learning_curve)
+            cv_scores = run_crossvalidation(model, self._data_properties.x_train, self._y_train, cv=cv, scoring=score, learning_curve=learning_curve)
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
             if not run:
                 return cv_scores
 
         if gridsearch:
-            model = run_gridsearch(model, gridsearch, cv_type, score, verbose=verbose)
+            cv = cv if cv else 5            
+            model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
         
         model.fit(self._data_properties.x_train, self._y_train)
 

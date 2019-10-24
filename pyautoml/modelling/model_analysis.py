@@ -75,7 +75,7 @@ PROBLEM_TYPE = {
     sklearn.tree.DecisionTreeRegressor: 'regression',
     sklearn.svm.LinearSVC: 'classification',
     sklearn.svm.LinearSVR: 'regression',
-    sklearn.svm.OneClassSVM: 'classification',
+    sklearn.svm.OneClassSVM: 'classification', # TODO: Move to unsupervised
     sklearn.svm.SVC: 'classification',
     sklearn.svm.SVR: 'regression',       
 }
@@ -86,6 +86,7 @@ class ModelBase(object):
     # TODO: Add loss metrics
 
     def __init__(self, model_object, model, model_name):
+        
         self.model = model
         self.model_name = model_name
         self.x_train = model_object._data_properties.x_train
