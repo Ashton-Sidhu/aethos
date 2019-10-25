@@ -13,17 +13,20 @@ def add_to_queue(model_function):
     def wrapper(self, *args, **kwargs):
         default_kwargs = get_default_args(model_function)
 
-        kwargs['run'] = kwargs.get('run', default_kwargs['run'])
-        kwargs['model_name'] = kwargs.get('model_name', default_kwargs['model_name'])
-        cv = kwargs.get('cv', False)
+        kwargs["run"] = kwargs.get("run", default_kwargs["run"])
+        kwargs["model_name"] = kwargs.get("model_name", default_kwargs["model_name"])
+        cv = kwargs.get("cv", False)
 
-        if kwargs['run'] or cv:
+        if kwargs["run"] or cv:
             return model_function(self, *args, **kwargs)
         else:
-            kwargs['run'] = True
-            self._queued_models[kwargs['model_name']] = partial(model_function, self, *args, **kwargs)
-    
+            kwargs["run"] = True
+            self._queued_models[kwargs["model_name"]] = partial(
+                model_function, self, *args, **kwargs
+            )
+
     return wrapper
+
 
 def get_default_args(func):
     """
@@ -38,7 +41,8 @@ def get_default_args(func):
         if v.default is not inspect.Parameter.empty
     }
 
-def run_gridsearch(model, gridsearch, cv=5, scoring='accuracy', **gridsearch_kwargs):
+
+def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwargs):
     """
     Runs Gridsearch on a model
     
@@ -68,11 +72,16 @@ def run_gridsearch(model, gridsearch, cv=5, scoring='accuracy', **gridsearch_kwa
     else:
         raise ValueError("Invalid Gridsearch input.")
 
-    model = GridSearchCV(model, gridsearch_grid, cv=cv, scoring=scoring, **gridsearch_kwargs)
-    
+    model = GridSearchCV(
+        model, gridsearch_grid, cv=cv, scoring=scoring, **gridsearch_kwargs
+    )
+
     return model
 
-def run_crossvalidation(model, x_train, y_train, cv=5, scoring='accuracy', learning_curve=False):
+
+def run_crossvalidation(
+    model, x_train, y_train, cv=5, scoring="accuracy", learning_curve=False
+):
     """
     Runs cross validation on a certain model.
     
@@ -114,6 +123,7 @@ def run_crossvalidation(model, x_train, y_train, cv=5, scoring='accuracy', learn
 
     return visualizer_scores.cv_scores_
 
+
 def _run_models_parallel(model_obj):
     """
     Runs queued models in parallel
@@ -134,6 +144,7 @@ def _run_models_parallel(model_obj):
     p.close()
     p.join()
 
+
 def _run(model):
     """
     Runs a model
@@ -144,6 +155,7 @@ def _run(model):
         Trained model
     """
     return model()
+
 
 def _get_cv_type(cv_type, random_state, **kwargs):
     """
@@ -165,20 +177,22 @@ def _get_cv_type(cv_type, random_state, **kwargs):
 
     if not cv_type:
         return None, kwargs
-            
+
     if isinstance(cv_type, int):
         cv_type = cv_type
-    elif cv_type == 'kfold':
-        n_splits = kwargs.pop('n_splits', 5)
-        shuffle = kwargs.pop('shuffle', False)
+    elif cv_type == "kfold":
+        n_splits = kwargs.pop("n_splits", 5)
+        shuffle = kwargs.pop("shuffle", False)
 
         cv_type = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
-    elif cv_type == 'strat-kfold':
-        n_splits = kwargs.pop('n_splits', 5)
-        shuffle = kwargs.pop('shuffle', False)
+    elif cv_type == "strat-kfold":
+        n_splits = kwargs.pop("n_splits", 5)
+        shuffle = kwargs.pop("shuffle", False)
 
-        cv_type = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+        cv_type = StratifiedKFold(
+            n_splits=n_splits, shuffle=shuffle, random_state=random_state
+        )
     else:
-        raise ValueError('Cross Validation type is invalid.')
+        raise ValueError("Cross Validation type is invalid.")
 
     return cv_type, kwargs

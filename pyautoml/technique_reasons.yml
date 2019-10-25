@@ -150,6 +150,12 @@ model:
 
     dbscan: >
       Ran DBSCAN clustering.
+
+    oneclass_cls: >
+      Trained a One Class Support Vector Machine.
+
+    iso_forest: >
+      Trained an Isolation Forest model.
   classification:
     logreg: >
       Trained a Logistic Regression model.
@@ -169,9 +175,6 @@ model:
     grad_cls: >
       Trained a Gradient Boosting Classifier.
       
-    iso_forest: >
-      Trained an Isolation Forest model.
-      
     rf_cls: >
       Trained a Random Forest classifier.
       
@@ -189,9 +192,6 @@ model:
       
     linsvc: >
       Trained a linear Support Vector Classifier.
-      
-    oneclass_cls: >
-      Trained a One Class Support Vector Machine.
       
     svc: >
       Trained a Support Vector Classifier.

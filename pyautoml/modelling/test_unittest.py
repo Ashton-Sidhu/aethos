@@ -84,7 +84,6 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
-    
     def test_model_kmeans_split(self):
 
         data = [[1, 2], [2, 2], [2, 3],
@@ -124,6 +123,21 @@ class TestModelling(unittest.TestCase):
         validate = all(filtered.dbscan_clusters == 0)
 
         self.assertTrue(validate)
+
+    def test_model_unsupervised_defaultgridsearch(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3', report_name='gridsearch_test')
+        
+        gridsearch_params = {
+            'k': [1, 2]
+        }
+        model.kmeans(gridsearch=gridsearch_params, cv=2, run=True)
+
+        self.assertTrue(True)
 
     def test_model_defaultgridsearch(self):
 
@@ -490,6 +504,16 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(True)
 
+    def test_unsupervisedcv(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+        model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
+        model.kmeans(cv=2, random_state=2, learning_curve=True)
+
+        self.assertTrue(True)
+
     def test_stratified_cv(self):
 
         data = np.random.randint(0, 2, size=(1000,3))
@@ -571,18 +595,29 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
-    # TODO: Move to unsupervised
-    # def test_model_isoforest(self):
+    def test_model_isoforest(self):
 
-    #     data = np.random.randint(0, 2, size=(1000,3))
+        data = np.random.randint(0, 2, size=(1000,3))
 
-    #     data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-    #     model = Model(x_train=data, target_field='col3')
-    #     model.isolation_forest(random_state=2, run=True)
-    #     validate = model.iso_forest is not None
+        model = Model(x_train=data)
+        model.isolation_forest(random_state=2, run=True)
+        validate = model.iso_forest is not None
 
-    #     self.assertTrue(validate)
+        self.assertTrue(validate)
+
+    def test_model_oneclasssvm(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data)
+        model.oneclass_svm(run=True)
+        validate = model.ocsvm is not None
+
+        self.assertTrue(validate)
 
     def test_model_rfclassifier(self):
 
@@ -826,5 +861,4 @@ class TestModelling(unittest.TestCase):
         self.assertTrue(validate)
 
 if __name__ == "__main__":
-
     unittest.main()

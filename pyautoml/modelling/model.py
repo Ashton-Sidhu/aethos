@@ -1,18 +1,31 @@
-
 import multiprocessing
 import warnings
 
 from IPython import display
 from pathos.multiprocessing import Pool
 from sklearn.cluster import DBSCAN, KMeans
-from sklearn.ensemble import (AdaBoostClassifier, AdaBoostRegressor,
-                              BaggingClassifier, BaggingRegressor,
-                              GradientBoostingClassifier,
-                              GradientBoostingRegressor, IsolationForest,
-                              RandomForestClassifier, RandomForestRegressor)
-from sklearn.linear_model import (BayesianRidge, ElasticNet, Lasso,
-                                  LinearRegression, LogisticRegression, Ridge,
-                                  RidgeClassifier, SGDClassifier, SGDRegressor)
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    AdaBoostRegressor,
+    BaggingClassifier,
+    BaggingRegressor,
+    GradientBoostingClassifier,
+    GradientBoostingRegressor,
+    IsolationForest,
+    RandomForestClassifier,
+    RandomForestRegressor,
+)
+from sklearn.linear_model import (
+    BayesianRidge,
+    ElasticNet,
+    Lasso,
+    LinearRegression,
+    LogisticRegression,
+    Ridge,
+    RidgeClassifier,
+    SGDClassifier,
+    SGDRegressor,
+)
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
@@ -21,32 +34,67 @@ from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
-                                     add_to_queue, run_crossvalidation,
-                                     run_gridsearch)
-from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _set_item, _validate_model_name)
+from pyautoml.modelling.util import (
+    _get_cv_type,
+    _run_models_parallel,
+    add_to_queue,
+    run_crossvalidation,
+    run_gridsearch,
+)
+from pyautoml.util import (
+    _contructor_data_properties,
+    _input_columns,
+    _set_item,
+    _validate_model_name,
+)
 
 # TODO: For classification implement probability predictions
 
-class Model(MethodBase):
 
-    def __init__(self, step=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
-        
+class Model(MethodBase):
+    def __init__(
+        self,
+        step=None,
+        x_train=None,
+        x_test=None,
+        test_split_percentage=0.2,
+        split=True,
+        target_field="",
+        report_name=None,
+    ):
+
         _data_properties = _contructor_data_properties(step)
 
-        if _data_properties is None:        
-            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
-                        split=split, target_field=target_field, target_mapping=None, report_name=report_name)
+        if _data_properties is None:
+            super().__init__(
+                x_train=x_train,
+                x_test=x_test,
+                test_split_percentage=test_split_percentage,
+                split=split,
+                target_field=target_field,
+                target_mapping=None,
+                report_name=report_name,
+            )
         else:
-            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
-                        split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
-                        
+            super().__init__(
+                x_train=_data_properties.x_train,
+                x_test=_data_properties.x_test,
+                test_split_percentage=test_split_percentage,
+                split=_data_properties.split,
+                target_field=_data_properties.target_field,
+                target_mapping=_data_properties.target_mapping,
+                report_name=_data_properties.report_name,
+            )
+
         if self._data_properties.report is not None:
             self.report.write_header("Modelling")
 
         self._train_result_data = self._data_properties.x_train.copy()
-        self._test_result_data = self._data_properties.x_test.copy() if self._data_properties.x_test is not None else None
+        self._test_result_data = (
+            self._data_properties.x_test.copy()
+            if self._data_properties.x_test is not None
+            else None
+        )
 
         if self._data_properties.target_field:
             if split:
@@ -56,21 +104,33 @@ class Model(MethodBase):
                     self._data_properties.x_train = step._data_properties.x_train
                     self._data_properties.x_test = step._data_properties.x_test
                 else:
-                    self._y_train = self._data_properties.x_train[self._data_properties.target_field]
-                    self._y_test = self._data_properties.x_test[self._data_properties.target_field]
-                    self._data_properties.x_train = self._data_properties.x_train.drop([self._data_properties.target_field], axis=1)
-                    self._data_properties.x_test = self._data_properties.x_test.drop([self._data_properties.target_field], axis=1)
+                    self._y_train = self._data_properties.x_train[
+                        self._data_properties.target_field
+                    ]
+                    self._y_test = self._data_properties.x_test[
+                        self._data_properties.target_field
+                    ]
+                    self._data_properties.x_train = self._data_properties.x_train.drop(
+                        [self._data_properties.target_field], axis=1
+                    )
+                    self._data_properties.x_test = self._data_properties.x_test.drop(
+                        [self._data_properties.target_field], axis=1
+                    )
             else:
                 if isinstance(step, Model):
                     self._y_train = step._y_train
                     self._data_properties.x_train = step._data_properties.x_train
                 else:
-                    self._y_train = self._data_properties.x_train[self._data_properties.target_field]
-                    self._data_properties.x_train = self._data_properties.x_train.drop([self._data_properties.target_field], axis=1)
+                    self._y_train = self._data_properties.x_train[
+                        self._data_properties.target_field
+                    ]
+                    self._data_properties.x_train = self._data_properties.x_train.drop(
+                        [self._data_properties.target_field], axis=1
+                    )
 
         if isinstance(step, Model):
             self._models = step._models
-            self._queued_models = step._queued_models            
+            self._queued_models = step._queued_models
         else:
             self._models = {}
             self._queued_models = {}
@@ -85,7 +145,7 @@ class Model(MethodBase):
     def __getattr__(self, key):
 
         # For when doing multi processing when pickle is reconstructing the object
-        if key in {'__getstate__', '__setstate__'}:
+        if key in {"__getstate__", "__setstate__"}:
             return object.__getattr__(self, key)
 
         if key in self._models:
@@ -101,8 +161,8 @@ class Model(MethodBase):
             raise AttributeError(e)
 
     def __setattr__(self, key, value):
-        
-        if key not in self.__dict__:       # any normal attributes are handled normally
+
+        if key not in self.__dict__:  # any normal attributes are handled normally
             dict.__setattr__(self, key, value)
         else:
             self.__setitem__(key, value)
@@ -124,18 +184,38 @@ class Model(MethodBase):
                     ## If the number of entries in the list does not match the number of rows in the training or testing
                     ## set raise a value error
                     if len(value) != x_train_length and len(value) != x_test_length:
-                        raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(value))))
+                        raise ValueError(
+                            "Length of list: {} does not equal the number rows as the training set or test set.".format(
+                                str(len(value))
+                            )
+                        )
 
                     self._train_result_data, self._test_result_data = _set_item(
-                        self._train_result_data, self._test_result_data, key, value, x_train_length, x_test_length)
+                        self._train_result_data,
+                        self._test_result_data,
+                        key,
+                        value,
+                        x_train_length,
+                        x_test_length,
+                    )
 
                 elif isinstance(value, tuple):
                     for data in value:
                         if len(data) != x_train_length and len(data) != x_test_length:
-                            raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
+                            raise ValueError(
+                                "Length of list: {} does not equal the number rows as the training set or test set.".format(
+                                    str(len(data))
+                                )
+                            )
 
                         self._train_result_data, self._test_result_data = _set_item(
-                            self._train_result_data, self._test_result_data, key, data, x_train_length, x_test_length)
+                            self._train_result_data,
+                            self._test_result_data,
+                            key,
+                            data,
+                            x_train_length,
+                            x_test_length,
+                        )
 
                 else:
                     self._train_result_data[key] = value
@@ -145,11 +225,11 @@ class Model(MethodBase):
 
     def __repr__(self):
 
-        if SHELL == 'ZMQInteractiveShell':
-            
-            display(self._train_result_data.head()) # Hack for jupyter notebooks
+        if SHELL == "ZMQInteractiveShell":
 
-            return ''
+            display(self._train_result_data.head())  # Hack for jupyter notebooks
+
+            return ""
         else:
             return str(self._train_result_data.head())
 
@@ -158,7 +238,7 @@ class Model(MethodBase):
         """
         Property function for the training target data.
         """
-        
+
         return self._y_train
 
     @y_train.setter
@@ -168,7 +248,7 @@ class Model(MethodBase):
         """
 
         self._y_train = value
-        
+
     @property
     def y_test(self):
         """
@@ -203,7 +283,7 @@ class Model(MethodBase):
         """
 
         self._train_result_data = value
-        
+
     @property
     def x_test_results(self):
         """
@@ -211,16 +291,16 @@ class Model(MethodBase):
         """
 
         return self._test_result_data
-    
+
     @x_test_results.setter
     def x_test_results(self, value):
         """
         Setter for the test target data.
         """
 
-        self._test_result_data = value    
-    
-    def run_models(self, method='parallel'):
+        self._test_result_data = value
+
+    def run_models(self, method="parallel"):
         """
         Runs all queued models.
 
@@ -231,25 +311,27 @@ class Model(MethodBase):
         method : str, optional
             How to run models, can either be in 'series' or in 'parallel', by default 'parallel'
         """
-        
+
         num_ran_models = len(self._models)
-        
-        if method == 'parallel':
+
+        if method == "parallel":
             _run_models_parallel(self)
-        elif method == 'series':
+        elif method == "series":
             for model in self._queued_models:
                 self._queued_models[model]()
         else:
-            raise ValueError('Invalid run method, accepted run methods are either "parallel" or "series".')
+            raise ValueError(
+                'Invalid run method, accepted run methods are either "parallel" or "series".'
+            )
 
         if len(self._models) == (num_ran_models + len(self._queued_models)):
             self._queued_models = {}
-    
+
     def list_models(self):
         """
         Prints out all queued and ran models.
         """
-        
+
         print("######## QUEUED MODELS ########")
         if self._queued_models:
             for key in self._queued_models:
@@ -258,7 +340,7 @@ class Model(MethodBase):
             print("No queued models.")
 
         print()
-        
+
         print("######### RAN MODELS ##########")
         if self._models:
             for key in self._models:
@@ -283,7 +365,7 @@ class Model(MethodBase):
         elif name in self._models:
             del self._models[name]
         else:
-            raise ValueError('Model {} does not exist'.format(name))
+            raise ValueError("Model {} does not exist".format(name))
 
         self.list_models()
 
@@ -300,27 +382,37 @@ class Model(MethodBase):
         for model in self._models:
             results.append(self._models[model].metrics())
 
-        results_table = pd.concat(results, axis=1, join='inner')
+        results_table = pd.concat(results, axis=1, join="inner")
 
         def _highlight_optimal(x):
-            
-            if 'loss' in x.name.lower():
+
+            if "loss" in x.name.lower():
                 is_min = x == x.min()
-                return ['background-color: green' if v else '' for v in is_min]
+                return ["background-color: green" if v else "" for v in is_min]
             else:
                 is_max = x == x.max()
-                return ['background-color: green' if v else '' for v in is_max]
+                return ["background-color: green" if v else "" for v in is_max]
 
         results_table = results_table.style.apply(_highlight_optimal, axis=1)
 
         return results_table
 
+    ################### TEXT MODELS ########################
+
     # TODO: Abstract these functions out to a more general template
 
     @add_to_queue
-    def summarize_gensim(self, *list_args, list_of_cols=[], new_col_name="_summarized", model_name="model_summarize_gensim", run=False, **summarizer_kwargs):
+    def summarize_gensim(
+        self,
+        *list_args,
+        list_of_cols=[],
+        new_col_name="_summarized",
+        model_name="model_summarize_gensim",
+        run=False,
+        **summarizer_kwargs
+    ):
         """
-        Summarize bodies of text using Gensim's Text Rank algorith. Note that it uses a Text Rank variant as stated here:
+        Summarize bodies of text using Gensim's Text Rank algorithm. Note that it uses a Text Rank variant as stated here:
         https://radimrehurek.com/gensim/summarization/summariser.html
 
         The output summary will consist of the most representative sentences and will be returned as a string, divided by newlines.
@@ -356,23 +448,36 @@ class Model(MethodBase):
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
-    
-        report_info = technique_reason_repo['model']['text']['textrank_summarizer']
+
+        report_info = technique_reason_repo["model"]["text"]["textrank_summarizer"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name, **summarizer_kwargs)
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            new_col_name=new_col_name,
+            **summarizer_kwargs
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self, model_name)
 
-        return self._models[model_name]        
+        return self._models[model_name]
 
     @add_to_queue
-    def extract_keywords_gensim(self, *list_args, list_of_cols=[], new_col_name="_extracted_keywords", model_name="model_extracted_keywords_gensim", run=False, **keyword_kwargs):
+    def extract_keywords_gensim(
+        self,
+        *list_args,
+        list_of_cols=[],
+        new_col_name="_extracted_keywords",
+        model_name="model_extracted_keywords_gensim",
+        run=False,
+        **keyword_kwargs
+    ):
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
 
@@ -422,11 +527,16 @@ class Model(MethodBase):
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
-        report_info = technique_reason_repo['model']['text']['textrank_keywords']
+        report_info = technique_reason_repo["model"]["text"]["textrank_keywords"]
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self._train_result_data, self._test_result_data = gensim_textrank_keywords(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name, **keyword_kwargs)
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            new_col_name=new_col_name,
+            **keyword_kwargs
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -435,8 +545,21 @@ class Model(MethodBase):
 
         return self._models[model_name]
 
+    ################### UNSUPERVISED MODELS ########################
+
     @add_to_queue
-    def kmeans(self, model_name="kmeans", new_col_name="kmeans_clusters", run=False, **kmeans_kwargs):
+    def kmeans(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="kmeans",
+        new_col_name="kmeans_clusters",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         K-means clustering is one of the simplest and popular unsupervised machine learning algorithms.
 
@@ -446,18 +569,49 @@ class Model(MethodBase):
         In other words, the K-means algorithm identifies k number of centroids,
         and then allocates every data point to the nearest cluster, while keeping the centroids as small as possible.
 
-        For a list of all possible options for K Means clustering please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html 
+        For a list of all possible options for K Means clustering please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
         
+        Possible scoring metrics:
+            - ‘adjusted_mutual_info_score’ 	
+            - ‘adjusted_rand_score’ 	 
+            - ‘completeness_score’ 	 
+            - ‘fowlkes_mallows_score’ 	 
+            - ‘homogeneity_score’ 	 
+            - ‘mutual_info_score’ 	 
+            - ‘normalized_mutual_info_score’ 	 
+            - ‘v_measure_score’
+
         Parameters
         ----------
-        run : bool, optional
-            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'homogenity_score'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "kmeans"
 
         new_col_name : str, optional
             Name of column for labels that are generated, by default "kmeans_clusters"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
 
         n_clusters : int, optional, default: 8
             The number of clusters to form as well as the number of centroids to generate.
@@ -485,30 +639,43 @@ class Model(MethodBase):
                     
         Returns
         -------
-        ClusterModel
-            ClusterModel object to view results and further analysis
+        UnsupervisedModel
+            UnsupervisedModel object to view results and further analysis
         """
 
-        kmeans = KMeans(**kmeans_kwargs)
+        report_info = technique_reason_repo["model"]["unsupervised"]["kmeans"]
+        random_state = kwargs.pop("random_state", 42)
 
-        report_info = technique_reason_repo['model']['unsupervised']['kmeans']
+        model = KMeans(random_state=random_state, **kwargs)
 
-        kmeans.fit(self._data_properties.x_train)
+        model = self._run_unsupervised_model(
+            model,
+            model_name,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
 
-        self._train_result_data[new_col_name] = kmeans.labels_
-        
-        if self._data_properties.x_test is not None:
-            self._test_result_data[new_col_name] = kmeans.predict(self._data_properties.x_test)
-        
-        if self.report is not None:
-            self.report.report_technique(report_info)
-
-        self._models[model_name] = ClusterModel(self, model_name, kmeans, new_col_name)
-
-        return self._models[model_name]
+        return model
 
     @add_to_queue
-    def dbscan(self, model_name="dbscan", new_col_name="dbscan_clusters", run=False, **dbscan_kwargs):
+    def dbscan(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="homogenity_score",
+        learning_curve=False,
+        model_name="dbscan",
+        new_col_name="dbscan_clusters",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Based on a set of points (let’s think in a bidimensional space as exemplified in the figure), 
         DBSCAN groups together points that are close to each other based on a distance measurement (usually Euclidean distance) and a minimum number of points.
@@ -518,13 +685,44 @@ class Model(MethodBase):
         
         For a list of all possible options for DBSCAN please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html
 
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics:
+            - ‘adjusted_mutual_info_score’ 	
+            - ‘adjusted_rand_score’ 	 
+            - ‘completeness_score’ 	 
+            - ‘fowlkes_mallows_score’ 	 
+            - ‘homogeneity_score’ 	 
+            - ‘mutual_info_score’ 	 
+            - ‘normalized_mutual_info_score’ 	 
+            - ‘v_measure_score’
+
         Parameters
         ----------
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'homogenity_score'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "dbscan"
 
         new_col_name : str, optional
             Name of column for labels that are generated, by default "dbscan_clusters"
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
@@ -553,38 +751,288 @@ class Model(MethodBase):
         
         Returns
         -------
-        ClusterModel
-            ClusterModel object to view results and further analysis
+        UnsupervisedModel
+            UnsupervisedModel object to view results and further analysis
         """
 
-        dbscan = DBSCAN(**dbscan_kwargs)
+        report_info = technique_reason_repo["model"]["unsupervised"]["dbscan"]
 
-        report_info = technique_reason_repo['model']['unsupervised']['kmeans']
+        model = DBSCAN(**kwargs)
 
-        if not self._data_properties.split:
-            dbscan.fit(self._data_properties.x_train)
-            self._train_result_data[new_col_name] = dbscan.labels_
+        model = self._run_unsupervised_model(
+            model,
+            model_name,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
 
-        else:
-            warnings.warn(
-                'DBSCAN has no predict method, so training and testing data was combined and DBSCAN was trained on the full data. To access results you can use `.train_result_data`.')
+        return model
 
-            full_data = self._data_properties.x_train.append(
-                self._data_properties.x_test, ignore_index=True)
-            dbscan.fit(full_data)
-            self._train_result_data[new_col_name] = dbscan.labels_
+    @add_to_queue
+    def isolation_forest(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="iso_forest",
+        new_col_name="iso_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
+        """
+        Isolation Forest Algorithm
 
+        Return the anomaly score of each sample using the IsolationForest algorithm
 
-        if self.report is not None:
-            self.report.report_technique(report_info)
+        The IsolationForest ‘isolates’ observations by randomly selecting a feature and then randomly selecting a split value between the maximum and minimum values of the selected feature.
 
-        self._models[model_name] = ClusterModel(self, model_name, dbscan, new_col_name)
+        For more Isolation Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html#sklearn.ensemble.IsolationForest
 
-        return self._models[model_name]
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "iso_forest"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "iso_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        n_estimators : int, optional (default=100)
+            The number of base estimators in the ensemble.
+
+        max_samples : int or float, optional (default=”auto”)
+            The number of samples to draw from X to train each base estimator.
+
+                    If int, then draw max_samples samples.
+                    If float, then draw max_samples * X.shape[0] samples.
+                    If “auto”, then max_samples=min(256, n_samples).
+
+            If max_samples is larger than the number of samples provided, all samples will be used for all trees (no sampling).
+
+        contamination : float in (0., 0.5), optional (default=0.1)
+            The amount of contamination of the data set, i.e. the proportion of outliers in the data set.
+            Used when fitting to define the threshold on the decision function.
+            If ‘auto’, the decision function threshold is determined as in the original paper.
+
+        max_features : int or float, optional (default=1.0)
+            The number of features to draw from X to train each base estimator.
+
+                    If int, then draw max_features features.
+                    If float, then draw max_features * X.shape[1] features.
+
+        bootstrap : boolean, optional (default=False)
+            If True, individual trees are fit on random subsets of the training data sampled with replacement.
+            If False, sampling without replacement is performed.
+
+        Returns
+        -------
+        UnsupervisedModel
+            UnsupervisedModel object to view results and analyze results
+        """
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["unsupervised"]["iso_forest"]
+
+        model = IsolationForest(random_state=random_state, **kwargs)
+
+        model = self._run_unsupervised_model(
+            model,
+            model_name,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
+
+        return model
+
+    @add_to_queue
+    def oneclass_svm(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="ocsvm",
+        new_col_name="ocsvm_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
+        """
+        Trains a One Class SVM model.
+
+        Unsupervised Outlier Detection.
+
+        For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html#sklearn.svm.OneClassSVM
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "ocsvm"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "ocsvm_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        kernel : string, optional (default=’rbf’)
+            Specifies the kernel type to be used in the algorithm.
+            It must be one of ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’ or a callable.
+            If none is given, ‘rbf’ will be used.
+            If a callable is given it is used to precompute the kernel matrix.
+
+        degree : int, optional (default=3)
+            Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
+
+        gamma : float, optional (default=’auto’)
+            Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.
+            Current default is ‘auto’ which uses 1 / n_features, if gamma='scale' is passed then it uses 1 / (n_features * X.var()) as value of gamma.
+
+        coef0 : float, optional (default=0.0)
+            Independent term in kernel function. It is only significant in ‘poly’ and ‘sigmoid’.
+
+        tol : float, optional
+            Tolerance for stopping criterion.
+
+        nu : float, optional
+            An upper bound on the fraction of training errors and a lower bound of the fraction of support vectors.
+            Should be in the interval (0, 1]. By default 0.5 will be taken.
+
+        shrinking : boolean, optional
+            Whether to use the shrinking heuristic.
+
+        cache_size : float, optional
+            Specify the size of the kernel cache (in MB).
+        
+        max_iter : int, optional (default=-1)
+            Hard limit on iterations within solver, or -1 for no limit.
+
+        Returns
+        -------
+        UnsupervisedModel
+            UnsupervisedModel object to view results and analyze results
+        """
+
+        report_info = technique_reason_repo["model"]["unsupervised"]["oneclass_cls"]
+
+        model = OneClassSVM(**kwargs)
+
+        model = self._run_unsupervised_model(
+            model,
+            model_name,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
+
+        return model
+
+    ################### REGRESSION MODELS ########################
 
     # NOTE: This entire process may need to be reworked.
     @add_to_queue
-    def logistic_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="log_reg", new_col_name="log_predictions", run=False, verbose=2, **kwargs):
+    def logistic_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="log_reg",
+        new_col_name="log_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a logistic regression model.
 
@@ -655,19 +1103,43 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
- 
-        random_state = kwargs.pop('random_state', 42)
-        solver = kwargs.pop('solver', 'lbfgs')
-        report_info = technique_reason_repo['model']['classification']['logreg']
+
+        random_state = kwargs.pop("random_state", 42)
+        solver = kwargs.pop("solver", "lbfgs")
+        report_info = technique_reason_repo["model"]["classification"]["logreg"]
 
         model = LogisticRegression(solver=solver, random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def ridge_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ridge_cls", new_col_name="ridge_cls_predictions", run=False, verbose=2, **kwargs):
+    def ridge_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="ridge_cls",
+        new_col_name="ridge_cls_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Ridge Classification model.
 
@@ -745,18 +1217,42 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['ridge_cls']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["ridge_cls"]
 
         model = RidgeClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def sgd_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="sgd_cls", new_col_name="sgd_cls_predictions", run=False, verbose=2, **kwargs):
+    def sgd_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="sgd_cls",
+        new_col_name="sgd_cls_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Linear classifier (SVM, logistic regression, a.o.) with SGD training.
 
@@ -892,18 +1388,42 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['sgd_cls']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["sgd_cls"]
 
         model = SGDClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def adaboost_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ada_cls", new_col_name="ada_cls_predictions", run=False, verbose=2, **kwargs):
+    def adaboost_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="ada_cls",
+        new_col_name="ada_cls_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains an AdaBoost classification model.
 
@@ -975,18 +1495,42 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['ada_cls']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["ada_cls"]
 
         model = AdaBoostClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def bagging_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="bag_cls", new_col_name="bag_cls_predictions", run=False, verbose=2, **kwargs):
+    def bagging_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="bag_cls",
+        new_col_name="bag_cls_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Bagging classification model.
 
@@ -1073,18 +1617,42 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['bag_cls']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["bag_cls"]
 
         model = BaggingClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def gradient_boosting_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="grad_cls", new_col_name="grad_cls_predictions", run=False, verbose=2, **kwargs):
+    def gradient_boosting_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="grad_cls",
+        new_col_name="grad_cls_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Gradient Boosting classification model.
 
@@ -1218,118 +1786,42 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['grad_cls']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["grad_cls"]
 
         model = GradientBoostingClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def isolation_forest(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="iso_forest", new_col_name="iso_predictions", run=False, verbose=2, **kwargs):
-        """
-        Isolation Forest Algorithm
-
-        Return the anomaly score of each sample using the IsolationForest algorithm
-
-        Return the anomaly score of each sample using the IsolationForest algorithm
-
-        The IsolationForest ‘isolates’ observations by randomly selecting a feature and then randomly selecting a split value between the maximum and minimum values of the selected feature.
-
-        For more Isolation Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html#sklearn.ensemble.IsolationForest
-
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        Possible scoring metrics: 
-            - ‘accuracy’ 	
-            - ‘balanced_accuracy’ 	
-            - ‘average_precision’ 	
-            - ‘brier_score_loss’ 	
-            - ‘f1’ 	
-            - ‘f1_micro’ 	
-            - ‘f1_macro’ 	
-            - ‘f1_weighted’ 	
-            - ‘f1_samples’ 	
-            - ‘neg_log_loss’ 	
-            - ‘precision’	
-            - ‘recall’ 	
-            - ‘jaccard’ 	
-            - ‘roc_auc’
-        
-        Parameters
-        ----------
-        cv : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        gridsearch : dict, optional
-            Parameters to gridsearch, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
-
-        model_name : str, optional
-            Name for this model, by default "iso_forest"
-
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "iso_predictions"
-
-        run : bool, optional
-            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
-
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
-
-        n_estimators : int, optional (default=100)
-            The number of base estimators in the ensemble.
-
-        max_samples : int or float, optional (default=”auto”)
-            The number of samples to draw from X to train each base estimator.
-
-                    If int, then draw max_samples samples.
-                    If float, then draw max_samples * X.shape[0] samples.
-                    If “auto”, then max_samples=min(256, n_samples).
-
-            If max_samples is larger than the number of samples provided, all samples will be used for all trees (no sampling).
-
-        contamination : float in (0., 0.5), optional (default=0.1)
-            The amount of contamination of the data set, i.e. the proportion of outliers in the data set.
-            Used when fitting to define the threshold on the decision function.
-            If ‘auto’, the decision function threshold is determined as in the original paper.
-
-        max_features : int or float, optional (default=1.0)
-            The number of features to draw from X to train each base estimator.
-
-                    If int, then draw max_features features.
-                    If float, then draw max_features * X.shape[1] features.
-
-        bootstrap : boolean, optional (default=False)
-            If True, individual trees are fit on random subsets of the training data sampled with replacement.
-            If False, sampling without replacement is performed.
-
-        Returns
-        -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
-        """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['iso_forest']
-
-        model = IsolationForest(random_state=random_state, **kwargs)
-
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
-
-        return model
-
-    @add_to_queue
-    def random_forest_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="rf_cls", new_col_name="rf_cls_predictions", run=False, verbose=2, **kwargs):
+    def random_forest_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="rf_cls",
+        new_col_name="rf_cls_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Random Forest classification model.
 
@@ -1456,18 +1948,42 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['rf_cls']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["rf_cls"]
 
         model = RandomForestClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def nb_bernoulli_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="bern", new_col_name="bern_predictions", run=False, verbose=2, **kwargs):
+    def nb_bernoulli_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="bern",
+        new_col_name="bern_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Bernoulli Naive Bayes classification model.
 
@@ -1540,16 +2056,39 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
-        report_info = technique_reason_repo['model']['classification']['bern']
+        report_info = technique_reason_repo["model"]["classification"]["bern"]
 
         model = BernoulliNB(**kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def nb_gaussian_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="gauss", new_col_name="gauss_predictions", run=False, verbose=2, **kwargs):
+    def nb_gaussian_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="gauss",
+        new_col_name="gauss_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Gaussian Naive Bayes classification model.
 
@@ -1611,17 +2150,40 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        report_info = technique_reason_repo['model']['classification']['gauss']
+
+        report_info = technique_reason_repo["model"]["classification"]["gauss"]
 
         model = GaussianNB(**kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def nb_multinomial_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="multi", new_col_name="multi_predictions", run=False, verbose=2, **kwargs):
+    def nb_multinomial_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="multi",
+        new_col_name="multi_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Multinomial Naive Bayes classification model.
 
@@ -1690,17 +2252,40 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
-        report_info = technique_reason_repo['model']['classification']['multi']
+
+        report_info = technique_reason_repo["model"]["classification"]["multi"]
 
         model = MultinomialNB(**kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def decision_tree_classification(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="dt_cls", new_col_name="dt_cls_predictions", run=False, verbose=2, **kwargs):
+    def decision_tree_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="dt_cls",
+        new_col_name="dt_cls_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Decision Tree classification model.
 
@@ -1832,18 +2417,42 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['dt_cls']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["dt_cls"]
 
         model = DecisionTreeClassifier(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def linearsvc(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="linsvc", new_col_name="linsvc_predictions", run=False, verbose=2, **kwargs):
+    def linearsvc(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="linsvc",
+        new_col_name="linsvc_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Linear Support Vector classification model.
 
@@ -1946,119 +2555,42 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['linsvc']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["linsvc"]
 
         model = LinearSVC(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
-
-        return model
-    
-    # TODO: Move this to an unsupervised model
-    @add_to_queue
-    def oneclass_svm(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ocsvm", new_col_name="ocsvm_predictions", run=False, verbose=2, **kwargs):
-        """
-        Trains a One Class SVM model.
-
-        Unsupervised Outlier Detection.
-
-        For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html#sklearn.svm.OneClassSVM
-
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        Possible scoring metrics: 
-            - ‘accuracy’ 	
-            - ‘balanced_accuracy’ 	
-            - ‘average_precision’ 	
-            - ‘brier_score_loss’ 	
-            - ‘f1’ 	
-            - ‘f1_micro’ 	
-            - ‘f1_macro’ 	
-            - ‘f1_weighted’ 	
-            - ‘f1_samples’ 	
-            - ‘neg_log_loss’ 	
-            - ‘precision’	
-            - ‘recall’ 	
-            - ‘jaccard’ 	
-            - ‘roc_auc’
-        
-        Parameters
-        ----------
-        cv : bool, optional
-            If True run crossvalidation on the model, by default None.
-
-        gridsearch : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
-
-        model_name : str, optional
-            Name for this model, by default "ocsvm"
-
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "ocsvm_predictions"
-
-        run : bool, optional
-            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
-
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
-
-        kernel : string, optional (default=’rbf’)
-            Specifies the kernel type to be used in the algorithm.
-            It must be one of ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’ or a callable.
-            If none is given, ‘rbf’ will be used.
-            If a callable is given it is used to precompute the kernel matrix.
-
-        degree : int, optional (default=3)
-            Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
-
-        gamma : float, optional (default=’auto’)
-            Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.
-            Current default is ‘auto’ which uses 1 / n_features, if gamma='scale' is passed then it uses 1 / (n_features * X.var()) as value of gamma.
-
-        coef0 : float, optional (default=0.0)
-            Independent term in kernel function. It is only significant in ‘poly’ and ‘sigmoid’.
-
-        tol : float, optional
-            Tolerance for stopping criterion.
-
-        nu : float, optional
-            An upper bound on the fraction of training errors and a lower bound of the fraction of support vectors.
-            Should be in the interval (0, 1]. By default 0.5 will be taken.
-
-        shrinking : boolean, optional
-            Whether to use the shrinking heuristic.
-
-        cache_size : float, optional
-            Specify the size of the kernel cache (in MB).
-        
-        max_iter : int, optional (default=-1)
-            Hard limit on iterations within solver, or -1 for no limit.
-
-        Returns
-        -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
-        """
-                 
-        report_info = technique_reason_repo['model']['classification']['oneclass_cls']
-
-        model = OneClassSVM(**kwargs)
-
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def svc(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="svc", new_col_name="svc_predictions", run=False, verbose=2, **kwargs):
+    def svc(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="svc",
+        new_col_name="svc_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a C-Support Vector classification model.
 
@@ -2165,20 +2697,44 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['svc']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["classification"]["svc"]
 
         model = SVC(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     ################### REGRESSION MODELS ########################
 
     @add_to_queue
-    def linear_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="lin_reg", new_col_name="linreg_predictions", run=False, verbose=2, **kwargs):
+    def linear_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="lin_reg",
+        new_col_name="linreg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Linear Regression.
 
@@ -2235,18 +2791,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['linreg']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["linreg"]
 
         model = LinearRegression(**kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def bayesian_ridge_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="bayridge_reg", new_col_name="bayridge_predictions", run=False, verbose=2, **kwargs):
+    def bayesian_ridge_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="bayridge_reg",
+        new_col_name="bayridge_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Bayesian Ridge Regression model.
 
@@ -2323,18 +2903,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['bay_reg']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["bay_reg"]
 
         model = BayesianRidge(**kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def elasticnet_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="elastic", new_col_name="elastic_predictions", run=False, verbose=2, **kwargs):
+    def elasticnet_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="elastic",
+        new_col_name="elastic_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Elastic Net regression with combined L1 and L2 priors as regularizer.
         
@@ -2423,18 +3027,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['el_net']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["el_net"]
 
         model = ElasticNet(**kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def lasso_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="lasso", new_col_name="lasso_predictions", run=False, verbose=2, **kwargs):
+    def lasso_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="lasso",
+        new_col_name="lasso_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Lasso Regression Model trained with L1 prior as regularizer (aka the Lasso)
 
@@ -2518,18 +3146,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['lasso']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["lasso"]
 
         model = Lasso(**kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def ridge_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ridge_reg", new_col_name="ridge_reg_predictions", run=False, verbose=2, **kwargs):
+    def ridge_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="ridge_reg",
+        new_col_name="ridge_reg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Ridge Regression model. 
 
@@ -2600,18 +3252,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['ridge_reg']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["ridge_reg"]
 
         model = Ridge(**kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def sgd_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="sgd_reg", new_col_name="sgd_reg_predictions", run=False, verbose=2, **kwargs):
+    def sgd_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="sgd_reg",
+        new_col_name="sgd_reg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a SGD Regression model. 
 
@@ -2754,18 +3430,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['sgd_reg']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["sgd_reg"]
 
         model = SGDRegressor(**kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def adaboost_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ada_reg", new_col_name="ada_reg_predictions", run=False, verbose=2, **kwargs):
+    def adaboost_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="ada_reg",
+        new_col_name="ada_reg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains an AdaBoost Regression model.
 
@@ -2833,18 +3533,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['ada_reg']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["ada_reg"]
 
         model = AdaBoostRegressor(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def bagging_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="bag_reg", new_col_name="bag_reg_predictions", run=False, verbose=2, **kwargs):
+    def bagging_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="bag_reg",
+        new_col_name="bag_reg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Bagging Regressor model.
 
@@ -2924,18 +3648,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['bag_reg']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["bag_reg"]
 
         model = BaggingRegressor(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def gradient_boosting_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="grad_reg", new_col_name="grad_reg_predictions", run=False, verbose=2, **kwargs):
+    def gradient_boosting_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="grad_reg",
+        new_col_name="grad_reg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Gradient Boosting regression model.
 
@@ -3070,17 +3818,41 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['grad_reg']
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["grad_reg"]
 
         model = GradientBoostingRegressor(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def random_forest_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="rf_reg", new_col_name="rf_reg_predictions", run=False, verbose=2, **kwargs):
+    def random_forest_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="rf_reg",
+        new_col_name="rf_reg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Random Forest Regression model.
 
@@ -3189,18 +3961,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['rf_reg']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["rf_reg"]
 
         model = RandomForestRegressor(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def decision_tree_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="dt_reg", new_col_name="dt_reg_predictions", run=False, verbose=2, **kwargs):
+    def decision_tree_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="dt_reg",
+        new_col_name="dt_reg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Decision Tree Regression model.
 
@@ -3314,18 +4110,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['dt_reg']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["dt_reg"]
 
         model = DecisionTreeRegressor(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def linearsvr(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="linsvr", new_col_name="linsvr_predictions", run=False, verbose=2, **kwargs):
+    def linearsvr(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="linsvr",
+        new_col_name="linsvr_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Trains a Linear Support Vector Regression model.
 
@@ -3408,18 +4228,42 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['regression']['linsvr']
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["linsvr"]
 
         model = LinearSVR(random_state=random_state, **kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
 
         return model
 
     @add_to_queue
-    def svr(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="svr", new_col_name="svr_predictions", run=False, verbose=2, **kwargs):
+    def svr(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="svr",
+        new_col_name="svr_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Epsilon-Support Vector Regression.
 
@@ -3508,50 +4352,155 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
-                 
-        report_info = technique_reason_repo['model']['regression']['svr']
+
+        report_info = technique_reason_repo["model"]["regression"]["svr"]
 
         model = SVR(**kwargs)
 
-        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
 
         return model
 
-    def _run_model(self, model, model_name, model_type, new_col_name, report_info, cv=None, gridsearch=None, score='accuracy', learning_curve=False, run=False, verbose=2, **kwargs):
+    def _run_supervised_model(
+        self,
+        model,
+        model_name,
+        model_type,
+        new_col_name,
+        report_info,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
         """
         Helper function that generalizes model orchestration.
         """
 
-        random_state = kwargs.pop('random_state', 42)
+        random_state = kwargs.pop("random_state", 42)
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
-        
+
         if cv:
-            cv_scores = run_crossvalidation(model, self._data_properties.x_train, self._y_train, cv=cv, scoring=score, learning_curve=learning_curve)
+            cv_scores = run_crossvalidation(
+                model,
+                self._data_properties.x_train,
+                self._y_train,
+                cv=cv,
+                scoring=score,
+                learning_curve=learning_curve,
+            )
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
             if not run:
                 return cv_scores
 
         if gridsearch:
-            cv = cv if cv else 5            
+            cv = cv if cv else 5
             model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
-        
+
         model.fit(self._data_properties.x_train, self._y_train)
 
-        self._train_result_data[new_col_name] = model.predict(self._data_properties.x_train)            
-        
+        self._train_result_data[new_col_name] = model.predict(
+            self._data_properties.x_train
+        )
+
         if self._data_properties.x_test is not None:
-            self._test_result_data[new_col_name] = model.predict(self._data_properties.x_test)
+            self._test_result_data[new_col_name] = model.predict(
+                self._data_properties.x_test
+            )
 
         if self.report is not None:
             if gridsearch:
-                self.report.report_gridsearch(model, verbose)                
-        
+                self.report.report_gridsearch(model, verbose)
+
             self.report.report_technique(report_info)
 
         if gridsearch:
             model = model.best_estimator_
 
         self._models[model_name] = model_type(self, model_name, model, new_col_name)
+
+        return self._models[model_name]
+
+    # TODO: Consider whether gridsearch/cv is necessary
+    def _run_unsupervised_model(
+        self,
+        model,
+        model_name,
+        new_col_name,
+        report_info,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
+        """
+        Helper function that generalizes model orchestration.
+        """
+
+        random_state = kwargs.pop("random_state", 42)
+        cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
+
+        if cv:
+            cv_scores = run_crossvalidation(
+                model,
+                self._data_properties.x_train,
+                self._y_train,
+                cv=cv,
+                scoring=score,
+                learning_curve=learning_curve,
+            )
+
+            # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
+            if not run:
+                return cv_scores
+
+        if gridsearch:
+            cv = cv if cv else 5
+            model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
+
+        self._train_result_data[new_col_name] = model.fit_predict(
+            self._data_properties.x_train
+        )
+
+        if self._data_properties.x_test is not None and hasattr(model, "predict"):
+            self._test_result_data[new_col_name] = model.predict(
+                self._data_properties.x_test
+            )
+        else:
+            warnings.warn(
+                "Model does not have a predict function, unable to predict on the test data set. Consider combining your datasets into 1 and set `model.x_test = None`"
+            )
+
+        if self.report is not None:
+            if gridsearch:
+                self.report.report_gridsearch(model, verbose)
+
+            self.report.report_technique(report_info)
+
+        if gridsearch:
+            model = model.best_estimator_
+
+        self._models[model_name] = UnsupervisedModel(
+            self, model_name, model, new_col_name
+        )
 
         return self._models[model_name]

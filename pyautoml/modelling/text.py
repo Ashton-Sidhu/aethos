@@ -1,9 +1,10 @@
-
 from gensim.summarization import keywords
 from gensim.summarization.summarizer import summarize
 
 
-def gensim_textrank_summarizer(x_train, x_test=None, list_of_cols=[], new_col_name="_summarized", **algo_kwargs):
+def gensim_textrank_summarizer(
+    x_train, x_test=None, list_of_cols=[], new_col_name="_summarized", **algo_kwargs
+):
     """
     Uses Gensim Text Rank summarize to extractively summarize text.
 
@@ -32,15 +33,25 @@ def gensim_textrank_summarizer(x_train, x_test=None, list_of_cols=[], new_col_na
     """
 
     for col in list_of_cols:
-        x_train.loc[:, col + new_col_name] = list(map(lambda x: summarize(x, **algo_kwargs), x_train[col]))
+        x_train.loc[:, col + new_col_name] = list(
+            map(lambda x: summarize(x, **algo_kwargs), x_train[col])
+        )
 
         if x_test is not None:
-            x_test.loc[:, col + new_col_name]  = list(map(lambda x: summarize(x, **algo_kwargs), x_test[col]))
+            x_test.loc[:, col + new_col_name] = list(
+                map(lambda x: summarize(x, **algo_kwargs), x_test[col])
+            )
 
     return x_train, x_test
 
 
-def gensim_textrank_keywords(x_train, x_test=None, list_of_cols=[], new_col_name="_extracted_keywords", **algo_kwargs):
+def gensim_textrank_keywords(
+    x_train,
+    x_test=None,
+    list_of_cols=[],
+    new_col_name="_extracted_keywords",
+    **algo_kwargs
+):
     """
     Uses Gensim Text Rank summarize to extract keywords.
 
@@ -69,9 +80,13 @@ def gensim_textrank_keywords(x_train, x_test=None, list_of_cols=[], new_col_name
     """
 
     for col in list_of_cols:
-        x_train.loc[:, col + new_col_name] = list(map(lambda x: keywords(x, **algo_kwargs), x_train[col]))
+        x_train.loc[:, col + new_col_name] = list(
+            map(lambda x: keywords(x, **algo_kwargs), x_train[col])
+        )
 
         if x_test is not None:
-            x_test.loc[:, col + new_col_name]  = list(map(lambda x: keywords(x, **algo_kwargs), x_test[col]))
+            x_test.loc[:, col + new_col_name] = list(
+                map(lambda x: keywords(x, **algo_kwargs), x_test[col])
+            )
 
     return x_train, x_test

@@ -20,7 +20,6 @@ SHAP_LEARNERS = {
     sklearn.ensemble.BaggingRegressor: 'kernel',
     sklearn.ensemble.GradientBoostingClassifier: 'tree',
     sklearn.ensemble.GradientBoostingRegressor: 'tree',
-    sklearn.ensemble.IsolationForest: 'tree', # TODO: Move to unsupervised
     sklearn.ensemble.RandomForestClassifier: 'tree',
     sklearn.ensemble.RandomForestRegressor: 'tree',
     BernoulliNB: 'kernel',
@@ -30,7 +29,6 @@ SHAP_LEARNERS = {
     sklearn.tree.DecisionTreeRegressor: 'tree',
     sklearn.svm.LinearSVC: 'kernel',
     sklearn.svm.LinearSVR: 'kernel',
-    sklearn.svm.OneClassSVM: 'kernel', # TODO: Move to unsupervised
     sklearn.svm.SVC: 'kernel',
     sklearn.svm.SVR: 'kernel',
 }
@@ -51,7 +49,6 @@ PROBLEM_TYPE = {
     sklearn.ensemble.BaggingRegressor: 'regression',
     sklearn.ensemble.GradientBoostingClassifier: 'classification',
     sklearn.ensemble.GradientBoostingRegressor: 'regression',
-    sklearn.ensemble.IsolationForest: 'classification', # TODO: Move to unsupervised
     sklearn.ensemble.RandomForestClassifier: 'classification',
     sklearn.ensemble.RandomForestRegressor: 'regression',
     sklearn.naive_bayes.BernoulliNB: 'classification',
@@ -61,7 +58,6 @@ PROBLEM_TYPE = {
     sklearn.tree.DecisionTreeRegressor: 'regression',
     sklearn.svm.LinearSVC: 'classification',
     sklearn.svm.LinearSVR: 'regression',
-    sklearn.svm.OneClassSVM: 'classification', # TODO: Move to unsupervised
     sklearn.svm.SVC: 'classification',
     sklearn.svm.SVR: 'regression',       
 }

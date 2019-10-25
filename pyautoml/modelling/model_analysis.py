@@ -42,7 +42,6 @@ class ModelBase(object):
             self.interpret = None
 
         for method in dir(self.model):
-
             try:
                 if not method.startswith('_') and not method.startswith('predict'):
                     self.__setattr__(method, getattr(self.model, method))
@@ -506,7 +505,7 @@ class TextModel(ModelBase):
 
         super().__init__(model_object, model, model_name)
 
-class ClusterModel(ModelBase):
+class UnsupervisedModel(ModelBase):
 
     # TODO: Add scatterplot of clusters
 
