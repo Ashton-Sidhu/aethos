@@ -511,6 +511,164 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(len(model._models) == 0)
 
+    def test_model_ridgeclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.ridge_classification(random_state=2, run=True)
+        validate = model.ridge_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_sgdclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.sgd_classification(random_state=2, run=True)
+        validate = model.sgd_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_adaclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.adaboost_classification(random_state=2, run=True)
+        validate = model.ada_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_bagclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.bagging_classification(random_state=2, run=True)
+        validate = model.bag_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_boostingclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.gradient_boosting_classification(random_state=2, run=True)
+        validate = model.grad_cls is not None
+
+        self.assertTrue(validate)
+
+    # TODO: Move to unsupervised
+    # def test_model_isoforest(self):
+
+    #     data = np.random.randint(0, 2, size=(1000,3))
+
+    #     data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+    #     model = Model(x_train=data, target_field='col3')
+    #     model.isolation_forest(random_state=2, run=True)
+    #     validate = model.iso_forest is not None
+
+    #     self.assertTrue(validate)
+
+    def test_model_rfclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.random_forest_classification(random_state=2, run=True)
+        validate = model.rf_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_bernoulli(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.nb_bernoulli_classification(run=True)
+        validate = model.bern is not None
+
+        self.assertTrue(validate)
+
+    def test_model_gaussian(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data)
+        model.nb_gaussian_classification(run=True)
+        validate = model.gauss is not None
+
+        self.assertTrue(validate)
+
+    def test_model_multinomial(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.nb_multinomial_classification(run=True)
+
+        validate = model.multi is not None
+
+        self.assertTrue(validate)
+
+    def test_model_dtclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.decision_tree_classification(random_state=2, run=True)
+        validate = model.dt_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_linearsvc(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.linearsvc(random_state=2, run=True)
+        validate = model.linsvc is not None
+
+        self.assertTrue(validate)
+
+    def test_model_svc(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.svc(random_state=2, run=True)
+        validate = model.svc is not None
+
+        self.assertTrue(validate)
+
 if __name__ == "__main__":
 
     unittest.main()

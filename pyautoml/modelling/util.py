@@ -164,7 +164,7 @@ def _get_cv_type(cv_type, random_state, **kwargs):
     """
 
     if not cv_type:
-        return None
+        return None, kwargs
             
     if isinstance(cv_type, int):
         cv_type = cv_type

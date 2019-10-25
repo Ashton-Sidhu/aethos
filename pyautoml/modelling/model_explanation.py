@@ -40,14 +40,13 @@ class Shap(object):
             self.explainer = shap.TreeExplainer(self.model)
             self.shap_interaction_values = self.explainer.shap_interaction_values(self.x_test)
         elif learner == 'kernel':
-            med = self.x_train.median().values.reshape((1, self.x_train.shape[1]))
 
             if hasattr(self.model, 'predict_proba'):
                 func = self.model.predict_proba
             else:
                 func = self.model.predict
 
-            self.explainer = shap.KernelExplainer(func, med, link='logit')
+            self.explainer = shap.KernelExplainer(func, self.x_train)
         else:
             raise ValueError('Learner: {} is not supported yet.'.format(learner))
         
@@ -145,8 +144,12 @@ class Shap(object):
             List specifying which values were misclassified
         """
 
-        y_pred = (self.shap_values.sum(1) + self.expected_value) > 0
-        misclassified = y_pred != self.y_test
+        y_pred = list(map(lambda x, y: x.sum(1) + y > 0 , self.shap_values, self.expected_value)) 
+
+        if len(y_pred) > 1:
+            misclassified = list(map(lambda x: x != self.y_test, y_pred))
+        else:    
+            misclassified = y_pred != self.y_test
 
         return misclassified
 

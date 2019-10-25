@@ -34,7 +34,7 @@ SHAP_LEARNERS = {
     sklearn.ensemble.BaggingRegressor: 'kernel',
     sklearn.ensemble.GradientBoostingClassifier: 'tree',
     sklearn.ensemble.GradientBoostingRegressor: 'tree',
-    sklearn.ensemble.IsolationForest: 'tree',
+    sklearn.ensemble.IsolationForest: 'tree', # TODO: Move to unsupervised
     sklearn.ensemble.RandomForestClassifier: 'tree',
     sklearn.ensemble.RandomForestRegressor: 'tree',
     BernoulliNB: 'kernel',
@@ -44,7 +44,7 @@ SHAP_LEARNERS = {
     sklearn.tree.DecisionTreeRegressor: 'tree',
     sklearn.svm.LinearSVC: 'kernel',
     sklearn.svm.LinearSVR: 'kernel',
-    sklearn.svm.OneClassSVM: 'kernel',
+    sklearn.svm.OneClassSVM: 'kernel', # TODO: Move to unsupervised
     sklearn.svm.SVC: 'kernel',
     sklearn.svm.SVR: 'kernel',
 }
@@ -65,7 +65,7 @@ PROBLEM_TYPE = {
     sklearn.ensemble.BaggingRegressor: 'regression',
     sklearn.ensemble.GradientBoostingClassifier: 'classification',
     sklearn.ensemble.GradientBoostingRegressor: 'regression',
-    sklearn.ensemble.IsolationForest: 'classification',
+    sklearn.ensemble.IsolationForest: 'classification', # TODO: Move to unsupervised
     sklearn.ensemble.RandomForestClassifier: 'classification',
     sklearn.ensemble.RandomForestRegressor: 'regression',
     sklearn.naive_bayes.BernoulliNB: 'classification',
@@ -103,8 +103,13 @@ class ModelBase(object):
             self.interpret = None
 
         for method in dir(self.model):
-            if not method.startswith('_') and not method.startswith('predict'):
-                self.__setattr__(method, getattr(self.model, method))
+
+            try:
+                if not method.startswith('_') and not method.startswith('predict'):
+                    self.__setattr__(method, getattr(self.model, method))
+                
+            except AttributeError as e:
+                continue
 
     def model_weights(self):
         """

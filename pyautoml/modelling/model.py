@@ -1858,7 +1858,7 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def linearsvc(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="linsvc_cls", new_col_name="linsvc_cls_predictions", run=False, verbose=2, **kwargs):
+    def linearsvc(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="linsvc", new_col_name="linsvc_cls_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a Linear Support Vector classification model.
 
