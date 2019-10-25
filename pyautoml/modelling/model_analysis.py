@@ -12,73 +12,12 @@ import seaborn as sns
 import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
-from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 
-from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
-                                                  MSFTInterpret, Shap)
+from pyautoml.modelling.model_constants import (INTERPRET_EXPLAINERS,
+                                                PROBLEM_TYPE, SHAP_LEARNERS)
+from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.visualizations.visualize import *
 
-SHAP_LEARNERS = {
-    sklearn.linear_model.LogisticRegression: 'linear',
-    sklearn.linear_model.BayesianRidge: 'linear',
-    sklearn.linear_model.ElasticNet: 'linear',
-    sklearn.linear_model.Lasso: 'linear',
-    sklearn.linear_model.LinearRegression: 'linear',
-    sklearn.linear_model.Ridge: 'linear',
-    sklearn.linear_model.RidgeClassifier: 'linear',
-    sklearn.linear_model.SGDClassifier: 'linear',
-    sklearn.linear_model.SGDRegressor: 'linear',
-    sklearn.ensemble.AdaBoostClassifier: 'kernel',
-    sklearn.ensemble.AdaBoostRegressor: 'kernel',
-    sklearn.ensemble.BaggingClassifier: 'kernel',
-    sklearn.ensemble.BaggingRegressor: 'kernel',
-    sklearn.ensemble.GradientBoostingClassifier: 'tree',
-    sklearn.ensemble.GradientBoostingRegressor: 'tree',
-    sklearn.ensemble.IsolationForest: 'tree', # TODO: Move to unsupervised
-    sklearn.ensemble.RandomForestClassifier: 'tree',
-    sklearn.ensemble.RandomForestRegressor: 'tree',
-    BernoulliNB: 'kernel',
-    GaussianNB: 'kernel',
-    MultinomialNB: 'kernel',
-    sklearn.tree.DecisionTreeClassifier: 'tree',
-    sklearn.tree.DecisionTreeRegressor: 'tree',
-    sklearn.svm.LinearSVC: 'kernel',
-    sklearn.svm.LinearSVR: 'kernel',
-    sklearn.svm.OneClassSVM: 'kernel', # TODO: Move to unsupervised
-    sklearn.svm.SVC: 'kernel',
-    sklearn.svm.SVR: 'kernel',
-}
-
-PROBLEM_TYPE = {
-    sklearn.linear_model.LogisticRegression: 'classification',
-    sklearn.linear_model.BayesianRidge: 'regression',
-    sklearn.linear_model.ElasticNet: 'regression',
-    sklearn.linear_model.Lasso: 'regression',
-    sklearn.linear_model.LinearRegression: 'regression',
-    sklearn.linear_model.Ridge: 'regression',
-    sklearn.linear_model.RidgeClassifier: 'classification',
-    sklearn.linear_model.SGDClassifier: 'classification',
-    sklearn.linear_model.SGDRegressor: 'regression',
-    sklearn.ensemble.AdaBoostClassifier: 'classification',
-    sklearn.ensemble.AdaBoostRegressor: 'regression',
-    sklearn.ensemble.BaggingClassifier: 'classification',
-    sklearn.ensemble.BaggingRegressor: 'regression',
-    sklearn.ensemble.GradientBoostingClassifier: 'classification',
-    sklearn.ensemble.GradientBoostingRegressor: 'regression',
-    sklearn.ensemble.IsolationForest: 'classification', # TODO: Move to unsupervised
-    sklearn.ensemble.RandomForestClassifier: 'classification',
-    sklearn.ensemble.RandomForestRegressor: 'regression',
-    sklearn.naive_bayes.BernoulliNB: 'classification',
-    sklearn.naive_bayes.GaussianNB: 'classification',
-    sklearn.naive_bayes.MultinomialNB: 'classification',
-    sklearn.tree.DecisionTreeClassifier: 'classification',
-    sklearn.tree.DecisionTreeRegressor: 'regression',
-    sklearn.svm.LinearSVC: 'classification',
-    sklearn.svm.LinearSVR: 'regression',
-    sklearn.svm.OneClassSVM: 'classification', # TODO: Move to unsupervised
-    sklearn.svm.SVC: 'classification',
-    sklearn.svm.SVR: 'regression',       
-}
 
 class ModelBase(object):
 

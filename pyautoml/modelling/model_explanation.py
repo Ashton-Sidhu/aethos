@@ -2,29 +2,10 @@ import interpret
 import numpy as np
 import pandas as pd
 import shap
-from interpret.blackbox import (LimeTabular, MorrisSensitivity,
-                                PartialDependence, ShapKernel)
-from interpret.perf import PR, ROC, RegressionPerf
 
-INTERPRET_EXPLAINERS = {
-    'problem': {
-        'classification': {
-            'roc': ROC,
-            'pr' : PR,
-        },
-        'regression': {
-            'regperf': RegressionPerf,
-        },
-    },    
-    'local': {
-        'lime': LimeTabular,
-        'shap': ShapKernel,
-    },
-    'global': {
-        'morris': MorrisSensitivity,
-        'dependence': PartialDependence,
-    }
-}
+from pyautoml.modelling.model_constants import INTERPRET_EXPLAINERS
+
+
 class Shap(object):
 
     def __init__(self, model, x_train, x_test, y_test, learner: str):
