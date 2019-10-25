@@ -144,11 +144,11 @@ class Shap(object):
             List specifying which values were misclassified
         """
 
-        y_pred = list(map(lambda x, y: x.sum(1) + y > 0 , self.shap_values, self.expected_value)) 
-
-        if len(y_pred) > 1:
+        if len(self.shap_values.shape) > 2:
+            y_pred = list(map(lambda x, y: x.sum(1) + y > 0 , self.shap_values, self.expected_value))
             misclassified = list(map(lambda x: x != self.y_test, y_pred))
-        else:    
+        else:
+            y_pred = (self.shap_values.sum(1) + self.expected_value) > 0
             misclassified = y_pred != self.y_test
 
         return misclassified

@@ -138,7 +138,7 @@ class TestModelling(unittest.TestCase):
         gridsearch_params = {
             'C': [0.2, 1]
         }
-        model.logistic_regression(gridsearch=gridsearch_params, cv_type=2, run=True)
+        model.logistic_regression(gridsearch=gridsearch_params, cv=2, run=True)
 
         self.assertTrue(True)
 
@@ -614,7 +614,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
-        model = Model(x_train=data)
+        model = Model(x_train=data, target_field='col3')
         model.nb_gaussian_classification(run=True)
         validate = model.gauss is not None
 
@@ -666,6 +666,162 @@ class TestModelling(unittest.TestCase):
         model = Model(x_train=data, target_field='col3')
         model.svc(random_state=2, run=True)
         validate = model.svc is not None
+
+        self.assertTrue(validate)
+
+    def test_model_bayesianridge(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.bayesian_ridge_regression(random_state=2, run=True)
+        validate = model.bayridge_reg is not None
+
+        self.assertTrue(validate)
+    
+    def test_model_elasticnet(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.elasticnet_regression(random_state=2, run=True)
+        validate = model.elastic is not None
+
+        self.assertTrue(validate)
+    
+    def test_model_lasso(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.lasso_regression(random_state=2, run=True)
+        validate = model.lasso is not None
+
+        self.assertTrue(validate)
+
+    def test_model_linreg(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.linear_regression(random_state=2, run=True)
+        validate = model.lin_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_ridgeregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.ridge_regression(random_state=2, run=True)
+        validate = model.ridge_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_sgdregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.sgd_regression(random_state=2, run=True)
+        validate = model.sgd_reg is not None
+
+        self.assertTrue(validate)
+        
+    def test_model_adaregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.adaboost_regression(random_state=2, run=True)
+        validate = model.ada_reg is not None
+
+        self.assertTrue(validate)
+    
+    def test_model_bgregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.bagging_regression(random_state=2, run=True)
+        validate = model.bag_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_gbregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.gradient_boosting_regression(random_state=2, run=True)
+        validate = model.grad_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_rfregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.random_forest_regression(random_state=2, run=True)
+        validate = model.rf_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_dtregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.decision_tree_regression(random_state=2, run=True)
+        validate = model.dt_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_linearsvr(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.linearsvr(random_state=2, run=True)
+        validate = model.linearsvr is not None
+
+        self.assertTrue(validate)
+
+    def test_model_svr(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.svr(run=True)
+        validate = model.svr is not None
 
         self.assertTrue(validate)
 

@@ -187,13 +187,13 @@ model:
     dt_cls: >
       Trained a Decision Tree Classifier.
       
-    linsvc_cls: >
+    linsvc: >
       Trained a linear Support Vector Classifier.
       
     oneclass_cls: >
       Trained a One Class Support Vector Machine.
       
-    svc_cls: >
+    svc: >
       Trained a Support Vector Classifier.
      
   regression:
@@ -230,9 +230,8 @@ model:
     dt_reg: >
       Trained a Decision Tree Regressor.
       
-    linsvc_reg: >
+    linsvr: >
       Trained a linear Support Vector Regressor.
       
-    svr_reg: >
+    svr: >
       Trained a Support Vector Regressor    
-

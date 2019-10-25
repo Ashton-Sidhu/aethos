@@ -883,13 +883,6 @@ class Model(MethodBase):
 
             The “balanced” mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))
 
-        warm_start : bool, optional
-            When set to True, reuse the solution of the previous call to fit as initialization, otherwise, just erase the previous solution.
-
-            Repeatedly calling fit or partial_fit when warm_start is True can result in a different solution than when calling fit a single time because of the way the data is shuffled.
-            If a dynamic learning rate is used, the learning rate is adapted depending on the number of samples already seen. 
-            Calling fit resets this counter, while partial_fit will result in increasing the existing counter.
-
         average : bool or int, optional
             When set to True, computes the averaged SGD weights and stores the result in the coef_ attribute.
             If set to an int greater than 1, averaging will begin once the total number of samples seen reaches average. So average=10 will begin averaging after seeing 10 samples.
@@ -914,7 +907,7 @@ class Model(MethodBase):
         """
         Trains an AdaBoost classification model.
 
-        An AdaBoost [1] classifier is a meta-estimator that begins by fitting a classifier on the original dataset and then fits additional copies of the classifier on the same dataset
+        An AdaBoost classifier is a meta-estimator that begins by fitting a classifier on the original dataset and then fits additional copies of the classifier on the same dataset
         but where the weights of incorrectly classified instances are adjusted such that subsequent classifiers focus more on difficult cases.
 
         For more AdaBoost info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html#sklearn.ensemble.AdaBoostClassifier
@@ -1074,10 +1067,6 @@ class Model(MethodBase):
 
         oob_score : bool, optional (default=False)
             Whether to use out-of-bag samples to estimate the generalization error.
-
-        warm_start : bool, optional (default=False)
-            When set to True, reuse the solution of the previous call to fit and add more estimators to the ensemble, 
-            otherwise, just fit a whole new ensemble.
 
         Returns
         -------
@@ -1323,10 +1312,6 @@ class Model(MethodBase):
         bootstrap : boolean, optional (default=False)
             If True, individual trees are fit on random subsets of the training data sampled with replacement.
             If False, sampling without replacement is performed.
-
-        warm_start : bool, optional (default=False)
-            When set to True, reuse the solution of the previous call to fit and add more estimators to the ensemble, 
-            otherwise, just fit a whole new ensemble.
 
         Returns
         -------
@@ -1858,7 +1843,7 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def linearsvc(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="linsvc", new_col_name="linsvc_cls_predictions", run=False, verbose=2, **kwargs):
+    def linearsvc(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="linsvc", new_col_name="linsvc_predictions", run=False, verbose=2, **kwargs):
         """
         Trains a Linear Support Vector classification model.
 
@@ -1903,10 +1888,10 @@ class Model(MethodBase):
             Scoring metric to evaluate models, by default 'accuracy'
 
         model_name : str, optional
-            Name for this model, by default "linsvc_cls"
+            Name for this model, by default "linsvc"
 
         new_col_name : str, optional
-            Name of column for labels that are generated, by default "linsvc_cls_predictions"
+            Name of column for labels that are generated, by default "linsvc_predictions"
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
@@ -1963,7 +1948,7 @@ class Model(MethodBase):
         """
                  
         random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['linsvc_cls']
+        report_info = technique_reason_repo['model']['classification']['linsvc']
 
         model = LinearSVC(random_state=random_state, **kwargs)
 
@@ -2182,11 +2167,1353 @@ class Model(MethodBase):
         """
                  
         random_state = kwargs.pop('random_state', 42)
-        report_info = technique_reason_repo['model']['classification']['svc_cls']
+        report_info = technique_reason_repo['model']['classification']['svc']
 
         model = SVC(random_state=random_state, **kwargs)
 
         model = self._run_model(model, model_name, ClassificationModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    ################### REGRESSION MODELS ########################
+
+    @add_to_queue
+    def linear_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="lin_reg", new_col_name="linreg_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Linear Regression.
+
+        For more Linear Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "lin_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "linreg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False        	
+
+        fit_intercept : boolean, optional, default True
+            whether to calculate the intercept for this model.
+            If set to False, no intercept will be used in calculations (e.g. data is expected to be already centered).
+
+        normalize : boolean, optional, default False
+            This parameter is ignored when fit_intercept is set to False.
+            If True, the regressors X will be normalized before regression by subtracting the mean and dividing by the l2-norm.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['linreg']
+
+        model = LinearRegression(**kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def bayesian_ridge_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="bayridge_reg", new_col_name="bayridge_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Bayesian Ridge Regression model.
+
+        For more Linear Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.BayesianRidge.html#sklearn.linear_model.BayesianRidge
+        and https://scikit-learn.org/stable/modules/linear_model.html#bayesian-regression 
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "bayridge_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "bayridge_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+        
+        n_iter : int, optional
+            Maximum number of iterations. Default is 300. Should be greater than or equal to 1.
+
+        tol : float, optional
+            Stop the algorithm if w has converged. Default is 1.e-3.
+            
+        alpha_1 : float, optional
+            Hyper-parameter : shape parameter for the Gamma distribution prior over the alpha parameter. Default is 1.e-6
+
+        alpha_2 : float, optional
+            Hyper-parameter : inverse scale parameter (rate parameter) for the Gamma distribution prior over the alpha parameter. Default is 1.e-6.
+
+        lambda_1 : float, optional
+            Hyper-parameter : shape parameter for the Gamma distribution prior over the lambda parameter. Default is 1.e-6.
+
+        lambda_2 : float, optional
+            Hyper-parameter : inverse scale parameter (rate parameter) for the Gamma distribution prior over the lambda parameter. Default is 1.e-6
+
+        fit_intercept : boolean, optional, default True
+            Whether to calculate the intercept for this model.
+            The intercept is not treated as a probabilistic parameter and thus has no associated variance.
+            If set to False, no intercept will be used in calculations (e.g. data is expected to be already centered).
+
+        normalize : boolean, optional, default False
+            This parameter is ignored when fit_intercept is set to False. 
+            If True, the regressors X will be normalized before regression by subtracting the mean and dividing by the l2-norm.
+            
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['bay_reg']
+
+        model = BayesianRidge(**kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def elasticnet_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="elastic", new_col_name="elastic_predictions", run=False, verbose=2, **kwargs):
+        """
+        Elastic Net regression with combined L1 and L2 priors as regularizer.
+        
+        For more Linear Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html#sklearn.linear_model.ElasticNet 
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "elastic"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "elastic_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False   
+        
+        alpha : float, optional
+            Constant that multiplies the penalty terms.
+            Defaults to 1.0. See the notes for the exact mathematical meaning of this parameter.
+            ``alpha = 0`` is equivalent to an ordinary least square, solved by the LinearRegression object.
+            For numerical reasons, using alpha = 0 with the Lasso object is not advised.
+            Given this, you should use the LinearRegression object.
+
+        l1_ratio : float
+            The ElasticNet mixing parameter, with 0 <= l1_ratio <= 1.
+            For l1_ratio = 0 the penalty is an L2 penalty.
+            For l1_ratio = 1 it is an L1 penalty.
+            For 0 < l1_ratio < 1, the penalty is a combination of L1 and L2.
+
+        fit_intercept : bool
+            Whether the intercept should be estimated or not.
+            If False, the data is assumed to be already centered.
+
+        normalize : boolean, optional, default False
+            This parameter is ignored when fit_intercept is set to False.
+            If True, the regressors X will be normalized before regression by subtracting the mean and dividing by the l2-norm.
+            If you wish to standardize, please use sklearn.preprocessing.
+
+        precompute : True | False | array-like
+            Whether to use a precomputed Gram matrix to speed up calculations.
+            The Gram matrix can also be passed as argument.
+            For sparse input this option is always True to preserve sparsity.
+
+        max_iter : int, optional
+            The maximum number of iterations
+
+        tol : float, optional
+            The tolerance for the optimization: if the updates are smaller than tol, the optimization code checks the dual gap for optimality and continues until it is smaller than tol.
+        
+        positive : bool, optional
+            When set to True, forces the coefficients to be positive.
+
+        selection : str, default ‘cyclic’
+            If set to ‘random’, a random coefficient is updated every iteration rather than looping over features sequentially by default.
+            This (setting to ‘random’) often leads to significantly faster convergence especially when tol is higher than 1e-4.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['el_net']
+
+        model = ElasticNet(**kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def lasso_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="lasso", new_col_name="lasso_predictions", run=False, verbose=2, **kwargs):
+        """
+        Lasso Regression Model trained with L1 prior as regularizer (aka the Lasso)
+
+        Technically the Lasso model is optimizing the same objective function as the Elastic Net with l1_ratio=1.0 (no L2 penalty).   
+
+        For more Lasso Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html#sklearn.linear_model.Lasso
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "lasso"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "lasso_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False        
+        
+        alpha : float, optional
+            Constant that multiplies the L1 term.
+            Defaults to 1.0. alpha = 0 is equivalent to an ordinary least square, solved by the LinearRegression object.
+            For numerical reasons, using alpha = 0 with the Lasso object is not advised.
+            Given this, you should use the LinearRegression object.
+
+        fit_intercept : boolean, optional, default True
+            Whether to calculate the intercept for this model.
+            If set to False, no intercept will be used in calculations (e.g. data is expected to be already centered).
+
+        normalize : boolean, optional, default False
+            This parameter is ignored when fit_intercept is set to False.
+            If True, the regressors X will be normalized before regression by subtracting the mean and dividing by the l2-norm.
+            
+        precompute : True | False | array-like, default=False
+            Whether to use a precomputed Gram matrix to speed up calculations.
+            If set to 'auto' let us decide. The Gram matrix can also be passed as argument.
+            For sparse input this option is always True to preserve sparsity.
+
+        max_iter : int, optional
+            The maximum number of iterations
+        
+        tol : float, optional
+            The tolerance for the optimization:
+             if the updates are smaller than tol, the optimization code checks the dual gap for optimality and continues until it is smaller than tol.
+        
+        positive : bool, optional
+            When set to True, forces the coefficients to be positive.
+
+        selection : str, default ‘cyclic’
+            If set to ‘random’, a random coefficient is updated every iteration rather than looping over features sequentially by default.
+            This (setting to ‘random’) often leads to significantly faster convergence especially when tol is higher than 1e-4.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['lasso']
+
+        model = Lasso(**kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def ridge_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ridge_reg", new_col_name="ridge_reg_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Ridge Regression model. 
+
+        For more Ridge Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html#sklearn.linear_model.Ridge
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "ridge"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "ridge_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False        
+        
+        alpha : {float, array-like}, shape (n_targets)
+            Regularization strength; must be a positive float.
+            Regularization improves the conditioning of the problem and reduces the variance of the estimates.
+            Larger values specify stronger regularization.
+            Alpha corresponds to C^-1 in other linear models such as LogisticRegression or LinearSVC.
+            If an array is passed, penalties are assumed to be specific to the targets. Hence they must correspond in number.
+        
+        fit_intercept : boolean
+            Whether to calculate the intercept for this model.
+            If set to false, no intercept will be used in calculations (e.g. data is expected to be already centered).
+
+        normalize : boolean, optional, default False
+
+            This parameter is ignored when fit_intercept is set to False.
+            If True, the regressors X will be normalized before regression by subtracting the mean and dividing by the l2-norm.
+        
+        max_iter : int, optional
+            Maximum number of iterations for conjugate gradient solver.
+
+        tol : float
+            Precision of the solution.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['ridge_reg']
+
+        model = Ridge(**kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def sgd_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="sgd_reg", new_col_name="sgd_reg_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a SGD Regression model. 
+
+        Linear model fitted by minimizing a regularized empirical loss with SGD
+
+        SGD stands for Stochastic Gradient Descent: the gradient of the loss is estimated each sample at a time and the model is updated along the way with a decreasing strength schedule (aka learning rate).
+
+        The regularizer is a penalty added to the loss function that shrinks model parameters towards the zero vector using either the squared euclidean norm L2 or the absolute norm L1 or a combination of both (Elastic Net).
+        If the parameter update crosses the 0.0 value because of the regularizer, the update is truncated to 0.0 to allow for learning sparse models and achieve online feature selection.
+
+        For more SGD Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html#sklearn.linear_model.SGDRegressor
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "sgd_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "sgd_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False        
+        
+        loss : str, default: ‘squared_loss’
+            The loss function to be used.
+            
+            The possible values are ‘squared_loss’, ‘huber’, ‘epsilon_insensitive’, or ‘squared_epsilon_insensitive’
+
+            The ‘squared_loss’ refers to the ordinary least squares fit.
+            ‘huber’ modifies ‘squared_loss’ to focus less on getting outliers correct by switching from squared to linear loss past a distance of epsilon.
+            ‘epsilon_insensitive’ ignores errors less than epsilon and is linear past that; this is the loss function used in SVR.
+            ‘squared_epsilon_insensitive’ is the same but becomes squared loss past a tolerance of epsilon.
+
+        penalty : str, ‘none’, ‘l2’, ‘l1’, or ‘elasticnet’
+            The penalty (aka regularization term) to be used.
+            Defaults to ‘l2’ which is the standard regularizer for linear SVM models.
+            ‘l1’ and ‘elasticnet’ might bring sparsity to the model (feature selection) not achievable with ‘l2’.
+
+        alpha : float
+            Constant that multiplies the regularization term.
+            Defaults to 0.0001 Also used to compute learning_rate when set to ‘optimal’.
+
+        l1_ratio : float
+            The Elastic Net mixing parameter, with 0 <= l1_ratio <= 1.
+            l1_ratio=0 corresponds to L2 penalty, l1_ratio=1 to L1.
+            Defaults to 0.15.
+
+        fit_intercept : bool
+            Whether the intercept should be estimated or not.
+            If False, the data is assumed to be already centered.
+            Defaults to True.
+
+        max_iter : int, optional (default=1000)
+            The maximum number of passes over the training data (aka epochs).
+            It only impacts the behavior in the fit method, and not the partial_fit.
+
+        tol : float or None, optional (default=1e-3)
+            The stopping criterion. 
+            If it is not None, the iterations will stop when (loss > best_loss - tol) for n_iter_no_change consecutive epochs.
+
+        shuffle : bool, optional
+            Whether or not the training data should be shuffled after each epoch. Defaults to True.
+
+        epsilon : float
+            Epsilon in the epsilon-insensitive loss functions; only if loss is ‘huber’, ‘epsilon_insensitive’, or ‘squared_epsilon_insensitive’.
+            
+            For ‘huber’, determines the threshold at which it becomes less important to get the prediction exactly right.
+            For epsilon-insensitive, any differences between the current prediction and the correct label are ignored if they are less than this threshold.
+        
+        learning_rate : string, optional
+            The learning rate schedule:
+
+                ‘constant’:
+                    eta = eta0
+
+                ‘optimal’:
+                    eta = 1.0 / (alpha * (t + t0)) where t0 is chosen by a heuristic proposed by Leon Bottou.
+
+                ‘invscaling’: [default]
+                    eta = eta0 / pow(t, power_t)
+
+                ‘adaptive’:
+                    eta = eta0, as long as the training keeps decreasing.
+                    Each time n_iter_no_change consecutive epochs fail to decrease the training loss by tol or fail to increase validation score by tol if early_stopping is True,
+                    the current learning rate is divided by 5.
+
+        eta0 : double
+            The initial learning rate for the ‘constant’, ‘invscaling’ or ‘adaptive’ schedules.
+            The default value is 0.01.
+
+        power_t : double
+            The exponent for inverse scaling learning rate [default 0.5].
+
+        early_stopping : bool, default=False
+            Whether to use early stopping to terminate training when validation score is not improving.
+            If set to True, it will automatically set aside a fraction of training data as validation 
+            and terminate training when validation score is not improving by at least tol for n_iter_no_change consecutive epochs.
+
+        validation_fraction : float, default=0.1
+            The proportion of training data to set aside as validation set for early stopping.
+            Must be between 0 and 1. Only used if early_stopping is True.
+
+        n_iter_no_change : int, default=5
+            Number of iterations with no improvement to wait before early stopping.
+
+        average : bool or int, optional
+            When set to True, computes the averaged SGD weights and stores the result in the coef_ attribute.
+            If set to an int greater than 1, averaging will begin once the total number of samples seen reaches average.
+            So average=10 will begin averaging after seeing 10 samples.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['sgd_reg']
+
+        model = SGDRegressor(**kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def adaboost_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="ada_reg", new_col_name="ada_reg_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains an AdaBoost Regression model.
+
+        An AdaBoost classifier is a meta-estimator that begins by fitting a regressor on the original dataset and then fits additional copies of the regressor on the same dataset
+        but where the weights of incorrectly classified instances are adjusted such that subsequent regressors focus more on difficult cases.
+
+        For more AdaBoost info, you can view it here:https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html#sklearn.ensemble.AdaBoostRegressor
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "ada_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "ada_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        base_estimator : object, optional (default=None)
+            The base estimator from which the boosted ensemble is built.
+            Support for sample weighting is required, as well as proper classes_ and n_classes_ attributes.
+            If None, then the base estimator is DecisionTreeRegressor(max_depth=3)
+
+        n_estimators : integer, optional (default=50)
+            The maximum number of estimators at which boosting is terminated.
+            In case of perfect fit, the learning procedure is stopped early.
+
+        learning_rate : float, optional (default=1.)
+            Learning rate shrinks the contribution of each classifier by learning_rate.
+            There is a trade-off between learning_rate and n_estimators.
+
+        loss : {‘linear’, ‘square’, ‘exponential’}, optional (default=’linear’)
+            The loss function to use when updating the weights after each boosting iteration.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['ada_reg']
+
+        model = AdaBoostRegressor(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def bagging_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="bag_reg", new_col_name="bag_reg_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Bagging Regressor model.
+
+        A Bagging classifier is an ensemble meta-estimator that fits base regressors each on random subsets of the original dataset and then aggregate their individual predictions (either by voting or by averaging) to form a final prediction.
+        Such a meta-estimator can typically be used as a way to reduce the variance of a black-box estimator (e.g., a decision tree), by introducing randomization into its construction procedure and then making an ensemble out of it.
+
+        For more Bagging Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingRegressor.html#sklearn.ensemble.BaggingRegressor
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "bag_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "bag_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        base_estimator : object or None, optional (default=None)
+            The base estimator to fit on random subsets of the dataset.
+            If None, then the base estimator is a decision tree.
+
+        n_estimators : int, optional (default=10)
+            The number of base estimators in the ensemble.
+
+        max_samples : int or float, optional (default=1.0)
+            The number of samples to draw from X to train each base estimator.
+
+                If int, then draw max_samples samples.
+                If float, then draw max_samples * X.shape[0] samples.
+
+        max_features : int or float, optional (default=1.0)
+            The number of features to draw from X to train each base estimator.
+
+                If int, then draw max_features features.
+                If float, then draw max_features * X.shape[1] features.
+
+        bootstrap : boolean, optional (default=True)
+            Whether samples are drawn with replacement. If False, sampling without replacement is performed.
+
+        bootstrap_features : boolean, optional (default=False)
+            Whether features are drawn with replacement.
+
+        oob_score : bool, optional (default=False)
+            Whether to use out-of-bag samples to estimate the generalization error.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['bag_reg']
+
+        model = BaggingRegressor(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def gradient_boosting_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="grad_reg", new_col_name="grad_reg_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Gradient Boosting regression model.
+
+        GB builds an additive model in a forward stage-wise fashion; it allows for the optimization of arbitrary differentiable loss functions.
+        In each stage n_classes_ regression trees are fit on the negative gradient of the binomial or multinomial deviance loss function. 
+
+        For more Gradient Boosting Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html#sklearn.ensemble.GradientBoostingRegressor
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "grad_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "grad_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        loss : {‘ls’, ‘lad’, ‘huber’, ‘quantile’}, optional (default=’ls’)
+            loss function to be optimized.
+            
+            ‘ls’ refers to least squares regression.
+            ‘lad’ (least absolute deviation) is a highly robust loss function solely based on order information of the input variables.
+            ‘huber’ is a combination of the two.
+            ‘quantile’ allows quantile regression (use alpha to specify the quantile).
+            
+        learning_rate : float, optional (default=0.1)
+            learning rate shrinks the contribution of each tree by learning_rate.
+            There is a trade-off between learning_rate and n_estimators.
+
+        n_estimators : int (default=100)
+            The number of boosting stages to perform.
+            Gradient boosting is fairly robust to over-fitting so a large number usually results in better performance.
+
+        subsample : float, optional (default=1.0)
+            The fraction of samples to be used for fitting the individual base learners.
+            If smaller than 1.0 this results in Stochastic Gradient Boosting.
+            Subsample interacts with the parameter n_estimators.
+            Choosing subsample < 1.0 leads to a reduction of variance and an increase in bias.
+
+        criterion : string, optional (default=”friedman_mse”)
+            The function to measure the quality of a split.
+            Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error.
+            The default value of “friedman_mse” is generally the best as it can provide a better approximation in some cases.
+
+        min_samples_split : int, float, optional (default=2)
+            The minimum number of samples required to split an internal node:
+
+                If int, then consider min_samples_split as the minimum number.
+                If float, then min_samples_split is a fraction and ceil(min_samples_split * n_samples) are the minimum number of samples for each split.
+
+        min_samples_leaf : int, float, optional (default=1)
+            The minimum number of samples required to be at a leaf node.
+            A split point at any depth will only be considered if it leaves at least min_samples_leaf training samples in each of the left and right branches.
+            This may have the effect of smoothing the model, especially in regression.
+
+                If int, then consider min_samples_leaf as the minimum number.
+                If float, then min_samples_leaf is a fraction and ceil(min_samples_leaf * n_samples) are the minimum number of samples for each node.
+
+        max_depth : integer, optional (default=3)
+            maximum depth of the individual regression estimators.
+            The maximum depth limits the number of nodes in the tree.
+            Tune this parameter for best performance; the best value depends on the interaction of the input variables.
+
+        max_features : int, float, string or None, optional (default=None)
+            The number of features to consider when looking for the best split:
+
+                If int, then consider max_features features at each split.
+                If float, then max_features is a fraction and int(max_features * n_features) features are considered at each split.
+                If “auto”, then max_features=sqrt(n_features).
+                If “sqrt”, then max_features=sqrt(n_features).
+                If “log2”, then max_features=log2(n_features).
+                If None, then max_features=n_features.
+
+            Choosing max_features < n_features leads to a reduction of variance and an increase in bias.
+
+            Note: the search for a split does not stop until at least one valid partition of the node samples is found, even if it requires to effectively inspect more than max_features features. 
+
+        alpha : float (default=0.9)
+            The alpha-quantile of the huber loss function and the quantile loss function.
+            Only if loss='huber' or loss='quantile'.
+
+        max_leaf_nodes : int or None, optional (default=None)
+            Grow trees with max_leaf_nodes in best-first fashion.
+            Best nodes are defined as relative reduction in impurity.
+            If None then unlimited number of leaf nodes.
+
+        presort : bool or ‘auto’, optional (default=’auto’)
+            Whether to presort the data to speed up the finding of best splits in fitting.
+            Auto mode by default will use presorting on dense data and default to normal sorting on sparse data.
+            Setting presort to true on sparse data will raise an error.
+
+        validation_fraction : float, optional, default 0.1
+            The proportion of training data to set aside as validation set for early stopping.
+            Must be between 0 and 1. Only used if n_iter_no_change is set to an integer.
+
+        tol : float, optional, default 1e-4
+            Tolerance for the early stopping.
+            When the loss is not improving by at least tol for n_iter_no_change iterations (if set to a number), the training stops.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['grad_reg']
+
+        model = GradientBoostingRegressor(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def random_forest_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="rf_reg", new_col_name="rf_reg_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Random Forest Regression model.
+
+        A random forest is a meta estimator that fits a number of decision tree regressors on various sub-samples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting. 
+        The sub-sample size is always the same as the original input sample size but the samples are drawn with replacement if bootstrap=True (default).
+
+        For more Random Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html#sklearn.ensemble.RandomForestRegressor
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "rf_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "rf_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+        
+        n_estimators : integer, optional (default=10)
+            The number of trees in the forest.
+
+        criterion : string, optional (default=”mse”)
+            The function to measure the quality of a split.           
+            Supported criteria are “mse” for the mean squared error, which is equal to variance reduction as feature selection criterion, and “mae” for the mean absolute error.
+
+        max_depth : integer or None, optional (default=None)
+            The maximum depth of the tree.
+            If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.
+
+        min_samples_split : int, float, optional (default=2)
+            The minimum number of samples required to split an internal node:
+
+                If int, then consider min_samples_split as the minimum number.
+                If float, then min_samples_split is a fraction and ceil(min_samples_split * n_samples) are the minimum number of samples for each split.
+
+        min_samples_leaf : int, float, optional (default=1)
+            The minimum number of samples required to be at a leaf node. A split point at any depth will only be considered if it leaves at least min_samples_leaf training samples in each of the left and right branches. This may have the effect of smoothing the model, especially in regression.
+
+                If int, then consider min_samples_leaf as the minimum number.
+                If float, then min_samples_leaf is a fraction and ceil(min_samples_leaf * n_samples) are the minimum number of samples for each node.
+
+        max_features : int, float, string or None, optional (default=”auto”)
+            The number of features to consider when looking for the best split:
+
+                If int, then consider max_features features at each split.
+                If float, then max_features is a fraction and int(max_features * n_features) features are considered at each split.
+                If “auto”, then max_features=sqrt(n_features).
+                If “sqrt”, then max_features=sqrt(n_features) (same as “auto”).
+                If “log2”, then max_features=log2(n_features).
+                If None, then max_features=n_features.
+
+            Note: the search for a split does not stop until at least one valid partition of the node samples is found, even if it requires to effectively inspect more than max_features features.
+        
+        max_leaf_nodes : int or None, optional (default=None)
+            Grow trees with max_leaf_nodes in best-first fashion.
+            Best nodes are defined as relative reduction in impurity. If None then unlimited number of leaf nodes.
+
+        min_impurity_decrease : float, optional (default=0.)
+            A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
+
+            The weighted impurity decrease equation is the following:
+
+            N_t / N * (impurity - N_t_R / N_t * right_impurity
+                                - N_t_L / N_t * left_impurity)
+
+            where N is the total number of samples, N_t is the number of samples at the current node, N_t_L is the number of samples in the left child, and N_t_R is the number of samples in the right child.
+
+            N, N_t, N_t_R and N_t_L all refer to the weighted sum, if sample_weight is passed.
+
+        bootstrap : boolean, optional (default=True)
+            Whether bootstrap samples are used when building trees. If False, the whole datset is used to build each tree.
+
+        oob_score : bool (default=False)
+            Whether to use out-of-bag samples to estimate the generalization accuracy.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['rf_reg']
+
+        model = RandomForestRegressor(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def decision_tree_regression(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="dt_reg", new_col_name="dt_reg_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Decision Tree Regression model.
+
+        For more Decision Tree info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html#sklearn.tree.DecisionTreeRegressor
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "dt_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "dt_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False       	
+
+        criterion : string, optional (default=”mse”)
+            The function to measure the quality of a split.
+            
+            Supported criteria are “mse” for the mean squared error, which is equal to variance reduction as feature selection criterion and minimizes the L2 loss using the mean of each terminal node,
+             “friedman_mse”, which uses mean squared error with Friedman’s improvement score for potential splits,
+             and “mae” for the mean absolute error, which minimizes the L1 loss using the median of each terminal node.
+
+        splitter : string, optional (default=”best”)
+            The strategy used to choose the split at each node.
+            Supported strategies are “best” to choose the best split and “random” to choose the best random split.
+
+        max_depth : int or None, optional (default=None)
+            The maximum depth of the tree.
+            If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.
+
+        min_samples_split : int, float, optional (default=2)
+            The minimum number of samples required to split an internal node:
+
+                If int, then consider min_samples_split as the minimum number.
+                If float, then min_samples_split is a fraction and ceil(min_samples_split * n_samples) are the minimum number of samples for each split.
+
+        min_samples_leaf : int, float, optional (default=1)
+            The minimum number of samples required to be at a leaf node. A split point at any depth will only be considered if it leaves at least min_samples_leaf training samples in each of the left and right branches. This may have the effect of smoothing the model, especially in regression.
+
+                If int, then consider min_samples_leaf as the minimum number.
+                If float, then min_samples_leaf is a fraction and ceil(min_samples_leaf * n_samples) are the minimum number of samples for each node.
+
+        max_features : int, float, string or None, optional (default=None)
+            The number of features to consider when looking for the best split:
+
+                    If int, then consider max_features features at each split.
+                    If float, then max_features is a fraction and int(max_features * n_features) features are considered at each split.
+                    If “auto”, then max_features=sqrt(n_features).
+                    If “sqrt”, then max_features=sqrt(n_features).
+                    If “log2”, then max_features=log2(n_features).
+                    If None, then max_features=n_features.
+
+            Note: the search for a split does not stop until at least one valid partition of the node samples is found, even if it requires to effectively inspect more than max_features features.
+
+        max_leaf_nodes : int or None, optional (default=None)
+            Grow a tree with max_leaf_nodes in best-first fashion.
+            Best nodes are defined as relative reduction in impurity.
+            If None then unlimited number of leaf nodes.
+
+        min_impurity_decrease : float, optional (default=0.)
+            A node will be split if this split induces a decrease of the impurity greater than or equal to this value.
+
+            The weighted impurity decrease equation is the following:
+
+            N_t / N * (impurity - N_t_R / N_t * right_impurity
+                                - N_t_L / N_t * left_impurity)
+
+            where N is the total number of samples, N_t is the number of samples at the current node, N_t_L is the number of samples in the left child, and N_t_R is the number of samples in the right child.
+
+            N, N_t, N_t_R and N_t_L all refer to the weighted sum, if sample_weight is passed.
+
+        min_impurity_split : float, (default=1e-7)
+            Threshold for early stopping in tree growth.
+            A node will split if its impurity is above the threshold, otherwise it is a leaf.
+
+        presort : bool, optional (default=False)
+            Whether to presort the data to speed up the finding of best splits in fitting.
+            For the default settings of a decision tree on large datasets, setting this to true may slow down the training process.
+            When using either a smaller dataset or a restricted depth, this may speed up the training.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['dt_reg']
+
+        model = DecisionTreeRegressor(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def linearsvr(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="linsvr", new_col_name="linsvr_predictions", run=False, verbose=2, **kwargs):
+        """
+        Trains a Linear Support Vector Regression model.
+
+        Similar to SVR with parameter kernel=’linear’, but implemented in terms of liblinear rather than libsvm,
+        so it has more flexibility in the choice of penalties and loss functions and should scale better to large numbers of samples.
+
+        For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVR.html#sklearn.svm.LinearSVR
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "linsvr_cls"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "linsvr_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        epsilon : float, optional (default=0.0)
+            Epsilon parameter in the epsilon-insensitive loss function.
+            Note that the value of this parameter depends on the scale of the target variable y.
+            If unsure, set epsilon=0.
+
+        tol : float, optional (default=1e-4)
+            Tolerance for stopping criteria.
+
+        C : float, optional (default=1.0)
+            Penalty parameter C of the error term.
+
+        loss : string, ‘hinge’ or ‘squared_hinge’ (default=’squared_hinge’)
+            Specifies the loss function.            
+            ‘hinge’ is the standard SVM loss (used e.g. by the SVC class) while ‘squared_hinge’ is the square of the hinge loss.
+
+        dual : bool, (default=True)
+            Select the algorithm to either solve the dual or primal optimization problem.
+            Prefer dual=False when n_samples > n_features.
+
+        fit_intercept : boolean, optional (default=True)
+            Whether to calculate the intercept for this model.
+            If set to false, no intercept will be used in calculations (i.e. data is expected to be already centered).
+
+        intercept_scaling : float, optional (default=1)
+            When self.fit_intercept is True, instance vector x becomes [x, self.intercept_scaling], i.e. a “synthetic” feature with constant value equals to intercept_scaling is appended to the instance vector.
+            The intercept becomes intercept_scaling * synthetic feature weight Note! the synthetic feature weight is subject to l1/l2 regularization as all other features.
+            To lessen the effect of regularization on synthetic feature weight (and therefore on the intercept) intercept_scaling has to be increased.
+       
+        max_iter : int, (default=1000)
+            The maximum number of iterations to be run.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        random_state = kwargs.pop('random_state', 42)
+        report_info = technique_reason_repo['model']['regression']['linsvr']
+
+        model = LinearSVR(random_state=random_state, **kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, random_state=random_state, **kwargs)
+
+        return model
+
+    @add_to_queue
+    def svr(self, cv=None, gridsearch=None, score='accuracy', learning_curve=False, model_name="svr", new_col_name="svr_predictions", run=False, verbose=2, **kwargs):
+        """
+        Epsilon-Support Vector Regression.
+
+        The free parameters in the model are C and epsilon.
+
+        The fit time scales at least quadratically with the number of samples and may be impractical beyond tens of thousands of samples.
+        For large datasets consider using model.linearsvr or model.sgd_regression instead
+
+        For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html#sklearn.svm.SVR
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ 	 
+            - ‘neg_mean_squared_error’ 	 
+            - ‘neg_mean_squared_log_error’ 	 
+            - ‘neg_median_absolute_error’ 	 
+            - ‘r2’
+
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "linsvr"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "linsvr_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        kernel : string, optional (default=’rbf’)
+            Specifies the kernel type to be used in the algorithm.
+            It must be one of ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’ or a callable.
+            If none is given, ‘rbf’ will be used.
+            If a callable is given it is used to pre-compute the kernel matrix from data matrices; that matrix should be an array of shape (n_samples, n_samples).
+
+        degree : int, optional (default=3)
+            Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
+
+        gamma : float, optional (default=’auto’)
+            Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.
+            Current default is ‘auto’ which uses 1 / n_features, if gamma='scale' is passed then it uses 1 / (n_features * X.var()) as value of gamma.
+
+        coef0 : float, optional (default=0.0)
+            Independent term in kernel function. It is only significant in ‘poly’ and ‘sigmoid’.
+
+        tol : float, optional (default=1e-3)
+            Tolerance for stopping criterion.
+
+        C : float, optional (default=1.0)
+            Penalty parameter C of the error term.
+
+        epsilon : float, optional (default=0.1)
+            Epsilon in the epsilon-SVR model.
+            It specifies the epsilon-tube within which no penalty is associated in the training loss function with points predicted within a distance epsilon from the actual value.
+
+        shrinking : boolean, optional (default=True)
+            Whether to use the shrinking heuristic.
+
+        cache_size : float, optional
+            Specify the size of the kernel cache (in MB).
+
+        max_iter : int, optional (default=-1)
+            Hard limit on iterations within solver, or -1 for no limit.
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+                 
+        report_info = technique_reason_repo['model']['regression']['svr']
+
+        model = SVR(**kwargs)
+
+        model = self._run_model(model, model_name, RegressionModel, new_col_name, report_info, cv=cv, gridsearch=gridsearch, score=score, learning_curve=learning_curve, verbose=verbose, **kwargs)
 
         return model
 

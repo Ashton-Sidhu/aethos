@@ -1052,5 +1052,16 @@ class ClassificationModel(ModelBase):
 class RegressionModel(ModelBase):
     # TODO: Summary statistics
     # TODO: Errors
+    def __init__(self, model_object, model_name, model, predictions_col):
+        
+        self.y_train = model_object.y_train
+        self.y_test = model_object.y_test if model_object.x_test is not None else model_object.y_train
 
-    pass
+        super().__init__(model_object, model, model_name)
+
+        self.y_pred = self.x_train_results[predictions_col] if self.x_test is None else self.x_test_results[predictions_col]
+
+        if self.report:
+            self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))
+
+        self.features = self.x_test.columns
