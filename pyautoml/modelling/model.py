@@ -4,28 +4,14 @@ import warnings
 from IPython import display
 from pathos.multiprocessing import Pool
 from sklearn.cluster import DBSCAN, KMeans
-from sklearn.ensemble import (
-    AdaBoostClassifier,
-    AdaBoostRegressor,
-    BaggingClassifier,
-    BaggingRegressor,
-    GradientBoostingClassifier,
-    GradientBoostingRegressor,
-    IsolationForest,
-    RandomForestClassifier,
-    RandomForestRegressor,
-)
-from sklearn.linear_model import (
-    BayesianRidge,
-    ElasticNet,
-    Lasso,
-    LinearRegression,
-    LogisticRegression,
-    Ridge,
-    RidgeClassifier,
-    SGDClassifier,
-    SGDRegressor,
-)
+from sklearn.ensemble import (AdaBoostClassifier, AdaBoostRegressor,
+                              BaggingClassifier, BaggingRegressor,
+                              GradientBoostingClassifier,
+                              GradientBoostingRegressor, IsolationForest,
+                              RandomForestClassifier, RandomForestRegressor)
+from sklearn.linear_model import (BayesianRidge, ElasticNet, Lasso,
+                                  LinearRegression, LogisticRegression, Ridge,
+                                  RidgeClassifier, SGDClassifier, SGDRegressor)
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
@@ -34,19 +20,11 @@ from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import (
-    _get_cv_type,
-    _run_models_parallel,
-    add_to_queue,
-    run_crossvalidation,
-    run_gridsearch,
-)
-from pyautoml.util import (
-    _contructor_data_properties,
-    _input_columns,
-    _set_item,
-    _validate_model_name,
-)
+from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
+                                     add_to_queue, run_crossvalidation,
+                                     run_gridsearch)
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _set_item, _validate_model_name)
 
 # TODO: For classification implement probability predictions
 
@@ -4413,6 +4391,7 @@ class Model(MethodBase):
             cv = cv if cv else 5
             model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
+        # Train a model and predict on the test test.
         model.fit(self._data_properties.x_train, self._y_train)
 
         self._train_result_data[new_col_name] = model.predict(
@@ -4424,6 +4403,7 @@ class Model(MethodBase):
                 self._data_properties.x_test
             )
 
+        # Report the results
         if self.report is not None:
             if gridsearch:
                 self.report.report_gridsearch(model, verbose)
