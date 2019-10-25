@@ -1,4 +1,5 @@
 import sklearn
+import xgboost as xgb
 from interpret.blackbox import (LimeTabular, MorrisSensitivity,
                                 PartialDependence, ShapKernel)
 from interpret.perf import PR, ROC, RegressionPerf
@@ -31,6 +32,8 @@ SHAP_LEARNERS = {
     sklearn.svm.LinearSVR: 'kernel',
     sklearn.svm.SVC: 'kernel',
     sklearn.svm.SVR: 'kernel',
+    xgb.XGBClassifier: 'tree',
+    xgb.XGBRegressor: 'tree',
 }
 
 PROBLEM_TYPE = {
@@ -59,7 +62,9 @@ PROBLEM_TYPE = {
     sklearn.svm.LinearSVC: 'classification',
     sklearn.svm.LinearSVR: 'regression',
     sklearn.svm.SVC: 'classification',
-    sklearn.svm.SVR: 'regression',       
+    sklearn.svm.SVR: 'regression',
+    xgb.XGBClassifier: 'classification',
+    xgb.XGBRegressor: 'regression',     
 }
 
 INTERPRET_EXPLAINERS = {

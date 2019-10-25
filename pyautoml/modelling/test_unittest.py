@@ -860,5 +860,29 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_xgbc(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.xgboost_classification(run=True)
+        validate = model.xgb_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_xgbr(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.xgboost_regression(run=True)
+        validate = model.xgb_reg is not None
+
+        self.assertTrue(validate)
+
 if __name__ == "__main__":
     unittest.main()

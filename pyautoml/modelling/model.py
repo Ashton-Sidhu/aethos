@@ -1,6 +1,7 @@
 import multiprocessing
 import warnings
 
+import xgboost as xgb
 from IPython import display
 from pathos.multiprocessing import Pool
 from sklearn.cluster import DBSCAN, KMeans
@@ -807,6 +808,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "iso_forest"
 
@@ -926,6 +930,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "ocsvm"
 
@@ -995,7 +1002,7 @@ class Model(MethodBase):
 
         return model
 
-    ################### REGRESSION MODELS ########################
+    ################### CLASSIFICATION MODELS ########################
 
     # NOTE: This entire process may need to be reworked.
     @add_to_queue
@@ -1048,6 +1055,9 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "log_reg"
@@ -1155,6 +1165,9 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "ridge_cls"
@@ -1268,6 +1281,9 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
+        
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "sgd_cls"
@@ -1443,6 +1459,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "ada_cls"
 
@@ -1549,6 +1568,9 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "bag_cls"
@@ -1672,6 +1694,9 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "grad_cls"
@@ -1841,6 +1866,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "rf_cls"
 
@@ -2004,6 +2032,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "bern"
 
@@ -2105,6 +2136,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "gauss"
 
@@ -2204,6 +2238,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "multi"
 
@@ -2301,6 +2338,9 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "dt_cls"
@@ -2474,6 +2514,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "linsvc"
 
@@ -2614,6 +2657,9 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
 
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
         model_name : str, optional
             Name for this model, by default "linsvc_cls"
 
@@ -2698,6 +2744,182 @@ class Model(MethodBase):
 
         return model
 
+    @add_to_queue
+    def xgboost_classification(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        learning_curve=False,
+        model_name="xgb_cls",
+        new_col_name="xgb_cls_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
+        """
+        Trains an XGBoost Classification Model.
+
+        XGBoost is an optimized distributed gradient boosting library designed to be highly efficient, flexible and portable.
+        It implements machine learning algorithms under the Gradient Boosting framework.
+        XGBoost provides a parallel tree boosting (also known as GBDT, GBM) that solve many data science problems in a fast and accurate way.
+        The same code runs on major distributed environment (Hadoop, SGE, MPI) and can solve problems beyond billions of examples.
+
+        For more XGBoost info, you can view it here: https://xgboost.readthedocs.io/en/latest/ and
+        https://github.com/dmlc/xgboost/blob/master/doc/parameter.rst. 
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
+        model_name : str, optional
+            Name for this model, by default "xgb_cls"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "xgb_cls_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        max_depth : int
+            Maximum tree depth for base learners. By default 3
+
+        learning_rate : float
+            Boosting learning rate (xgb's "eta"). By default 0.1
+
+        n_estimators : int
+            Number of trees to fit. By default 100.
+
+        objective : string or callable
+            Specify the learning task and the corresponding learning objective or
+            a custom objective function to be used (see note below).
+            By default binary:logistic for binary classification or multi:softprob for multiclass classifcation
+
+        booster: string
+            Specify which booster to use: gbtree, gblinear or dart. By default 'gbtree'
+
+        tree_method: string
+            Specify which tree method to use
+            If this parameter is set to default, XGBoost will choose the most conservative option
+            available.  It's recommended to study this option from parameters
+            document. By default 'auto'
+
+        gamma : float
+            Minimum loss reduction required to make a further partition on a leaf node of the tree.
+            By default 0
+
+        subsample : float
+            Subsample ratio of the training instance.
+            By default 1
+        
+        reg_alpha : float (xgb's alpha)
+            L1 regularization term on weights. By default 0
+
+        reg_lambda : float (xgb's lambda)
+            L2 regularization term on weights. By default 1
+
+        scale_pos_weight : float
+            Balancing of positive and negative weights. By default 1
+
+        base_score:
+            The initial prediction score of all instances, global bias. By default 0
+
+        missing : float, optional
+            Value in the data which needs to be present as a missing value. If
+            None, defaults to np.nan.
+            By default, None
+
+        num_parallel_tree: int
+            Used for boosting random forest.
+            By default 1
+
+        importance_type: string, default "gain"
+            The feature importance type for the feature_importances\\_ property:
+            either "gain", "weight", "cover", "total_gain" or "total_cover".
+            By default 'gain'.
+
+        Note
+        ----
+        A custom objective function can be provided for the ``objective``
+        parameter. In this case, it should have the signature
+        ``objective(y_true, y_pred) -> grad, hess``:
+
+        y_true: array_like of shape [n_samples]
+            The target values
+
+        y_pred: array_like of shape [n_samples]
+            The predicted values
+
+        grad: array_like of shape [n_samples]
+            The value of the gradient for each sample point.
+
+        hess: array_like of shape [n_samples]
+            The value of the second derivative for each sample point
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+
+        random_state = kwargs.pop("random_state", 42)
+        objective = kwargs.pop('objective', 'binary:logistic' if len(self._y_train.unique()) == 2 else 'multi:softprob')
+        report_info = technique_reason_repo["model"]["classification"]["xgb_cls"]
+
+        model = xgb.XGBClassifier(objective=objective, random_state=random_state, **kwargs)
+
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
+
+        return model
+
     ################### REGRESSION MODELS ########################
 
     @add_to_queue
@@ -2705,7 +2927,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="lin_reg",
         new_col_name="linreg_predictions",
@@ -2727,10 +2949,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -2742,7 +2964,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "lin_reg"
@@ -2797,7 +3022,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="bayridge_reg",
         new_col_name="bayridge_predictions",
@@ -2820,10 +3045,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -2835,7 +3060,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "bayridge_reg"
@@ -2909,7 +3137,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="elastic",
         new_col_name="elastic_predictions",
@@ -2927,14 +3155,14 @@ class Model(MethodBase):
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
+        
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -2946,7 +3174,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "elastic"
@@ -3033,7 +3264,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="lasso",
         new_col_name="lasso_predictions",
@@ -3057,10 +3288,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -3072,7 +3303,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "lasso"
@@ -3152,7 +3386,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="ridge_reg",
         new_col_name="ridge_reg_predictions",
@@ -3174,10 +3408,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -3189,7 +3423,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "ridge"
@@ -3258,7 +3495,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="sgd_reg",
         new_col_name="sgd_reg_predictions",
@@ -3287,10 +3524,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -3302,7 +3539,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "sgd_reg"
@@ -3436,7 +3676,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="ada_reg",
         new_col_name="ada_reg_predictions",
@@ -3461,10 +3701,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -3476,7 +3716,10 @@ class Model(MethodBase):
             Parameters to gridsearch, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "ada_reg"
@@ -3539,7 +3782,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="bag_reg",
         new_col_name="bag_reg_predictions",
@@ -3564,10 +3807,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -3579,7 +3822,10 @@ class Model(MethodBase):
             Parameters to gridsearch, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "bag_reg"
@@ -3654,7 +3900,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="grad_reg",
         new_col_name="grad_reg_predictions",
@@ -3679,10 +3925,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -3694,7 +3940,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default 'neg_mean_squared_error'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "grad_reg"
@@ -3823,7 +4072,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="rf_reg",
         new_col_name="rf_reg_predictions",
@@ -3844,14 +4093,14 @@ class Model(MethodBase):
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
+        
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -3863,7 +4112,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default 'neg_mean_squared_error'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "rf_reg"
@@ -3967,7 +4219,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="dt_reg",
         new_col_name="dt_reg_predictions",
@@ -3989,10 +4241,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -4004,7 +4256,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default 'neg_mean_squared_error'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "dt_reg"
@@ -4116,7 +4371,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="linsvr",
         new_col_name="linsvr_predictions",
@@ -4137,14 +4392,14 @@ class Model(MethodBase):
             - 'strat-kfold' for StratifiedKfold
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
+        
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
         
         Parameters
@@ -4156,7 +4411,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default 'neg_mean_squared_error’
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "linsvr_cls"
@@ -4234,7 +4492,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score='neg_mean_squared_error',
         learning_curve=False,
         model_name="svr",
         new_col_name="svr_predictions",
@@ -4261,10 +4519,10 @@ class Model(MethodBase):
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ 	 
-            - ‘neg_mean_squared_error’ 	 
-            - ‘neg_mean_squared_log_error’ 	 
-            - ‘neg_median_absolute_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE	 
+            - ‘neg_mean_squared_error’ --> MSE 	 
+            - ‘neg_mean_squared_log_error’ --> MSLE
+            - ‘neg_median_absolute_error’ --> MeAE 	 
             - ‘r2’
 
         Parameters
@@ -4276,7 +4534,10 @@ class Model(MethodBase):
             Cross validation method, by default None
 
         score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
+            Scoring metric to evaluate models, by default 'neg_mean_squared_error'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "linsvr"
@@ -4350,6 +4611,176 @@ class Model(MethodBase):
         )
 
         return model
+
+    @add_to_queue
+    def xgboost_regression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="neg_mean_squared_error",
+        learning_curve=False,
+        model_name="xgb_reg",
+        new_col_name="xgb_reg_predictions",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
+        """
+        Trains an XGBoost Regression Model.
+
+        XGBoost is an optimized distributed gradient boosting library designed to be highly efficient, flexible and portable.
+        It implements machine learning algorithms under the Gradient Boosting framework.
+        XGBoost provides a parallel tree boosting (also known as GBDT, GBM) that solve many data science problems in a fast and accurate way.
+        The same code runs on major distributed environment (Hadoop, SGE, MPI) and can solve problems beyond billions of examples.
+
+        For more XGBoost info, you can view it here: https://xgboost.readthedocs.io/en/latest/ and
+        https://github.com/dmlc/xgboost/blob/master/doc/parameter.rst. 
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE 
+            - ‘neg_mean_squared_error’ --> MSE
+            - ‘neg_mean_squared_log_error’ --> MSLE 
+            - ‘neg_median_absolute_error’ --> MeAE 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'neg_mean_squared_error'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
+        model_name : str, optional
+            Name for this model, by default "xgb_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "xgb_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        max_depth : int
+            Maximum tree depth for base learners. By default 3
+
+        learning_rate : float
+            Boosting learning rate (xgb's "eta"). By default 0.1
+
+        n_estimators : int
+            Number of trees to fit. By default 100.
+
+        objective : string or callable
+            Specify the learning task and the corresponding learning objective or
+            a custom objective function to be used (see note below).
+            By default, reg:linear
+
+        booster: string
+            Specify which booster to use: gbtree, gblinear or dart. By default 'gbtree'
+
+        tree_method: string
+            Specify which tree method to use
+            If this parameter is set to default, XGBoost will choose the most conservative option
+            available.  It's recommended to study this option from parameters
+            document. By default 'auto'
+
+        gamma : float
+            Minimum loss reduction required to make a further partition on a leaf node of the tree.
+            By default 0
+
+        subsample : float
+            Subsample ratio of the training instance.
+            By default 1
+        
+        reg_alpha : float (xgb's alpha)
+            L1 regularization term on weights. By default 0
+
+        reg_lambda : float (xgb's lambda)
+            L2 regularization term on weights. By default 1
+
+        scale_pos_weight : float
+            Balancing of positive and negative weights. By default 1
+
+        base_score:
+            The initial prediction score of all instances, global bias. By default 0
+
+        missing : float, optional
+            Value in the data which needs to be present as a missing value. If
+            None, defaults to np.nan.
+            By default, None
+
+        num_parallel_tree: int
+            Used for boosting random forest.
+            By default 1
+
+        importance_type: string, default "gain"
+            The feature importance type for the feature_importances\\_ property:
+            either "gain", "weight", "cover", "total_gain" or "total_cover".
+            By default 'gain'.
+
+        Note
+        ----
+        A custom objective function can be provided for the ``objective``
+        parameter. In this case, it should have the signature
+        ``objective(y_true, y_pred) -> grad, hess``:
+
+        y_true: array_like of shape [n_samples]
+            The target values
+
+        y_pred: array_like of shape [n_samples]
+            The predicted values
+
+        grad: array_like of shape [n_samples]
+            The value of the gradient for each sample point.
+
+        hess: array_like of shape [n_samples]
+            The value of the second derivative for each sample point
+
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["xgb_reg"]
+
+        model = xgb.XGBRegressor(random_state=random_state, **kwargs)
+
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs
+        )
+
+        return model
+
+    ################### CLASSIFICATION MODELS ########################
 
     def _run_supervised_model(
         self,

@@ -195,6 +195,9 @@ model:
       
     svc: >
       Trained a Support Vector Classifier.
+
+    xgb_cls: >
+      Trained a XGBoost Classification Model.
      
   regression:
     linreg: >
@@ -234,4 +237,7 @@ model:
       Trained a linear Support Vector Regressor.
       
     svr: >
-      Trained a Support Vector Regressor    
+      Trained a Support Vector Regressor
+
+    xgb_reg: >
+      Trained a XGBoost Regressor model.  
