@@ -144,6 +144,13 @@ model:
       
     textrank_summarizer: >
       Created an extractive summary using the Text Rank algorithm.
+
+    doc2vec: >
+      Trained a doc2vec model.
+
+    word2vec: >
+      Trained a word2vec model.
+
   unsupervised:
     kmeans: >
       Ran KMeans clustering.
@@ -156,6 +163,16 @@ model:
 
     iso_forest: >
       Trained an Isolation Forest model.
+
+    agglom: >
+      Trained an Agglomerative Hierarchical Clustering model.
+
+    em_gmm: >
+      Trained an Expectation-Maxmimization (EM) Clustering model using Gaussian Mixture Models (GMM).
+
+    ms : >
+      Trained a Mean-Shift Clustering model.
+    
   classification:
     logreg: >
       Trained a Logistic Regression model.

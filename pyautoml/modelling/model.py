@@ -4,7 +4,7 @@ import warnings
 import xgboost as xgb
 from IPython import display
 from pathos.multiprocessing import Pool
-from sklearn.cluster import DBSCAN, KMeans
+from sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans, MeanShift
 from sklearn.ensemble import (AdaBoostClassifier, AdaBoostRegressor,
                               BaggingClassifier, BaggingRegressor,
                               GradientBoostingClassifier,
@@ -13,6 +13,7 @@ from sklearn.ensemble import (AdaBoostClassifier, AdaBoostRegressor,
 from sklearn.linear_model import (BayesianRidge, ElasticNet, Lasso,
                                   LinearRegression, LogisticRegression, Ridge,
                                   RidgeClassifier, SGDClassifier, SGDRegressor)
+from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
@@ -531,7 +532,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="homogenity_score",
         learning_curve=False,
         model_name="kmeans",
         new_col_name="kmeans_clusters",
@@ -542,7 +543,7 @@ class Model(MethodBase):
         """
         K-means clustering is one of the simplest and popular unsupervised machine learning algorithms.
 
-        the objective of K-means is simple: group similar data points together and discover underlying patterns.
+        The objective of K-means is simple: group similar data points together and discover underlying patterns.
         To achieve this objective, K-means looks for a fixed number (k) of clusters in a dataset.
 
         In other words, the K-means algorithm identifies k number of centroids,
@@ -758,7 +759,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="homogenity_score",
         learning_curve=False,
         model_name="iso_forest",
         new_col_name="iso_predictions",
@@ -781,21 +782,15 @@ class Model(MethodBase):
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
-        Possible scoring metrics: 
-            - ‘accuracy’ 	
-            - ‘balanced_accuracy’ 	
-            - ‘average_precision’ 	
-            - ‘brier_score_loss’ 	
-            - ‘f1’ 	
-            - ‘f1_micro’ 	
-            - ‘f1_macro’ 	
-            - ‘f1_weighted’ 	
-            - ‘f1_samples’ 	
-            - ‘neg_log_loss’ 	
-            - ‘precision’	
-            - ‘recall’ 	
-            - ‘jaccard’ 	
-            - ‘roc_auc’
+        Possible scoring metrics:
+            - ‘adjusted_mutual_info_score’ 	
+            - ‘adjusted_rand_score’ 	 
+            - ‘completeness_score’ 	 
+            - ‘fowlkes_mallows_score’ 	 
+            - ‘homogeneity_score’ 	 
+            - ‘mutual_info_score’ 	 
+            - ‘normalized_mutual_info_score’ 	 
+            - ‘v_measure_score’
         
         Parameters
         ----------
@@ -882,7 +877,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score="accuracy",
+        score="homogenity_score",
         learning_curve=False,
         model_name="ocsvm",
         new_col_name="ocsvm_predictions",
@@ -903,21 +898,15 @@ class Model(MethodBase):
 
         For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
-        Possible scoring metrics: 
-            - ‘accuracy’ 	
-            - ‘balanced_accuracy’ 	
-            - ‘average_precision’ 	
-            - ‘brier_score_loss’ 	
-            - ‘f1’ 	
-            - ‘f1_micro’ 	
-            - ‘f1_macro’ 	
-            - ‘f1_weighted’ 	
-            - ‘f1_samples’ 	
-            - ‘neg_log_loss’ 	
-            - ‘precision’	
-            - ‘recall’ 	
-            - ‘jaccard’ 	
-            - ‘roc_auc’
+        Possible scoring metrics:
+            - ‘adjusted_mutual_info_score’ 	
+            - ‘adjusted_rand_score’ 	 
+            - ‘completeness_score’ 	 
+            - ‘fowlkes_mallows_score’ 	 
+            - ‘homogeneity_score’ 	 
+            - ‘mutual_info_score’ 	 
+            - ‘normalized_mutual_info_score’ 	 
+            - ‘v_measure_score’
         
         Parameters
         ----------
@@ -986,6 +975,398 @@ class Model(MethodBase):
         report_info = technique_reason_repo["model"]["unsupervised"]["oneclass_cls"]
 
         model = OneClassSVM(**kwargs)
+
+        model = self._run_unsupervised_model(
+            model,
+            model_name,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
+
+        return model
+
+    @add_to_queue
+    def agglomerative_clustering(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="homogenity_score",
+        learning_curve=False,
+        model_name="agglom",
+        new_col_name="agglom_clusters",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
+        """
+        Trains a Agglomerative Clustering Model
+
+        Each data point as a single cluster at the outset and then successively merge (or agglomerate) pairs of clusters until all clusters have been merged into a single cluster that contains all data points
+        
+        Hierarchical clustering does not require us to specify the number of clusters and we can even select which number of clusters looks best since we are building a tree.
+        
+        Additionally, the algorithm is not sensitive to the choice of distance metric; all of them tend to work equally well whereas with other clustering algorithms, 
+        the choice of distance metric is critical. 
+        
+        A particularly good use case of hierarchical clustering methods is when the underlying data has a hierarchical structure and you want to recover the hierarchy;
+        other clustering algorithms can’t do this.
+        
+        These advantages of hierarchical clustering come at the cost of lower efficiency, as it has a time complexity of O(n³), unlike the linear complexity of K-Means and GMM.
+
+        For a list of all possible options for Agglomerative clustering please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html#sklearn.cluster.AgglomerativeClustering
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+        
+        Possible scoring metrics:
+            - ‘adjusted_mutual_info_score’ 	
+            - ‘adjusted_rand_score’ 	 
+            - ‘completeness_score’ 	 
+            - ‘fowlkes_mallows_score’ 	 
+            - ‘homogeneity_score’ 	 
+            - ‘mutual_info_score’ 	 
+            - ‘normalized_mutual_info_score’ 	 
+            - ‘v_measure_score’
+
+        Parameters
+        ----------
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'homogenity_score'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
+        model_name : str, optional
+            Name for this model, by default "agglom"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "agglom_clusters"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        n_clusters : int or None, optional (default=2)
+            The number of clusters to find.
+            It must be None if distance_threshold is not None.
+
+        affinity : string or callable, default: “euclidean”
+            Metric used to compute the linkage.
+            Can be “euclidean”, “l1”, “l2”, “manhattan”, “cosine”, or “precomputed”.
+            If linkage is “ward”, only “euclidean” is accepted.
+            If “precomputed”, a distance matrix (instead of a similarity matrix) is needed as input for the fit method.
+
+        compute_full_tree : bool or ‘auto’ (optional)
+            Stop early the construction of the tree at n_clusters.
+            This is useful to decrease computation time if the number of clusters is not small compared to the number of samples.
+            This option is useful only when specifying a connectivity matrix.
+            Note also that when varying the number of clusters and using caching, it may be advantageous to compute the full tree.
+            It must be True if distance_threshold is not None.
+
+        linkage : {“ward”, “complete”, “average”, “single”}, optional (default=”ward”)
+            Which linkage criterion to use. The linkage criterion determines which distance to use between sets of observation. The algorithm will merge the pairs of cluster that minimize this criterion.
+
+                'ward' minimizes the variance of the clusters being merged.
+                'average' uses the average of the distances of each observation of the two sets.
+                'complete' or maximum linkage uses the maximum distances between all observations of the two sets.
+                'single' uses the minimum of the distances between all observations of the two sets.
+
+        distance_threshold : float, optional (default=None)
+            The linkage distance threshold above which, clusters will not be merged.
+            If not None, n_clusters must be None and compute_full_tree must be True.
+                    
+        Returns
+        -------
+        UnsupervisedModel
+            UnsupervisedModel object to view results and further analysis
+        """
+
+        report_info = technique_reason_repo["model"]["unsupervised"]["agglom"]
+
+        model = AgglomerativeClustering(**kwargs)
+
+        model = self._run_unsupervised_model(
+            model,
+            model_name,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
+
+        return model
+
+    @add_to_queue
+    def mean_shift(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="homogenity_score",
+        learning_curve=False,
+        model_name="mshift",
+        new_col_name="mshift_clusters",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
+        """
+        Trains a Mean Shift clustering algorithm.
+
+        Mean shift clustering aims to discover “blobs” in a smooth density of samples.
+
+        It is a centroid-based algorithm, which works by updating candidates for centroids to be the mean of the points within a given region.
+
+        These candidates are then filtered in a post-processing stage to eliminate near-duplicates to form the final set of centroids.
+
+        For more info on Mean Shift clustering please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.MeanShift.html#sklearn.cluster.MeanShift
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+        
+        Possible scoring metrics:
+            - ‘adjusted_mutual_info_score’ 	
+            - ‘adjusted_rand_score’ 	 
+            - ‘completeness_score’ 	 
+            - ‘fowlkes_mallows_score’ 	 
+            - ‘homogeneity_score’ 	 
+            - ‘mutual_info_score’ 	 
+            - ‘normalized_mutual_info_score’ 	 
+            - ‘v_measure_score’
+
+        Parameters
+        ----------
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'homogenity_score'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
+        model_name : str, optional
+            Name for this model, by default "mshift"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "mshift_clusters"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        bandwidth : float, optional
+            Bandwidth used in the RBF kernel.
+
+            If not given, the bandwidth is estimated using sklearn.cluster.estimate_bandwidth; see the documentation for that function for hints on scalability (see also the Notes, below).
+
+        seeds : array, shape=[n_samples, n_features], optional
+            Seeds used to initialize kernels.
+            If not set, the seeds are calculated by clustering.get_bin_seeds with bandwidth as the grid size and default values for other parameters.
+
+        bin_seeding : boolean, optional
+            If true, initial kernel locations are not locations of all points, but rather the location of the discretized version of points, where points are binned onto a grid whose coarseness corresponds to the bandwidth.
+            Setting this option to True will speed up the algorithm because fewer seeds will be initialized.
+            default value: False Ignored if seeds argument is not None.        
+            
+        min_bin_freq : int, optional
+            To speed up the algorithm, accept only those bins with at least min_bin_freq points as seeds.
+            If not defined, set to 1.
+
+        cluster_all : boolean, default True
+            If true, then all points are clustered, even those orphans that are not within any kernel. Orphans are assigned to the nearest kernel.
+            If false, then orphans are given cluster label -1.
+                    
+        Returns
+        -------
+        UnsupervisedModel
+            UnsupervisedModel object to view results and further analysis
+        """
+
+        report_info = technique_reason_repo["model"]["unsupervised"]["ms"]
+
+        model = MeanShift(**kwargs)
+
+        model = self._run_unsupervised_model(
+            model,
+            model_name,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            learning_curve=learning_curve,
+            verbose=verbose,
+            **kwargs
+        )
+
+        return model
+
+    @add_to_queue
+    def gaussian_mixture_clustering(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="homogenity_score",
+        learning_curve=False,
+        model_name="gm_cluster",
+        new_col_name="gm_clusters",
+        run=False,
+        verbose=2,
+        **kwargs
+    ):
+        """
+        Trains a GaussianMixture algorithm that implements the expectation-maximization algorithm for fitting mixture
+        of Gaussian models.
+
+        A Gaussian mixture model is a probabilistic model that assumes all the data points are generated from a mixture of a finite number of Gaussian distributions with unknown parameters.
+
+        There are 2 key advantages to using GMMs.
+        
+        Firstly GMMs are a lot more flexible in terms of cluster covariance than K-Means; due to the standard deviation parameter, the clusters can take on any ellipse shape, rather than being restricted to circles.
+        
+        K-Means is actually a special case of GMM in which each cluster’s covariance along all dimensions approaches 0.
+        Secondly, since GMMs use probabilities, they can have multiple clusters per data point.
+        
+        So if a data point is in the middle of two overlapping clusters, we can simply define its class by saying it belongs X-percent to class 1 and Y-percent to class 2. I.e GMMs support mixed membership.
+
+        For more information on Gaussian Mixture algorithms please visit: https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html#sklearn.mixture.GaussianMixture
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+        
+        Possible scoring metrics:
+            - ‘adjusted_mutual_info_score’ 	
+            - ‘adjusted_rand_score’ 	 
+            - ‘completeness_score’ 	 
+            - ‘fowlkes_mallows_score’ 	 
+            - ‘homogeneity_score’ 	 
+            - ‘mutual_info_score’ 	 
+            - ‘normalized_mutual_info_score’ 	 
+            - ‘v_measure_score’
+
+        Parameters
+        ----------
+        cv : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        gridsearch : dict, optional
+            Parameters to gridsearch, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'homogenity_score'
+
+        learning_curve : bool, optional
+            When running cross validation, True to display a learning curve, by default False
+
+        model_name : str, optional
+            Name for this model, by default "gm_cluster"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "gm_clusters"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        n_components : int, defaults to 1.
+            The number of mixture components/ number of unique y_train values.
+
+        covariance_type : {‘full’ (default), ‘tied’, ‘diag’, ‘spherical’}
+            String describing the type of covariance parameters to use. Must be one of:
+
+            ‘full’
+                each component has its own general covariance matrix
+
+            ‘tied’
+                all components share the same general covariance matrix
+
+            ‘diag’
+                each component has its own diagonal covariance matrix
+
+            ‘spherical’
+                each component has its own single variance
+
+        tol : float, defaults to 1e-3.
+            The convergence threshold. EM iterations will stop when the lower bound average gain is below this threshold.
+
+        reg_covar : float, defaults to 1e-6.
+            Non-negative regularization added to the diagonal of covariance.
+            Allows to assure that the covariance matrices are all positive.
+
+        max_iter : int, defaults to 100.
+            The number of EM iterations to perform.
+
+        n_init : int, defaults to 1.
+            The number of initializations to perform. The best results are kept.
+
+        init_params : {‘kmeans’, ‘random’}, defaults to ‘kmeans’.
+            The method used to initialize the weights, the means and the precisions. Must be one of:
+
+            'kmeans' : responsibilities are initialized using kmeans.
+            'random' : responsibilities are initialized randomly.
+
+        weights_init : array-like, shape (n_components, ), optional
+            The user-provided initial weights
+            If it None, weights are initialized using the init_params method.
+            Defaults to None. 
+
+        means_init : array-like, shape (n_components, n_features), optional
+            The user-provided initial means
+            If it None, means are initialized using the init_params method.
+            Defaults to None
+
+        precisions_init : array-like, optional.
+            The user-provided initial precisions (inverse of the covariance matrices), defaults to None. If it None, precisions are initialized using the ‘init_params’ method. The shape depends on ‘covariance_type’:
+
+            (n_components,)                        if 'spherical',
+            (n_features, n_features)               if 'tied',
+            (n_components, n_features)             if 'diag',
+            (n_components, n_features, n_features) if 'full'
+            
+        Returns
+        -------
+        UnsupervisedModel
+            UnsupervisedModel object to view results and further analysis
+        """
+
+        report_info = technique_reason_repo["model"]["unsupervised"]["em_gmm"]
+        random_state = kwargs.pop("random_state", 42)
+
+        model = GaussianMixture(random_state=random_state, **kwargs)
 
         model = self._run_unsupervised_model(
             model,
@@ -4892,14 +5273,15 @@ class Model(MethodBase):
             self._data_properties.x_train
         )
 
-        if self._data_properties.x_test is not None and hasattr(model, "predict"):
-            self._test_result_data[new_col_name] = model.predict(
-                self._data_properties.x_test
-            )
-        else:
-            warnings.warn(
-                "Model does not have a predict function, unable to predict on the test data set. Consider combining your datasets into 1 and set `model.x_test = None`"
-            )
+        if self._data_properties.x_test is not None:
+            if hasattr(model, "predict"):
+                self._test_result_data[new_col_name] = model.predict(
+                    self._data_properties.x_test
+                )
+            else:
+                warnings.warn(
+                    "Model does not have a predict function, unable to predict on the test data set. Consider combining your datasets into 1 and set `model.x_test = None`"
+                )
 
         if self.report is not None:
             if gridsearch:

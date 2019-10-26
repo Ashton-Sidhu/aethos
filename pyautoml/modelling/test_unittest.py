@@ -884,5 +884,44 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_agglom(self):
+
+        data = [[1, 2], [2, 2], [2, 3],
+            [8, 7], [8, 8], [25, 80]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2'])
+
+        model = Model(x_train=data, split=False)
+        model.agglomerative_clustering(n_clusters=2, run=True)
+        validate = model.agglom is not None
+
+        self.assertTrue(validate)
+
+    def test_model_meanshift(self):
+
+        data = [[1, 2], [2, 2], [2, 3],
+            [8, 7], [8, 8], [25, 80]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2'])
+
+        model = Model(x_train=data, split=False)
+        model.mean_shift(run=True)
+        validate = model.mshift is not None
+
+        self.assertTrue(validate)
+
+    def test_model_gaussianmixture(self):
+
+        data = [[1, 2], [2, 2], [2, 3],
+            [8, 7], [8, 8], [25, 80]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2'])
+
+        model = Model(x_train=data, split=False)
+        model.gaussian_mixture_clustering(run=True)
+        validate = model.gm_cluster is not None
+
+        self.assertTrue(validate)
+
 if __name__ == "__main__":
     unittest.main()
