@@ -787,7 +787,7 @@ class Model(MethodBase):
 
         report_info = technique_reason_repo["model"]["text"]["doc2vec"]
 
-        w2v_model = gensim_doc2vec(
+        d2v_model = gensim_doc2vec(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             prep=prep,
