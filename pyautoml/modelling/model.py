@@ -811,7 +811,7 @@ class Model(MethodBase):
         gridsearch=None,
         score="homogeneity_score",
         learning_curve=False,
-        model_name="kmeans",
+        model_name="km",
         new_col_name="kmeans_clusters",
         run=False,
         verbose=2,
@@ -900,6 +900,9 @@ class Model(MethodBase):
             UnsupervisedModel object to view results and further analysis
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         report_info = technique_reason_repo["model"]["unsupervised"]["kmeans"]
         random_state = kwargs.pop("random_state", 42)
 
@@ -927,7 +930,7 @@ class Model(MethodBase):
         gridsearch=None,
         score="homogeneity_score",
         learning_curve=False,
-        model_name="dbscan",
+        model_name="dbs",
         new_col_name="dbscan_clusters",
         run=False,
         verbose=2,
@@ -1011,6 +1014,9 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["unsupervised"]["dbscan"]
 
@@ -1127,6 +1133,9 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["unsupervised"]["iso_forest"]
@@ -1248,6 +1257,9 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["unsupervised"]["oneclass_cls"]
 
@@ -1375,6 +1387,9 @@ class Model(MethodBase):
             UnsupervisedModel object to view results and further analysis
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         report_info = technique_reason_repo["model"]["unsupervised"]["agglom"]
 
         model = AgglomerativeClustering(**kwargs)
@@ -1487,6 +1502,9 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["unsupervised"]["ms"]
 
@@ -1640,6 +1658,9 @@ class Model(MethodBase):
             UnsupervisedModel object to view results and further analysis
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         report_info = technique_reason_repo["model"]["unsupervised"]["em_gmm"]
         random_state = kwargs.pop("random_state", 42)
 
@@ -1749,6 +1770,9 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         solver = kwargs.pop("solver", "lbfgs")
@@ -1866,6 +1890,9 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["ridge_cls"]
@@ -2041,6 +2068,9 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["sgd_cls"]
 
@@ -2150,6 +2180,9 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["ada_cls"]
@@ -2275,6 +2308,9 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["bag_cls"]
@@ -2448,6 +2484,9 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["grad_cls"]
 
@@ -2613,6 +2652,9 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["rf_cls"]
 
@@ -2723,6 +2765,9 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         report_info = technique_reason_repo["model"]["classification"]["bern"]
 
         model = BernoulliNB(**kwargs)
@@ -2820,6 +2865,9 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["classification"]["gauss"]
 
@@ -2925,6 +2973,9 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["classification"]["multi"]
 
@@ -3094,6 +3145,9 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["dt_cls"]
 
@@ -3235,6 +3289,9 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["linsvc"]
 
@@ -3264,7 +3321,7 @@ class Model(MethodBase):
         gridsearch=None,
         score="accuracy",
         learning_curve=False,
-        model_name="svc",
+        model_name="svc_cls",
         new_col_name="svc_predictions",
         run=False,
         verbose=2,
@@ -3379,6 +3436,9 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["svc"]
@@ -3555,6 +3615,9 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         objective = kwargs.pop('objective', 'binary:logistic' if len(self._y_train.unique()) == 2 else 'multi:softprob')
         report_info = technique_reason_repo["model"]["classification"]["xgb_cls"]
@@ -3652,6 +3715,9 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["linreg"]
@@ -3767,6 +3833,9 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["bay_reg"]
@@ -3895,6 +3964,9 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["el_net"]
 
@@ -4017,6 +4089,9 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["lasso"]
 
@@ -4125,6 +4200,9 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["ridge_reg"]
@@ -4307,6 +4385,9 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["sgd_reg"]
 
@@ -4412,6 +4493,9 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["ada_reg"]
@@ -4530,6 +4614,9 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["bag_reg"]
@@ -4703,6 +4790,9 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["grad_reg"]
 
@@ -4849,6 +4939,9 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["rf_reg"]
@@ -5002,6 +5095,9 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["dt_reg"]
 
@@ -5123,6 +5219,9 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["linsvr"]
 
@@ -5152,7 +5251,7 @@ class Model(MethodBase):
         gridsearch=None,
         score='neg_mean_squared_error',
         learning_curve=False,
-        model_name="svr",
+        model_name="svr_reg",
         new_col_name="svr_predictions",
         run=False,
         verbose=2,
@@ -5249,6 +5348,9 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["regression"]["svr"]
 
@@ -5416,6 +5518,9 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["xgb_reg"]
 
@@ -5438,7 +5543,7 @@ class Model(MethodBase):
 
         return model
 
-    ################### CLASSIFICATION MODELS ########################
+    ################### HELPER FUNCTIONS ########################
 
     def _run_supervised_model(
         self,

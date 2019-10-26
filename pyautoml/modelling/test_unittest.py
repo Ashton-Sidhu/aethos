@@ -761,7 +761,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field='col3')
         model.svc(random_state=2, run=True)
-        validate = model.svc is not None
+        validate = model.svc_cls is not None
 
         self.assertTrue(validate)
 
@@ -917,7 +917,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field='col3')
         model.svr(run=True)
-        validate = model.svr is not None
+        validate = model.svr_reg is not None
 
         self.assertTrue(validate)
 
