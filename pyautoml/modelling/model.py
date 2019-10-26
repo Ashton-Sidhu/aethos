@@ -444,7 +444,7 @@ class Model(MethodBase):
         if self.report is not None:
             self.report.report_technique(report_info)
 
-        self._models[model_name] = TextModel(self, model_name)
+        self._models[model_name] = TextModel(self, None, model_name)
 
         return self._models[model_name]
 
@@ -521,7 +521,7 @@ class Model(MethodBase):
         if self.report is not None:
             self.report.report_technique(report_info)
 
-        self._models[model_name] = TextModel(self, model_name)
+        self._models[model_name] = TextModel(self, None, model_name)
 
         return self._models[model_name]
 
@@ -662,7 +662,7 @@ class Model(MethodBase):
         if self.report is not None:
             self.report.report_technique(report_info)
 
-        self._models[model_name] = TextModel(self, model_name)
+        self._models[model_name] = TextModel(self, w2v_model, model_name)
 
         return self._models[model_name]
 
@@ -798,7 +798,7 @@ class Model(MethodBase):
         if self.report is not None:
             self.report.report_technique(report_info)
 
-        self._models[model_name] = TextModel(self, model_name)
+        self._models[model_name] = TextModel(self, d2v_model, model_name)
 
         return self._models[model_name]
 

@@ -499,10 +499,8 @@ class ModelBase(object):
         
 class TextModel(ModelBase):
 
-    def __init__(self, model_object, model_name):
+    def __init__(self, model_object, model, model_name):
         
-        model = None
-
         super().__init__(model_object, model, model_name)
 
 class UnsupervisedModel(ModelBase):
