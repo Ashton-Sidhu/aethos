@@ -94,13 +94,8 @@ def gensim_textrank_keywords(
 
     return x_train, x_test
 
-def gensim_word2vec(
-    x_train,
-    x_test=None,
-    prep=False,
-    col_name=None,
-    **algo_kwargs
-):
+
+def gensim_word2vec(x_train, x_test=None, prep=False, col_name=None, **algo_kwargs):
     """
     Uses Gensim Text Rank summarize to extract keywords.
 
@@ -130,19 +125,17 @@ def gensim_word2vec(
 
     # TODO: Add better default behaviour and transformation of passing in raw text
     if prep:
-        w2v = Word2Vec(sentences=[word_tokenize(text.lower()) for text in x_train[col_name]], **algo_kwargs)
+        w2v = Word2Vec(
+            sentences=[word_tokenize(text.lower()) for text in x_train[col_name]],
+            **algo_kwargs
+        )
     else:
         w2v = Word2Vec(sentences=x_train[col_name], **algo_kwargs)
 
     return w2v
 
-def gensim_doc2vec(
-    x_train,
-    x_test=None,
-    prep=False,
-    col_name=None,
-    **algo_kwargs
-):
+
+def gensim_doc2vec(x_train, x_test=None, prep=False, col_name=None, **algo_kwargs):
     """
     Uses Gensim Text Rank summarize to extract keywords.
 
@@ -172,9 +165,15 @@ def gensim_doc2vec(
 
     # TODO: Add better default behaviour and transformation of passing in raw text
     if prep:
-        tagged_data = [TaggedDocument(words=word_tokenize(text.lower()), tags=[str(i)]) for i, text in enumerate(x_train[col_name])]
+        tagged_data = [
+            TaggedDocument(words=word_tokenize(text.lower()), tags=[str(i)])
+            for i, text in enumerate(x_train[col_name])
+        ]
     else:
-        tagged_data = [TaggedDocument(words=text, tags=[str(i)]) for i, text in enumerate(x_train[col_name])]
+        tagged_data = [
+            TaggedDocument(words=text, tags=[str(i)])
+            for i, text in enumerate(x_train[col_name])
+        ]
 
     d2v = Doc2Vec(tagged_data, **algo_kwargs)
     d2v.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)

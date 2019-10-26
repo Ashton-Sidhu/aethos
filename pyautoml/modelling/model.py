@@ -5,14 +5,28 @@ import xgboost as xgb
 from IPython import display
 from pathos.multiprocessing import Pool
 from sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans, MeanShift
-from sklearn.ensemble import (AdaBoostClassifier, AdaBoostRegressor,
-                              BaggingClassifier, BaggingRegressor,
-                              GradientBoostingClassifier,
-                              GradientBoostingRegressor, IsolationForest,
-                              RandomForestClassifier, RandomForestRegressor)
-from sklearn.linear_model import (BayesianRidge, ElasticNet, Lasso,
-                                  LinearRegression, LogisticRegression, Ridge,
-                                  RidgeClassifier, SGDClassifier, SGDRegressor)
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    AdaBoostRegressor,
+    BaggingClassifier,
+    BaggingRegressor,
+    GradientBoostingClassifier,
+    GradientBoostingRegressor,
+    IsolationForest,
+    RandomForestClassifier,
+    RandomForestRegressor,
+)
+from sklearn.linear_model import (
+    BayesianRidge,
+    ElasticNet,
+    Lasso,
+    LinearRegression,
+    LogisticRegression,
+    Ridge,
+    RidgeClassifier,
+    SGDClassifier,
+    SGDRegressor,
+)
 from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
@@ -22,11 +36,19 @@ from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
-                                     add_to_queue, run_crossvalidation,
-                                     run_gridsearch)
-from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _set_item, _validate_model_name)
+from pyautoml.modelling.util import (
+    _get_cv_type,
+    _run_models_parallel,
+    add_to_queue,
+    run_crossvalidation,
+    run_gridsearch,
+)
+from pyautoml.util import (
+    _contructor_data_properties,
+    _input_columns,
+    _set_item,
+    _validate_model_name,
+)
 
 # TODO: For classification implement probability predictions
 
@@ -526,14 +548,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def word2vec(
-        self,
-        col_name,
-        prep=False,
-        model_name="w2v",
-        run=False,
-        **kwargs
-    ):
+    def word2vec(self, col_name, prep=False, model_name="w2v", run=False, **kwargs):
         """
         The underlying assumption of Word2Vec is that two words sharing similar contexts also share a similar meaning and consequently a similar vector representation from the model.
         For instance: "dog", "puppy" and "pup" are often used in similar situations, with similar surrounding words like "good", "fluffy" or "cute", and according to Word2Vec they will therefore share a similar vector representation.
@@ -658,7 +673,7 @@ class Model(MethodBase):
             col_name=col_name,
             **kwargs
         )
-        
+
         if self.report is not None:
             self.report.report_technique(report_info)
 
@@ -667,14 +682,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def doc2vec(
-        self,
-        col_name,
-        prep=False,
-        model_name="d2v",
-        run=False,
-        **kwargs
-    ):
+    def doc2vec(self, col_name, prep=False, model_name="d2v", run=False, **kwargs):
         """
         The underlying assumption of Word2Vec is that two words sharing similar contexts also share a similar meaning and consequently a similar vector representation from the model.
         For instance: "dog", "puppy" and "pup" are often used in similar situations, with similar surrounding words like "good", "fluffy" or "cute", and according to Word2Vec they will therefore share a similar vector representation.
@@ -794,7 +802,7 @@ class Model(MethodBase):
             col_name=col_name,
             **kwargs
         )
-        
+
         if self.report is not None:
             self.report.report_technique(report_info)
 
@@ -3619,10 +3627,15 @@ class Model(MethodBase):
             raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
-        objective = kwargs.pop('objective', 'binary:logistic' if len(self._y_train.unique()) == 2 else 'multi:softprob')
+        objective = kwargs.pop(
+            "objective",
+            "binary:logistic" if len(self._y_train.unique()) == 2 else "multi:softprob",
+        )
         report_info = technique_reason_repo["model"]["classification"]["xgb_cls"]
 
-        model = xgb.XGBClassifier(objective=objective, random_state=random_state, **kwargs)
+        model = xgb.XGBClassifier(
+            objective=objective, random_state=random_state, **kwargs
+        )
 
         model = self._run_supervised_model(
             model,
@@ -5249,7 +5262,7 @@ class Model(MethodBase):
         self,
         cv=None,
         gridsearch=None,
-        score='neg_mean_squared_error',
+        score="neg_mean_squared_error",
         learning_curve=False,
         model_name="svr_reg",
         new_col_name="svr_predictions",
