@@ -525,6 +525,283 @@ class Model(MethodBase):
 
         return self._models[model_name]
 
+    @add_to_queue
+    def word2vec(
+        self,
+        col_name,
+        prep=False,
+        model_name="w2v",
+        run=False,
+        **kwargs
+    ):
+        """
+        The underlying assumption of Word2Vec is that two words sharing similar contexts also share a similar meaning and consequently a similar vector representation from the model.
+        For instance: "dog", "puppy" and "pup" are often used in similar situations, with similar surrounding words like "good", "fluffy" or "cute", and according to Word2Vec they will therefore share a similar vector representation.
+
+        From this assumption, Word2Vec can be used to find out the relations between words in a dataset, compute the similarity between them, or use the vector representation of those words as input for other applications such as text classification or clustering.
+
+        For more information on word2vec, you can view it here https://radimrehurek.com/gensim/models/word2vec.html.
+        
+        Parameters
+        ----------
+        col_name : str, optional
+            Column name of text data that you want to summarize
+
+        prep : bool, optional
+            True to prep the data. Use when passing in raw text data.
+            False if passing in text that is already prepped.
+            By default False
+
+        model_name : str, optional
+            Name for this model, default to `model_extract_keywords_gensim`
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        size : int, optional
+            Dimensionality of the word vectors.
+
+        window : int, optional
+            Maximum distance between the current and predicted word within a sentence.
+
+        min_count : int, optional
+            Ignores all words with total frequency lower than this.
+
+        workers int, optional
+            Use these many worker threads to train the model (=faster training with multicore machines).
+
+        sg : {0, 1}, optional
+            Training algorithm: 1 for skip-gram; otherwise CBOW.
+
+        hs : {0, 1}, optional
+            If 1, hierarchical softmax will be used for model training.
+            If 0, and negative is non-zero, negative sampling will be used.
+
+        negative : int, optional
+            If > 0, negative sampling will be used, the int for negative specifies how many “noise words” should be drawn (usually between 5-20).
+            If set to 0, no negative sampling is used.
+
+        ns_exponent : float, optional
+            The exponent used to shape the negative sampling distribution.
+            A value of 1.0 samples exactly in proportion to the frequencies, 0.0 samples all words equally, while a negative value samples low-frequency words more than high-frequency words.
+            The popular default value of 0.75 was chosen by the original Word2Vec paper.
+            More recently, in https://arxiv.org/abs/1804.04212, Caselles-Dupré, Lesaint, & Royo-Letelier suggest that other values may perform better for recommendation applications.
+
+        cbow_mean : {0, 1}, optional 
+            If 0, use the sum of the context word vectors.
+            If 1, use the mean, only applies when cbow is used.
+
+        alpha : float, optional
+            The initial learning rate.
+
+        min_alpha : float, optional
+            Learning rate will linearly drop to min_alpha as training progresses.
+
+        max_vocab_size : int, optional
+            Limits the RAM during vocabulary building; if there are more unique words than this, then prune the infrequent ones.
+            Every 10 million word types need about 1GB of RAM. Set to None for no limit.
+
+        max_final_vocab : int, optional
+            Limits the vocab to a target vocab size by automatically picking a matching min_count.
+            If the specified min_count is more than the calculated min_count, the specified min_count will be used.
+            Set to None if not required.
+
+        sample : float, optional
+            The threshold for configuring which higher-frequency words are randomly downsampled, useful range is (0, 1e-5).
+
+        hashfxn : function, optional
+            Hash function to use to randomly initialize weights, for increased training reproducibility.
+
+        workers : int, optional
+            Use these many worker threads to train the model (=faster training with multicore machines).
+
+        iter : int, optional
+            Number of iterations (epochs) over the corpus.
+
+        trim_rule : function, optional
+            Vocabulary trimming rule, specifies whether certain words should remain in the vocabulary, be trimmed away, or handled using the default (discard if word count < min_count). Can be None (min_count will be used, look to keep_vocab_item()), or a callable that accepts parameters (word, count, min_count) and returns either gensim.utils.RULE_DISCARD, gensim.utils.RULE_KEEP or gensim.utils.RULE_DEFAULT. The rule, if given, is only used to prune vocabulary during build_vocab() and is not stored as part of the model.
+
+            The input parameters are of the following types:
+
+                    word (str) - the word we are examining
+
+                    count (int) - the word’s frequency count in the corpus
+
+                    min_count (int) - the minimum count threshold.
+
+        sorted_vocab : {0, 1}, optional
+            If 1, sort the vocabulary by descending frequency before assigning word indexes.
+            See sort_vocab().
+
+        batch_words : int, optional
+            Target size (in words) for batches of examples passed to worker threads (and thus cython routines).
+            (Larger batches will be passed if individual texts are longer than 10000 words, but the standard cython code truncates to that maximum.)
+
+        compute_loss : bool, optional
+            If True, computes and stores loss value which can be retrieved using get_latest_training_loss().
+
+        Returns
+        -------
+        TextModel
+            Resulting model
+        """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
+        report_info = technique_reason_repo["model"]["text"]["word2vec"]
+
+        w2v_model = gensim_word2vec(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            prep=prep,
+            col_name=col_name,
+            **kwargs
+        )
+        
+        if self.report is not None:
+            self.report.report_technique(report_info)
+
+        self._models[model_name] = TextModel(self, model_name)
+
+        return self._models[model_name]
+
+    @add_to_queue
+    def doc2vec(
+        self,
+        col_name,
+        prep=False,
+        model_name="d2v",
+        run=False,
+        **kwargs
+    ):
+        """
+        The underlying assumption of Word2Vec is that two words sharing similar contexts also share a similar meaning and consequently a similar vector representation from the model.
+        For instance: "dog", "puppy" and "pup" are often used in similar situations, with similar surrounding words like "good", "fluffy" or "cute", and according to Word2Vec they will therefore share a similar vector representation.
+
+        From this assumption, Word2Vec can be used to find out the relations between words in a dataset, compute the similarity between them, or use the vector representation of those words as input for other applications such as text classification or clustering.
+
+        For more information on word2vec, you can view it here https://radimrehurek.com/gensim/models/word2vec.html.
+        
+        Parameters
+        ----------
+        col_name : str, optional
+            Column name of text data that you want to summarize
+
+        prep : bool, optional
+            True to prep the data. Use when passing in raw text data.
+            False if passing in text that is already prepped.
+            By default False
+
+        model_name : str, optional
+            Name for this model, default to `model_extract_keywords_gensim`
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        dm : {1,0}, optional
+            Defines the training algorithm.
+            If dm=1, ‘distributed memory’ (PV-DM) is used.
+            Otherwise, distributed bag of words (PV-DBOW) is employed.
+
+        vector_size : int, optional
+            Dimensionality of the feature vectors.
+
+        window : int, optional
+            The maximum distance between the current and predicted word within a sentence.
+
+        alpha : float, optional
+            The initial learning rate.
+
+        min_alpha : float, optional
+            Learning rate will linearly drop to min_alpha as training progresses.
+
+        min_count : int, optional
+            Ignores all words with total frequency lower than this.
+
+        max_vocab_size : int, optional
+            Limits the RAM during vocabulary building; 
+            if there are more unique words than this, then prune the infrequent ones.
+            Every 10 million word types need about 1GB of RAM.
+            Set to None for no limit.
+
+        sample : float, optional
+            The threshold for configuring which higher-frequency words are randomly downsampled, useful range is (0, 1e-5).
+
+        workers : int, optional
+            Use these many worker threads to train the model (=faster training with multicore machines).
+
+        epochs : int, optional
+            Number of iterations (epochs) over the corpus.
+
+        hs : {1,0}, optional
+            If 1, hierarchical softmax will be used for model training.
+            If set to 0, and negative is non-zero, negative sampling will be used.
+
+        negative : int, optional
+            If > 0, negative sampling will be used, the int for negative specifies how many “noise words” should be drawn (usually between 5-20).
+            If set to 0, no negative sampling is used.
+
+        ns_exponent : float, optional
+            The exponent used to shape the negative sampling distribution.
+            A value of 1.0 samples exactly in proportion to the frequencies, 0.0 samples all words equally, while a negative value samples low-frequency words more than high-frequency words.
+            The popular default value of 0.75 was chosen by the original Word2Vec paper.
+            More recently, in https://arxiv.org/abs/1804.04212, Caselles-Dupré, Lesaint, & Royo-Letelier suggest that other values may perform better for recommendation applications.
+
+        dm_mean : {1,0}, optional
+            If 0 , use the sum of the context word vectors.
+            If 1, use the mean.
+            Only applies when dm is used in non-concatenative mode.
+
+        dm_concat : {1,0}, optional
+            If 1, use concatenation of context vectors rather than sum/average;
+            Note concatenation results in a much-larger model, as the input is no longer the size of one (sampled or arithmetically combined) word vector,
+            but the size of the tag(s) and all words in the context strung together.
+
+        dm_tag_count : int, optional
+            Expected constant number of document tags per document, when using dm_concat mode.
+
+        dbow_words : {1,0}, optional
+            If set to 1 trains word-vectors (in skip-gram fashion) simultaneous with DBOW doc-vector training;
+            If 0, only trains doc-vectors (faster).
+
+        trim_rule : function, optional
+            Vocabulary trimming rule, specifies whether certain words should remain in the vocabulary, be trimmed away, or handled using the default (discard if word count < min_count). Can be None (min_count will be used, look to keep_vocab_item()), or a callable that accepts parameters (word, count, min_count) and returns either gensim.utils.RULE_DISCARD, gensim.utils.RULE_KEEP or gensim.utils.RULE_DEFAULT. The rule, if given, is only used to prune vocabulary during current method call and is not stored as part of the model.
+
+            The input parameters are of the following types:
+
+                    word (str) - the word we are examining
+
+                    count (int) - the word’s frequency count in the corpus
+
+                    min_count (int) - the minimum count threshold.
+
+        Returns
+        -------
+        TextModel
+            Resulting model
+        """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
+        report_info = technique_reason_repo["model"]["text"]["doc2vec"]
+
+        w2v_model = gensim_doc2vec(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            prep=prep,
+            col_name=col_name,
+            **kwargs
+        )
+        
+        if self.report is not None:
+            self.report.report_technique(report_info)
+
+        self._models[model_name] = TextModel(self, model_name)
+
+        return self._models[model_name]
+
     ################### UNSUPERVISED MODELS ########################
 
     @add_to_queue

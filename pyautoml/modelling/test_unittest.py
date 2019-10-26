@@ -39,6 +39,67 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_text_gensim_w2v(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        model = Model(x_train=data, split=False)
+        model.word2vec('data', prep=True, run=True, min_count=1)
+        validate = model.w2v is not None
+
+        self.assertTrue(validate)
+
+    def test_text_w2vprep(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+        data['prep'] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, split=False)
+        model.word2vec('prep', run=True, min_count=1)
+        validate = model.w2v is not None
+
+        self.assertTrue(validate)
+
+    def test_text_d2v(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        model = Model(x_train=data, split=False)
+        model.doc2vec('data', prep=True, run=True, min_count=1)
+        validate = model.d2v is not None
+
+        self.assertTrue(validate)
+
+    def test_text_d2vprep(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+        data['prep'] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, split=False)
+        model.doc2vec('prep', run=True, min_count=1)
+        validate = model.d2v is not None
+
+        self.assertTrue(validate)
 
     def test_model_getattr(self):
 
