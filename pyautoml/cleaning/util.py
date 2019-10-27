@@ -16,7 +16,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from impyute.imputation.cs import fast_knn
-from pyautoml.util import _function_input_validation, drop_replace_columns
+from pyautoml.util import drop_replace_columns
 from sklearn.impute import MissingIndicator
 
 

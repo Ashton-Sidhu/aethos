@@ -12,17 +12,12 @@ import seaborn as sns
 import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
-from pyautoml.modelling.model_explanation import (INTERPRET_EXPLAINERS,
-                                                  MSFTInterpret, Shap)
+
+from pyautoml.modelling.model_constants import (INTERPRET_EXPLAINERS,
+                                                PROBLEM_TYPE, SHAP_LEARNERS)
+from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.visualizations.visualize import *
 
-SHAP_LEARNERS = {
-    sklearn.linear_model.LogisticRegression : 'linear'
-}
-
-PROBLEM_TYPE = {
-    sklearn.linear_model.LogisticRegression : 'classification'
-}
 
 class ModelBase(object):
 
@@ -45,6 +40,14 @@ class ModelBase(object):
         else:
             self.shap = None
             self.interpret = None
+
+        for method in dir(self.model):
+            try:
+                if not method.startswith('_') and not method.startswith('predict'):
+                    self.__setattr__(method, getattr(self.model, method))
+                
+            except AttributeError as e:
+                continue
 
     def model_weights(self):
         """
@@ -496,13 +499,11 @@ class ModelBase(object):
         
 class TextModel(ModelBase):
 
-    def __init__(self, model_object, model_name):
+    def __init__(self, model_object, model, model_name):
         
-        model = None
-
         super().__init__(model_object, model, model_name)
 
-class ClusterModel(ModelBase):
+class UnsupervisedModel(ModelBase):
 
     # TODO: Add scatterplot of clusters
 
@@ -987,5 +988,16 @@ class ClassificationModel(ModelBase):
 class RegressionModel(ModelBase):
     # TODO: Summary statistics
     # TODO: Errors
+    def __init__(self, model_object, model_name, model, predictions_col):
+        
+        self.y_train = model_object.y_train
+        self.y_test = model_object.y_test if model_object.x_test is not None else model_object.y_train
 
-    pass
+        super().__init__(model_object, model, model_name)
+
+        self.y_pred = self.x_train_results[predictions_col] if self.x_test is None else self.x_test_results[predictions_col]
+
+        if self.report:
+            self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))
+
+        self.features = self.x_test.columns

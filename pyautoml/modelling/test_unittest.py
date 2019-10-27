@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from pyautoml import Model
 
 
@@ -38,6 +39,67 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_text_gensim_w2v(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        model = Model(x_train=data, split=False)
+        model.word2vec('data', prep=True, run=True, min_count=1)
+        validate = model.w2v is not None
+
+        self.assertTrue(validate)
+
+    def test_text_w2vprep(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+        data['prep'] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, split=False)
+        model.word2vec('prep', run=True, min_count=1)
+        validate = model.w2v is not None
+
+        self.assertTrue(validate)
+
+    def test_text_d2v(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+
+        model = Model(x_train=data, split=False)
+        model.doc2vec('data', prep=True, run=True, min_count=1)
+        validate = model.d2v is not None
+
+        self.assertTrue(validate)
+
+    def test_text_d2vprep(self):
+
+        text_data = [
+                    "Hi my name is PyAutoML. Please split me.",
+                    "This function is going to split by sentence. Automation is great."
+                    ]
+
+        data = pd.DataFrame(data=text_data, columns=['data'])
+        data['prep'] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, split=False)
+        model.doc2vec('prep', run=True, min_count=1)
+        validate = model.d2v is not None
+
+        self.assertTrue(validate)
 
     def test_model_getattr(self):
 
@@ -83,7 +145,6 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
-    
     def test_model_kmeans_split(self):
 
         data = [[1, 2], [2, 2], [2, 3],
@@ -124,6 +185,21 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_unsupervised_defaultgridsearch(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3', report_name='gridsearch_test')
+        
+        gridsearch_params = {
+            'k': [1, 2]
+        }
+        model.kmeans(gridsearch=gridsearch_params, cv=2, run=True)
+
+        self.assertTrue(True)
+
     def test_model_defaultgridsearch(self):
 
         data = [[1, 2, 1], [2, 2, 1], [2, 3, 1],
@@ -133,7 +209,11 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
 
         model = Model(x_train=data, target_field='col3', report_name='gridsearch_test')
-        model.logistic_regression(gridsearch=True, cv_type=2, run=True)
+        
+        gridsearch_params = {
+            'C': [0.2, 1]
+        }
+        model.logistic_regression(gridsearch=gridsearch_params, cv=2, run=True)
 
         self.assertTrue(True)
 
@@ -481,7 +561,17 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
-        model.logistic_regression(cv=True, cv_type=2, random_state=2, learning_curve=True)
+        model.logistic_regression(cv=2, random_state=2, learning_curve=True)
+
+        self.assertTrue(True)
+
+    def test_unsupervisedcv(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+        model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
+        model.kmeans(cv=2, random_state=2, learning_curve=True)
 
         self.assertTrue(True)
 
@@ -491,7 +581,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
         model = Model(x_train=data, target_field='col3', test_split_percentage=0.2)
-        cv_values = model.logistic_regression(cv=True, cv_type='strat-kfold', random_state=2, learning_curve=True, run=False)
+        cv_values = model.logistic_regression(cv='strat-kfold', random_state=2, learning_curve=True, run=False)
 
         self.assertIsNotNone(len(cv_values) == 5)
 
@@ -506,6 +596,393 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(len(model._models) == 0)
 
-if __name__ == "__main__":
+    def test_model_ridgeclassifier(self):
 
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.ridge_classification(random_state=2, run=True)
+        validate = model.ridge_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_sgdclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.sgd_classification(random_state=2, run=True)
+        validate = model.sgd_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_adaclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.adaboost_classification(random_state=2, run=True)
+        validate = model.ada_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_bagclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.bagging_classification(random_state=2, run=True)
+        validate = model.bag_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_boostingclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.gradient_boosting_classification(random_state=2, run=True)
+        validate = model.grad_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_isoforest(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data)
+        model.isolation_forest(random_state=2, run=True)
+        validate = model.iso_forest is not None
+
+        self.assertTrue(validate)
+
+    def test_model_oneclasssvm(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data)
+        model.oneclass_svm(run=True)
+        validate = model.ocsvm is not None
+
+        self.assertTrue(validate)
+
+    def test_model_rfclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.random_forest_classification(random_state=2, run=True)
+        validate = model.rf_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_bernoulli(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.nb_bernoulli_classification(run=True)
+        validate = model.bern is not None
+
+        self.assertTrue(validate)
+
+    def test_model_gaussian(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.nb_gaussian_classification(run=True)
+        validate = model.gauss is not None
+
+        self.assertTrue(validate)
+
+    def test_model_multinomial(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.nb_multinomial_classification(run=True)
+
+        validate = model.multi is not None
+
+        self.assertTrue(validate)
+
+    def test_model_dtclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.decision_tree_classification(random_state=2, run=True)
+        validate = model.dt_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_linearsvc(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.linearsvc(random_state=2, run=True)
+        validate = model.linsvc is not None
+
+        self.assertTrue(validate)
+
+    def test_model_svc(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.svc(random_state=2, run=True)
+        validate = model.svc_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_bayesianridge(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.bayesian_ridge_regression(random_state=2, run=True)
+        validate = model.bayridge_reg is not None
+
+        self.assertTrue(validate)
+    
+    def test_model_elasticnet(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.elasticnet_regression(random_state=2, run=True)
+        validate = model.elastic is not None
+
+        self.assertTrue(validate)
+    
+    def test_model_lasso(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.lasso_regression(random_state=2, run=True)
+        validate = model.lasso is not None
+
+        self.assertTrue(validate)
+
+    def test_model_linreg(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.linear_regression(random_state=2, run=True)
+        validate = model.lin_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_ridgeregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.ridge_regression(random_state=2, run=True)
+        validate = model.ridge_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_sgdregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.sgd_regression(random_state=2, run=True)
+        validate = model.sgd_reg is not None
+
+        self.assertTrue(validate)
+        
+    def test_model_adaregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.adaboost_regression(random_state=2, run=True)
+        validate = model.ada_reg is not None
+
+        self.assertTrue(validate)
+    
+    def test_model_bgregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.bagging_regression(random_state=2, run=True)
+        validate = model.bag_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_gbregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.gradient_boosting_regression(random_state=2, run=True)
+        validate = model.grad_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_rfregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.random_forest_regression(random_state=2, run=True)
+        validate = model.rf_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_dtregression(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.decision_tree_regression(random_state=2, run=True)
+        validate = model.dt_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_linearsvr(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.linearsvr(random_state=2, run=True)
+        validate = model.linearsvr is not None
+
+        self.assertTrue(validate)
+
+    def test_model_svr(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.svr(run=True)
+        validate = model.svr_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_xgbc(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.xgboost_classification(run=True)
+        validate = model.xgb_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_xgbr(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3')
+        model.xgboost_regression(run=True)
+        validate = model.xgb_reg is not None
+
+        self.assertTrue(validate)
+
+    def test_model_agglom(self):
+
+        data = [[1, 2], [2, 2], [2, 3],
+            [8, 7], [8, 8], [25, 80]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2'])
+
+        model = Model(x_train=data, split=False)
+        model.agglomerative_clustering(n_clusters=2, run=True)
+        validate = model.agglom is not None
+
+        self.assertTrue(validate)
+
+    def test_model_meanshift(self):
+
+        data = [[1, 2], [2, 2], [2, 3],
+            [8, 7], [8, 8], [25, 80]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2'])
+
+        model = Model(x_train=data, split=False)
+        model.mean_shift(run=True)
+        validate = model.mshift is not None
+
+        self.assertTrue(validate)
+
+    def test_model_gaussianmixture(self):
+
+        data = [[1, 2], [2, 2], [2, 3],
+            [8, 7], [8, 8], [25, 80]]
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2'])
+
+        model = Model(x_train=data, split=False)
+        model.gaussian_mixture_clustering(run=True)
+        validate = model.gm_cluster is not None
+
+        self.assertTrue(validate)
+
+if __name__ == "__main__":
     unittest.main()

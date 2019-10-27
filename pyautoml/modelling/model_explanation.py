@@ -2,29 +2,10 @@ import interpret
 import numpy as np
 import pandas as pd
 import shap
-from interpret.blackbox import (LimeTabular, MorrisSensitivity,
-                                PartialDependence, ShapKernel)
-from interpret.perf import PR, ROC, RegressionPerf
 
-INTERPRET_EXPLAINERS = {
-    'problem': {
-        'classification': {
-            'roc': ROC,
-            'pr' : PR,
-        },
-        'regression': {
-            'regperf': RegressionPerf,
-        },
-    },    
-    'local': {
-        'lime': LimeTabular,
-        'shap': ShapKernel,
-    },
-    'global': {
-        'morris': MorrisSensitivity,
-        'dependence': PartialDependence,
-    }
-}
+from pyautoml.modelling.model_constants import INTERPRET_EXPLAINERS
+
+
 class Shap(object):
 
     def __init__(self, model, x_train, x_test, y_test, learner: str):
@@ -39,6 +20,14 @@ class Shap(object):
         elif learner == 'tree':
             self.explainer = shap.TreeExplainer(self.model)
             self.shap_interaction_values = self.explainer.shap_interaction_values(self.x_test)
+        elif learner == 'kernel':
+
+            if hasattr(self.model, 'predict_proba'):
+                func = self.model.predict_proba
+            else:
+                func = self.model.predict
+
+            self.explainer = shap.KernelExplainer(func, self.x_train)
         else:
             raise ValueError('Learner: {} is not supported yet.'.format(learner))
         
@@ -136,8 +125,12 @@ class Shap(object):
             List specifying which values were misclassified
         """
 
-        y_pred = (self.shap_values.sum(1) + self.expected_value) > 0
-        misclassified = y_pred != self.y_test
+        if len(self.shap_values.shape) > 2:
+            y_pred = list(map(lambda x, y: x.sum(1) + y > 0 , self.shap_values, self.expected_value))
+            misclassified = list(map(lambda x: x != self.y_test, y_pred))
+        else:
+            y_pred = (self.shap_values.sum(1) + self.expected_value) > 0
+            misclassified = y_pred != self.y_test
 
         return misclassified
 
