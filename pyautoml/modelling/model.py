@@ -383,23 +383,26 @@ class Model(MethodBase):
             results.append(self._models[model].metrics())
 
         results_table = pd.concat(results, axis=1, join="inner")
+        results_table = results_table.loc[:, ~results_table.columns.duplicated()]
 
-        def _highlight_optimal(x):
+        # Move descriptions column to end of dataframe.
+        descriptions = results_table.pop('Description')
+        results_table['Description'] = descriptions
 
-            if "loss" in x.name.lower():
-                is_min = x == x.min()
-                return ["background-color: green" if v else "" for v in is_min]
-            else:
-                is_max = x == x.max()
-                return ["background-color: green" if v else "" for v in is_max]
+        # def _highlight_optimal(x):
 
-        results_table = results_table.style.apply(_highlight_optimal, axis=1)
+        #     if "loss" in x.name.lower():
+        #         is_min = x == x.min()
+        #         return ["background-color: green" if v else "" for v in is_min]
+        #     else:
+        #         is_max = x == x.max()
+        #         return ["background-color: green" if v else "" for v in is_max]
+
+        # results_table = results_table.style.apply(_highlight_optimal, axis=1)
 
         return results_table
 
     ################### TEXT MODELS ########################
-
-    # TODO: Abstract these functions out to a more general template
 
     @add_to_queue
     def summarize_gensim(

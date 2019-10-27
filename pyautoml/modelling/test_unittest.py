@@ -539,7 +539,7 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(True)
 
-    def test_comparemodels(self):
+    def test_compareclsmodels(self):
 
         data = np.random.randint(0, 2, size=(1000,3))
 
@@ -549,6 +549,22 @@ class TestModelling(unittest.TestCase):
         model.logistic_regression(random_state=2, penalty='l2', model_name='l1', run=True)
         model.logistic_regression(random_state=2, penalty='l2', model_name='l2', run=True)
         model.logistic_regression(random_state=2, penalty='l2', model_name='l3', run=True)
+
+        model.run_models(method='series')
+        model.compare_models()
+
+        self.assertTrue(True)
+
+    def test_compareregmodels(self):
+
+        data = np.random.randint(0, 2, size=(1000,3))
+
+        data = pd.DataFrame(data=data, columns=['col1', 'col2', 'col3'])
+
+        model = Model(x_train=data, target_field='col3', test_split_percentage=0.5, report_name='modelweights')
+        model.linear_regression(random_state=2, model_name='l1', run=True)
+        model.linear_regression(random_state=2, model_name='l2', run=True)
+        model.linear_regression(random_state=2, model_name='l3', run=True)
 
         model.run_models(method='series')
         model.compare_models()

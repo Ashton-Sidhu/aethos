@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import shap
 
-from pyautoml.modelling.model_constants import INTERPRET_EXPLAINERS
+from pyautoml.modelling.constants import INTERPRET_EXPLAINERS
 
 
 class Shap(object):

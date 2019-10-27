@@ -86,3 +86,34 @@ INTERPRET_EXPLAINERS = {
         'dependence': PartialDependence,
     }
 }
+
+CLASS_METRICS_DESC = {
+    'Accuracy': 'Measures how many observations, both positive and negative, were correctly classified.',
+    'Balanced Accuracy': 'The balanced accuracy in binary and multiclass classification problems to deal with imbalanced datasets. It is defined as the average of recall obtained on each class.',
+    'Average Precision': 'Summarizes a precision-recall curve as the weighted mean of precisions achieved at each threshold',
+    'ROC AUC': 'Shows how good at ranking predictions your model is. It tells you what is the probability that a randomly chosen positive instance is ranked higher than a randomly chosen negative instance.',
+    'Zero One Loss': 'Fraction of misclassifications.',
+    'Precision': 'It measures how many observations predicted as positive are positive. Good to use when False Positives are costly.',
+    'Recall': 'It measures how many observations out of all positive observations have we classified as positive. Good to use when catching call positive occurences, usually at the cost of false positive.',
+    'Matthews Correlation Coefficient': 'It’s a correlation between predicted classes and ground truth.',
+    'Log Loss': 'Difference between ground truth and predicted score for every observation and average those errors over all observations.',
+    'Jaccard': 'Defined as the size of the intersection divided by the size of the union of two label sets, is used to compare set of predicted labels for a sample to the corresponding set of true labels.',
+    'Hinge Loss': 'Computes the average distance between the model and the data using hinge loss, a one-sided metric that considers only prediction errors.',
+    'Hamming Loss': 'The Hamming loss is the fraction of labels that are incorrectly predicted.',
+    'F-Beta': 'It’s the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+    'F1': 'It’s the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+    'Cohen Kappa': 'Cohen Kappa tells you how much better is your model over the random classifier that predicts based on class frequencies. Works well for imbalanced problems.',
+    'Brier Loss': 'It is a measure of how far your predictions lie from the true values. Basically, it is a mean square error in the probability space.'
+}
+
+REG_METRICS_DESC = {
+    'Explained Variance': 'Explained variance regression score function. Best possible score is 1.0, lower values are worse.',
+    'Max Error': 'Returns the single most maximum residual error.',
+    'Mean Absolute Error': 'Postive mean value of all residuals',
+    'Mean Squared Error': 'Mean of the squared sum the residuals',
+    'Root Mean Sqaured Error': 'Square root of the Mean Squared Error',
+    'Mean Squared Log Error': 'Mean of the squared sum of the log of all residuals',
+    'Median Absolute Error': 'Postive median value of all residuals',
+    'R2': 'R-squared (R2) is a statistical measure that represents the proportion of the variance for a dependent variable that is explained by an independent variable or variables in a regression model.',
+    'SMAPE': 'Symmetric mean absolute percentage error. It is an accuracy measure based on percentage (or relative) errors.'
+}

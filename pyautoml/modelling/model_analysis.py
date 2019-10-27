@@ -2,6 +2,7 @@ import itertools
 import warnings
 from collections import OrderedDict
 from itertools import compress
+import math
 
 import bokeh
 import interpret
@@ -13,8 +14,8 @@ import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
 
-from pyautoml.modelling.model_constants import (INTERPRET_EXPLAINERS,
-                                                PROBLEM_TYPE, SHAP_LEARNERS)
+from pyautoml.modelling.constants import (INTERPRET_EXPLAINERS,
+                                                PROBLEM_TYPE, SHAP_LEARNERS, CLASS_METRICS_DESC, REG_METRICS_DESC)
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.visualizations.visualize import *
 
@@ -542,6 +543,7 @@ class ClassificationModel(ModelBase):
 
         super().__init__(model_object, model, model_name)
 
+        self.probabilities = None
         self.target_mapping = model_object.target_mapping
 
         self.y_pred = self.x_train_results[predictions_col] if self.x_test is None else self.x_test_results[predictions_col]
@@ -556,9 +558,12 @@ class ClassificationModel(ModelBase):
 
         self.features = self.x_test.columns
 
+        if hasattr(model, 'predict_proba'):
+            self.probabilities = model.predict_proba(model_object._data_properties.x_test)
+
     def accuracy(self, **kwargs):
         """
-        [summary]
+        It measures how many observations, both positive and negative, were correctly classified.
         
         Returns
         -------
@@ -583,16 +588,25 @@ class ClassificationModel(ModelBase):
         return sklearn.metrics.balanced_accuracy_score(self.y_test, self.y_pred, **kwargs)
 
     def average_precision(self, **kwargs):
+        """
+        AP summarizes a precision-recall curve as the weighted mean of precisions achieved at each threshold,
+        with the increase in recall from the previous threshold used as the weight
+        
+        Returns
+        -------
+        float
+            Average Precision Score
+        """
 
-        #TODO: Fix this when predicting probabilities are implemented
-        warnings.warn('Average precision is not correctly implemented yet as it needs continuous scoring values.')
-        # return sklearn.metrics.average_precision_score(self.y_test, self.y_pred, **kwargs)
-
-        return -999
+        if hasattr(self.model, 'decision_function'):
+            return sklearn.metrics.average_precision_score(self.y_test, self.model.decision_function(self.x_test), **kwargs)
+        else:
+            return np.nan
 
     def roc_auc(self, **kwargs):
         """
-        [summary]
+        This metric tells us that this metric shows how good at ranking predictions your model is.
+        It tells you what is the probability that a randomly chosen positive instance is ranked higher than a randomly chosen negative instance.
         
         Returns
         -------
@@ -606,7 +620,9 @@ class ClassificationModel(ModelBase):
 
     def zero_one_loss(self, **kwargs):
         """
-        [summary]
+        Return the fraction of misclassifications (float), else it returns the number of misclassifications (int).
+        
+        The best performance is 0.
         
         Returns
         -------
@@ -665,12 +681,22 @@ class ClassificationModel(ModelBase):
         return sklearn.metrics.matthews_corrcoef(self.y_test, self.y_pred, **kwargs)
 
     def log_loss(self, **kwargs):
+        """
+        Log loss, aka logistic loss or cross-entropy loss.
 
-        #TODO: Fix this when predicting probabilities are implemented
-        warnings.warn('Log loss is not correctly implemented yet as it needs class prediction probabilities.')
-        # return sklearn.metrics.log_loss(self.y_test, self.y_pred, **kwargs)
+        This is the loss function used in (multinomial) logistic regression and extensions of it
+        such as neural networks, defined as the negative log-likelihood of the true labels given a probabilistic classifier’s predictions.
+        
+        Returns
+        -------
+        Float
+            Log loss
+        """
 
-        return -999
+        if self.probabilities is not None:
+            return sklearn.metrics.log_loss(self.y_test, self.probabilities, **kwargs)
+        else:
+            return np.nan
 
     def jaccard(self, **kwargs):
         """
@@ -687,11 +713,19 @@ class ClassificationModel(ModelBase):
         return sklearn.metrics.jaccard_score(self.y_test, self.y_pred, **kwargs)
 
     def hinge_loss(self, **kwargs):
+        """
+        Computes the average distance between the model and the data using hinge loss, a one-sided metric that considers only prediction errors.
         
-        #TODO: Fix this when we gather decision function values
-        warnings.warn('Hinge Loss is not correctly implemented as it needs decision function values')
-        # return sklearn.metrics.hinge_loss(self.y_true, self.y_pred, **kwargs)
-        return -999
+        Returns
+        -------
+        float
+            Hinge loss
+        """
+        
+        if hasattr(self.model, 'decision_function'):
+            return sklearn.metrics.hinge_loss(self.y_test, self.model.decision_function(self.x_test), **kwargs)
+        else:
+            return np.nan
 
     def hamming_loss(self, **kwargs):
         """
@@ -714,7 +748,7 @@ class ClassificationModel(ModelBase):
         Parameters
         ----------
         beta : float, optional
-            [description], by default 0.5
+            Weight of precision in harmonic mean, by default 0.5
         
         Returns
         -------
@@ -740,12 +774,22 @@ class ClassificationModel(ModelBase):
 
         return sklearn.metrics.f1_score(self.y_test, self.y_pred, **kwargs)
 
-    # TODO: Implement Cohen Kappa Score
     def cohen_kappa(self, **kwargs):
+        """
+        Cohen Kappa tells you how much better is your model over the random classifier that predicts based on class frequencies
+        
+        This measure is intended to compare labelings by different human annotators, not a classifier versus a ground truth.
 
-        warnings.warn('Cohen Kappa score is not implemented yet.')
+        The kappa score (see docstring) is a number between -1 and 1.
+        Scores above .8 are generally considered good agreement; zero or lower means no agreement (practically random labels).
+        
+        Returns
+        -------
+        float
+            Cohen Kappa score.
+        """ 
 
-        return -999
+        return sklearn.metrics.cohen_kappa_score(self.y_test, self.y_pred, **kwargs)
 
     def brier_loss(self, **kwargs):
         """
@@ -770,25 +814,24 @@ class ClassificationModel(ModelBase):
 
         For more detailed information and parameters please see the following link: https://scikit-learn.org/stable/modules/classes.html#classification-metrics
         
-        TODO: Improve documentation about what each metric does.
         Supported metrics are:
 
-            Accuracy : Accuracy classification score.
-            Balanced Accuracy : Compute the balanced accuracy
-            Average Precision : Compute average precision (AP) from prediction scores
-            ROC AUC : Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
-            Zero One Loss : Computes Zero One Loss
-            Precision : Compute the precision
-            Recall : Compute the recall
-            Matthews Correlation Coefficient : Computes MCC
-            Log Loss : Computes log loss
-            Jaccard : Jaccard similarity coefficient score
-            Hinge Loss : Computes Hinge Loss
-            Hamming Loss: Computes Hamming Loss
-            F-Beta : Compute the F-beta score
-            F1 : Compute the F1 score, also known as balanced F-score or F-measure
-            Cohen Kappa : Cohen’s kappa: a statistic that measures inter-annotator agreement.
-            Brier Loss : Computes Brier Loss
+            'Accuracy': 'Measures how many observations, both positive and negative, were correctly classified.',
+            'Balanced Accuracy': 'The balanced accuracy in binary and multiclass classification problems to deal with imbalanced datasets. It is defined as the average of recall obtained on each class.',
+            'Average Precision': 'Summarizes a precision-recall curve as the weighted mean of precisions achieved at each threshold',
+            'ROC AUC': 'Shows how good at ranking predictions your model is. It tells you what is the probability that a randomly chosen positive instance is ranked higher than a randomly chosen negative instance.',
+            'Zero One Loss': 'Fraction of misclassifications.',
+            'Precision': 'It measures how many observations predicted as positive are positive. Good to use when False Positives are costly.',
+            'Recall': 'It measures how many observations out of all positive observations have we classified as positive. Good to use when catching call positive occurences, usually at the cost of false positive.',
+            'Matthews Correlation Coefficient': 'It’s a correlation between predicted classes and ground truth.',
+            'Log Loss': 'Difference between ground truth and predicted score for every observation and average those errors over all observations.',
+            'Jaccard': 'Defined as the size of the intersection divided by the size of the union of two label sets, is used to compare set of predicted labels for a sample to the corresponding set of true labels.',
+            'Hinge Loss': 'Computes the average distance between the model and the data using hinge loss, a one-sided metric that considers only prediction errors.',
+            'Hamming Loss': 'The Hamming loss is the fraction of labels that are incorrectly predicted.',
+            'F-Beta': 'It’s the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+            'F1': 'It’s the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+            'Cohen Kappa': 'Cohen Kappa tells you how much better is your model over the random classifier that predicts based on class frequencies. Works well for imbalanced problems.',
+            'Brier Loss': 'It is a measure of how far your predictions lie from the true values. Basically, it is a mean square error in the probability space.'
         
         Parameters
         ----------
@@ -796,7 +839,6 @@ class ClassificationModel(ModelBase):
             Specific type of metrics to view
         """
 
-        # TODO: Add metric descriptions.
         metrics = {'Accuracy': self.accuracy(),
                 'Balanced Accuracy': self.balanced_accuracy(),
                 'Average Precision': self.average_precision(),
@@ -815,6 +857,7 @@ class ClassificationModel(ModelBase):
                 'Brier Loss': self.brier_loss()}
 
         metric_table = pd.DataFrame(index=metrics.keys(), columns=[self.model_name], data=metrics.values())
+        metric_table['Description'] = list(map(lambda x: CLASS_METRICS_DESC[x], metric_table.index))
 
         filt_metrics = list(metrics) if metrics else metric_table.index
 
@@ -987,7 +1030,7 @@ class ClassificationModel(ModelBase):
 
 class RegressionModel(ModelBase):
     # TODO: Summary statistics
-    # TODO: Errors
+
     def __init__(self, model_object, model_name, model, predictions_col):
         
         self.y_train = model_object.y_train
@@ -1001,3 +1044,185 @@ class RegressionModel(ModelBase):
             self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))
 
         self.features = self.x_test.columns
+
+    def explained_variance(self, multioutput='uniform_average', **kwargs):
+        """
+        Explained variance regression score function
+
+        Best possible score is 1.0, lower values are worse.
+        
+        Parameters
+        ----------
+        multioutput : string in [‘raw_values’, ‘uniform_average’, ‘variance_weighted’] or array-like of shape (n_outputs)
+            Defines aggregating of multiple output scores. Array-like value defines weights used to average scores.
+
+            ‘raw_values’ :
+                Returns a full set of scores in case of multioutput input.
+
+            ‘uniform_average’ :
+                Scores of all outputs are averaged with uniform weight.
+
+            ‘variance_weighted’ :
+                Scores of all outputs are averaged, weighted by the variances of each individual output.
+
+            By default 'uniform_average'
+        
+        Returns
+        -------
+        float
+            Explained Variance
+        """
+
+        return sklearn.metrics.explained_variance_score(self.y_test, self.y_pred, multioutput='uniform_average', **kwargs)
+
+    def max_error(self):
+        """
+        Returns the single most maximum residual error.
+        
+        Returns
+        -------
+        float
+            Max error
+        """
+
+        return sklearn.metrics.max_error(self.y_test, self.y_pred)
+
+    def mean_abs_error(self, **kwargs):
+        """
+        Mean absolute error.
+        
+        Returns
+        -------
+        float
+            Mean absolute error.
+        """
+
+        return sklearn.metrics.mean_absolute_error(self.y_test, self.y_pred)
+
+    def mean_sq_error(self, **kwargs):
+        """
+        Mean squared error.
+        
+        Returns
+        -------
+        float
+            Mean squared error.
+        """
+
+        return sklearn.metrics.mean_squared_error(self.y_test, self.y_pred)
+
+    def mean_sq_log_error(self, **kwargs):
+        """
+        Mean squared log error.
+        
+        Returns
+        -------
+        float
+            Mean squared log error.
+        """
+
+        return sklearn.metrics.mean_squared_log_error(self.y_test, self.y_pred)
+
+    def median_abs_error(self, **kwargs):
+        """
+        Median absolute error.
+        
+        Returns
+        -------
+        float
+            Median absolute error.
+        """
+
+        return sklearn.metrics.median_absolute_error(self.y_test, self.y_pred)
+
+    def r2(self, **kwargs):
+        """
+        R^2 (coefficient of determination) regression score function.
+
+        R-squared (R2) is a statistical measure that represents the proportion of the variance for a dependent variable
+        that is explained by an independent variable or variables in a regression model.
+
+        Best possible score is 1.0 and it can be negative (because the model can be arbitrarily worse).
+        A constant model that always predicts the expected value of y, disregarding the input features, would get a R^2 score of 0.0.
+        
+        Returns
+        -------
+        float
+            R2 coefficient.
+        """
+
+        return sklearn.metrics.r2_score(self.y_test, self.y_pred)
+
+    def smape(self, **kwargs):
+        """
+        Symmetric mean absolute percentage error.
+
+        It is an accuracy measure based on percentage (or relative) errors.
+        
+        Returns
+        -------
+        float
+            SMAPE
+        """
+
+        return 1 / len(self.y_test) * np.sum(2 * np.abs(self.y_pred - self.y_test) / (np.abs(self.y_test) + np.abs(self.y_pred)))
+
+    def root_mean_sq_error(self):
+        """
+        Root mean squared error.
+
+        Calculated by taking the square root of the Mean Squared Error.
+
+        Returns
+        -------
+        float
+            Root mean squared error.
+        """
+
+        return math.sqrt(self.mean_sq_error())
+
+    def metrics(self, *metrics):
+        """
+        Measures how well your model performed against certain metrics.
+
+        For more detailed information and parameters please see the following link: https://scikit-learn.org/stable/modules/classes.html#regression-metrics
+        
+        Supported metrics are:
+            'Explained Variance': 'Explained variance regression score function. Best possible score is 1.0, lower values are worse.',
+            'Max Error': 'Returns the single most maximum residual error.',
+            'Mean Absolute Error': 'Postive mean value of all residuals',
+            'Mean Squared Error': 'Mean of the squared sum the residuals',
+            'Root Mean Sqaured Error': 'Square root of the Mean Squared Error',
+            'Mean Squared Log Error': 'Mean of the squared sum of the log of all residuals',
+            'Median Absolute Error': 'Postive median value of all residuals',
+            'R2': 'R-squared (R2) is a statistical measure that represents the proportion of the variance for a dependent variable that is explained by an independent variable or variables in a regression model.',
+            'SMAPE': 'Symmetric mean absolute percentage error. It is an accuracy measure based on percentage (or relative) errors.'
+
+        Parameters
+        ----------
+        metrics : str(s), optional
+            Specific type of metrics to view
+        """
+
+        metrics = {
+            'Explained Variance': self.explained_variance(),
+            'Max Error': self.max_error(),
+            'Mean Absolute Error': self.mean_abs_error(),
+            'Mean Squared Error': self.mean_sq_error(),
+            'Root Mean Sqaured Error': self.root_mean_sq_error(),
+            'Mean Squared Log Error': self.mean_sq_log_error(),
+            'Median Absolute Error': self.median_abs_error(),
+            'R2': self.r2(),
+            'SMAPE': self.smape()
+        }
+
+        metric_table = pd.DataFrame(index=metrics.keys(), columns=[self.model_name], data=metrics.values())
+        metric_table['Description'] = list(map(lambda x: REG_METRICS_DESC[x], metric_table.index))
+
+        filt_metrics = list(metrics) if metrics else metric_table.index
+
+        if self.report:
+            self.report.log('Metrics:\n')
+            self.report.log(metric_table.loc[filt_metrics, :].to_string())
+
+        return metric_table.loc[filt_metrics, :]
