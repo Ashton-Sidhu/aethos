@@ -50,8 +50,6 @@ from pyautoml.util import (
     _validate_model_name,
 )
 
-# TODO: For classification implement probability predictions
-
 
 class Model(MethodBase):
     def __init__(
