@@ -6,6 +6,54 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
+DATA_CHECKLIST = {    
+    'Convert files to .csv',
+    'Merge files',
+    'Fix encoding issues',
+    'Clean column names (english, no whitespace, no special chars)',
+    'Are there duplicate columns?',
+    'Fix datatypes (datetime, int, float, string)',
+}
+
+CLEANING_CHECKLIST = {
+    'Non-sensical observations/artifacts?',
+    'Coding of categorical features?',
+    'Missing values?',
+    'Outliers?',
+    'Constant values (=Zero Importance)?',
+    'Low importance features?',
+    'Collinear, correlated or otherwise dependent features?',
+    'Highly skewed features?',
+    'Irrelevant features?',
+}
+
+UNI_ANALYSIS_CHECKLIST = {
+    'Look at mean, median, min, max, std, iqr, quantiles (1%, 5%, 25%, 50%, 75%, 95%, 99%)',
+    'Draw boxplots, histograms',
+}
+
+MULTI_ANALYSIS_CHECKLIST = {
+    'Draw scatter plots',
+    'Create correlation matrix',
+}
+
+ISSUES_CHECKLIST = {
+    'Impute missing values (mode, median, mean)',
+    'Remove variables that have too many missings',
+    'Remove observations that have too many missings',
+    'Select appropriate time slice',
+}
+
+PREPARATION_CHECKLIST = {
+    'Clip values that are too small/too large',
+    'Scale to [0,1] or normalize (mean=0, std=1) or Robust / Quantile Scaling',
+    'One-hot encoding, Label Encoding (0,1,2,3)',
+    'Create log-transformed versions for highly skewed variables',
+    'Create binned versions for variables',
+    'Combine categories for highly skewed categorical variables',
+    'Create sum/difference/product/quotient of variables',
+    'Create polynomial features',
+}
 
 def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
     """

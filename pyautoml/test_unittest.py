@@ -363,6 +363,21 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+    def test_write_traindata_tocsv(self):
+
+        int_missing_data = [[1, 0, 0],
+                            [0, 2, 3],
+                            [0, 3, 4],
+                            [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]        
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(x_train=data, x_test=None, split=True, target_field='', report_name="test", target_mapping=None, test_split_percentage=0.5)
+
+        base.checklist()
+
+        self.assertTrue(True)
+
 
 
 if __name__ == "__main__":

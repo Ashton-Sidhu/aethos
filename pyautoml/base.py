@@ -9,11 +9,14 @@ import yaml
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+import ipywidgets as widgets
+from ipywidgets import Layout
 
 import pyautoml
 from pyautoml.data.data import Data
-from pyautoml.util import _get_columns, _set_item, label_encoder, split_data
+from pyautoml.util import _get_columns, _set_item, label_encoder, split_data, DATA_CHECKLIST, CLEANING_CHECKLIST, UNI_ANALYSIS_CHECKLIST, MULTI_ANALYSIS_CHECKLIST, ISSUES_CHECKLIST, PREPARATION_CHECKLIST
 from pyautoml.visualizations.visualize import *
+
 
 # TODO: Move to a config file
 
@@ -692,6 +695,61 @@ class MethodBase(object):
         if self._data_properties.x_test is not None:
             self._data_properties.x_test.to_csv(name + '_test.csv', index=index, chunksize=chunksize, **kwargs)
 
+    def checklist(self):
+        """
+        Displays a checklist dashboard with reminders for a Data Science project.
+        """
+
+        data_checkboxes = []
+        clean_checkboxes = []
+        analysis_checkboxes = [[widgets.Label(value='Univariate Analysis')], [widgets.Label(value='Multivariate Analysis')], [widgets.Label(value='Timeseries Analysis')]]
+        issue_checkboxes = []
+        preparation_checkboxes = []
+
+        for item in DATA_CHECKLIST:        
+            data_checkboxes.append(widgets.Checkbox(
+                description=item, layout=Layout(width='100%')))
+        data_box = widgets.VBox(data_checkboxes)
+
+        for item in CLEANING_CHECKLIST:
+            clean_checkboxes.append(widgets.Checkbox(
+                description=item, layout=Layout(width='100%')))
+        clean_box = widgets.VBox(clean_checkboxes)
+
+        for item in UNI_ANALYSIS_CHECKLIST:
+            analysis_checkboxes[0].append(widgets.Checkbox(
+                description=item, layout=Layout(width='100%')))
+        uni_box = widgets.VBox(analysis_checkboxes[0])
+
+        for item in MULTI_ANALYSIS_CHECKLIST:
+            analysis_checkboxes[1].append(widgets.Checkbox(
+                description=item, layout=Layout(width='100%')))
+            
+        multi_box = widgets.VBox(analysis_checkboxes[1])
+                
+        analysis_box = widgets.HBox([uni_box, multi_box])
+
+        for item in ISSUES_CHECKLIST:
+            issue_checkboxes.append(widgets.Checkbox(
+                description=item, layout=Layout(width='100%')))
+        issue_box = widgets.VBox(issue_checkboxes)
+
+        for item in PREPARATION_CHECKLIST:
+            preparation_checkboxes.append(widgets.Checkbox(
+                description=item, layout=Layout(width='100%')))
+        prep_box = widgets.VBox(preparation_checkboxes)
+
+        tab_list = [data_box, clean_box, analysis_box, issue_box, prep_box]
+
+        tab = widgets.Tab()
+        tab.children = tab_list
+        tab.set_title(0, 'Data')
+        tab.set_title(1, 'Cleaning')
+        tab.set_title(2, 'Analysis')
+        tab.set_title(3, 'Issues')
+        tab.set_title(4, 'Preparation')
+
+        display(tab)
 
     def visualize_raincloud(self, x_col: str, y_col=None, **params):
         """
