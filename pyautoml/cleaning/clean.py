@@ -3,8 +3,11 @@ from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
 from pyautoml.cleaning.util import *
-from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _numeric_input_conditions)
+from pyautoml.util import (
+    _contructor_data_properties,
+    _input_columns,
+    _numeric_input_conditions,
+)
 
 
 class Clean(MethodBase):
@@ -68,7 +71,10 @@ class Clean(MethodBase):
 
         original_columns = set(list(self._data_properties.x_train.columns))
 
-        self._data_properties.x_train, self._data_properties.x_test = remove_columns_threshold(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = remove_columns_threshold(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             threshold=threshold,
@@ -102,7 +108,10 @@ class Clean(MethodBase):
 
         report_info = technique_reason_repo["clean"]["general"]["remove_rows"]
 
-        self._data_properties.x_train, self._data_properties.x_test = remove_rows_threshold(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = remove_rows_threshold(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             threshold=threshold,
@@ -145,7 +154,10 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_mean_median_mode(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -194,7 +206,10 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_mean_median_mode(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -241,7 +256,10 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_mean_median_mode(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_mean_median_mode(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -303,7 +321,10 @@ class Clean(MethodBase):
             # If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_constant = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_constant(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_constant(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             col_to_constant=col_to_constant,
@@ -368,7 +389,10 @@ class Clean(MethodBase):
             # If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_category = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_new_category(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_new_category(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             col_to_category=col_to_category,
@@ -412,7 +436,10 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_remove_row(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_remove_row(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             cols_to_remove=list_of_cols,
@@ -452,7 +479,10 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = remove_duplicate_rows(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = remove_duplicate_rows(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -477,7 +507,10 @@ class Clean(MethodBase):
             "remove_duplicate_columns"
         ]
 
-        self._data_properties.x_train, self._data_properties.x_test = remove_duplicate_columns(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = remove_duplicate_columns(
             x_train=self._data_properties.x_train, x_test=self._data_properties.x_test
         )
 
@@ -517,7 +550,10 @@ class Clean(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_random_discrete(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_random_discrete(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -564,7 +600,10 @@ class Clean(MethodBase):
 
         report_info = technique_reason_repo["clean"]["general"]["knn"]
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_knn(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_knn(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             k=k,
@@ -625,7 +664,10 @@ class Clean(MethodBase):
         report_info = technique_reason_repo["clean"]["general"]["interpolate"]
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_interpolate(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_interpolate(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -663,7 +705,10 @@ class Clean(MethodBase):
         report_info = technique_reason_repo["clean"]["general"]["bfill"]
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_fill(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_fill(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -701,7 +746,10 @@ class Clean(MethodBase):
         report_info = technique_reason_repo["clean"]["general"]["ffill"]
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_fill(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_fill(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -753,7 +801,10 @@ class Clean(MethodBase):
         report_info = technique_reason_repo["clean"]["general"]["indicator"]
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = replace_missing_indicator(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = replace_missing_indicator(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,

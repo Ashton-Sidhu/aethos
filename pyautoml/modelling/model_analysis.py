@@ -1,8 +1,8 @@
 import itertools
+import math
 import warnings
 from collections import OrderedDict
 from itertools import compress
-import math
 
 import bokeh
 import interpret
@@ -14,20 +14,20 @@ import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
 
-from pyautoml.modelling.constants import (INTERPRET_EXPLAINERS,
-                                                PROBLEM_TYPE, SHAP_LEARNERS, CLASS_METRICS_DESC, REG_METRICS_DESC)
-from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.feature_engineering.util import pca
+from pyautoml.modelling.constants import (CLASS_METRICS_DESC,
+                                          INTERPRET_EXPLAINERS, PROBLEM_TYPE,
+                                          REG_METRICS_DESC, SHAP_LEARNERS)
+from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.visualizations.visualize import *
 
 
 class ModelBase(object):
 
     # TODO: Add more SHAP use cases
-    # TODO: Add loss metrics
 
     def __init__(self, model_object, model, model_name):
-        
+
         self.model = model
         self.model_name = model_name
         self.x_train = model_object._data_properties.x_train
@@ -37,17 +37,29 @@ class ModelBase(object):
         self.report = model_object._data_properties.report
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
-            self.shap = Shap(self.model, self.x_train, self.x_test, self.y_test, SHAP_LEARNERS[type(self.model)])
-            self.interpret = MSFTInterpret(self.model, self.x_train, self.x_test, self.y_test, PROBLEM_TYPE[type(self.model)])
+            self.shap = Shap(
+                self.model,
+                self.x_train,
+                self.x_test,
+                self.y_test,
+                SHAP_LEARNERS[type(self.model)],
+            )
+            self.interpret = MSFTInterpret(
+                self.model,
+                self.x_train,
+                self.x_test,
+                self.y_test,
+                PROBLEM_TYPE[type(self.model)],
+            )
         else:
             self.shap = None
             self.interpret = None
 
         for method in dir(self.model):
             try:
-                if not method.startswith('_') and not method.startswith('predict'):
+                if not method.startswith("_") and not method.startswith("predict"):
                     self.__setattr__(method, getattr(self.model, method))
-                
+
             except AttributeError as e:
                 continue
 
@@ -71,18 +83,20 @@ class ModelBase(object):
         try:
             model_dict = dict(zip(self.features, self.model.coef_.flatten()))
         except Exception as e:
-            raise AttributeError('Model does not have coefficients to view.')
+            raise AttributeError("Model does not have coefficients to view.")
 
-        sorted_features = OrderedDict(sorted(model_dict.items(), key=lambda kv: abs(kv[1]), reverse=True))
+        sorted_features = OrderedDict(
+            sorted(model_dict.items(), key=lambda kv: abs(kv[1]), reverse=True)
+        )
 
         for feature, weight in sorted_features.items():
-            report_string = '\t{} : {:.2f}'.format(feature, weight)
+            report_string = "\t{} : {:.2f}".format(feature, weight)
             report_strings.append(report_string)
 
             print(report_string.strip())
 
         if self.report:
-            self.report.log('Features ranked from most to least important:\n')
+            self.report.log("Features ranked from most to least important:\n")
             self.report.write_contents("\n".join(report_strings))
 
         return sorted_features
@@ -138,11 +152,19 @@ class ModelBase(object):
         """
 
         if self.shap is None:
-            raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
+            raise NotImplementedError(
+                "SHAP is not implemented yet for {}".format(type(self))
+            )
 
         self.shap.summary_plot(**summaryplot_kwargs)
 
-    def decision_plot(self, num_samples=0.6, sample_no=None, highlight_misclassified=False, **decisionplot_kwargs):
+    def decision_plot(
+        self,
+        num_samples=0.6,
+        sample_no=None,
+        highlight_misclassified=False,
+        **decisionplot_kwargs
+    ):
         """
         Visualize model decisions using cumulative SHAP values.
         
@@ -265,16 +287,18 @@ class ModelBase(object):
 
         >>> r = model.model_name.decision_plot()
         >>> model.model_name.decision_plot(no_sample=42, feature_order=r.feature_idx, xlim=r.xlim)
-        """   
+        """
 
         if self.shap is None:
-            raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
+            raise NotImplementedError(
+                "SHAP is not implemented yet for {}".format(type(self))
+            )
 
         if highlight_misclassified:
             if not any(self.shap.misclassified_values):
-                raise AttributeError('There are no misclassified values!')
-            
-            decisionplot_kwargs['highlight'] = self.shap.misclassified_values
+                raise AttributeError("There are no misclassified values!")
+
+            decisionplot_kwargs["highlight"] = self.shap.misclassified_values
 
         return self.shap.decision_plot(num_samples, sample_no, **decisionplot_kwargs)
 
@@ -312,17 +336,23 @@ class ModelBase(object):
         """
 
         if self.shap is None:
-            raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
+            raise NotImplementedError(
+                "SHAP is not implemented yet for {}".format(type(self))
+            )
 
         if misclassified:
             if not any(self.shap.misclassified_values):
-                raise AttributeError('There are no misclassified values!')
-            
-            forceplot_kwargs['shap_values'] = self.shap.shap_values[self.shap.misclassified_values]
+                raise AttributeError("There are no misclassified values!")
+
+            forceplot_kwargs["shap_values"] = self.shap.shap_values[
+                self.shap.misclassified_values
+            ]
 
         return self.shap.force_plot(sample_no, **forceplot_kwargs)
 
-    def dependence_plot(self, feature: str, interaction='auto', **dependenceplot_kwargs):
+    def dependence_plot(
+        self, feature: str, interaction="auto", **dependenceplot_kwargs
+    ):
         """
         A dependence plot is a scatter plot that shows the effect a single feature has on the predictions made by the mode.
 
@@ -370,7 +400,9 @@ class ModelBase(object):
         """
 
         if self.shap is None:
-            raise NotImplementedError('SHAP is not implemented yet for {}'.format(type(self)))
+            raise NotImplementedError(
+                "SHAP is not implemented yet for {}".format(type(self))
+            )
 
         self.shap.dependence_plot(feature, interaction, **dependenceplot_kwargs)
 
@@ -379,7 +411,12 @@ class ModelBase(object):
         Prints the sample numbers of misclassified samples.
         """
 
-        sample_list = list(compress(range(len(self.shap.misclassified_values)), self.shap.misclassified_values))
+        sample_list = list(
+            compress(
+                range(len(self.shap.misclassified_values)),
+                self.shap.misclassified_values,
+            )
+        )
 
         print(", ".join(str(np.array(sample_list) + 1)))
 
@@ -393,7 +430,9 @@ class ModelBase(object):
         if show:
             self.interpret.create_dashboard()
 
-    def interpret_model_performance(self, method='all', predictions='default', show=True, **interpret_kwargs):
+    def interpret_model_performance(
+        self, method="all", predictions="default", show=True, **interpret_kwargs
+    ):
         """
         Plots an interpretable display of your model based off a performance metric.
 
@@ -418,19 +457,36 @@ class ModelBase(object):
         show : bool, optional 
             False to not display the plot, by default True
         """
-        
+
         dashboard = []
 
-        if method == 'all':
-            for explainer in INTERPRET_EXPLAINERS['problem'][self.interpret.problem]:
-                dashboard.append(self.interpret.blackbox_show_performance(method=explainer, predictions=predictions, show=False, **interpret_kwargs))
+        if method == "all":
+            for explainer in INTERPRET_EXPLAINERS["problem"][self.interpret.problem]:
+                dashboard.append(
+                    self.interpret.blackbox_show_performance(
+                        method=explainer,
+                        predictions=predictions,
+                        show=False,
+                        **interpret_kwargs
+                    )
+                )
 
             if show:
                 interpret.show(dashboard)
         else:
-            self.interpret.blackbox_show_performance(method=method, predictions=predictions, show=show, **interpret_kwargs)
+            self.interpret.blackbox_show_performance(
+                method=method, predictions=predictions, show=show, **interpret_kwargs
+            )
 
-    def interpret_predictions(self, num_samples=0.25, sample_no=None, method='all', predictions='default', show=True, **interpret_kwargs):
+    def interpret_predictions(
+        self,
+        num_samples=0.25,
+        sample_no=None,
+        method="all",
+        predictions="default",
+        show=True,
+        **interpret_kwargs
+    ):
         """
         Plots an interpretable display that explains individual predictions of your model.
 
@@ -459,16 +515,34 @@ class ModelBase(object):
 
         dashboard = []
 
-        if method == 'all':
-            for explainer in INTERPRET_EXPLAINERS['local']:
-                dashboard.append(self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=explainer, predictions=predictions, show=False, **interpret_kwargs))
+        if method == "all":
+            for explainer in INTERPRET_EXPLAINERS["local"]:
+                dashboard.append(
+                    self.interpret.blackbox_local_explanation(
+                        num_samples=num_samples,
+                        sample_no=sample_no,
+                        method=explainer,
+                        predictions=predictions,
+                        show=False,
+                        **interpret_kwargs
+                    )
+                )
 
             if show:
                 interpret.show(dashboard)
         else:
-            self.interpret.blackbox_local_explanation(num_samples=num_samples, sample_no=sample_no, method=method, predictions=predictions, show=show, **interpret_kwargs)
-        
-    def interpret_model_behavior(self, method='all', predictions='default', show=True, **interpret_kwargs):
+            self.interpret.blackbox_local_explanation(
+                num_samples=num_samples,
+                sample_no=sample_no,
+                method=method,
+                predictions=predictions,
+                show=show,
+                **interpret_kwargs
+            )
+
+    def interpret_model_behavior(
+        self, method="all", predictions="default", show=True, **interpret_kwargs
+    ):
         """
         Provides an interpretable summary of your models behaviour based off an explainer.
 
@@ -490,20 +564,30 @@ class ModelBase(object):
 
         dashboard = []
 
-        if method == 'all':
-            for explainer in INTERPRET_EXPLAINERS['global']:
-                dashboard.append(self.interpret.blackbox_global_explanation(method=explainer, predictions=predictions, show=False, **interpret_kwargs))
+        if method == "all":
+            for explainer in INTERPRET_EXPLAINERS["global"]:
+                dashboard.append(
+                    self.interpret.blackbox_global_explanation(
+                        method=explainer,
+                        predictions=predictions,
+                        show=False,
+                        **interpret_kwargs
+                    )
+                )
 
             if show:
                 interpret.show(dashboard)
         else:
-            self.interpret.blackbox_global_explanation(method=method, predictions=predictions, show=show, **interpret_kwargs)
-        
-class TextModel(ModelBase):
+            self.interpret.blackbox_global_explanation(
+                method=method, predictions=predictions, show=show, **interpret_kwargs
+            )
 
+
+class TextModel(ModelBase):
     def __init__(self, model_object, model, model_name):
-        
+
         super().__init__(model_object, model, model_name)
+
 
 class UnsupervisedModel(ModelBase):
 
@@ -514,6 +598,11 @@ class UnsupervisedModel(ModelBase):
         super().__init__(model_object, model, model_name)
 
         self.cluster_col = cluster_col
+
+        self.x_train[self.cluster_col] = self.x_train_results[self.cluster_col]
+
+        if self.x_test is not None:
+            self.x_test[self.cluster_col] = self.x_test_results[self.cluster_col]
 
     def filter_cluster(self, cluster_no: int):
         """
@@ -531,49 +620,97 @@ class UnsupervisedModel(ModelBase):
         """
 
         if self.x_test is None:
-            return self.x_train_results[self.x_train_results[self.cluster_col] == cluster_no]
+            return self.x_train[self.x_train[self.cluster_col] == cluster_no]
         else:
-            return self.x_test_results[self.x_test_results[self.cluster_col] == cluster_no]
+            return self.x_test[self.x_test[self.cluster_col] == cluster_no]
 
-    def plot_clusters(self, dim=2, reduce='pca'):
+    def plot_clusters(self, dim=2, reduce="pca", **kwargs):
+        """
+        Plots the clusters in either 2d or 3d space with each cluster point highlighted
+        as a different colour.
 
-        if dim != 2 or dim != 3:
-            raise ValueError('Dimension must be either 2d (2) or 3d (3)')
+        For 2d plotting options, see:
+        
+            https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.scatter
+
+            https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#userguide-styling-line-properties 
+
+        For 3d plotting options, see:
+
+            https://www.plotly.express/plotly_express/#plotly_express.scatter_3d
+            
+        Parameters
+        ----------
+        dim : 2 or 3, optional
+            Dimension of the plot, either 2 for 2d, 3 for 3d, by default 2
+        reduce : str, optional
+            Dimension reduction strategy i.e. pca, by default "pca"
+        """
+
+        if dim != 2 and dim != 3:
+            raise ValueError("Dimension must be either 2d (2) or 3d (3)")
+
+        dataset = self.x_test if self.x_test is not None else self.x_train
+
+        if reduce == "pca":
+            reduced_df, _ = pca(
+                dataset.drop(self.cluster_col, axis=1),
+                n_components=dim,
+                random_state=42,
+            )
+        else:
+            raise ValueError("Currently supported dimensionality reducers are: PCA.")
+
+        reduced_df[self.cluster_col] = dataset[self.cluster_col]
+        reduced_df.columns = list(map(str, reduced_df.columns))
 
         if dim == 2:
-
-            scatterplot()
-        
+            scatterplot("0", "1", data=reduced_df, **kwargs)
         else:
-            
-            scatterplot()
+            scatterplot(
+                "0", "1", "2", data=reduced_df, color=self.cluster_col, **kwargs
+            )
+
 
 class ClassificationModel(ModelBase):
-
     def __init__(self, model_object, model_name, model, predictions_col):
-        
+
         self.y_train = model_object.y_train
-        self.y_test = model_object.y_test if model_object.x_test is not None else model_object.y_train
+        self.y_test = (
+            model_object.y_test
+            if model_object.x_test is not None
+            else model_object.y_train
+        )
 
         super().__init__(model_object, model, model_name)
 
         self.probabilities = None
         self.target_mapping = model_object.target_mapping
 
-        self.y_pred = self.x_train_results[predictions_col] if self.x_test is None else self.x_test_results[predictions_col]
+        self.y_pred = (
+            self.x_train_results[predictions_col]
+            if self.x_test is None
+            else self.x_test_results[predictions_col]
+        )
 
         if self.report:
-            self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))
+            self.report.write_header(
+                "Analyzing Model {}: ".format(self.model_name.upper())
+            )
 
         if self.target_mapping is None:
-            self.classes = [str(item) for item in np.unique(list(self.y_train) + list(self.y_test))]
+            self.classes = [
+                str(item) for item in np.unique(list(self.y_train) + list(self.y_test))
+            ]
         else:
             self.classes = [str(item) for item in self.target_mapping.values()]
 
         self.features = self.x_test.columns
 
-        if hasattr(model, 'predict_proba'):
-            self.probabilities = model.predict_proba(model_object._data_properties.x_test)
+        if hasattr(model, "predict_proba"):
+            self.probabilities = model.predict_proba(
+                model_object._data_properties.x_test
+            )
 
     def accuracy(self, **kwargs):
         """
@@ -599,7 +736,9 @@ class ClassificationModel(ModelBase):
             Balanced accuracy
         """
 
-        return sklearn.metrics.balanced_accuracy_score(self.y_test, self.y_pred, **kwargs)
+        return sklearn.metrics.balanced_accuracy_score(
+            self.y_test, self.y_pred, **kwargs
+        )
 
     def average_precision(self, **kwargs):
         """
@@ -612,8 +751,10 @@ class ClassificationModel(ModelBase):
             Average Precision Score
         """
 
-        if hasattr(self.model, 'decision_function'):
-            return sklearn.metrics.average_precision_score(self.y_test, self.model.decision_function(self.x_test), **kwargs)
+        if hasattr(self.model, "decision_function"):
+            return sklearn.metrics.average_precision_score(
+                self.y_test, self.model.decision_function(self.x_test), **kwargs
+            )
         else:
             return np.nan
 
@@ -628,7 +769,9 @@ class ClassificationModel(ModelBase):
             ROC AUC Score
         """
 
-        fpr, tpr, thresholds = sklearn.metrics.roc_curve(self.y_test, self.y_pred, **kwargs)
+        fpr, tpr, thresholds = sklearn.metrics.roc_curve(
+            self.y_test, self.y_pred, **kwargs
+        )
 
         return sklearn.metrics.auc(fpr, tpr, **kwargs)
 
@@ -735,9 +878,11 @@ class ClassificationModel(ModelBase):
         float
             Hinge loss
         """
-        
-        if hasattr(self.model, 'decision_function'):
-            return sklearn.metrics.hinge_loss(self.y_test, self.model.decision_function(self.x_test), **kwargs)
+
+        if hasattr(self.model, "decision_function"):
+            return sklearn.metrics.hinge_loss(
+                self.y_test, self.model.decision_function(self.x_test), **kwargs
+            )
         else:
             return np.nan
 
@@ -801,7 +946,7 @@ class ClassificationModel(ModelBase):
         -------
         float
             Cohen Kappa score.
-        """ 
+        """
 
         return sklearn.metrics.cohen_kappa_score(self.y_test, self.y_pred, **kwargs)
 
@@ -853,35 +998,51 @@ class ClassificationModel(ModelBase):
             Specific type of metrics to view
         """
 
-        metrics = {'Accuracy': self.accuracy(),
-                'Balanced Accuracy': self.balanced_accuracy(),
-                'Average Precision': self.average_precision(),
-                'ROC AUC': self.roc_auc(),
-                'Zero One Loss': self.zero_one_loss(),
-                'Precision': self.precision(),
-                'Recall': self.recall(),
-                'Matthews Correlation Coefficient': self.matthews_corr_coef(),
-                'Log Loss': self.log_loss(),
-                'Jaccard': self.jaccard(),
-                'Hinge Loss': self.hinge_loss(),
-                'Hamming Loss': self.hamming_loss(),
-                'F-Beta': self.fbeta(),
-                'F1': self.f1(),
-                'Cohen Kappa': self.cohen_kappa(),
-                'Brier Loss': self.brier_loss()}
+        metrics = {
+            "Accuracy": self.accuracy(),
+            "Balanced Accuracy": self.balanced_accuracy(),
+            "Average Precision": self.average_precision(),
+            "ROC AUC": self.roc_auc(),
+            "Zero One Loss": self.zero_one_loss(),
+            "Precision": self.precision(),
+            "Recall": self.recall(),
+            "Matthews Correlation Coefficient": self.matthews_corr_coef(),
+            "Log Loss": self.log_loss(),
+            "Jaccard": self.jaccard(),
+            "Hinge Loss": self.hinge_loss(),
+            "Hamming Loss": self.hamming_loss(),
+            "F-Beta": self.fbeta(),
+            "F1": self.f1(),
+            "Cohen Kappa": self.cohen_kappa(),
+            "Brier Loss": self.brier_loss(),
+        }
 
-        metric_table = pd.DataFrame(index=metrics.keys(), columns=[self.model_name], data=metrics.values())
-        metric_table['Description'] = list(map(lambda x: CLASS_METRICS_DESC[x], metric_table.index))
+        metric_table = pd.DataFrame(
+            index=metrics.keys(), columns=[self.model_name], data=metrics.values()
+        )
+        metric_table["Description"] = list(
+            map(lambda x: CLASS_METRICS_DESC[x], metric_table.index)
+        )
 
         filt_metrics = list(metrics) if metrics else metric_table.index
 
         if self.report:
-            self.report.log('Metrics:\n')
+            self.report.log("Metrics:\n")
             self.report.log(metric_table.loc[filt_metrics, :].to_string())
 
         return metric_table.loc[filt_metrics, :]
 
-    def confusion_matrix(self, title=None, normalize=False, hide_counts=False, x_tick_rotation=0, figsize=None, cmap='Blues', title_fontsize="large", text_fontsize="medium"):
+    def confusion_matrix(
+        self,
+        title=None,
+        normalize=False,
+        hide_counts=False,
+        x_tick_rotation=0,
+        figsize=None,
+        cmap="Blues",
+        title_fontsize="large",
+        text_fontsize="medium",
+    ):
         """
         Prints a confusion matrix as a heatmap.
     
@@ -920,7 +1081,7 @@ class ClassificationModel(ModelBase):
         text_fontsize : str
             Size of the text of the rest of the plot, by default 'medium'        
         """
-        
+
         y_true = self.y_test
         y_pred = self.y_pred
 
@@ -930,7 +1091,10 @@ class ClassificationModel(ModelBase):
         confusion_matrix = sklearn.metrics.confusion_matrix(y_true, y_pred)
 
         if normalize:
-            confusion_matrix = confusion_matrix.astype('float') / confusion_matrix.sum(axis=1)[:, np.newaxis]
+            confusion_matrix = (
+                confusion_matrix.astype("float")
+                / confusion_matrix.sum(axis=1)[:, np.newaxis]
+            )
 
         accuracy = np.trace(confusion_matrix) / float(np.sum(confusion_matrix))
         mis_class = 1 - accuracy
@@ -938,16 +1102,16 @@ class ClassificationModel(ModelBase):
         if title:
             plt.title(title, fontsize=title_fontsize)
         elif normalize:
-            plt.title('Normalized Confusion Matrix', fontsize=title_fontsize)
+            plt.title("Normalized Confusion Matrix", fontsize=title_fontsize)
         else:
-            plt.title('Confusion Matrix', fontsize=title_fontsize)
+            plt.title("Confusion Matrix", fontsize=title_fontsize)
 
         cm_sum = np.sum(confusion_matrix, axis=1)
         cm_perc = confusion_matrix / cm_sum.astype(float) * 100
         nrows, ncols = confusion_matrix.shape
 
         if not hide_counts:
-            annot = np.zeros_like(confusion_matrix).astype('str')
+            annot = np.zeros_like(confusion_matrix).astype("str")
 
             for i in range(nrows):
                 for j in range(ncols):
@@ -955,31 +1119,40 @@ class ClassificationModel(ModelBase):
                     p = cm_perc[i, j]
                     if i == j:
                         s = cm_sum[i]
-                        annot[i, j] = '{:.2f}%\n{}/{}'.format(float(p), int(c), int(s))
+                        annot[i, j] = "{:.2f}%\n{}/{}".format(float(p), int(c), int(s))
                     elif c == 0:
-                        annot[i, j] = ''
+                        annot[i, j] = ""
                     else:
-                        annot[i, j] = '{:.2f}%\n{}'.format(p, c)
+                        annot[i, j] = "{:.2f}%\n{}".format(p, c)
         else:
             annot = np.zeros_like(confusion_matrix, dtype=str)
 
         df_cm = pd.DataFrame(
-            confusion_matrix, index=self.classes, columns=self.classes, 
+            confusion_matrix, index=self.classes, columns=self.classes,
         )
 
-        heatmap = sns.heatmap(df_cm, annot=annot, square=True, cmap=plt.cm.get_cmap(cmap), fmt='')       
+        heatmap = sns.heatmap(
+            df_cm, annot=annot, square=True, cmap=plt.cm.get_cmap(cmap), fmt=""
+        )
 
         plt.tight_layout()
-        plt.ylabel('True label', fontsize=text_fontsize)
-        plt.xlabel('Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}'.format(accuracy, mis_class), fontsize=text_fontsize)
-        plt.xticks(np.arange(len(self.classes)) + 0.5, self.classes, rotation=x_tick_rotation)
+        plt.ylabel("True label", fontsize=text_fontsize)
+        plt.xlabel(
+            "Predicted label\naccuracy={:0.4f}; misclassified={:0.4f}".format(
+                accuracy, mis_class
+            ),
+            fontsize=text_fontsize,
+        )
+        plt.xticks(
+            np.arange(len(self.classes)) + 0.5, self.classes, rotation=x_tick_rotation
+        )
         plt.show()
 
         if self.report:
-            self.report.log('CONFUSION MATRIX:\n')
+            self.report.log("CONFUSION MATRIX:\n")
             self.report.log(df_cm.to_string())
 
-    def roc_curve(self, figsize=(450,550), output_file=''):
+    def roc_curve(self, figsize=(450, 550), output_file=""):
         """
         Plots an ROC curve and displays the ROC statistics (area under the curve).
 
@@ -993,7 +1166,9 @@ class ClassificationModel(ModelBase):
         """
 
         if len(np.unique(list(self.y_train) + list(self.y_test))) > 2:
-            raise NotImplementedError('ROC Curve is currently not implemented for multiclassification problems.')
+            raise NotImplementedError(
+                "ROC Curve is currently not implemented for multiclassification problems."
+            )
 
         y_true = self.y_test
         y_pred = self.y_pred
@@ -1004,20 +1179,33 @@ class ClassificationModel(ModelBase):
         step = 1 / (len(fpr) - 1)
         random = np.arange(0, 1 + step, step)
 
-        p = figure(plot_width=figsize[0], plot_height=figsize[1], title='ROC Curve (Area = {:.2f})'.format(roc_auc), x_range=[0,1], y_range=[0,1], x_axis_label='False Positive Rate or (1 - Specifity)', y_axis_label='True Positive Rate or (Sensitivity)', tooltips=[('False Positive Rate', '$x'), ('True Positve Rate', '$y')], tools='pan,wheel_zoom,tap,box_zoom,reset', active_drag='box_zoom', active_scroll='wheel_zoom')
+        p = figure(
+            plot_width=figsize[0],
+            plot_height=figsize[1],
+            title="ROC Curve (Area = {:.2f})".format(roc_auc),
+            x_range=[0, 1],
+            y_range=[0, 1],
+            x_axis_label="False Positive Rate or (1 - Specifity)",
+            y_axis_label="True Positive Rate or (Sensitivity)",
+            tooltips=[("False Positive Rate", "$x"), ("True Positve Rate", "$y")],
+            tools="pan,wheel_zoom,tap,box_zoom,reset",
+            active_drag="box_zoom",
+            active_scroll="wheel_zoom",
+        )
 
-        p.line(fpr, tpr, color='blue', alpha=0.8, legend='ROC')
-        p.line(random, random, color='orange', line_dash='dashed', legend='Baseline')
+        p.line(fpr, tpr, color="blue", alpha=0.8, legend="ROC")
+        p.line(random, random, color="orange", line_dash="dashed", legend="Baseline")
 
         p.legend.location = "bottom_right"
         p.legend.click_policy = "hide"
 
         if output_file:
-            output_file(output_file + '.html', title='ROC Curve (area = {:.2f})'.format(roc_auc))
-
+            output_file(
+                output_file + ".html", title="ROC Curve (area = {:.2f})".format(roc_auc)
+            )
 
         bokeh.io.show(p)
-    
+
     def classification_report(self):
         """
         Prints and logs the classification report.
@@ -1035,31 +1223,44 @@ class ClassificationModel(ModelBase):
          weighted avg       1.00      0.67      0.80         3
         """
 
-        classification_report = sklearn.metrics.classification_report(self.y_test, self.y_pred, target_names=self.classes, digits=2)
+        classification_report = sklearn.metrics.classification_report(
+            self.y_test, self.y_pred, target_names=self.classes, digits=2
+        )
 
         if self.report:
             self.report.report_classification_report(classification_report)
 
-        print(classification_report)        
+        print(classification_report)
+
 
 class RegressionModel(ModelBase):
     # TODO: Summary statistics
 
     def __init__(self, model_object, model_name, model, predictions_col):
-        
+
         self.y_train = model_object.y_train
-        self.y_test = model_object.y_test if model_object.x_test is not None else model_object.y_train
+        self.y_test = (
+            model_object.y_test
+            if model_object.x_test is not None
+            else model_object.y_train
+        )
 
         super().__init__(model_object, model, model_name)
 
-        self.y_pred = self.x_train_results[predictions_col] if self.x_test is None else self.x_test_results[predictions_col]
+        self.y_pred = (
+            self.x_train_results[predictions_col]
+            if self.x_test is None
+            else self.x_test_results[predictions_col]
+        )
 
         if self.report:
-            self.report.write_header('Analyzing Model {}: '.format(self.model_name.upper()))
+            self.report.write_header(
+                "Analyzing Model {}: ".format(self.model_name.upper())
+            )
 
         self.features = self.x_test.columns
 
-    def explained_variance(self, multioutput='uniform_average', **kwargs):
+    def explained_variance(self, multioutput="uniform_average", **kwargs):
         """
         Explained variance regression score function
 
@@ -1087,7 +1288,9 @@ class RegressionModel(ModelBase):
             Explained Variance
         """
 
-        return sklearn.metrics.explained_variance_score(self.y_test, self.y_pred, multioutput='uniform_average', **kwargs)
+        return sklearn.metrics.explained_variance_score(
+            self.y_test, self.y_pred, multioutput="uniform_average", **kwargs
+        )
 
     def max_error(self):
         """
@@ -1179,7 +1382,15 @@ class RegressionModel(ModelBase):
             SMAPE
         """
 
-        return 1 / len(self.y_test) * np.sum(2 * np.abs(self.y_pred - self.y_test) / (np.abs(self.y_test) + np.abs(self.y_pred)))
+        return (
+            1
+            / len(self.y_test)
+            * np.sum(
+                2
+                * np.abs(self.y_pred - self.y_test)
+                / (np.abs(self.y_test) + np.abs(self.y_pred))
+            )
+        )
 
     def root_mean_sq_error(self):
         """
@@ -1219,24 +1430,28 @@ class RegressionModel(ModelBase):
         """
 
         metrics = {
-            'Explained Variance': self.explained_variance(),
-            'Max Error': self.max_error(),
-            'Mean Absolute Error': self.mean_abs_error(),
-            'Mean Squared Error': self.mean_sq_error(),
-            'Root Mean Sqaured Error': self.root_mean_sq_error(),
-            'Mean Squared Log Error': self.mean_sq_log_error(),
-            'Median Absolute Error': self.median_abs_error(),
-            'R2': self.r2(),
-            'SMAPE': self.smape()
+            "Explained Variance": self.explained_variance(),
+            "Max Error": self.max_error(),
+            "Mean Absolute Error": self.mean_abs_error(),
+            "Mean Squared Error": self.mean_sq_error(),
+            "Root Mean Sqaured Error": self.root_mean_sq_error(),
+            "Mean Squared Log Error": self.mean_sq_log_error(),
+            "Median Absolute Error": self.median_abs_error(),
+            "R2": self.r2(),
+            "SMAPE": self.smape(),
         }
 
-        metric_table = pd.DataFrame(index=metrics.keys(), columns=[self.model_name], data=metrics.values())
-        metric_table['Description'] = list(map(lambda x: REG_METRICS_DESC[x], metric_table.index))
+        metric_table = pd.DataFrame(
+            index=metrics.keys(), columns=[self.model_name], data=metrics.values()
+        )
+        metric_table["Description"] = list(
+            map(lambda x: REG_METRICS_DESC[x], metric_table.index)
+        )
 
         filt_metrics = list(metrics) if metrics else metric_table.index
 
         if self.report:
-            self.report.log('Metrics:\n')
+            self.report.log("Metrics:\n")
             self.report.log(metric_table.loc[filt_metrics, :].to_string())
 
         return metric_table.loc[filt_metrics, :]

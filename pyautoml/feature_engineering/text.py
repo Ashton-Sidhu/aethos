@@ -9,15 +9,19 @@ nltk_feature_postag
 
 import pandas as pd
 import spacy
-from sklearn.feature_extraction.text import (CountVectorizer,
-                                             HashingVectorizer,
-                                             TfidfVectorizer)
+from sklearn.feature_extraction.text import (
+    CountVectorizer,
+    HashingVectorizer,
+    TfidfVectorizer,
+)
 from textblob import TextBlob
 
 from pyautoml.util import _get_columns, drop_replace_columns
 
 
-def feature_bag_of_words(x_train, x_test=None, list_of_cols=[], keep_col=False, **algo_kwargs):
+def feature_bag_of_words(
+    x_train, x_test=None, list_of_cols=[], keep_col=False, **algo_kwargs
+):
     """
     Creates a matrix of how many times a word appears in a document.
     
@@ -54,16 +58,17 @@ def feature_bag_of_words(x_train, x_test=None, list_of_cols=[], keep_col=False, 
         enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
         x_train = drop_replace_columns(x_train, col, enc_df, keep_col)
 
-
         if x_test is not None:
             enc_x_test = enc.transform(x_test[col]).toarray()
-            enc_test_df = pd.DataFrame(
-                enc_x_test, columns=enc.get_features_names())
+            enc_test_df = pd.DataFrame(enc_x_test, columns=enc.get_features_names())
             x_test = drop_replace_columns(x_test, col, enc_test_df, keep_col)
 
     return x_train, x_test
 
-def feature_hash_vectorizer(x_train, x_test=None, list_of_cols=[], keep_col=True, **hashing_kwargs):
+
+def feature_hash_vectorizer(
+    x_train, x_test=None, list_of_cols=[], keep_col=True, **hashing_kwargs
+):
     """
     Returns a hashed encoding of text data.
     
@@ -102,11 +107,11 @@ def feature_hash_vectorizer(x_train, x_test=None, list_of_cols=[], keep_col=True
 
         if x_test is not None:
             enc_x_test = enc.transform(x_test[col]).toarray()
-            enc_test_df = pd.DataFrame(
-                enc_x_test)
+            enc_test_df = pd.DataFrame(enc_x_test)
             x_test = drop_replace_columns(x_test, col, enc_test_df, keep_col)
 
     return x_train, x_test
+
 
 def feature_tfidf(x_train, x_test=None, list_of_cols=[], keep_col=True, **algo_kwargs):
     """
@@ -149,14 +154,15 @@ def feature_tfidf(x_train, x_test=None, list_of_cols=[], keep_col=True, **algo_k
 
         if x_test is not None:
             enc_x_test = enc.transform(x_test[col]).toarray()
-            enc_test_df = pd.DataFrame(
-                enc_x_test, columns=enc.get_feature_names())
+            enc_test_df = pd.DataFrame(enc_x_test, columns=enc.get_feature_names())
             x_test = drop_replace_columns(x_test, col, enc_test_df, keep_col)
 
     return x_train, x_test
 
 
-def nltk_feature_postag(x_train, x_test=None, list_of_cols=[], new_col_name='_postagged'):
+def nltk_feature_postag(
+    x_train, x_test=None, list_of_cols=[], new_col_name="_postagged"
+):
     """
     Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
     Verbs, etc.
@@ -188,16 +194,21 @@ def nltk_feature_postag(x_train, x_test=None, list_of_cols=[], new_col_name='_po
     list_of_cols = _get_columns(list_of_cols, x_train)
 
     for col in list_of_cols:
-        x_train[col +
-                new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_train[col]))
+        x_train[col + new_col_name] = pd.Series(
+            map(lambda x: TextBlob(x).tags, x_train[col])
+        )
 
         if x_test is not None:
-            x_test[col +
-                      new_col_name] = pd.Series(map(lambda x: TextBlob(x).tags, x_test[col]))
+            x_test[col + new_col_name] = pd.Series(
+                map(lambda x: TextBlob(x).tags, x_test[col])
+            )
 
     return x_train, x_test
 
-def nltk_feature_noun_phrases(x_train, x_test=None, list_of_cols=[], new_col_name='_phrases'):
+
+def nltk_feature_noun_phrases(
+    x_train, x_test=None, list_of_cols=[], new_col_name="_phrases"
+):
     """
     Extracts noun phrases from the given text.
 
@@ -228,17 +239,22 @@ def nltk_feature_noun_phrases(x_train, x_test=None, list_of_cols=[], new_col_nam
     list_of_cols = _get_columns(list_of_cols, x_train)
 
     for col in list_of_cols:
-        x_train[col +
-                new_col_name] = pd.Series(map(lambda x: TextBlob(x).noun_phrases, x_train[col]))
+        x_train[col + new_col_name] = pd.Series(
+            map(lambda x: TextBlob(x).noun_phrases, x_train[col])
+        )
 
         if x_test is not None:
-            x_test[col +
-                      new_col_name] = pd.Series(map(lambda x: TextBlob(x).noun_phrases, x_test[col]))
+            x_test[col + new_col_name] = pd.Series(
+                map(lambda x: TextBlob(x).noun_phrases, x_test[col])
+            )
 
     return x_train, x_test
 
+
 # TODO: Add simple and complex spacy pos tagging
-def spacy_feature_postag(x_train, x_test=None, list_of_cols=[], new_col_name='_postagged'):
+def spacy_feature_postag(
+    x_train, x_test=None, list_of_cols=[], new_col_name="_postagged"
+):
     """
     Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
     Verbs, etc.
@@ -269,20 +285,33 @@ def spacy_feature_postag(x_train, x_test=None, list_of_cols=[], new_col_name='_p
 
     list_of_cols = _get_columns(list_of_cols, x_train)
 
-    nlp = spacy.load('en_core_web_sm')
+    nlp = spacy.load("en_core_web_sm")
 
     for col in list_of_cols:
         transformed_text = map(nlp, x_train[col])
-        x_train[col + new_col_name] = pd.Series(map(lambda x: list(map(lambda token: (token, token.pos_), x)), transformed_text))
+        x_train[col + new_col_name] = pd.Series(
+            map(
+                lambda x: list(map(lambda token: (token, token.pos_), x)),
+                transformed_text,
+            )
+        )
 
         if x_test is not None:
             transformed_text = map(nlp, x_test[col])
-            x_test[col + new_col_name] = pd.Series(map(lambda x: list(map(lambda token: (token, token.pos_), x)), transformed_text))
+            x_test[col + new_col_name] = pd.Series(
+                map(
+                    lambda x: list(map(lambda token: (token, token.pos_), x)),
+                    transformed_text,
+                )
+            )
 
     return x_train, x_test
 
+
 # TODO: Double check spacy noun phrase implementation
-def spacy_feature_noun_phrases(x_train, x_test=None, list_of_cols=[], new_col_name='_phrases'):
+def spacy_feature_noun_phrases(
+    x_train, x_test=None, list_of_cols=[], new_col_name="_phrases"
+):
     """
     Extracts noun phrases from the given data.
 
@@ -312,14 +341,18 @@ def spacy_feature_noun_phrases(x_train, x_test=None, list_of_cols=[], new_col_na
 
     list_of_cols = _get_columns(list_of_cols, x_train)
 
-    nlp = spacy.load('en')
+    nlp = spacy.load("en")
 
     for col in list_of_cols:
         transformed_text = list(map(nlp, x_train[col]))
-        x_train[col + new_col_name] = pd.Series(map(lambda x: [str(phrase) for phrase in x.noun_chunks], transformed_text))
+        x_train[col + new_col_name] = pd.Series(
+            map(lambda x: [str(phrase) for phrase in x.noun_chunks], transformed_text)
+        )
 
         if x_test is not None:
             transformed_text = map(nlp, x_test[col])
-            x_test[col + new_col_name] = pd.Series(map(lambda x: x.noun_chunks, transformed_text))
+            x_test[col + new_col_name] = pd.Series(
+                map(lambda x: x.noun_chunks, transformed_text)
+            )
 
     return x_train, x_test

@@ -11,14 +11,10 @@ from .preprocessing import Preprocess
 
 pd.options.mode.chained_assignment = None
 
-__all__ = ['Clean',
-         'Feature',
-         'Model',
-         'Preprocess'
-        ]
+__all__ = ["Clean", "Feature", "Model", "Preprocess"]
 
 shell = get_ipython().__class__.__name__
 
-if shell == 'ZMQInteractiveShell':
+if shell == "ZMQInteractiveShell":
     output_notebook()
     shap.initjs()

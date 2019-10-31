@@ -386,8 +386,8 @@ class Model(MethodBase):
         results_table = results_table.loc[:, ~results_table.columns.duplicated()]
 
         # Move descriptions column to end of dataframe.
-        descriptions = results_table.pop('Description')
-        results_table['Description'] = descriptions
+        descriptions = results_table.pop("Description")
+        results_table["Description"] = descriptions
 
         # def _highlight_optimal(x):
 

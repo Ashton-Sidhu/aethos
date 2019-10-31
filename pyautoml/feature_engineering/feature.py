@@ -10,23 +10,46 @@ from pyautoml.util import (_contructor_data_properties, _input_columns,
 
 
 class Feature(MethodBase):
+    def __init__(
+        self,
+        step=None,
+        x_train=None,
+        x_test=None,
+        test_split_percentage=0.2,
+        split=True,
+        target_field="",
+        report_name=None,
+    ):
 
-    def __init__(self, step=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
-        
         _data_properties = _contructor_data_properties(step)
 
-        if _data_properties is None:        
-            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
-                        split=split, target_field=target_field, target_mapping=None, report_name=report_name)
+        if _data_properties is None:
+            super().__init__(
+                x_train=x_train,
+                x_test=x_test,
+                test_split_percentage=test_split_percentage,
+                split=split,
+                target_field=target_field,
+                target_mapping=None,
+                report_name=report_name,
+            )
         else:
-            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
-                        split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
-                        
+            super().__init__(
+                x_train=_data_properties.x_train,
+                x_test=_data_properties.x_test,
+                test_split_percentage=test_split_percentage,
+                split=_data_properties.split,
+                target_field=_data_properties.target_field,
+                target_mapping=_data_properties.target_mapping,
+                report_name=_data_properties.report_name,
+            )
+
         if self._data_properties.report is not None:
             self.report.write_header("Feature Engineering")
 
-
-    def onehot_encode(self, *list_args, list_of_cols=[], keep_col=True, **onehot_kwargs):
+    def onehot_encode(
+        self, *list_args, list_of_cols=[], keep_col=True, **onehot_kwargs
+    ):
         """
         Creates a matrix of converted categorical columns into binary columns of ones and zeros.
 
@@ -56,22 +79,26 @@ class Feature(MethodBase):
         --------
         >>> feature.onehot_encode('col1', 'col2', 'col3')
         """
-        
-        report_info = technique_reason_repo['feature']['categorical']['onehotencode']
+
+        report_info = technique_reason_repo["feature"]["categorical"]["onehotencode"]
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = feature_one_hot_encode(x_train=self._data_properties.x_train,
-                                                                                            x_test=self._data_properties.x_test,
-                                                                                            list_of_cols=list_of_cols,
-                                                                                            keep_col=keep_col,
-                                                                                            **onehot_kwargs)
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = feature_one_hot_encode(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            keep_col=keep_col,
+            **onehot_kwargs,
+        )
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
-
 
     def tfidf(self, *list_args, list_of_cols=[], keep_col=True, **tfidf_kwargs):
         """
@@ -103,24 +130,24 @@ class Feature(MethodBase):
         Feature:
             Returns a deep copy of the Feature object.
         """
-        
-        report_info = technique_reason_repo['feature']['text']['tfidf']
+
+        report_info = technique_reason_repo["feature"]["text"]["tfidf"]
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = feature_tfidf(x_train=self._data_properties.x_train,
-                                                                                    x_test=self._data_properties.x_test,
-                                                                                    list_of_cols=list_of_cols,
-                                                                                    keep_col = keep_col,
-                                                                                    **tfidf_kwargs,
-                                                                                    )
+        self._data_properties.x_train, self._data_properties.x_test = feature_tfidf(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            keep_col=keep_col,
+            **tfidf_kwargs,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
 
         return self.copy()
-
 
     def bag_of_words(self, *list_args, list_of_cols=[], keep_col=True, **bow_kwargs):
         """
@@ -152,17 +179,21 @@ class Feature(MethodBase):
             Returns a deep copy of the Feature object.
         """
 
-        report_info = technique_reason_repo['feature']['text']['bow']
+        report_info = technique_reason_repo["feature"]["text"]["bow"]
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = feature_bag_of_words(x_train=self._data_properties.x_train,
-                                                                                            x_test=self._data_properties.x_test,
-                                                                                            list_of_cols=list_of_cols,
-                                                                                            keep_col=keep_col,
-                                                                                            **bow_kwargs,
-                                                                                            )
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = feature_bag_of_words(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            keep_col=keep_col,
+            **bow_kwargs,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
@@ -213,24 +244,28 @@ class Feature(MethodBase):
             Returns a deep copy of the Feature object.
         """
 
-        report_info = technique_reason_repo['feature']['text']['hash']
+        report_info = technique_reason_repo["feature"]["text"]["hash"]
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = feature_hash_vectorizer(x_train=self._data_properties.x_train,
-                                                                                            x_test=self._data_properties.x_test,
-                                                                                            list_of_cols=list_of_cols,
-                                                                                            keep_col=keep_col,
-                                                                                            **hash_kwargs,
-                                                                                            )
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = feature_hash_vectorizer(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            keep_col=keep_col,
+            **hash_kwargs,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
 
         return self.copy()
 
-    def postag_nltk(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
+    def postag_nltk(self, *list_args, list_of_cols=[], new_col_name="_postagged"):
         """
         Tag documents with their respective "Part of Speech" tag with the Textblob package which utilizes the NLTK NLP engine and Penn Treebank tag set.
         These tags classify a word as a noun, verb, adjective, etc. A full list and their meaning can be found here:
@@ -254,20 +289,27 @@ class Feature(MethodBase):
         Feature:
             Returns a deep copy of the Feature object.
         """
-        
-        report_info = technique_reason_repo['feature']['text']['nltk_postag']
+
+        report_info = technique_reason_repo["feature"]["text"]["nltk_postag"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = nltk_feature_postag(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name)
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = nltk_feature_postag(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            new_col_name=new_col_name,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
 
         return self.copy()
 
-    def postag_spacy(self, *list_args, list_of_cols=[], new_col_name='_postagged'):
+    def postag_spacy(self, *list_args, list_of_cols=[], new_col_name="_postagged"):
         """
         Tag documents with their respective "Part of Speech" tag with the Spacy NLP engine and the Universal Dependencies scheme.
         These tags classify a word as a noun, verb, adjective, etc. A full list and their meaning can be found here:
@@ -291,20 +333,27 @@ class Feature(MethodBase):
         Feature:
             Returns a deep copy of the Feature object.
         """
-        
-        report_info = technique_reason_repo['feature']['text']['spacy_postag']
+
+        report_info = technique_reason_repo["feature"]["text"]["spacy_postag"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = spacy_feature_postag(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name)
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = spacy_feature_postag(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            new_col_name=new_col_name,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
-    def nounphrases_nltk(self, *list_args, list_of_cols=[], new_col_name='_phrases'):
+    def nounphrases_nltk(self, *list_args, list_of_cols=[], new_col_name="_phrases"):
         """
         Extract noun phrases from text using the Textblob packages which uses the NLTK NLP engine.
 
@@ -326,20 +375,27 @@ class Feature(MethodBase):
         Feature:
             Returns a deep copy of the Feature object.
         """
-        
-        report_info = technique_reason_repo['feature']['text']['nltk_np']
+
+        report_info = technique_reason_repo["feature"]["text"]["nltk_np"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = nltk_feature_noun_phrases(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name)
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = nltk_feature_noun_phrases(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            new_col_name=new_col_name,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
-    def nounphrases_spacy(self, *list_args, list_of_cols=[], new_col_name='_phrases'):
+    def nounphrases_spacy(self, *list_args, list_of_cols=[], new_col_name="_phrases"):
         """
         Extract noun phrases from text using the Textblob packages which uses the NLTK NLP engine.
 
@@ -361,13 +417,20 @@ class Feature(MethodBase):
         Feature:
             Returns a deep copy of the Feature object.
         """
-        
-        report_info = technique_reason_repo['feature']['text']['spacy_np']
+
+        report_info = technique_reason_repo["feature"]["text"]["spacy_np"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = spacy_feature_noun_phrases(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, new_col_name=new_col_name)
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = spacy_feature_noun_phrases(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            new_col_name=new_col_name,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
@@ -403,23 +466,27 @@ class Feature(MethodBase):
             Returns a deep copy of the Feature object.
         """
 
-        report_info = technique_reason_repo['feature']['numeric']['poly']
+        report_info = technique_reason_repo["feature"]["numeric"]["poly"]
 
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = polynomial_features(x_train=self._data_properties.x_train,
-                                                                                            x_test=self._data_properties.x_test,
-                                                                                            list_of_cols=list_of_cols,
-                                                                                            **poly_kwargs,
-                                                                                            )
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = polynomial_features(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            **poly_kwargs,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
-    def apply(self, func, output_col: str, description=''):
+    def apply(self, func, output_col: str, description=""):
         """
         Calls pandas apply function. Will apply the function to your dataset, or
         both your training and testing dataset.
@@ -452,12 +519,14 @@ class Feature(MethodBase):
             1     0     2     0     0  
             2     1     0     1     1
         """
-        
-        self._data_properties.x_train, self._data_properties.x_test = apply(x_train=self._data_properties.x_train,
-                                                                            func=func,
-                                                                            output_col=output_col,
-                                                                            x_test=self._data_properties.x_test)
-    
+
+        self._data_properties.x_train, self._data_properties.x_test = apply(
+            x_train=self._data_properties.x_train,
+            func=func,
+            output_col=output_col,
+            x_test=self._data_properties.x_test,
+        )
+
         if self.report is not None:
             self.report.log("Added feature {}. {}".format(output_col, description))
 
@@ -484,13 +553,16 @@ class Feature(MethodBase):
         Feature
             Copy of feature object
         """
-    
-        report_info = technique_reason_repo['preprocess']['categorical']['label_encode']
+
+        report_info = technique_reason_repo["preprocess"]["categorical"]["label_encode"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self._data_properties.x_train, self._data_properties.x_test, _ = label_encoder(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols)
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
@@ -550,12 +622,34 @@ class Feature(MethodBase):
             Returns a deep copy of the Feature object.
         """
 
-        report_info = technique_reason_repo['feature']['general']['pca']
+        report_info = technique_reason_repo["feature"]["general"]["pca"]
 
-        self._data_properties.x_train, self._data_properties.x_test = pca(x_train=self._data_properties.x_train,
-                                                                                            x_test=self._data_properties.x_test,
-                                                                                            **pca_kwargs,
-                                                                                            )
+        if self._data_properties.target_field:
+            train_target_data = self._data_properties.x_train[self.target_field]
+            test_target_data = (
+                self._data_properties.x_test[self.target_field]
+                if self._data_properties.x_test is not None
+                else None
+            )
+            x_train = self._data_properties.x_train.drop(self.target_field, axis=1)
+            x_test = (
+                self._data_properties.x_test.drop(self.target_field, axis=1)
+                if self._data_properties.x_test is not None
+                else None
+            )
+        else:
+            x_train = self._data_properties.x_train
+            x_test = self._data_properties.x_test
+
+        self._data_properties.x_train, self._data_properties.x_test = pca(
+            x_train=x_train, x_test=x_test, **pca_kwargs,
+        )
+
+        if self._data_properties.target_field:
+            self._data_properties.x_train[self.target_field] = train_target_data
+            self._data_properties.x_test[self.target_field] = (
+                test_target_data if test_target_data is not None else None
+            )
 
         if self.report is not None:
             self.report.report_technique(report_info, [])

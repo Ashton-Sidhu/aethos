@@ -40,7 +40,7 @@ def polynomial_features(x_train, x_test=None, list_of_cols=[], **poly_kwargs):
     scaled_data = poly.fit_transform(x_train[list_of_cols])
     scaled_df = pd.DataFrame(scaled_data, columns=poly.get_feature_names())
     x_train = drop_replace_columns(x_train, list_of_cols, scaled_df)
-    
+
     if x_test is not None:
         scaled_x_test = poly.transform(x_test)
         scaled_test_df = pd.DataFrame(scaled_x_test, columns=poly.get_feature_names())

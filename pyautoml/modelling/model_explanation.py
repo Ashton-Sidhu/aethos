@@ -7,33 +7,38 @@ from pyautoml.modelling.constants import INTERPRET_EXPLAINERS
 
 
 class Shap(object):
-
     def __init__(self, model, x_train, x_test, y_test, learner: str):
 
         self.model = model
         self.x_train = x_train
         self.x_test = x_test
         self.y_test = y_test
-        
-        if learner == 'linear':
-            self.explainer = shap.LinearExplainer(self.model, self.x_train, feature_dependence='independent')
-        elif learner == 'tree':
-            self.explainer = shap.TreeExplainer(self.model)
-            self.shap_interaction_values = self.explainer.shap_interaction_values(self.x_test)
-        elif learner == 'kernel':
 
-            if hasattr(self.model, 'predict_proba'):
+        if learner == "linear":
+            self.explainer = shap.LinearExplainer(
+                self.model, self.x_train, feature_dependence="independent"
+            )
+        elif learner == "tree":
+            self.explainer = shap.TreeExplainer(self.model)
+            self.shap_interaction_values = self.explainer.shap_interaction_values(
+                self.x_test
+            )
+        elif learner == "kernel":
+
+            if hasattr(self.model, "predict_proba"):
                 func = self.model.predict_proba
             else:
                 func = self.model.predict
 
             self.explainer = shap.KernelExplainer(func, self.x_train)
         else:
-            raise ValueError('Learner: {} is not supported yet.'.format(learner))
-        
+            raise ValueError("Learner: {} is not supported yet.".format(learner))
+
         self.expected_value = self.explainer.expected_value
-        self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(float)
-        
+        self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(
+            float
+        )
+
         # Calculate misclassified values
         self.misclassified_values = self._calculate_misclassified()
 
@@ -45,7 +50,12 @@ class Shap(object):
         Plots a SHAP summary plot.
         """
 
-        shap.summary_plot(self.shap_values, self.x_test_array, feature_names=self.x_train.columns, **summaryplot_kwargs)
+        shap.summary_plot(
+            self.shap_values,
+            self.x_test_array,
+            feature_names=self.x_train.columns,
+            **summaryplot_kwargs
+        )
 
     def decision_plot(self, num_samples=0.25, sample_no=None, **decisionplot_kwargs):
         """
@@ -66,19 +76,21 @@ class Shap(object):
             If return_objects=True (the default). Returns None otherwise.
         """
 
-        return_objects = decisionplot_kwargs.pop('return_objects', True)
-        highlight = decisionplot_kwargs.pop('highlight', None)
+        return_objects = decisionplot_kwargs.pop("return_objects", True)
+        highlight = decisionplot_kwargs.pop("highlight", None)
 
         if sample_no is not None:
             if sample_no < 1 or not isinstance(sample_no, int):
-                raise ValueError('Sample number must be greater than 1.')
+                raise ValueError("Sample number must be greater than 1.")
 
             samples = slice(sample_no - 1, sample_no)
         else:
-            if num_samples == 'all':
+            if num_samples == "all":
                 samples = slice(0, len(self.x_test_array))
             elif num_samples <= 0:
-                raise ValueError('Number of samples must be greater than 0. If it is less than 1, it will be treated as a percentage.')
+                raise ValueError(
+                    "Number of samples must be greater than 0. If it is less than 1, it will be treated as a percentage."
+                )
             elif num_samples > 0 and num_samples < 1:
                 samples = slice(0, int(num_samples * len(self.x_test_array)))
             else:
@@ -87,33 +99,51 @@ class Shap(object):
         if highlight is not None:
             highlight = highlight[samples]
 
-        return shap.decision_plot(self.expected_value, self.shap_values[samples], self.x_train.columns, return_objects=return_objects, highlight=highlight, **decisionplot_kwargs) 
+        return shap.decision_plot(
+            self.expected_value,
+            self.shap_values[samples],
+            self.x_train.columns,
+            return_objects=return_objects,
+            highlight=highlight,
+            **decisionplot_kwargs
+        )
 
     def force_plot(self, sample_no=None, **forceplot_kwargs):
         """
         Plots a SHAP force plot.
         """
 
-        shap_values = forceplot_kwargs.pop('shap_values', self.shap_values)
+        shap_values = forceplot_kwargs.pop("shap_values", self.shap_values)
 
         if sample_no is not None:
             if sample_no < 1 or not isinstance(sample_no, int):
-                raise ValueError('Sample number must be greater than 1.')
+                raise ValueError("Sample number must be greater than 1.")
 
             samples = slice(sample_no - 1, sample_no)
         else:
             samples = slice(0, len(shap_values))
 
-        return shap.force_plot(self.expected_value, shap_values[samples], self.x_train.columns, **forceplot_kwargs)
+        return shap.force_plot(
+            self.expected_value,
+            shap_values[samples],
+            self.x_train.columns,
+            **forceplot_kwargs
+        )
 
     def dependence_plot(self, feature, interaction=None, **dependenceplot_kwargs):
         """
         Plots a SHAP dependence plot.
         """
 
-        interaction = dependenceplot_kwargs.pop('interaction_index', interaction)
+        interaction = dependenceplot_kwargs.pop("interaction_index", interaction)
 
-        shap.dependence_plot(feature, self.shap_values, self.x_test, interaction_index=interaction, **dependenceplot_kwargs)
+        shap.dependence_plot(
+            feature,
+            self.shap_values,
+            self.x_test,
+            interaction_index=interaction,
+            **dependenceplot_kwargs
+        )
 
     def _calculate_misclassified(self) -> list:
         """
@@ -126,7 +156,11 @@ class Shap(object):
         """
 
         if len(self.shap_values.shape) > 2:
-            y_pred = list(map(lambda x, y: x.sum(1) + y > 0 , self.shap_values, self.expected_value))
+            y_pred = list(
+                map(
+                    lambda x, y: x.sum(1) + y > 0, self.shap_values, self.expected_value
+                )
+            )
             misclassified = list(map(lambda x: x != self.y_test, y_pred))
         else:
             y_pred = (self.shap_values.sum(1) + self.expected_value) > 0
@@ -134,8 +168,8 @@ class Shap(object):
 
         return misclassified
 
-class MSFTInterpret(object):
 
+class MSFTInterpret(object):
     def __init__(self, model, x_train, x_test, y_test, problem):
 
         self.model = model
@@ -145,7 +179,7 @@ class MSFTInterpret(object):
         self.problem = problem
         self.trained_blackbox_explainers = {}
 
-    def blackbox_show_performance(self, method, predictions='default', show=True):
+    def blackbox_show_performance(self, method, predictions="default", show=True):
         """
         Plots an interpretable display of your model based off a performance metric.
 
@@ -170,16 +204,25 @@ class MSFTInterpret(object):
             Interpretable dashboard of your model
         """
 
-        if predictions == 'probability':
+        if predictions == "probability":
             predict_fn = self.model.predict_proba
         else:
             predict_fn = self.model.predict
 
-        if self.problem in INTERPRET_EXPLAINERS['problem']:
-            if method.lower() in INTERPRET_EXPLAINERS['problem'][self.problem]:
-                blackbox_perf = INTERPRET_EXPLAINERS['problem'][self.problem][method.lower()](predict_fn).explain_perf(self.x_test, self.y_test, name=method.upper())
+        if self.problem in INTERPRET_EXPLAINERS["problem"]:
+            if method.lower() in INTERPRET_EXPLAINERS["problem"][self.problem]:
+                blackbox_perf = INTERPRET_EXPLAINERS["problem"][self.problem][
+                    method.lower()
+                ](predict_fn).explain_perf(
+                    self.x_test, self.y_test, name=method.upper()
+                )
         else:
-            raise ValueError('Supported blackbox explainers are only {} for classification problems and {} for regression problems'.format(",".join(INTERPRET_EXPLAINERS['problem']['classification'].keys()), ",".join(INTERPRET_EXPLAINERS['problem']['regression'].keys())))
+            raise ValueError(
+                "Supported blackbox explainers are only {} for classification problems and {} for regression problems".format(
+                    ",".join(INTERPRET_EXPLAINERS["problem"]["classification"].keys()),
+                    ",".join(INTERPRET_EXPLAINERS["problem"]["regression"].keys()),
+                )
+            )
 
         if show:
             interpret.show(blackbox_perf)
@@ -188,7 +231,15 @@ class MSFTInterpret(object):
 
         return blackbox_perf
 
-    def blackbox_local_explanation(self, num_samples=0.25, sample_no=None, method='lime',  predictions='default', show=True, **kwargs):
+    def blackbox_local_explanation(
+        self,
+        num_samples=0.25,
+        sample_no=None,
+        method="lime",
+        predictions="default",
+        show=True,
+        **kwargs
+    ):
         """
         Plots an interpretable display that explains individual predictions of your model.
 
@@ -217,42 +268,50 @@ class MSFTInterpret(object):
         Interpret
             Interpretable dashboard of your model
         """
-        
-        if predictions == 'probability':
+
+        if predictions == "probability":
             predict_fn = self.model.predict_proba
         else:
             predict_fn = self.model.predict
 
         # Determine method
-        if method.lower() in INTERPRET_EXPLAINERS['local']:
-            if method.lower() == 'lime':
+        if method.lower() in INTERPRET_EXPLAINERS["local"]:
+            if method.lower() == "lime":
                 data = self.x_train
-            elif method.lower() == 'shap':
+            elif method.lower() == "shap":
                 data = np.median(self.x_train, axis=0).reshape(1, -1)
             else:
                 raise ValueError
 
-            explainer = INTERPRET_EXPLAINERS['local'][method.lower()](predict_fn=predict_fn, data=data, **kwargs)
+            explainer = INTERPRET_EXPLAINERS["local"][method.lower()](
+                predict_fn=predict_fn, data=data, **kwargs
+            )
 
         else:
-            raise ValueError('Supported blackbox local explainers are only "lime" and "shap".')
+            raise ValueError(
+                'Supported blackbox local explainers are only "lime" and "shap".'
+            )
 
         if sample_no is not None:
             if sample_no < 1 or not isinstance(sample_no, int):
-                raise ValueError('Sample number must be greater than 1.')
+                raise ValueError("Sample number must be greater than 1.")
 
             samples = slice(sample_no - 1, sample_no)
         else:
-            if num_samples == 'all':
+            if num_samples == "all":
                 samples = slice(0, len(self.x_test))
             elif num_samples <= 0:
-                raise ValueError('Number of samples must be greater than 0. If it is less than 1, it will be treated as a percentage.')
+                raise ValueError(
+                    "Number of samples must be greater than 0. If it is less than 1, it will be treated as a percentage."
+                )
             elif num_samples > 0 and num_samples < 1:
                 samples = slice(0, int(num_samples * len(self.x_test)))
             else:
                 samples = slice(0, num_samples)
 
-        explainer_local = explainer.explain_local(self.x_test[samples], self.y_test[samples], name=method.upper())
+        explainer_local = explainer.explain_local(
+            self.x_test[samples], self.y_test[samples], name=method.upper()
+        )
 
         self.trained_blackbox_explainers[method.lower()] = explainer_local
 
@@ -261,7 +320,9 @@ class MSFTInterpret(object):
 
         return explainer_local
 
-    def blackbox_global_explanation(self, method='morris', predictions='default', show=True, **kwargs):
+    def blackbox_global_explanation(
+        self, method="morris", predictions="default", show=True, **kwargs
+    ):
         """
         Provides an interpretable summary of your models behaviour based off an explainer.
 
@@ -284,16 +345,20 @@ class MSFTInterpret(object):
             Interpretable dashboard of your model
         """
 
-        if predictions == 'probability':
+        if predictions == "probability":
             predict_fn = self.model.predict_proba
         else:
             predict_fn = self.model.predict
 
-        if method.lower() in INTERPRET_EXPLAINERS['global']:
-            sensitivity = INTERPRET_EXPLAINERS['global'][method.lower()](predict_fn=predict_fn, data=self.x_train, **kwargs)
+        if method.lower() in INTERPRET_EXPLAINERS["global"]:
+            sensitivity = INTERPRET_EXPLAINERS["global"][method.lower()](
+                predict_fn=predict_fn, data=self.x_train, **kwargs
+            )
 
         else:
-            raise ValueError('Supported blackbox global explainers are only "morris" and partial "dependence".')
+            raise ValueError(
+                'Supported blackbox global explainers are only "morris" and partial "dependence".'
+            )
 
         sensitivity_global = sensitivity.explain_global(name=method.upper())
 
@@ -315,7 +380,7 @@ class MSFTInterpret(object):
 
         for explainer_type in INTERPRET_EXPLAINERS:
 
-            if explainer_type == 'problem':
+            if explainer_type == "problem":
                 temp_explainer_type = INTERPRET_EXPLAINERS[explainer_type][self.problem]
             else:
                 temp_explainer_type = INTERPRET_EXPLAINERS[explainer_type]
@@ -324,11 +389,21 @@ class MSFTInterpret(object):
                 if explainer in self.trained_blackbox_explainers:
                     dashboard_plots.append(self.trained_blackbox_explainers[explainer])
                 else:
-                    if explainer_type == 'problem':
-                        dashboard_plots.append(self.blackbox_show_performance(explainer, show=False))
-                    elif explainer_type == 'local':
-                        dashboard_plots.append(self.blackbox_local_explanation(method=explainer, show=False))
+                    if explainer_type == "problem":
+                        dashboard_plots.append(
+                            self.blackbox_show_performance(explainer, show=False)
+                        )
+                    elif explainer_type == "local":
+                        dashboard_plots.append(
+                            self.blackbox_local_explanation(
+                                method=explainer, show=False
+                            )
+                        )
                     else:
-                        dashboard_plots.append(self.blackbox_global_explanation(method=explainer, show=False))
+                        dashboard_plots.append(
+                            self.blackbox_global_explanation(
+                                method=explainer, show=False
+                            )
+                        )
 
         interpret.show(dashboard_plots)

@@ -5,8 +5,12 @@ from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _numeric_input_conditions, label_encoder)
+from pyautoml.util import (
+    _contructor_data_properties,
+    _input_columns,
+    _numeric_input_conditions,
+    label_encoder,
+)
 
 
 class Preprocess(MethodBase):
@@ -347,7 +351,10 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = nltk_word_tokenizer(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = nltk_word_tokenizer(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -394,7 +401,10 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = nltk_remove_stopwords(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = nltk_remove_stopwords(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -452,7 +462,10 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = remove_punctuation(
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = remove_punctuation(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,

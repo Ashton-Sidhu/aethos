@@ -6,54 +6,55 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-DATA_CHECKLIST = {    
-    'Convert files to .csv',
-    'Merge files',
-    'Fix encoding issues',
-    'Clean column names (english, no whitespace, no special chars)',
-    'Are there duplicate columns?',
-    'Fix datatypes (datetime, int, float, string)',
+DATA_CHECKLIST = {
+    "Convert files to .csv",
+    "Merge files",
+    "Fix encoding issues",
+    "Clean column names (english, no whitespace, no special chars)",
+    "Are there duplicate columns?",
+    "Fix datatypes (datetime, int, float, string)",
 }
 
 CLEANING_CHECKLIST = {
-    'Non-sensical observations/artifacts?',
-    'Coding of categorical features?',
-    'Missing values?',
-    'Outliers?',
-    'Constant values (=Zero Importance)?',
-    'Low importance features?',
-    'Collinear, correlated or otherwise dependent features?',
-    'Highly skewed features?',
-    'Irrelevant features?',
+    "Non-sensical observations/artifacts?",
+    "Coding of categorical features?",
+    "Missing values?",
+    "Outliers?",
+    "Constant values (=Zero Importance)?",
+    "Low importance features?",
+    "Collinear, correlated or otherwise dependent features?",
+    "Highly skewed features?",
+    "Irrelevant features?",
 }
 
 UNI_ANALYSIS_CHECKLIST = {
-    'Look at mean, median, min, max, std, iqr, quantiles (1%, 5%, 25%, 50%, 75%, 95%, 99%)',
-    'Draw boxplots, histograms',
+    "Look at mean, median, min, max, std, iqr, quantiles (1%, 5%, 25%, 50%, 75%, 95%, 99%)",
+    "Draw boxplots, histograms",
 }
 
 MULTI_ANALYSIS_CHECKLIST = {
-    'Draw scatter plots',
-    'Create correlation matrix',
+    "Draw scatter plots",
+    "Create correlation matrix",
 }
 
 ISSUES_CHECKLIST = {
-    'Impute missing values (mode, median, mean)',
-    'Remove variables that have too many missings',
-    'Remove observations that have too many missings',
-    'Select appropriate time slice',
+    "Impute missing values (mode, median, mean)",
+    "Remove variables that have too many missings",
+    "Remove observations that have too many missings",
+    "Select appropriate time slice",
 }
 
 PREPARATION_CHECKLIST = {
-    'Clip values that are too small/too large',
-    'Scale to [0,1] or normalize (mean=0, std=1) or Robust / Quantile Scaling',
-    'One-hot encoding, Label Encoding (0,1,2,3)',
-    'Create log-transformed versions for highly skewed variables',
-    'Create binned versions for variables',
-    'Combine categories for highly skewed categorical variables',
-    'Create sum/difference/product/quotient of variables',
-    'Create polynomial features',
+    "Clip values that are too small/too large",
+    "Scale to [0,1] or normalize (mean=0, std=1) or Robust / Quantile Scaling",
+    "One-hot encoding, Label Encoding (0,1,2,3)",
+    "Create log-transformed versions for highly skewed variables",
+    "Create binned versions for variables",
+    "Combine categories for highly skewed categorical variables",
+    "Create sum/difference/product/quotient of variables",
+    "Create polynomial features",
 }
+
 
 def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
     """
@@ -84,7 +85,7 @@ def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
 
     Returns 2 Dataframes x_test is provided.  
     """
-    
+
     label_encode = LabelEncoder()
     target_mapping = None
 
@@ -95,7 +96,9 @@ def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
             x_test[col] = label_encode.transform(x_test[col])
 
     if target:
-        target_mapping = dict(zip(x_train[list_of_cols], label_encode.inverse_transform(x_train[col])))
+        target_mapping = dict(
+            zip(x_train[list_of_cols], label_encode.inverse_transform(x_train[col]))
+        )
         target_mapping = OrderedDict(sorted(target_mapping.items()))
 
     return x_train, x_test, target_mapping
@@ -114,9 +117,10 @@ def check_missing_data(df) -> bool:
     -------
     bool
         True if data has missing values, False otherwise.
-    """   
-    
+    """
+
     return df.isnull().values.any()
+
 
 def get_keys_by_values(dict_of_elements: dict, item) -> list:
     """
@@ -169,6 +173,7 @@ def drop_replace_columns(df, drop_cols, new_data, keep_col=False):
 
     return df
 
+
 def split_data(df, split_percentage: float):
     """
     Function that splits the data into a training and testing set. Split percentage is passed in through
@@ -186,11 +191,12 @@ def split_data(df, split_percentage: float):
     -------
     Dataframe, Dataframe
         Train data and test data.
-    """    
+    """
 
     x_train, x_test = train_test_split(df, test_size=split_percentage)
 
     return x_train, x_test
+
 
 def _numeric_input_conditions(list_of_cols: list, x_train) -> list:
     """
@@ -207,6 +213,7 @@ def _numeric_input_conditions(list_of_cols: list, x_train) -> list:
         list_of_cols = x_train.select_dtypes([np.number]).columns.tolist()
 
     return list_of_cols
+
 
 def _get_columns(list_of_cols, x_train) -> list:
     """
@@ -234,6 +241,7 @@ def _get_columns(list_of_cols, x_train) -> list:
 
     return list_of_cols
 
+
 def _input_columns(list_args: list, list_of_cols: list):
     """
     Takes columns inputted as arguments vs. columns passed as a list
@@ -256,9 +264,10 @@ def _input_columns(list_args: list, list_of_cols: list):
     if list_of_cols or (not list_of_cols and not list_args):
         column_list = list_of_cols
     else:
-        column_list = list(list_args)  
+        column_list = list(list_args)
 
     return column_list
+
 
 def _contructor_data_properties(step_obj):
     """
@@ -284,6 +293,7 @@ def _contructor_data_properties(step_obj):
         except:
             return step_obj
 
+
 def _validate_model_name(model_obj, model_name: str) -> bool:
     """
     Validates the inputted model name. If the object already has an
@@ -308,7 +318,10 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
 
     return True
 
-def _set_item(x_train, x_test, column: str, value: list, train_length: int, test_length: int):
+
+def _set_item(
+    x_train, x_test, column: str, value: list, train_length: int, test_length: int
+):
     """
     Utility function for __setitem__ for determining which input is for which dataset
     and then sets the input to the new column for the correct dataset.

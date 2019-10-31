@@ -5,6 +5,7 @@ pca
 apply
 """
 
+import pandas as pd
 from sklearn.decomposition import PCA
 
 
@@ -33,12 +34,13 @@ def pca(x_train, x_test=None, **pca_kwargs):
 
     pca = PCA(**pca_kwargs)
 
-    x_train = pca.fit_transform(x_train)
+    x_train = pd.DataFrame(pca.fit_transform(x_train))
 
     if x_test is not None:
-        x_test = pca.transform(x_test)
+        x_test = pd.DataFrame(pca.transform(x_test))
 
     return x_train, x_test
+
 
 def apply(x_train, func, output_col: str, x_test=None):
     """
