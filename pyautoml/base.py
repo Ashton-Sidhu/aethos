@@ -921,17 +921,21 @@ class MethodBase(object):
         
         barplot(x_col, list(cols), self._data_properties.x_train, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
 
-    def visualize_scatterplot(self, x_col: str, y_col: str, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
+    def visualize_scatterplot(self, x_col: str, y_col: str, z_col=None, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
         """
         Plots a scatterplot for the given x and y columns provided using Bokeh.
 
-        For a list of possible scatterplot_kwargs please check out the following links:
+        For a list of possible scatterplot_kwargs for 2 dimensional data please check out the following links:
 
         https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.scatter
 
         https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#userguide-styling-line-properties 
 
         https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#userguide-styling-fill-properties 
+
+        For more information on key word arguments for 3d data, please check them out here:
+
+        https://www.plotly.express/plotly_express/#plotly_express.scatter_3d
         
         Parameters
         ----------
@@ -940,6 +944,9 @@ class MethodBase(object):
 
         y_col : str
             Y column name
+
+        z_col : str
+            Z column name, 
 
         category : str, optional
             Category to group your data, by default None
@@ -951,12 +958,6 @@ class MethodBase(object):
             Size of the circle, can either be a number
             or a column name to scale the size, by default 8
 
-        fill_color : color value, optional
-            Colour or Colour palette to set fill colour
-
-        line_color : color value, optional
-            Colour or Colour palette to set line colour
-
         output_file : str, optional
             Output html file name for image
 
@@ -964,7 +965,7 @@ class MethodBase(object):
             See above links for list of possible scatterplot options.
         """
 
-        scatterplot(x_col, y_col, self._data_properties.x_train, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
+        scatterplot(x_col, y_col, z=z_col, data=self._data_properties.x_train, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
 
     def visualize_lineplot(self, x_col: str, *y_cols, title='Line Plot', output_file='', **lineplot_kwargs):
         """

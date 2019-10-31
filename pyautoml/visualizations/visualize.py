@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pandas_bokeh
 import ptitprince as pt
+import plotly.express as px
 
 
 def raincloud(col: str, target_col: str, data, **params):
@@ -102,7 +103,7 @@ def barplot(x, y, data, groupby=None, method=None, orient='v', stacked=False, ou
         pandas_bokeh.output_file(output_file)
         pandas_bokeh.save(p_bar)
 
-def scatterplot(x: str, y: str, data, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
+def scatterplot(x: str, y: str, z=None, data=None, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
     """
     Plots a scatter plot.
     
@@ -113,6 +114,9 @@ def scatterplot(x: str, y: str, data, category=None, title='Scatter Plot', size=
 
     y : str
         Y axis column
+
+    z: str
+        Z axis column
 
     data : Dataframe
         Dataframe
@@ -131,22 +135,29 @@ def scatterplot(x: str, y: str, data, category=None, title='Scatter Plot', size=
         If a name is provided save the plot to an html file, by default ''
     """
 
-    fill_alpha = scatterplot_kwargs.pop('fill_alpha', 0.6)
-    data[[x, y]] = data[[x, y]].apply(pd.to_numeric)
+    if z is None:
+        fill_alpha = scatterplot_kwargs.pop('fill_alpha', 0.6)
+        data[[x, y]] = data[[x, y]].apply(pd.to_numeric)
 
-    p_scatter = data.plot_bokeh.scatter(
-        x=x,
-        y=y,
-        category=category,
-        title=title,
-        size=size,
-        fill_alpha=fill_alpha,
-        **scatterplot_kwargs,
-    )
+        p_scatter = data.plot_bokeh.scatter(
+            x=x,
+            y=y,
+            category=category,
+            title=title,
+            size=size,
+            fill_alpha=fill_alpha,
+            **scatterplot_kwargs,
+        )
 
-    if output_file:
-        pandas_bokeh.output_file(output_file)
-        pandas_bokeh.save(p_scatter)
+        if output_file:
+            pandas_bokeh.output_file(output_file)
+            pandas_bokeh.save(p_scatter)
+
+    else:
+
+        fig = px.scatter_3d(data, x=x, y=y, z=z, **scatterplot_kwargs)
+
+        fig.show()
 
 def lineplot(x: str, y: list, data, title='Line Plot', output_file='', **lineplot_kwargs):
     """

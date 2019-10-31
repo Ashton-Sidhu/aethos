@@ -17,6 +17,7 @@ from bokeh.plotting import figure, output_file
 from pyautoml.modelling.constants import (INTERPRET_EXPLAINERS,
                                                 PROBLEM_TYPE, SHAP_LEARNERS, CLASS_METRICS_DESC, REG_METRICS_DESC)
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
+from pyautoml.feature_engineering.util import pca
 from pyautoml.visualizations.visualize import *
 
 
@@ -533,6 +534,19 @@ class UnsupervisedModel(ModelBase):
             return self.x_train_results[self.x_train_results[self.cluster_col] == cluster_no]
         else:
             return self.x_test_results[self.x_test_results[self.cluster_col] == cluster_no]
+
+    def plot_clusters(self, dim=2, reduce='pca'):
+
+        if dim != 2 or dim != 3:
+            raise ValueError('Dimension must be either 2d (2) or 3d (3)')
+
+        if dim == 2:
+
+            scatterplot()
+        
+        else:
+            
+            scatterplot()
 
 class ClassificationModel(ModelBase):
 
