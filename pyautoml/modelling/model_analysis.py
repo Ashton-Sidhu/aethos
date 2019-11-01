@@ -663,7 +663,7 @@ class UnsupervisedModel(ModelBase):
         reduced_df.columns = list(map(str, reduced_df.columns))
 
         if dim == 2:
-            scatterplot("0", "1", data=reduced_df, **kwargs)
+            scatterplot("0", "1", data=reduced_df, color=reduced_df[self.cluster_col].tolist(), **kwargs)
         else:
             scatterplot(
                 "0", "1", "2", data=reduced_df, color=self.cluster_col, **kwargs
