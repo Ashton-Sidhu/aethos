@@ -32,8 +32,6 @@ class ModelBase(object):
         self.model_name = model_name
         self.x_train = model_object._data_properties.x_train
         self.x_test = model_object._data_properties.x_test
-        self.x_train_results = model_object._train_result_data
-        self.x_test_results = model_object._test_result_data
         self.report = model_object._data_properties.report
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
@@ -599,10 +597,10 @@ class UnsupervisedModel(ModelBase):
 
         self.cluster_col = cluster_col
 
-        self.x_train[self.cluster_col] = self.x_train_results[self.cluster_col]
+        self.x_train[self.cluster_col] = model_object.x_train_results[self.cluster_col]
 
         if self.x_test is not None:
-            self.x_test[self.cluster_col] = self.x_test_results[self.cluster_col]
+            self.x_test[self.cluster_col] = model_object.x_test_results[self.cluster_col]
 
     def filter_cluster(self, cluster_no: int):
         """
@@ -688,9 +686,9 @@ class ClassificationModel(ModelBase):
         self.target_mapping = model_object.target_mapping
 
         self.y_pred = (
-            self.x_train_results[predictions_col]
+            model_object.x_train_results[predictions_col]
             if self.x_test is None
-            else self.x_test_results[predictions_col]
+            else model_object.x_test_results[predictions_col]
         )
 
         if self.report:
@@ -1248,9 +1246,9 @@ class RegressionModel(ModelBase):
         super().__init__(model_object, model, model_name)
 
         self.y_pred = (
-            self.x_train_results[predictions_col]
+            model_object.x_train_results[predictions_col]
             if self.x_test is None
-            else self.x_test_results[predictions_col]
+            else model_object.x_test_results[predictions_col]
         )
 
         if self.report:
