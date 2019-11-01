@@ -9,25 +9,16 @@ import yaml
 from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
+
 import ipywidgets as widgets
-from ipywidgets import Layout
-
 import pyautoml
+from ipywidgets import Layout
 from pyautoml.data.data import Data
-from pyautoml.util import (
-    _get_columns,
-    _set_item,
-    label_encoder,
-    split_data,
-    DATA_CHECKLIST,
-    CLEANING_CHECKLIST,
-    UNI_ANALYSIS_CHECKLIST,
-    MULTI_ANALYSIS_CHECKLIST,
-    ISSUES_CHECKLIST,
-    PREPARATION_CHECKLIST,
-)
+from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
+                           ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
+                           PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
+                           _get_columns, _set_item, label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
-
 
 # TODO: Move to a config file
 
@@ -229,7 +220,7 @@ class MethodBase(object):
         """
 
         if self.target_field:
-            self._data_properties.y_train = value
+            self._data_properties.x_train[self.target_field] = value
         else:
             self._data_properties.target_field = 'label'
             self._data_properties.x_train['label'] = value
