@@ -99,17 +99,9 @@ class Model(MethodBase):
         if self._data_properties.target_field:
             if split:
                 if isinstance(step, Model):
-                    self._y_train = step._y_train
-                    self._y_test = step._y_test
                     self._data_properties.x_train = step._data_properties.x_train
                     self._data_properties.x_test = step._data_properties.x_test
                 else:
-                    self._y_train = self._data_properties.x_train[
-                        self._data_properties.target_field
-                    ]
-                    self._y_test = self._data_properties.x_test[
-                        self._data_properties.target_field
-                    ]
                     self._data_properties.x_train = self._data_properties.x_train.drop(
                         [self._data_properties.target_field], axis=1
                     )
@@ -118,12 +110,8 @@ class Model(MethodBase):
                     )
             else:
                 if isinstance(step, Model):
-                    self._y_train = step._y_train
                     self._data_properties.x_train = step._data_properties.x_train
                 else:
-                    self._y_train = self._data_properties.x_train[
-                        self._data_properties.target_field
-                    ]
                     self._data_properties.x_train = self._data_properties.x_train.drop(
                         [self._data_properties.target_field], axis=1
                     )
@@ -232,41 +220,6 @@ class Model(MethodBase):
             return ""
         else:
             return str(self._train_result_data.head())
-
-    @property
-    def y_train(self):
-        """
-        Property function for the training target data.
-        """
-
-        return self._y_train
-
-    @y_train.setter
-    def y_train(self, value):
-        """
-        Setter function for the training target data.
-        """
-
-        self._y_train = value
-
-    @property
-    def y_test(self):
-        """
-        Property function for the test target data.
-        """
-
-        try:
-            return self._y_test
-        except Exception as e:
-            return None
-
-    @y_test.setter
-    def y_test(self, value):
-        """
-        Setter for the test target data.
-        """
-
-        self._y_test = value
 
     @property
     def x_train_results(self):
@@ -926,6 +879,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -1040,6 +994,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -1160,6 +1115,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -1283,6 +1239,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -1412,6 +1369,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -1528,6 +1486,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -1684,6 +1643,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -1799,6 +1759,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -1918,6 +1879,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -2095,6 +2057,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -2208,6 +2171,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -2336,6 +2300,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -2511,6 +2476,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -2679,6 +2645,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -2791,6 +2758,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -2892,6 +2860,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -3000,6 +2969,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -3172,6 +3142,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -3316,6 +3287,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -3464,6 +3436,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -3630,7 +3603,7 @@ class Model(MethodBase):
         random_state = kwargs.pop("random_state", 42)
         objective = kwargs.pop(
             "objective",
-            "binary:logistic" if len(self._y_train.unique()) == 2 else "multi:softprob",
+            "binary:logistic" if len(self.y_train.unique()) == 2 else "multi:softprob",
         )
         report_info = technique_reason_repo["model"]["classification"]["xgb_cls"]
 
@@ -3648,6 +3621,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -3748,6 +3722,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -3866,6 +3841,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -3996,6 +3972,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -4121,6 +4098,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -4233,6 +4211,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -4417,6 +4396,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -4526,6 +4506,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -4647,6 +4628,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -4822,6 +4804,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -4972,6 +4955,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -5127,6 +5111,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -5251,6 +5236,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -5380,6 +5366,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             **kwargs
         )
@@ -5550,6 +5537,7 @@ class Model(MethodBase):
             gridsearch=gridsearch,
             score=score,
             learning_curve=learning_curve,
+            run=run,
             verbose=verbose,
             random_state=random_state,
             **kwargs
@@ -5585,7 +5573,7 @@ class Model(MethodBase):
             cv_scores = run_crossvalidation(
                 model,
                 self._data_properties.x_train,
-                self._y_train,
+                self.y_train,
                 cv=cv,
                 scoring=score,
                 learning_curve=learning_curve,
@@ -5600,7 +5588,7 @@ class Model(MethodBase):
             model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
         # Train a model and predict on the test test.
-        model.fit(self._data_properties.x_train, self._y_train)
+        model.fit(self._data_properties.x_train, self.y_train)
 
         self._train_result_data[new_col_name] = model.predict(
             self._data_properties.x_train
@@ -5651,7 +5639,7 @@ class Model(MethodBase):
             cv_scores = run_crossvalidation(
                 model,
                 self._data_properties.x_train,
-                self._y_train,
+                self.y_train,
                 cv=cv,
                 scoring=score,
                 learning_curve=learning_curve,
@@ -5665,9 +5653,18 @@ class Model(MethodBase):
             cv = cv if cv else 5
             model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
-        self._train_result_data[new_col_name] = model.fit_predict(
-            self._data_properties.x_train
-        )
+        if hasattr(model, "predict"):
+            model.fit(
+                self._data_properties.x_train
+            ) 
+
+            self._train_result_data[new_col_name] = model.predict(
+                self._data_properties.x_train
+            )
+        else:
+            self._train_result_data[new_col_name] = model.fit_predict(
+                self._data_properties.x_train
+            )
 
         if self._data_properties.x_test is not None:
             if hasattr(model, "predict"):

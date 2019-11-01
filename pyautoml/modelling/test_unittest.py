@@ -190,7 +190,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field="col3", report_name="gridsearch_test")
 
-        gridsearch_params = {"k": [1, 2]}
+        gridsearch_params = {"max_iter": [300, 200]}
         model.kmeans(gridsearch=gridsearch_params, cv=2, run=True)
 
         self.assertTrue(True)

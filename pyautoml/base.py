@@ -70,6 +70,17 @@ class MethodBase(object):
             self._data_properties.x_train.reset_index(drop=True, inplace=True)
             self._data_properties.x_test.reset_index(drop=True, inplace=True)
 
+        # if target_field:
+        #     self.y_train = self._data_properties.x_train[target_field]
+
+        #     if self._data_properties.x_test is not None:
+        #         self.y_test = self._data_properties.x_test[target_field]
+        #     else:
+        #         self.y_test = None
+        # else:
+        #     self.y_train = None
+        #     self.y_test = None
+
         if self._data_properties.report is None:
             self.report = None
         else:
@@ -202,6 +213,49 @@ class MethodBase(object):
         """
 
         self._data_properties.x_test = value
+
+    @property
+    def y_train(self):
+        """
+        Property function for the training predictor variable
+        """
+
+        return self._data_properties.y_train
+
+    @y_train.setter
+    def y_train(self, value):
+        """
+        Setter function for the training predictor variable
+        """
+
+        if self.target_field:
+            self._data_properties.y_train = value
+        else:
+            self._data_properties.target_field = 'label'
+            self._data_properties.x_train['label'] = value
+            print('Added a target (predictor) field (column) named "label".')
+
+    @property
+    def y_test(self):
+        """
+        Property function for the testing predictor variable
+        """
+
+        return self._data_properties.y_test
+
+    @y_test.setter
+    def y_test(self, value):
+        """
+        Setter function for the testing predictor variable
+        """
+
+        if self._data_properties.x_test is not None:
+            if self.target_field:
+                self._data_properties.x_test[self.target_field] = value
+            else:
+                self._data_properties.target_field = 'label'
+                self._data_properties.x_test['label'] = value
+                print('Added a target (predictor) field (column) named "label".')           
 
     @property
     def target_field(self):
