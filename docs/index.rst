@@ -1,7 +1,7 @@
 
 *"A collection of tools for Data Scientists and ML Engineers for them to focus less on how to do the analysis and instead worry about what are the best analytic tools that will help gain the most insights from their data."*
 
-Welcome to PyAutoMl's documentation!
+Welcome to PyAutoML's documentation!
 ====================================
 Py-automl is a library/platform that automates your data science and analytical tasks at any stage in the pipeline. Py-automl is, at its core, a wrapper that helps automate analytical techniques from various libaries such as pandas, sci-kit learn, gensim, etc. and tries to the bridge the gap 
 
@@ -155,7 +155,7 @@ For preprocessing docmentation click `here <https://py-automl.readthedocs.io/en/
 Feature Engineering Methods
 ===========================
 
-For feature engineering docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.feature_engineering.html#module-pyautoml.feature_engineering/>`_.
+For feature engineering docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.feature_engineering.html/>`_.
 
 Modelling Methods
 =================
@@ -165,7 +165,7 @@ For modelling docmentation click `here <https://py-automl.readthedocs.io/en/late
 Model Analysis Methods
 ======================
 
-For modelling analysis documentation click `here <>
+For modelling analysis documentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.modelling.html#module-pyautoml.modelling.model_analysis/>`_.
 
 Examples
 ========
