@@ -1,5 +1,5 @@
-pyautoml.Model package
-=========================
+Modelling package
+===================
 
 Models
 -------

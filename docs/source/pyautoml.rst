@@ -6,12 +6,12 @@ Subpackages
 
 .. toctree::
 
-   pyautoml.base
-   pyautoml.cleaning
-   pyautoml.preprocessing
-   pyautoml.feature_engineering
-   pyautoml.modelling
-   pyautoml.modelling.model_analysis
+    pyautoml.base
+    pyautoml.cleaning
+    pyautoml.preprocessing
+    pyautoml.feature_engineering
+    pyautoml.modelling
+    pyautoml.modelling.model_analysis
 
 pyautoml module
 --------------------
