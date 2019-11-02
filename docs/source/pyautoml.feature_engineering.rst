@@ -1,4 +1,4 @@
-pyautoml.Feature Engineering package
+Feature package
 =====================================
 
 Module contents

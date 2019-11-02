@@ -23,15 +23,6 @@ pyautoml.base module
    :undoc-members:
    :show-inheritance:
 
-pyautoml.util module
---------------------
-
-.. automodule:: pyautoml.util
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 Module contents
 ---------------
 

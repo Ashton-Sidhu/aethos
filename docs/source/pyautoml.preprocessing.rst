@@ -1,4 +1,4 @@
-pyautoml.Preprocessing package
+Preprocessing package
 ==============================
 
 Module contents

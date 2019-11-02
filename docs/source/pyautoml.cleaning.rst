@@ -1,4 +1,4 @@
-pyautoml.Clean package
+Clean package
 =========================
 
 Module contents

@@ -101,6 +101,7 @@ Modelling
 =========
 
 .. code:: python
+
     model = Model(feature) # To move onto modelling
 
     # Models can be run in various ways
@@ -124,7 +125,6 @@ Modelling
     model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
 
     model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
-    Load your data into pandas.
 
 In terms of speed, on the backend I am doing everything I can do to use vectorization to reduce processing and computation time (even when using .apply) and I am constantly trying to make speed improvements where possible.
 
