@@ -145,12 +145,7 @@ class ModelBase(object):
             Max number of bins, by default 20
 
         **summaryplot_kwargs
-            For more info see https://shap.readthedocs.io/en/latest/#plots
-        
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
+            For more info see https://shap.readthedocs.io/en/latest/#plots    
         """
 
         if self.shap is None:
@@ -273,11 +268,6 @@ class ModelBase(object):
         legend_location : str 
             Legend location. Any of "best", "upper right", "upper left", "lower left", "lower right", "right", "center left", "center right", "lower center", "upper center", "center".
     
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
-
         Returns
         -------
         DecisionPlotResult 
@@ -324,11 +314,6 @@ class ModelBase(object):
             Whether to use the default Javascript output, or the (less developed) matplotlib output. Using matplotlib
             can be helpful in scenarios where rendering Javascript/HTML is inconvenient. 
         
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
-
         Example
         --------
         Plot two decision plots using the same feature order and x-axis.
@@ -394,11 +379,6 @@ class ModelBase(object):
 
         cmap : str or matplotlib.colors.ColorMap 
             Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
-
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
         """
 
         if self.shap is None:
