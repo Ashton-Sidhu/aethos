@@ -9,6 +9,8 @@ Py-automl makes it easy to PoC, experiment and compare different techniques and 
 
 For more info such as features, development plan, status and vision checkout the `Py-automl github page <https://github.com/Ashton-Sidhu/py-automl/>`_.
 
+For full api documentation you can view it `here 
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
