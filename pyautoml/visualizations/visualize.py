@@ -122,7 +122,7 @@ def scatterplot(
     title="Scatter Plot",
     size=8,
     output_file="",
-    **scatterplot_kwargs,
+    **scatterplot_kwargs
 ):
     """
     Plots a scatter plot.
