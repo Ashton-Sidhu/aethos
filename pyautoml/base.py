@@ -34,7 +34,7 @@ SHELL = get_ipython().__class__.__name__
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
-with open("{}/technique_reasons.yml".format(pkg_directory), "r") as stream:
+with open(f"{pkg_directory}/technique_reasons.yml", "r") as stream:
     try:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
@@ -107,9 +107,7 @@ class MethodBase(object):
                 ## set raise a value error
                 if len(value) != x_train_length and len(value) != x_test_length:
                     raise ValueError(
-                        "Length of list: {} does not equal the number rows as the training set or test set.".format(
-                            str(len(value))
-                        )
+                        f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
                     )
 
                 self._data_properties.x_train, self._data_properties.x_test = _set_item(
@@ -125,9 +123,7 @@ class MethodBase(object):
                 for data in value:
                     if len(data) != x_train_length and len(data) != x_test_length:
                         raise ValueError(
-                            "Length of list: {} does not equal the number rows as the training set or test set.".format(
-                                str(len(data))
-                            )
+                            f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
                         )
 
                     (
@@ -781,9 +777,7 @@ class MethodBase(object):
             self._data_properties.x_test = self.x_test.drop(drop_columns, axis=1)
 
         if self.report is not None:
-            self.report.log(
-                "Dropped columns: {}. {}".format(", ".join(drop_columns), reason)
-            )
+            self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
 
         return self.copy()
 
@@ -1055,7 +1049,7 @@ class MethodBase(object):
         orient="v",
         stacked=False,
         output_file="",
-        **barplot_kwargs
+        **barplot_kwargs,
     ):
         """
         Plots a bar plot for the given columns provided using Bokeh.
@@ -1106,7 +1100,7 @@ class MethodBase(object):
             method=method,
             orient=orient,
             stacked=stacked,
-            **barplot_kwargs
+            **barplot_kwargs,
         )
 
     def visualize_scatterplot(
@@ -1118,7 +1112,7 @@ class MethodBase(object):
         title="Scatter Plot",
         size=8,
         output_file="",
-        **scatterplot_kwargs
+        **scatterplot_kwargs,
     ):
         """
         Plots a scatterplot for the given x and y columns provided using Bokeh.
@@ -1170,7 +1164,7 @@ class MethodBase(object):
             category=category,
             size=size,
             output_file=output_file,
-            **scatterplot_kwargs
+            **scatterplot_kwargs,
         )
 
     def visualize_lineplot(
@@ -1238,5 +1232,5 @@ class MethodBase(object):
             self._data_properties.x_train,
             title=title,
             output_file=output_file,
-            **lineplot_kwargs
+            **lineplot_kwargs,
         )

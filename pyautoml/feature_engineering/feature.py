@@ -527,7 +527,7 @@ class Feature(MethodBase):
         )
 
         if self.report is not None:
-            self.report.log("Added feature {}. {}".format(output_col, description))
+            self.report.log(f"Added feature {output_col}. {description}")
 
         return self.copy()
 

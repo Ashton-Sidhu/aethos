@@ -114,13 +114,14 @@ class Report:
         self.write_contents(log + "\n")
 
     def report_gridsearch(self, clf, verbose):
+        """
+        Logs gridsearch results.
+        """
 
-        content = "Tuning hyper-parameters:\n\n \
+        content = f"Tuning hyper-parameters:\n\n \
             Best parameters set found on training set:\n \
-                {}\n\n \
-            Grid scores on training set:\n\n".format(
-            str(clf.best_params_)
-        )
+                {clf.best_params_}\n\n \
+            Grid scores on training set:\n\n"
 
         self.write_contents("\n".join(map(str.lstrip, content.split("\n"))))
 
@@ -138,6 +139,9 @@ class Report:
             self.write_contents("\n")
 
     def report_classification_report(self, report):
+        """
+        Logs classification report results.
+        """
 
         self.write_contents("Detailed classification report:\n")
         self.write_contents("The model is trained on the full training set.")

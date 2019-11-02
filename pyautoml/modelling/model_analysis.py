@@ -155,7 +155,7 @@ class ModelBase(object):
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         self.shap.summary_plot(**summaryplot_kwargs)
@@ -165,7 +165,7 @@ class ModelBase(object):
         num_samples=0.6,
         sample_no=None,
         highlight_misclassified=False,
-        **decisionplot_kwargs
+        **decisionplot_kwargs,
     ):
         """
         Visualize model decisions using cumulative SHAP values.
@@ -293,7 +293,7 @@ class ModelBase(object):
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         if highlight_misclassified:
@@ -339,7 +339,7 @@ class ModelBase(object):
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         if misclassified:
@@ -403,7 +403,7 @@ class ModelBase(object):
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         self.shap.dependence_plot(feature, interaction, **dependenceplot_kwargs)
@@ -469,7 +469,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -487,7 +487,7 @@ class ModelBase(object):
         method="all",
         predictions="default",
         show=True,
-        **interpret_kwargs
+        **interpret_kwargs,
     ):
         """
         Plots an interpretable display that explains individual predictions of your model.
@@ -526,7 +526,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -539,7 +539,7 @@ class ModelBase(object):
                 method=method,
                 predictions=predictions,
                 show=show,
-                **interpret_kwargs
+                **interpret_kwargs,
             )
 
     def interpret_model_behavior(
@@ -573,7 +573,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -592,9 +592,6 @@ class TextModel(ModelBase):
 
 
 class UnsupervisedModel(ModelBase):
-
-    # TODO: Add scatterplot of clusters
-
     def __init__(self, model_object, model_name, model, cluster_col):
 
         super().__init__(model_object, model, model_name)
@@ -674,7 +671,7 @@ class UnsupervisedModel(ModelBase):
                 "1",
                 data=reduced_df,
                 color=reduced_df[self.cluster_col].tolist(),
-                **kwargs
+                **kwargs,
             )
         else:
             scatterplot(
@@ -704,9 +701,7 @@ class ClassificationModel(ModelBase):
         )
 
         if self.report:
-            self.report.write_header(
-                "Analyzing Model {}: ".format(self.model_name.upper())
-            )
+            self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
 
         if self.target_mapping is None:
             self.classes = [
@@ -1242,8 +1237,6 @@ class ClassificationModel(ModelBase):
 
 
 class RegressionModel(ModelBase):
-    # TODO: Summary statistics
-
     def __init__(self, model_object, model_name, model, predictions_col):
 
         self.y_train = model_object.y_train
@@ -1262,9 +1255,7 @@ class RegressionModel(ModelBase):
         )
 
         if self.report:
-            self.report.write_header(
-                "Analyzing Model {}: ".format(self.model_name.upper())
-            )
+            self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
 
         self.features = self.x_test.columns
 

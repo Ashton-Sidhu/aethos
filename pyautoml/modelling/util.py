@@ -68,7 +68,7 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
 
     if isinstance(gridsearch, dict):
         gridsearch_grid = gridsearch
-        print("Gridsearching with the following parameters: {}".format(gridsearch_grid))
+        print(f"Gridsearching with the following parameters: {gridsearch_grid}")
     else:
         raise ValueError("Invalid Gridsearch input.")
 

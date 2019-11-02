@@ -173,9 +173,7 @@ class Model(MethodBase):
                     ## set raise a value error
                     if len(value) != x_train_length and len(value) != x_test_length:
                         raise ValueError(
-                            "Length of list: {} does not equal the number rows as the training set or test set.".format(
-                                str(len(value))
-                            )
+                            f"Length of list: {len(value)} does not equal the number rows as the training set or test set."
                         )
 
                     self._train_result_data, self._test_result_data = _set_item(
@@ -191,9 +189,7 @@ class Model(MethodBase):
                     for data in value:
                         if len(data) != x_train_length and len(data) != x_test_length:
                             raise ValueError(
-                                "Length of list: {} does not equal the number rows as the training set or test set.".format(
-                                    str(len(data))
-                                )
+                                f"Length of list: {len(data)} does not equal the number rows as the training set or test set."
                             )
 
                         self._train_result_data, self._test_result_data = _set_item(
@@ -371,7 +367,7 @@ class Model(MethodBase):
         elif name in self._models:
             del self._models[name]
         else:
-            raise ValueError("Model {} does not exist".format(name))
+            raise ValueError(f"Model {name} does not exist")
 
         self.list_models()
 
@@ -418,7 +414,7 @@ class Model(MethodBase):
         new_col_name="_summarized",
         model_name="model_summarize_gensim",
         run=False,
-        **summarizer_kwargs
+        **summarizer_kwargs,
     ):
         """
         Summarize bodies of text using Gensim's Text Rank algorithm. Note that it uses a Text Rank variant as stated here:
@@ -467,7 +463,7 @@ class Model(MethodBase):
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
-            **summarizer_kwargs
+            **summarizer_kwargs,
         )
 
         if self.report is not None:
@@ -485,7 +481,7 @@ class Model(MethodBase):
         new_col_name="_extracted_keywords",
         model_name="model_extracted_keywords_gensim",
         run=False,
-        **keyword_kwargs
+        **keyword_kwargs,
     ):
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
@@ -544,7 +540,7 @@ class Model(MethodBase):
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
-            **keyword_kwargs
+            **keyword_kwargs,
         )
 
         if self.report is not None:
@@ -678,7 +674,7 @@ class Model(MethodBase):
             x_test=self._data_properties.x_test,
             prep=prep,
             col_name=col_name,
-            **kwargs
+            **kwargs,
         )
 
         if self.report is not None:
@@ -807,7 +803,7 @@ class Model(MethodBase):
             x_test=self._data_properties.x_test,
             prep=prep,
             col_name=col_name,
-            **kwargs
+            **kwargs,
         )
 
         if self.report is not None:
@@ -830,7 +826,7 @@ class Model(MethodBase):
         new_col_name="kmeans_clusters",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         K-means clustering is one of the simplest and popular unsupervised machine learning algorithms.
@@ -934,7 +930,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -950,7 +946,7 @@ class Model(MethodBase):
         new_col_name="dbscan_clusters",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Based on a set of points (let’s think in a bidimensional space as exemplified in the figure), 
@@ -1049,7 +1045,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -1065,7 +1061,7 @@ class Model(MethodBase):
         new_col_name="iso_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Isolation Forest Algorithm
@@ -1171,7 +1167,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -1187,7 +1183,7 @@ class Model(MethodBase):
         new_col_name="ocsvm_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a One Class SVM model.
@@ -1294,7 +1290,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -1310,7 +1306,7 @@ class Model(MethodBase):
         new_col_name="agglom_clusters",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Agglomerative Clustering Model
@@ -1424,7 +1420,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -1440,7 +1436,7 @@ class Model(MethodBase):
         new_col_name="mshift_clusters",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Mean Shift clustering algorithm.
@@ -1541,7 +1537,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -1557,7 +1553,7 @@ class Model(MethodBase):
         new_col_name="gm_clusters",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a GaussianMixture algorithm that implements the expectation-maximization algorithm for fitting mixture
@@ -1698,7 +1694,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -1717,7 +1713,7 @@ class Model(MethodBase):
         new_col_name="log_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a logistic regression model.
@@ -1815,7 +1811,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -1831,7 +1827,7 @@ class Model(MethodBase):
         new_col_name="ridge_cls_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Ridge Classification model.
@@ -1935,7 +1931,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -1951,7 +1947,7 @@ class Model(MethodBase):
         new_col_name="sgd_cls_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Linear classifier (SVM, logistic regression, a.o.) with SGD training.
@@ -2113,7 +2109,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -2129,7 +2125,7 @@ class Model(MethodBase):
         new_col_name="ada_cls_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains an AdaBoost classification model.
@@ -2227,7 +2223,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -2243,7 +2239,7 @@ class Model(MethodBase):
         new_col_name="bag_cls_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Bagging classification model.
@@ -2356,7 +2352,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -2372,7 +2368,7 @@ class Model(MethodBase):
         new_col_name="grad_cls_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Gradient Boosting classification model.
@@ -2532,7 +2528,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -2548,7 +2544,7 @@ class Model(MethodBase):
         new_col_name="rf_cls_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Random Forest classification model.
@@ -2701,7 +2697,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -2717,7 +2713,7 @@ class Model(MethodBase):
         new_col_name="bern_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Bernoulli Naive Bayes classification model.
@@ -2813,7 +2809,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -2829,7 +2825,7 @@ class Model(MethodBase):
         new_col_name="gauss_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Gaussian Naive Bayes classification model.
@@ -2915,7 +2911,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -2931,7 +2927,7 @@ class Model(MethodBase):
         new_col_name="multi_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Multinomial Naive Bayes classification model.
@@ -3024,7 +3020,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -3040,7 +3036,7 @@ class Model(MethodBase):
         new_col_name="dt_cls_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Decision Tree classification model.
@@ -3198,7 +3194,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -3214,7 +3210,7 @@ class Model(MethodBase):
         new_col_name="linsvc_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Linear Support Vector classification model.
@@ -3343,7 +3339,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -3359,7 +3355,7 @@ class Model(MethodBase):
         new_col_name="svc_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a C-Support Vector classification model.
@@ -3492,7 +3488,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -3508,7 +3504,7 @@ class Model(MethodBase):
         new_col_name="xgb_cls_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains an XGBoost Classification Model.
@@ -3677,7 +3673,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -3695,7 +3691,7 @@ class Model(MethodBase):
         new_col_name="linreg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Linear Regression.
@@ -3778,7 +3774,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -3794,7 +3790,7 @@ class Model(MethodBase):
         new_col_name="bayridge_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Bayesian Ridge Regression model.
@@ -3897,7 +3893,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -3913,7 +3909,7 @@ class Model(MethodBase):
         new_col_name="elastic_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Elastic Net regression with combined L1 and L2 priors as regularizer.
@@ -4028,7 +4024,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -4044,7 +4040,7 @@ class Model(MethodBase):
         new_col_name="lasso_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Lasso Regression Model trained with L1 prior as regularizer (aka the Lasso)
@@ -4154,7 +4150,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -4170,7 +4166,7 @@ class Model(MethodBase):
         new_col_name="ridge_reg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Ridge Regression model. 
@@ -4267,7 +4263,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -4283,7 +4279,7 @@ class Model(MethodBase):
         new_col_name="sgd_reg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a SGD Regression model. 
@@ -4452,7 +4448,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -4468,7 +4464,7 @@ class Model(MethodBase):
         new_col_name="ada_reg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains an AdaBoost Regression model.
@@ -4562,7 +4558,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -4578,7 +4574,7 @@ class Model(MethodBase):
         new_col_name="bag_reg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Bagging Regressor model.
@@ -4684,7 +4680,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -4700,7 +4696,7 @@ class Model(MethodBase):
         new_col_name="grad_reg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Gradient Boosting regression model.
@@ -4860,7 +4856,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -4876,7 +4872,7 @@ class Model(MethodBase):
         new_col_name="rf_reg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Random Forest Regression model.
@@ -5011,7 +5007,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -5027,7 +5023,7 @@ class Model(MethodBase):
         new_col_name="dt_reg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Decision Tree Regression model.
@@ -5167,7 +5163,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -5183,7 +5179,7 @@ class Model(MethodBase):
         new_col_name="linsvr_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains a Linear Support Vector Regression model.
@@ -5292,7 +5288,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -5308,7 +5304,7 @@ class Model(MethodBase):
         new_col_name="svr_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Epsilon-Support Vector Regression.
@@ -5421,7 +5417,7 @@ class Model(MethodBase):
             learning_curve=learning_curve,
             run=run,
             verbose=verbose,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -5437,7 +5433,7 @@ class Model(MethodBase):
         new_col_name="xgb_reg_predictions",
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Trains an XGBoost Regression Model.
@@ -5593,7 +5589,7 @@ class Model(MethodBase):
             run=run,
             verbose=verbose,
             random_state=random_state,
-            **kwargs
+            **kwargs,
         )
 
         return model
@@ -5613,7 +5609,7 @@ class Model(MethodBase):
         learning_curve=False,
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Helper function that generalizes model orchestration.
@@ -5679,7 +5675,7 @@ class Model(MethodBase):
         learning_curve=False,
         run=False,
         verbose=2,
-        **kwargs
+        **kwargs,
     ):
         """
         Helper function that generalizes model orchestration.
