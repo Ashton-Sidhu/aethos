@@ -18,6 +18,11 @@ Usage
 
 To start, we need to import the data science workflow stages as well as pandas.
 
+Before that, we can create a full data science folder structure by running `pyautoml create` from the command line and follow the command prompts.
+
+General Usage
+=============
+
 .. code:: python
 
     from pyautoml import Clean, Preprocess, Feature
@@ -52,6 +57,15 @@ To start, we need to import the data science workflow stages as well as pandas.
 
     clean.missing_data # View your missing data at anytime
 
+**NOTE:** One of the benefits of using ``pyautoml`` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
+
+**NOTE:** If you are providing a list or a Series and your data is split into train and test, the new column is created in the dataset that matches the length of the data provided. If the length of the data provided matches both train and test data it is added to both. To individually add new columns you can do the following:
+
+Cleaning
+========
+
+.. code:: python
+
     clean.checklist() # Will provide an iteractive checklist to keep track of your cleaning tasks
 
     clean.replace_missing_mostcommon('Fare', 'Embarked') # Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
@@ -70,12 +84,23 @@ To start, we need to import the data science workflow stages as well as pandas.
 
     clean.visualize_barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
 
+Preprocessing and Feature Engineering
+====================================
+
+.. code:: python
+
     prep = Preprocess(clean) # To move onto preprocessing
 
     feature = Feature(clean) # to move onto feature engineering
 
     feature.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode these columns and then drop the original columns
 
+**NOTE:** In pandas you'll often see ``df = df.method(...)`` or ``df.method(..., inplace=True)`` when transforming your data. Then depending on how you developed your analysis, when a mistake is made you either have to restart the kernel or reload your data entirely. In ``pyautoml`` most methods will change the data inplace (methods that have the keyword argument ``new_col_name`` will create a new column) without having to go ``df = df.method(...)``. To create a "checkpoint" that creates a copy of your current state just assign the method to a variable.
+
+Modelling
+=========
+
+.. code:: python
     model = Model(feature) # To move onto modelling
 
     # Models can be run in various ways
@@ -100,12 +125,6 @@ To start, we need to import the data science workflow stages as well as pandas.
 
     model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
     Load your data into pandas.
-
-**NOTE:** One of the benefits of using ``pyautoml`` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
-
-**NOTE:** If you are providing a list or a Series and your data is split into train and test, the new column is created in the dataset that matches the length of the data provided. If the length of the data provided matches both train and test data it is added to both. To individually add new columns you can do the following:
-
-**NOTE:** In pandas you'll often see ``df = df.method(...)`` or ``df.method(..., inplace=True)`` when transforming your data. Then depending on how you developed your analysis, when a mistake is made you either have to restart the kernel or reload your data entirely. In ``pyautoml`` most methods will change the data inplace (methods that have the keyword argument ``new_col_name`` will create a new column) without having to go ``df = df.method(...)``. To create a "checkpoint" that creates a copy of your current state just assign the method to a variable, for example:
 
 In terms of speed, on the backend I am doing everything I can do to use vectorization to reduce processing and computation time (even when using .apply) and I am constantly trying to make speed improvements where possible.
 

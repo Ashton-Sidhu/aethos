@@ -52,6 +52,8 @@ To start, we need to import the data science workflow stages as well as pandas.
 
 Before that, we can create a full data science folder structure by running `pyautoml create` from the command line and follow the command prompts.
 
+#### General Use
+
 ```python
 from pyautoml import Clean, Preprocess, Feature
 import pandas as pd
@@ -86,7 +88,11 @@ clean.describe_column('Fare') # Get indepth statistics about the 'Fare' column
 clean.missing_data # View your missing data at anytime
 
 clean.checklist() # Will provide an iteractive checklist to keep track of your cleaning tasks
+```
 
+#### Cleaning 
+
+```python
 clean.replace_missing_mostcommon('Fare', 'Embarked') # Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
 
 rep_mcommon = clean.replace_missing_mostcommon('Fare', 'Embarked') # To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
@@ -100,7 +106,11 @@ clean.drop('Cabin') # Drop the cabin column
 # Columns can also be dropped by defining the columns you want to keep (drop all columns except the ones you want to keep) or by passing in a regex expressions and all columns that match the regex expression will be dropped.
 
 # As you've started to notice, alot of tasks to clean the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation).
+```
 
+#### Preprocessing and Feature Engineering
+
+```python
 clean.visualize_barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
 
 prep = Preprocess(clean) # To move onto preprocessing
@@ -108,7 +118,11 @@ prep = Preprocess(clean) # To move onto preprocessing
 feature = Feature(clean) # to move onto feature engineering
 
 feature.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode these columns and then drop the original columns
+```
 
+#### Modelling
+
+```python
 model = Model(feature) # To move onto modelling
 
 # Models can be run in various ways
