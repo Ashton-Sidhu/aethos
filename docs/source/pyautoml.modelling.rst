@@ -8,3 +8,11 @@ Models
    :members:
    :undoc-members:
    :show-inheritance:
+
+Model Analysis
+--------------
+
+.. automodule:: pyautoml.modelling.model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:

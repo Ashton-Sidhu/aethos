@@ -9,7 +9,7 @@ Py-automl makes it easy to PoC, experiment and compare different techniques and 
 
 For more info such as features, development plan, status and vision checkout the `Py-automl github page <https://github.com/Ashton-Sidhu/py-automl/>`_.
 
-For full api documentation you can view it `here 
+For full api documentation you can view it `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#/>`_.
 
 .. toctree::
    :maxdepth: 2
@@ -144,28 +144,28 @@ General Methods and Visualizations
 
 For general methods and visualization docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#module-pyautoml.base/>`_.
 
-Cleaning Methods
-================
+Cleaning API
+============
 
 For cleaning docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.cleaning.html#module-contents/>`_.
 
-Preprocessing Methods
-=====================
+Preprocessing API
+=================
 
 For preprocessing docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.preprocessing.html#module-pyautoml.preprocessing/>`_.
 
-Feature Engineering Methods
-===========================
+Feature Engineering API
+=======================
 
-For feature engineering docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.feature_engineering.html/>`_.
+For feature engineering docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.feature_engineering.html#module-pyautoml.feature_engineering/>`_.
 
-Modelling Methods
-=================
+Modelling API
+=============
 
 For modelling docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.modelling.html#module-pyautoml.modelling/>`_.
 
-Model Analysis Methods
-======================
+Model Analysis API
+==================
 
 For modelling analysis documentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.modelling.html#module-pyautoml.modelling.model_analysis/>`_.
 
