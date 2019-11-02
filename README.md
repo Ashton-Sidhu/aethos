@@ -139,9 +139,10 @@ model.xgboost_classification() # Adds an xgboost classification model to the que
 model.run_models() # This will run all queued models in parallel
 model.run_models(method='series') # Run each model one after the other
 
-model.compare_models() # This will display each model evaluated against every metric on the test set
+model.compare_models() # This will display each model evaluated against every metric
 
-# Every model is accessed by a unique name that is assiged when you run the model. Default model names can be seen in the function header of each model. 
+# Every model is accessed by a unique name that is assiged when you run the model.
+# Default model names can be seen in the function header of each model.
 
 model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
 
@@ -163,7 +164,7 @@ model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random for
 - Model Evaluation
 - Model Deployment *
 - Spark Integration *
-- Data visualizations *
+- Data visualizations
 - On prem deployment *
 - 3rd Party application integration (Azure, AWS, GC) *
 
