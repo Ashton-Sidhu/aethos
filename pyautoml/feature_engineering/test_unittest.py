@@ -151,7 +151,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = np.arange(6).reshape(3, 2)
 
-        data = pd.DataFrame(data=data, columns=["col1", "col2",])
+        data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
         feature = Feature(x_train=data, test_split_percentage=0.33)
         feature.polynomial_features()
@@ -224,7 +224,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = np.arange(6).reshape(3, 2)
 
-        data = pd.DataFrame(data=data, columns=["col1", "col2",])
+        data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
         feature = Feature(x_train=data, test_split_percentage=0.33)
         feature.pca(n_components=2)

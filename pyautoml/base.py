@@ -14,10 +14,18 @@ import ipywidgets as widgets
 import pyautoml
 from ipywidgets import Layout
 from pyautoml.data.data import Data
-from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
-                           ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
-                           PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
-                           _get_columns, _set_item, label_encoder, split_data)
+from pyautoml.util import (
+    CLEANING_CHECKLIST,
+    DATA_CHECKLIST,
+    ISSUES_CHECKLIST,
+    MULTI_ANALYSIS_CHECKLIST,
+    PREPARATION_CHECKLIST,
+    UNI_ANALYSIS_CHECKLIST,
+    _get_columns,
+    _set_item,
+    label_encoder,
+    split_data,
+)
 from pyautoml.visualizations.visualize import *
 
 # TODO: Move to a config file
@@ -200,7 +208,11 @@ class MethodBase(object):
         Property function for the training predictor variable
         """
 
-        return self._data_properties.x_train[self._data_properties.target_field] if self._data_properties.target_field else None
+        return (
+            self._data_properties.x_train[self._data_properties.target_field]
+            if self._data_properties.target_field
+            else None
+        )
 
     @y_train.setter
     def y_train(self, value):
@@ -211,8 +223,8 @@ class MethodBase(object):
         if self.target_field:
             self._data_properties.x_train[self.target_field] = value
         else:
-            self._data_properties.target_field = 'label'
-            self._data_properties.x_train['label'] = value
+            self._data_properties.target_field = "label"
+            self._data_properties.x_train["label"] = value
             print('Added a target (predictor) field (column) named "label".')
 
     @property
@@ -239,10 +251,9 @@ class MethodBase(object):
             if self.target_field:
                 self._data_properties.x_test[self.target_field] = value
             else:
-                self._data_properties.target_field = 'label'
-                self._data_properties.x_test['label'] = value
-                print('Added a target (predictor) field (column) named "label".')           
-
+                self._data_properties.target_field = "label"
+                self._data_properties.x_test["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
 
     @y_test.setter
     def y_test(self, value):
@@ -254,9 +265,9 @@ class MethodBase(object):
             if self.target_field:
                 self._data_properties.x_test[self.target_field] = value
             else:
-                self._data_properties.target_field = 'label'
-                self._data_properties.x_test['label'] = value
-                print('Added a target (predictor) field (column) named "label".')           
+                self._data_properties.target_field = "label"
+                self._data_properties.x_test["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
 
     @property
     def target_field(self):

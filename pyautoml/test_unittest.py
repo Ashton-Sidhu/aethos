@@ -596,8 +596,11 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.y_train = [1,1]
-        validate = base._data_properties.x_train['label'].tolist() == [1,1] and base.y_train.tolist() == [1,1]
+        base.y_train = [1, 1]
+        validate = base._data_properties.x_train["label"].tolist() == [
+            1,
+            1,
+        ] and base.y_train.tolist() == [1, 1]
 
         self.assertTrue(validate)
 
@@ -637,9 +640,11 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.y_test = [1,1]
+        base.y_test = [1, 1]
 
-        validate = base.y_test.tolist() == [1,1] and base._data_properties.x_test['label'].tolist() == [1,1]
+        validate = base.y_test.tolist() == [1, 1] and base._data_properties.x_test[
+            "label"
+        ].tolist() == [1, 1]
 
         self.assertTrue(validate)
 

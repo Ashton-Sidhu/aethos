@@ -1088,7 +1088,10 @@ class TestModelling(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        validate = base.x_train_results[base.target_field].tolist() == base.y_train.tolist() and len(base.y_train) == 2
+        validate = (
+            base.x_train_results[base.target_field].tolist() == base.y_train.tolist()
+            and len(base.y_train) == 2
+        )
 
         self.assertTrue(validate)
 
@@ -1107,7 +1110,10 @@ class TestModelling(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        validate = base.x_train_results[base.target_field].tolist() == base.y_train.tolist() and len(base.y_train) == 4
+        validate = (
+            base.x_train_results[base.target_field].tolist() == base.y_train.tolist()
+            and len(base.y_train) == 4
+        )
 
         self.assertTrue(validate)
 
@@ -1126,8 +1132,11 @@ class TestModelling(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.y_train = [1,1]
-        validate = base.x_train_results['label'].tolist() == [1,1] and base.y_train.tolist() == [1,1]
+        base.y_train = [1, 1]
+        validate = base.x_train_results["label"].tolist() == [
+            1,
+            1,
+        ] and base.y_train.tolist() == [1, 1]
 
         self.assertTrue(validate)
 
@@ -1146,7 +1155,10 @@ class TestModelling(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        validate = base.x_test_results[base.target_field].tolist() == base.y_test.tolist() and len(base.y_test) == 2
+        validate = (
+            base.x_test_results[base.target_field].tolist() == base.y_test.tolist()
+            and len(base.y_test) == 2
+        )
 
         self.assertTrue(validate)
 
@@ -1165,9 +1177,11 @@ class TestModelling(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.y_test = [1,1]
+        base.y_test = [1, 1]
 
-        validate = base.y_test.tolist() == [1,1] and base.x_test_results['label'].tolist() == [1,1]
+        validate = base.y_test.tolist() == [1, 1] and base.x_test_results[
+            "label"
+        ].tolist() == [1, 1]
 
         self.assertTrue(validate)
 

@@ -5,14 +5,28 @@ import xgboost as xgb
 from IPython import display
 from pathos.multiprocessing import Pool
 from sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans, MeanShift
-from sklearn.ensemble import (AdaBoostClassifier, AdaBoostRegressor,
-                              BaggingClassifier, BaggingRegressor,
-                              GradientBoostingClassifier,
-                              GradientBoostingRegressor, IsolationForest,
-                              RandomForestClassifier, RandomForestRegressor)
-from sklearn.linear_model import (BayesianRidge, ElasticNet, Lasso,
-                                  LinearRegression, LogisticRegression, Ridge,
-                                  RidgeClassifier, SGDClassifier, SGDRegressor)
+from sklearn.ensemble import (
+    AdaBoostClassifier,
+    AdaBoostRegressor,
+    BaggingClassifier,
+    BaggingRegressor,
+    GradientBoostingClassifier,
+    GradientBoostingRegressor,
+    IsolationForest,
+    RandomForestClassifier,
+    RandomForestRegressor,
+)
+from sklearn.linear_model import (
+    BayesianRidge,
+    ElasticNet,
+    Lasso,
+    LinearRegression,
+    LogisticRegression,
+    Ridge,
+    RidgeClassifier,
+    SGDClassifier,
+    SGDRegressor,
+)
 from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
@@ -22,11 +36,19 @@ from pyautoml.base import SHELL, MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
-                                     add_to_queue, run_crossvalidation,
-                                     run_gridsearch)
-from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _set_item, _validate_model_name)
+from pyautoml.modelling.util import (
+    _get_cv_type,
+    _run_models_parallel,
+    add_to_queue,
+    run_crossvalidation,
+    run_gridsearch,
+)
+from pyautoml.util import (
+    _contructor_data_properties,
+    _input_columns,
+    _set_item,
+    _validate_model_name,
+)
 
 
 class Model(MethodBase):
@@ -205,7 +227,11 @@ class Model(MethodBase):
         Property function for the training predictor variable
         """
 
-        return self.x_train_results[self._data_properties.target_field] if self._data_properties.target_field else None
+        return (
+            self.x_train_results[self._data_properties.target_field]
+            if self._data_properties.target_field
+            else None
+        )
 
     @y_train.setter
     def y_train(self, value):
@@ -216,8 +242,8 @@ class Model(MethodBase):
         if self.target_field:
             self.x_train_results[self.target_field] = value
         else:
-            self._data_properties.target_field = 'label'
-            self.x_train_results['label'] = value
+            self._data_properties.target_field = "label"
+            self.x_train_results["label"] = value
             print('Added a target (predictor) field (column) named "label".')
 
     @property
@@ -244,9 +270,9 @@ class Model(MethodBase):
             if self.target_field:
                 self.x_test_results[self.target_field] = value
             else:
-                self._data_properties.target_field = 'label'
-                self.x_test_results['label'] = value
-                print('Added a target (predictor) field (column) named "label".')           
+                self._data_properties.target_field = "label"
+                self.x_test_results["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
 
     @property
     def x_train_results(self):
@@ -5679,25 +5705,22 @@ class Model(MethodBase):
         if gridsearch:
 
             if not self.target_field:
-                raise ValueError('Target field (.target_field) must be set to evaluate best model against a scoring metric.')
+                raise ValueError(
+                    "Target field (.target_field) must be set to evaluate best model against a scoring metric."
+                )
 
             cv = cv if cv else 5
             model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
-            model.fit(
-                self._data_properties.x_train,
-                self.y_train
-            )
+            model.fit(self._data_properties.x_train, self.y_train)
 
             self._train_result_data[new_col_name] = model.predict(
                 self._data_properties.x_train
             )
-        
+
         else:
             if hasattr(model, "predict"):
-                model.fit(
-                    self._data_properties.x_train
-                ) 
+                model.fit(self._data_properties.x_train)
 
                 self._train_result_data[new_col_name] = model.predict(
                     self._data_properties.x_train

@@ -15,9 +15,13 @@ from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
 
 from pyautoml.feature_engineering.util import pca
-from pyautoml.modelling.constants import (CLASS_METRICS_DESC,
-                                          INTERPRET_EXPLAINERS, PROBLEM_TYPE,
-                                          REG_METRICS_DESC, SHAP_LEARNERS)
+from pyautoml.modelling.constants import (
+    CLASS_METRICS_DESC,
+    INTERPRET_EXPLAINERS,
+    PROBLEM_TYPE,
+    REG_METRICS_DESC,
+    SHAP_LEARNERS,
+)
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.visualizations.visualize import *
 
@@ -600,7 +604,9 @@ class UnsupervisedModel(ModelBase):
         self.x_train[self.cluster_col] = model_object.x_train_results[self.cluster_col]
 
         if self.x_test is not None:
-            self.x_test[self.cluster_col] = model_object.x_test_results[self.cluster_col]
+            self.x_test[self.cluster_col] = model_object.x_test_results[
+                self.cluster_col
+            ]
 
     def filter_cluster(self, cluster_no: int):
         """
@@ -663,7 +669,13 @@ class UnsupervisedModel(ModelBase):
         reduced_df.columns = list(map(str, reduced_df.columns))
 
         if dim == 2:
-            scatterplot("0", "1", data=reduced_df, color=reduced_df[self.cluster_col].tolist(), **kwargs)
+            scatterplot(
+                "0",
+                "1",
+                data=reduced_df,
+                color=reduced_df[self.cluster_col].tolist(),
+                **kwargs
+            )
         else:
             scatterplot(
                 "0", "1", "2", data=reduced_df, color=self.cluster_col, **kwargs
@@ -1125,9 +1137,7 @@ class ClassificationModel(ModelBase):
         else:
             annot = np.zeros_like(confusion_matrix, dtype=str)
 
-        df_cm = pd.DataFrame(
-            confusion_matrix, index=self.classes, columns=self.classes,
-        )
+        df_cm = pd.DataFrame(confusion_matrix, index=self.classes, columns=self.classes)
 
         heatmap = sns.heatmap(
             df_cm, annot=annot, square=True, cmap=plt.cm.get_cmap(cmap), fmt=""
