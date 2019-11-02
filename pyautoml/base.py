@@ -61,17 +61,6 @@ class MethodBase(object):
             self._data_properties.x_train.reset_index(drop=True, inplace=True)
             self._data_properties.x_test.reset_index(drop=True, inplace=True)
 
-        # if target_field:
-        #     self.y_train = self._data_properties.x_train[target_field]
-
-        #     if self._data_properties.x_test is not None:
-        #         self.y_test = self._data_properties.x_test[target_field]
-        #     else:
-        #         self.y_test = None
-        # else:
-        #     self.y_train = None
-        #     self.y_test = None
-
         if self._data_properties.report is None:
             self.report = None
         else:

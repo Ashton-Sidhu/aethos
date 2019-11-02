@@ -5677,21 +5677,35 @@ class Model(MethodBase):
                 return cv_scores
 
         if gridsearch:
+
+            if not self.target_field:
+                raise ValueError('Target field (.target_field) must be set to evaluate best model against a scoring metric.')
+
             cv = cv if cv else 5
             model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
-        if hasattr(model, "predict"):
             model.fit(
-                self._data_properties.x_train
-            ) 
+                self._data_properties.x_train,
+                self.y_train
+            )
 
             self._train_result_data[new_col_name] = model.predict(
                 self._data_properties.x_train
             )
+        
         else:
-            self._train_result_data[new_col_name] = model.fit_predict(
-                self._data_properties.x_train
-            )
+            if hasattr(model, "predict"):
+                model.fit(
+                    self._data_properties.x_train
+                ) 
+
+                self._train_result_data[new_col_name] = model.predict(
+                    self._data_properties.x_train
+                )
+            else:
+                self._train_result_data[new_col_name] = model.fit_predict(
+                    self._data_properties.x_train
+                )
 
         if self._data_properties.x_test is not None:
             if hasattr(model, "predict"):
