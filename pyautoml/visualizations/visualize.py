@@ -51,7 +51,7 @@ def barplot(
     orient="v",
     stacked=False,
     output_file="",
-    **barplot_kwargs,
+    **barplot_kwargs
 ):
     """
     Visualizes a bar plot.
