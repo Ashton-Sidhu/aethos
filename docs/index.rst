@@ -139,6 +139,11 @@ For package use:
 
 Currently working on condas implementation.
 
+Full API & Documentation
+========================
+
+For full api documentation you can view it `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#/>`_.
+
 General Methods and Visualizations
 ==================================
 
