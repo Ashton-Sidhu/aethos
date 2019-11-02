@@ -73,11 +73,11 @@ PROBLEM_TYPE = {
 
 INTERPRET_EXPLAINERS = {
     "problem": {
-        "classification": {"roc": ROC, "pr": PR,},
-        "regression": {"regperf": RegressionPerf,},
+        "classification": {"roc": ROC, "pr": PR},
+        "regression": {"regperf": RegressionPerf},
     },
-    "local": {"lime": LimeTabular, "shap": ShapKernel,},
-    "global": {"morris": MorrisSensitivity, "dependence": PartialDependence,},
+    "local": {"lime": LimeTabular, "shap": ShapKernel},
+    "global": {"morris": MorrisSensitivity, "dependence": PartialDependence},
 }
 
 CLASS_METRICS_DESC = {

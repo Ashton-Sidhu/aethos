@@ -423,7 +423,7 @@ class Preprocess(MethodBase):
         list_of_cols=[],
         regexp="",
         exceptions=[],
-        new_col_name="_rem_punct"
+        new_col_name="_rem_punct",
     ):
         """
         Removes punctuation from every string entry.

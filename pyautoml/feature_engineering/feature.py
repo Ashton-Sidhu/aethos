@@ -5,8 +5,7 @@ from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
 from pyautoml.feature_engineering.util import *
-from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           label_encoder)
+from pyautoml.util import _contructor_data_properties, _input_columns, label_encoder
 
 
 class Feature(MethodBase):
@@ -528,7 +527,7 @@ class Feature(MethodBase):
         )
 
         if self.report is not None:
-            self.report.log("Added feature {}. {}".format(output_col, description))
+            self.report.log(f"Added feature {output_col}. {description}")
 
         return self.copy()
 
@@ -642,7 +641,7 @@ class Feature(MethodBase):
             x_test = self._data_properties.x_test
 
         self._data_properties.x_train, self._data_properties.x_test = pca(
-            x_train=x_train, x_test=x_test, **pca_kwargs,
+            x_train=x_train, x_test=x_test, **pca_kwargs
         )
 
         if self._data_properties.target_field:

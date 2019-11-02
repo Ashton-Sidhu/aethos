@@ -32,7 +32,7 @@ class Shap(object):
 
             self.explainer = shap.KernelExplainer(func, self.x_train)
         else:
-            raise ValueError("Learner: {} is not supported yet.".format(learner))
+            raise ValueError(f"Learner: {learner} is not supported yet.")
 
         self.expected_value = self.explainer.expected_value
         self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(
@@ -54,7 +54,7 @@ class Shap(object):
             self.shap_values,
             self.x_test_array,
             feature_names=self.x_train.columns,
-            **summaryplot_kwargs
+            **summaryplot_kwargs,
         )
 
     def decision_plot(self, num_samples=0.25, sample_no=None, **decisionplot_kwargs):
@@ -105,7 +105,7 @@ class Shap(object):
             self.x_train.columns,
             return_objects=return_objects,
             highlight=highlight,
-            **decisionplot_kwargs
+            **decisionplot_kwargs,
         )
 
     def force_plot(self, sample_no=None, **forceplot_kwargs):
@@ -127,7 +127,7 @@ class Shap(object):
             self.expected_value,
             shap_values[samples],
             self.x_train.columns,
-            **forceplot_kwargs
+            **forceplot_kwargs,
         )
 
     def dependence_plot(self, feature, interaction=None, **dependenceplot_kwargs):
@@ -142,7 +142,7 @@ class Shap(object):
             self.shap_values,
             self.x_test,
             interaction_index=interaction,
-            **dependenceplot_kwargs
+            **dependenceplot_kwargs,
         )
 
     def _calculate_misclassified(self) -> list:
@@ -238,7 +238,7 @@ class MSFTInterpret(object):
         method="lime",
         predictions="default",
         show=True,
-        **kwargs
+        **kwargs,
     ):
         """
         Plots an interpretable display that explains individual predictions of your model.

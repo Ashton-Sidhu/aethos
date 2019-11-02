@@ -190,7 +190,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field="col3", report_name="gridsearch_test")
 
-        gridsearch_params = {"k": [1, 2]}
+        gridsearch_params = {"max_iter": [300, 200]}
         model.kmeans(gridsearch=gridsearch_params, cv=2, run=True)
 
         self.assertTrue(True)
@@ -1072,6 +1072,118 @@ class TestModelling(unittest.TestCase):
         model.km.plot_clusters(dim=3)
 
         self.assertTrue(True)
+
+    def test_ytrain_split(self):
+
+        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="col3",
+            report_name=None,
+            test_split_percentage=0.5,
+        )
+
+        validate = (
+            base.x_train_results[base.target_field].tolist() == base.y_train.tolist()
+            and len(base.y_train) == 2
+        )
+
+        self.assertTrue(validate)
+
+    def test_ytrain_nosplit(self):
+
+        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=False,
+            target_field="col3",
+            report_name=None,
+            test_split_percentage=0.5,
+        )
+
+        validate = (
+            base.x_train_results[base.target_field].tolist() == base.y_train.tolist()
+            and len(base.y_train) == 4
+        )
+
+        self.assertTrue(validate)
+
+    def test_ytrain_dne(self):
+
+        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name=None,
+            test_split_percentage=0.5,
+        )
+
+        base.y_train = [1, 1]
+        validate = base.x_train_results["label"].tolist() == [
+            1,
+            1,
+        ] and base.y_train.tolist() == [1, 1]
+
+        self.assertTrue(validate)
+
+    def test_ytest_split(self):
+
+        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="col3",
+            report_name=None,
+            test_split_percentage=0.5,
+        )
+
+        validate = (
+            base.x_test_results[base.target_field].tolist() == base.y_test.tolist()
+            and len(base.y_test) == 2
+        )
+
+        self.assertTrue(validate)
+
+    def test_ytest_dne(self):
+
+        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name=None,
+            test_split_percentage=0.5,
+        )
+
+        base.y_test = [1, 1]
+
+        validate = base.y_test.tolist() == [1, 1] and base.x_test_results[
+            "label"
+        ].tolist() == [1, 1]
+
+        self.assertTrue(validate)
 
 
 if __name__ == "__main__":

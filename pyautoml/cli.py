@@ -11,6 +11,5 @@ def create(ctx, param, value):
 
 @click.command(context_settings=dict(help_option_names=[u"-h", u"--help"]))
 @click.argument(u"create", callback=create)
-def main():
-
-    sys.exit()
+def main(create):
+    pass

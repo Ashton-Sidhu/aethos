@@ -15,9 +15,13 @@ from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
 
 from pyautoml.feature_engineering.util import pca
-from pyautoml.modelling.constants import (CLASS_METRICS_DESC,
-                                          INTERPRET_EXPLAINERS, PROBLEM_TYPE,
-                                          REG_METRICS_DESC, SHAP_LEARNERS)
+from pyautoml.modelling.constants import (
+    CLASS_METRICS_DESC,
+    INTERPRET_EXPLAINERS,
+    PROBLEM_TYPE,
+    REG_METRICS_DESC,
+    SHAP_LEARNERS,
+)
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.visualizations.visualize import *
 
@@ -141,17 +145,12 @@ class ModelBase(object):
             Max number of bins, by default 20
 
         **summaryplot_kwargs
-            For more info see https://shap.readthedocs.io/en/latest/#plots
-        
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
+            For more info see https://shap.readthedocs.io/en/latest/#plots    
         """
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         self.shap.summary_plot(**summaryplot_kwargs)
@@ -161,7 +160,7 @@ class ModelBase(object):
         num_samples=0.6,
         sample_no=None,
         highlight_misclassified=False,
-        **decisionplot_kwargs
+        **decisionplot_kwargs,
     ):
         """
         Visualize model decisions using cumulative SHAP values.
@@ -269,11 +268,6 @@ class ModelBase(object):
         legend_location : str 
             Legend location. Any of "best", "upper right", "upper left", "lower left", "lower right", "right", "center left", "center right", "lower center", "upper center", "center".
     
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
-
         Returns
         -------
         DecisionPlotResult 
@@ -289,7 +283,7 @@ class ModelBase(object):
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         if highlight_misclassified:
@@ -320,11 +314,6 @@ class ModelBase(object):
             Whether to use the default Javascript output, or the (less developed) matplotlib output. Using matplotlib
             can be helpful in scenarios where rendering Javascript/HTML is inconvenient. 
         
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
-
         Example
         --------
         Plot two decision plots using the same feature order and x-axis.
@@ -335,7 +324,7 @@ class ModelBase(object):
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         if misclassified:
@@ -390,16 +379,11 @@ class ModelBase(object):
 
         cmap : str or matplotlib.colors.ColorMap 
             Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
-
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
         """
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         self.shap.dependence_plot(feature, interaction, **dependenceplot_kwargs)
@@ -465,7 +449,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -483,7 +467,7 @@ class ModelBase(object):
         method="all",
         predictions="default",
         show=True,
-        **interpret_kwargs
+        **interpret_kwargs,
     ):
         """
         Plots an interpretable display that explains individual predictions of your model.
@@ -522,7 +506,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -535,7 +519,7 @@ class ModelBase(object):
                 method=method,
                 predictions=predictions,
                 show=show,
-                **interpret_kwargs
+                **interpret_kwargs,
             )
 
     def interpret_model_behavior(
@@ -569,7 +553,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -588,9 +572,6 @@ class TextModel(ModelBase):
 
 
 class UnsupervisedModel(ModelBase):
-
-    # TODO: Add scatterplot of clusters
-
     def __init__(self, model_object, model_name, model, cluster_col):
 
         super().__init__(model_object, model, model_name)
@@ -600,7 +581,9 @@ class UnsupervisedModel(ModelBase):
         self.x_train[self.cluster_col] = model_object.x_train_results[self.cluster_col]
 
         if self.x_test is not None:
-            self.x_test[self.cluster_col] = model_object.x_test_results[self.cluster_col]
+            self.x_test[self.cluster_col] = model_object.x_test_results[
+                self.cluster_col
+            ]
 
     def filter_cluster(self, cluster_no: int):
         """
@@ -663,7 +646,13 @@ class UnsupervisedModel(ModelBase):
         reduced_df.columns = list(map(str, reduced_df.columns))
 
         if dim == 2:
-            scatterplot("0", "1", data=reduced_df, color=reduced_df[self.cluster_col].tolist(), **kwargs)
+            scatterplot(
+                "0",
+                "1",
+                data=reduced_df,
+                color=reduced_df[self.cluster_col].tolist(),
+                **kwargs,
+            )
         else:
             scatterplot(
                 "0", "1", "2", data=reduced_df, color=self.cluster_col, **kwargs
@@ -692,9 +681,7 @@ class ClassificationModel(ModelBase):
         )
 
         if self.report:
-            self.report.write_header(
-                "Analyzing Model {}: ".format(self.model_name.upper())
-            )
+            self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
 
         if self.target_mapping is None:
             self.classes = [
@@ -1125,9 +1112,7 @@ class ClassificationModel(ModelBase):
         else:
             annot = np.zeros_like(confusion_matrix, dtype=str)
 
-        df_cm = pd.DataFrame(
-            confusion_matrix, index=self.classes, columns=self.classes,
-        )
+        df_cm = pd.DataFrame(confusion_matrix, index=self.classes, columns=self.classes)
 
         heatmap = sns.heatmap(
             df_cm, annot=annot, square=True, cmap=plt.cm.get_cmap(cmap), fmt=""
@@ -1232,8 +1217,6 @@ class ClassificationModel(ModelBase):
 
 
 class RegressionModel(ModelBase):
-    # TODO: Summary statistics
-
     def __init__(self, model_object, model_name, model, predictions_col):
 
         self.y_train = model_object.y_train
@@ -1252,9 +1235,7 @@ class RegressionModel(ModelBase):
         )
 
         if self.report:
-            self.report.write_header(
-                "Analyzing Model {}: ".format(self.model_name.upper())
-            )
+            self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
 
         self.features = self.x_test.columns
 
