@@ -5,11 +5,10 @@ import sys
 from datetime import datetime
 
 
-class Report():
-
+class Report:
     def __init__(self, report_name):
-        
-        #TODO: Move making the directory on first time run to some config file
+
+        # TODO: Move making the directory on first time run to some config file
         if not os.path.exists("pyautoml_reports/"):
             os.makedirs("pyautoml_reports")
 
@@ -18,7 +17,9 @@ class Report():
         if os.path.exists(self.report_name):
             self.filename = self.report_name
         else:
-            self.filename = 'pyautoml_reports/{}{}.txt'.format(report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p"))
+            self.filename = "pyautoml_reports/{}{}.txt".format(
+                report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")
+            )
             self.report_environtment()
 
     def write_header(self, header: str):
@@ -31,21 +32,21 @@ class Report():
             Header for a report file
             Examples: 'Cleaning', 'Feature Engineering', 'Modelling', etc.
         """
-        
+
         if os.path.exists(self.filename):
 
-            write = False; 
+            write = False
 
-            with open(self.filename, 'r') as f:
+            with open(self.filename, "r") as f:
                 if header not in f.read():
                     write = True
-            
+
             if write:
-                with open(self.filename, 'a+') as f:
+                with open(self.filename, "a+") as f:
                     f.write("\n" + header + "\n\n")
-        
+
         else:
-            with open(self.filename, 'a+') as f:
+            with open(self.filename, "a+") as f:
                 f.write(header + "\n\n")
 
     def write_contents(self, content: str):
@@ -58,17 +59,17 @@ class Report():
             Report Content
         """
 
-        write = True; 
+        write = True
 
         if os.path.exists(self.filename):
             write = False
-            
-            with open(self.filename, 'r') as f:
+
+            with open(self.filename, "r") as f:
                 if content not in f.read():
                     write = True
 
         if write:
-            with open(self.filename, 'a+') as f:
+            with open(self.filename, "a+") as f:
                 f.writelines(content)
 
     def report_technique(self, technique: str, list_of_cols=[]):
@@ -88,7 +89,7 @@ class Report():
             List of columns
         """
 
-        if list(list_of_cols) != []:        
+        if list(list_of_cols) != []:
             for col in list_of_cols:
                 log = technique.replace("column_name_placeholder", col)
 
@@ -113,29 +114,34 @@ class Report():
         self.write_contents(log + "\n")
 
     def report_gridsearch(self, clf, verbose):
+        """
+        Logs gridsearch results.
+        """
 
-        content = "Tuning hyper-parameters:\n\n \
+        content = f"Tuning hyper-parameters:\n\n \
             Best parameters set found on training set:\n \
-                {}\n\n \
-            Grid scores on training set:\n\n".format(
-            str(clf.best_params_))
+                {clf.best_params_}\n\n \
+            Grid scores on training set:\n\n"
 
-        self.write_contents("\n".join(map(str.lstrip, content.split('\n'))))
-        
+        self.write_contents("\n".join(map(str.lstrip, content.split("\n"))))
+
         if verbose:
             print(content)
 
-        means = clf.cv_results_['mean_test_score']
-        stds = clf.cv_results_['std_test_score']
-        for mean, std, params in zip(means, stds, clf.cv_results_['params']):
-            stats = '{:.2%} (+/-{}) for {}\n'.format(float(mean), std*2, params)
+        means = clf.cv_results_["mean_test_score"]
+        stds = clf.cv_results_["std_test_score"]
+        for mean, std, params in zip(means, stds, clf.cv_results_["params"]):
+            stats = "{:.2%} (+/-{}) for {}\n".format(float(mean), std * 2, params)
             self.write_contents(stats)
             if verbose:
                 print(stats)
-            
-            self.write_contents('\n')
+
+            self.write_contents("\n")
 
     def report_classification_report(self, report):
+        """
+        Logs classification report results.
+        """
 
         self.write_contents("Detailed classification report:\n")
         self.write_contents("The model is trained on the full training set.")
@@ -146,40 +152,60 @@ class Report():
         """
         Reports local environment info.
         """
-        
+
         system = platform.system()
 
-        self.write_header('Environment')
+        self.write_header("Environment")
 
-        self.log('OS Version          : {}'.format(platform.platform()))
-        self.log('System              : {}'.format(system))
-        self.log('Machine             : {}'.format(platform.machine()))
+        self.log("OS Version          : {}".format(platform.platform()))
+        self.log("System              : {}".format(system))
+        self.log("Machine             : {}".format(platform.machine()))
 
-        if system == 'Windows':
-            memory = subprocess.check_output('wmic memorychip get capacity', shell=True, universal_newlines=True)
+        if system == "Windows":
+            memory = subprocess.check_output(
+                "wmic memorychip get capacity", shell=True, universal_newlines=True
+            )
             total_mem = 0
             for m in memory.split("  \r\n")[1:-1]:
                 total_mem += int(m)
 
-            self.log('Processor           : {}'.format(platform.processor()))
-            self.log('Memory              : {:.2f} GB'.format(round(total_mem / (1024**2))))
-        elif platform.system() == 'Darwin':
-            processor = subprocess.check_output('/usr/sbin/sysctl -n machdep.cpu.brand_string', shell=True, universal_newlines=True)
-            memory = subprocess.check_output('sysctl -n hw.memsize', shell=True, universal_newlines=True)
-            self.log('Processor           : {}'.format(processor.strip()))
-            self.log('Memory              : {}'.format(round(int(memory.strip()) / (1024**2))))
-        elif platform.system() == 'Linux':
-            processor = subprocess.check_output("cat /proc/cpuinfo | grep 'model name'", shell=True, universal_newlines=True)
+            self.log("Processor           : {}".format(platform.processor()))
+            self.log(
+                "Memory              : {:.2f} GB".format(round(total_mem / (1024 ** 2)))
+            )
+        elif platform.system() == "Darwin":
+            processor = subprocess.check_output(
+                "/usr/sbin/sysctl -n machdep.cpu.brand_string",
+                shell=True,
+                universal_newlines=True,
+            )
+            memory = subprocess.check_output(
+                "sysctl -n hw.memsize", shell=True, universal_newlines=True
+            )
+            self.log("Processor           : {}".format(processor.strip()))
+            self.log(
+                "Memory              : {}".format(
+                    round(int(memory.strip()) / (1024 ** 2))
+                )
+            )
+        elif platform.system() == "Linux":
+            processor = subprocess.check_output(
+                "cat /proc/cpuinfo | grep 'model name'",
+                shell=True,
+                universal_newlines=True,
+            )
             with open("/proc/meminfo", "r") as f:
                 lines = f.readlines()
-            
-            memory = [int(s) for s in lines[0].split() if s.isdigit()][0]
-            processor = processor.replace('\t', '').split('model name:')[1].strip()
-            self.log('Processor           : {}'.format(processor))
-            self.log('Memory              : {:.2f} GB'.format(round(memory / (1024 ** 2))))
 
-        self.log('CPU Count           : {}'.format(os.cpu_count()))
-        
-        self.log('Python Version      : {}'.format(platform.python_version()))
-        self.log('Python Compiler     : {}'.format(platform.python_compiler()))
-        self.log('Python Build        : {}'.format(platform.python_build()))
+            memory = [int(s) for s in lines[0].split() if s.isdigit()][0]
+            processor = processor.replace("\t", "").split("model name:")[1].strip()
+            self.log("Processor           : {}".format(processor))
+            self.log(
+                "Memory              : {:.2f} GB".format(round(memory / (1024 ** 2)))
+            )
+
+        self.log("CPU Count           : {}".format(os.cpu_count()))
+
+        self.log("Python Version      : {}".format(platform.python_version()))
+        self.log("Python Compiler     : {}".format(platform.python_compiler()))
+        self.log("Python Build        : {}".format(platform.python_build()))

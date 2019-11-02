@@ -6,11 +6,18 @@ remove_rows_threshold
 remove_duplicate_rows
 remove_duplicate_columns
 replace_missing_random_discrete
+replace_missing_knn
+replace_missing_interpolate
+replace_missing_fill
+replace_missing_indicator
 """
+import warnings
+
 import numpy as np
 import pandas as pd
-
-from pyautoml.util import _function_input_validation
+from impyute.imputation.cs import fast_knn
+from pyautoml.util import drop_replace_columns
+from sklearn.impute import MissingIndicator
 
 
 def remove_columns_threshold(x_train, x_test=None, threshold=0.5):
@@ -49,6 +56,7 @@ def remove_columns_threshold(x_train, x_test=None, threshold=0.5):
     else:
         return x_train[criteria_meeting_columns], None
 
+
 def remove_rows_threshold(x_train, x_test=None, threshold=0.5):
     """
     Remove rows from the dataframe that have more than the threshold value of missing rows.
@@ -85,6 +93,7 @@ def remove_rows_threshold(x_train, x_test=None, threshold=0.5):
 
     return x_train, x_test
 
+
 def remove_duplicate_rows(x_train, x_test=None, list_of_cols=[]):
     """
     Removes rows that are exact duplicates of each other.
@@ -115,6 +124,7 @@ def remove_duplicate_rows(x_train, x_test=None, list_of_cols=[]):
 
     return x_train, x_test
 
+
 def remove_duplicate_columns(x_train, x_test=None):
     """
     Removes columns whose values are exact duplicates of each other.
@@ -136,11 +146,12 @@ def remove_duplicate_columns(x_train, x_test=None):
     """
 
     x_train = x_train.T.drop_duplicates().T
-    
+
     if x_test is not None:
         x_test = x_test.T.drop_duplicates().T
 
     return x_train, x_test
+
 
 def replace_missing_random_discrete(x_train, x_test=None, list_of_cols=[]):
     """
@@ -166,15 +177,209 @@ def replace_missing_random_discrete(x_train, x_test=None, list_of_cols=[]):
     Returns 2 Dataframes if x_test is provided.
     """
 
-
     for col in list_of_cols:
         probabilities = x_train[col].value_counts(normalize=True)
 
         missing_data = x_train[col].isnull()
-        x_train.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(x_train[missing_data]), replace=True, p=probabilities.values)
+        x_train.loc[missing_data, col] = np.random.choice(
+            probabilities.index,
+            size=len(x_train[missing_data]),
+            replace=True,
+            p=probabilities.values,
+        )
 
         if x_test is not None:
             missing_data = x_test[col].isnull()
-            x_test.loc[missing_data, col] = np.random.choice(probabilities.index, size=len(x_test[missing_data]), replace=True, p=probabilities.values)            
+            x_test.loc[missing_data, col] = np.random.choice(
+                probabilities.index,
+                size=len(x_test[missing_data]),
+                replace=True,
+                p=probabilities.values,
+            )
+
+    return x_train, x_test
+
+
+def replace_missing_knn(x_train, x_test=None, **knn_kwargs):
+    """
+    Replaces missing data using K nearest neighbors.
+    
+    Parameters
+    ----------
+    x_train: Dataframe or array like - 2d
+        Dataset
+        
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
+    k : int, optional
+        Number of rows around the missing data to look at, by default 5
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
+
+    Returns 2 Dataframes if x_test is provided.
+    """
+
+    neighbors = knn_kwargs.pop("k", 5)
+
+    columns = x_train.columns
+
+    train_knn_transformed = fast_knn(x_train.values, k=neighbors, **knn_kwargs)
+
+    if x_test is not None:
+        warnings.warn(
+            "If test data does not come from the same distribution of the training data, it may lead to erroneous results."
+        )
+        test_knn_transformed = fast_knn(x_test.values, k=neighbors, **knn_kwargs)
+
+    return (
+        pd.DataFrame(data=train_knn_transformed, columns=columns),
+        pd.DataFrame(data=test_knn_transformed, columns=columns),
+    )
+
+
+def replace_missing_interpolate(x_train, x_test=None, list_of_cols=[], **inter_kwargs):
+    """
+    Replaces missing data using interpolation techniques.
+    
+    Parameters
+    ----------
+    x_train: Dataframe or array like - 2d
+        Dataset
+        
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+        
+    list_of_cols : list
+        A list of specific columns to apply this technique to, by default []
+    
+    method : str, optional
+        Interpolation method, by default linear
+
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
+
+    Returns 2 Dataframes if x_test is provided.
+    """
+
+    method = inter_kwargs.pop("method", "linear")
+
+    for col in list_of_cols:
+        x_train[col] = x_train[col].interpolate(method=method, **inter_kwargs)
+
+        if x_test is not None:
+            warnings.warn(
+                "If test data does not come from the same distribution of the training data, it may lead to erroneous results."
+            )
+            x_test[col] = x_test[col].interpolate(method=method, **inter_kwargs)
+
+    return x_train, x_test
+
+
+def replace_missing_fill(
+    x_train, x_test=None, list_of_cols=[], method="", **extra_kwargs
+):
+    """
+    Replaces missing values with the known values ahead of it and behind it.
+    
+    Parameters
+    ----------
+    x_train: Dataframe or array like - 2d
+        Dataset
+        
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+        
+    list_of_cols : list
+        A list of specific columns to apply this technique to, by default []
+
+    method : str
+        Type of fill, by default ''
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
+
+    Returns 2 Dataframes if x_test is provided.
+    """
+
+    # Handle erroneous input
+    extra_kwargs.pop("method", method)
+
+    for col in list_of_cols:
+        x_train[col] = x_train[col].fillna(method=method, **extra_kwargs)
+
+        if x_test is not None:
+            x_test[col] = x_test[col].fillna(method=method, **extra_kwargs)
+
+    return x_train, x_test
+
+
+def replace_missing_indicator(
+    x_train,
+    x_test=None,
+    list_of_cols=[],
+    missing_indicator=1,
+    valid_indicator=0,
+    keep_col=False,
+):
+    """
+    Adds a new column describing if the column provided is missing data
+    
+    Parameters
+    ----------
+    x_train: Dataframe or array like - 2d
+        Dataset
+        
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
+    list_of_cols : list
+        A list of specific columns to apply this technique to, by default []
+
+    missing_indicator : int, optional
+        Value to indicate missing data, by default 1
+
+    valid_indicator : int, optional
+        Value to indicate non missing data, by default 0
+
+    keep_col : bool, optional
+        True to keep column, False to replace it, by default False
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
+
+    Returns 2 Dataframes if x_test is provided.
+    """
+
+    for col in list_of_cols:
+        x_train[col + "_missing"] = list(
+            map(
+                lambda x: missing_indicator if x else valid_indicator,
+                x_train[col].isnull(),
+            )
+        )
+
+        if not keep_col:
+            x_train = x_train.drop([col], axis=1)
+
+        if x_test is not None:
+            x_test[col + "_missing"] = list(
+                map(
+                    lambda x: missing_indicator if x else valid_indicator,
+                    x_test[col].isnull(),
+                )
+            )
+
+            if not keep_col:
+                x_test = x_test.drop([col], axis=1)
 
     return x_train, x_test

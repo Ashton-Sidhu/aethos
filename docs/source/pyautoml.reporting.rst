@@ -1,16 +1,5 @@
-pyautoml.reporting package
-==========================
-
-Submodules
-----------
-
-pyautoml.reporting.report module
---------------------------------
-
-.. automodule:: pyautoml.reporting.report
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Reporting package
+==================
 
 Module contents
 ---------------

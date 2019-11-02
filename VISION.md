@@ -1,4 +1,4 @@
-# Vision
+# Vision 
 
 Py-automl is a platform (Web Application and API) that automates tasks of the ML pipeline, from Data Cleaning to Validation. Py-automl is designed to aggregate machine learning techniques and models so that they are usable by everyone from Data Scientists and Machine Learning Engineers to Data Analysts and Business Professionals. It gives users full customizability and visibility into the techniques that are being used and also comes with an autoML feature (soon). Each technique has customizable parameters where applicable that can be passed in as arguments to help automate tasks. Every part of the auto-ml pipeline will be automated and users can start automating at any point (i.e. if the user already has cleaned their dataset, they can start automating from the feature engineering/extraction phase). All of this being done with the goal in mind that engineers, scientists, analysts and professionals alike spend less time on coding and worrying about how to do the analysis and instead worry about what analytic tools will best help them get insights from their data.
 

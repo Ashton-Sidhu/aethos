@@ -10,9 +10,22 @@ from IPython import get_ipython
 from IPython.display import display
 from pandas_summary import DataFrameSummary
 
+import ipywidgets as widgets
 import pyautoml
+from ipywidgets import Layout
 from pyautoml.data.data import Data
-from pyautoml.util import _get_columns, _set_item, label_encoder, split_data
+from pyautoml.util import (
+    CLEANING_CHECKLIST,
+    DATA_CHECKLIST,
+    ISSUES_CHECKLIST,
+    MULTI_ANALYSIS_CHECKLIST,
+    PREPARATION_CHECKLIST,
+    UNI_ANALYSIS_CHECKLIST,
+    _get_columns,
+    _set_item,
+    label_encoder,
+    split_data,
+)
 from pyautoml.visualizations.visualize import *
 
 # TODO: Move to a config file
@@ -21,56 +34,63 @@ SHELL = get_ipython().__class__.__name__
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
-with open("{}/technique_reasons.yml".format(pkg_directory), 'r') as stream:
+with open(f"{pkg_directory}/technique_reasons.yml", "r") as stream:
     try:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
 
-class MethodBase(object):
 
+class MethodBase(object):
     def __init__(self, **kwargs):
 
-        x_train = kwargs.pop('x_train')
-        x_test = kwargs.pop('x_test')
-        split = kwargs.pop('split')
-        target_field = kwargs.pop('target_field')
-        target_mapping = kwargs.pop('target_mapping')
-        report_name = kwargs.pop('report_name')
-        test_split_percentage = kwargs.pop('test_split_percentage')
+        x_train = kwargs.pop("x_train")
+        x_test = kwargs.pop("x_test")
+        split = kwargs.pop("split")
+        target_field = kwargs.pop("target_field")
+        target_mapping = kwargs.pop("target_mapping")
+        report_name = kwargs.pop("report_name")
+        test_split_percentage = kwargs.pop("test_split_percentage")
 
-        self._data_properties = Data(x_train, x_test, split=split, target_field=target_field, target_mapping=target_mapping, report_name=report_name)
+        self._data_properties = Data(
+            x_train,
+            x_test,
+            split=split,
+            target_field=target_field,
+            target_mapping=target_mapping,
+            report_name=report_name,
+        )
 
         if split and x_test is None:
             # Generate train set and test set.
-            self._data_properties.x_train, self._data_properties.x_test = split_data(self._data_properties.x_train, test_split_percentage)
+            self._data_properties.x_train, self._data_properties.x_test = split_data(
+                self._data_properties.x_train, test_split_percentage
+            )
             self._data_properties.x_train.reset_index(drop=True, inplace=True)
             self._data_properties.x_test.reset_index(drop=True, inplace=True)
 
         if self._data_properties.report is None:
             self.report = None
         else:
-            self.report = self._data_properties.report        
-            
+            self.report = self._data_properties.report
+
     def __repr__(self):
 
-        if SHELL == 'ZMQInteractiveShell':            
-            display(self._data_properties.x_train.head()) # Hack for jupyter notebooks
+        if SHELL == "ZMQInteractiveShell":
+            display(self._data_properties.x_train.head())  # Hack for jupyter notebooks
 
-            return ''
-        
+            return ""
+
         else:
             return self._data_properties.x_train.to_string()
 
-
     def __getitem__(self, column):
 
-        try: 
+        try:
             return self._data_properties.x_train[column]
 
         except Exception as e:
             raise AttributeError(e)
-        
 
     def __setitem__(self, column, value):
 
@@ -86,18 +106,37 @@ class MethodBase(object):
                 ## If the number of entries in the list does not match the number of rows in the training or testing
                 ## set raise a value error
                 if len(value) != x_train_length and len(value) != x_test_length:
-                    raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(value))))
+                    raise ValueError(
+                        f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
+                    )
 
                 self._data_properties.x_train, self._data_properties.x_test = _set_item(
-                    self._data_properties.x_train, self._data_properties.x_test, column, value, x_train_length, x_test_length)
+                    self._data_properties.x_train,
+                    self._data_properties.x_test,
+                    column,
+                    value,
+                    x_train_length,
+                    x_test_length,
+                )
 
             elif isinstance(value, tuple):
                 for data in value:
                     if len(data) != x_train_length and len(data) != x_test_length:
-                        raise ValueError("Length of list: {} does not equal the number rows as the training set or test set.".format(str(len(data))))
+                        raise ValueError(
+                            f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
+                        )
 
-                    self._data_properties.x_train, self._data_properties.x_test = _set_item(
-                        self._data_properties.x_train, self._data_properties.x_test, column, data, x_train_length, x_test_length)
+                    (
+                        self._data_properties.x_train,
+                        self._data_properties.x_test,
+                    ) = _set_item(
+                        self._data_properties.x_train,
+                        self._data_properties.x_test,
+                        column,
+                        data,
+                        x_train_length,
+                        x_test_length,
+                    )
 
             else:
                 self._data_properties.x_train[column] = value
@@ -114,14 +153,14 @@ class MethodBase(object):
             raise AttributeError(e)
 
     def __setattr__(self, item, value):
-        
-        if item not in self.__dict__:       # any normal attributes are handled normally
+
+        if item not in self.__dict__:  # any normal attributes are handled normally
             dict.__setattr__(self, item, value)
         else:
             self.__setitem__(item, value)
 
     def __deepcopy__(self, memo):
-        
+
         data_props = copy.deepcopy(self._data_properties)
         new_inst = type(self)(data_props)
 
@@ -142,7 +181,7 @@ class MethodBase(object):
         """
 
         self._data_properties.x_train = value
-        
+
     @property
     def x_test(self):
         """
@@ -158,6 +197,73 @@ class MethodBase(object):
         """
 
         self._data_properties.x_test = value
+
+    @property
+    def y_train(self):
+        """
+        Property function for the training predictor variable
+        """
+
+        return (
+            self._data_properties.x_train[self._data_properties.target_field]
+            if self._data_properties.target_field
+            else None
+        )
+
+    @y_train.setter
+    def y_train(self, value):
+        """
+        Setter function for the training predictor variable
+        """
+
+        if self.target_field:
+            self._data_properties.x_train[self.target_field] = value
+        else:
+            self._data_properties.target_field = "label"
+            self._data_properties.x_train["label"] = value
+            print('Added a target (predictor) field (column) named "label".')
+
+    @property
+    def y_test(self):
+        """
+        Property function for the testing predictor variable
+        """
+
+        if self._data_properties.x_test is not None:
+            if self._data_properties.target_field:
+                return self._data_properties.x_test[self.target_field]
+            else:
+                return None
+        else:
+            return None
+
+    @y_test.setter
+    def y_test(self, value):
+        """
+        Setter function for the testing predictor variable
+        """
+
+        if self._data_properties.x_test is not None:
+            if self.target_field:
+                self._data_properties.x_test[self.target_field] = value
+            else:
+                self._data_properties.target_field = "label"
+                self._data_properties.x_test["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
+
+    @y_test.setter
+    def y_test(self, value):
+        """
+        Setter function for the testing predictor variable
+        """
+
+        if self._data_properties.x_test is not None:
+            if self.target_field:
+                self._data_properties.x_test[self.target_field] = value
+            else:
+                self._data_properties.target_field = "label"
+                self._data_properties.x_test["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
 
     @property
     def target_field(self):
@@ -190,25 +296,35 @@ class MethodBase(object):
         """
 
         self._data_properties.target_mapping = value
-        
+
     @property
     def missing_values(self):
         """
         Property function that shows how many values are missing in each column.
         """
 
-        dataframes = list(filter(lambda x: x is not None, [
-                          self._data_properties.x_train, self._data_properties.x_train, self._data_properties.x_test]))
+        dataframes = list(
+            filter(
+                lambda x: x is not None,
+                [
+                    self._data_properties.x_train,
+                    self._data_properties.x_train,
+                    self._data_properties.x_test,
+                ],
+            )
+        )
 
         for dataframe in dataframes:
-            if not dataframe.isnull().values.any():            
+            if not dataframe.isnull().values.any():
                 print("No missing values!")
             else:
                 total = dataframe.isnull().sum().sort_values(ascending=False)
-                percent = (dataframe.isnull().sum() /
-                           dataframe.isnull().count()).sort_values(ascending=False)
+                percent = (
+                    dataframe.isnull().sum() / dataframe.isnull().count()
+                ).sort_values(ascending=False)
                 missing_data = pd.concat(
-                    [total, percent], axis=1, keys=['Total', 'Percent'])
+                    [total, percent], axis=1, keys=["Total", "Percent"]
+                )
 
                 display(missing_data.T)
 
@@ -243,29 +359,37 @@ class MethodBase(object):
         # TODO: Refactor this to take in boolean expressions
 
         if not values:
-            return ValueError("Please provided columns to groupby.")        
+            return ValueError("Please provided columns to groupby.")
 
         if replace:
             if not_equal:
-                self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
-                
-                if self._data_properties.x_test is not None:
-                    self._data_properties.x_test = self._data_properties.x_test[self._data_properties.x_test.isin(list(values)).any(axis=1)]
-            else:
-                self._data_properties.x_train = self._data_properties.x_train[self._data_properties.x_train.isin(list(values)).any(axis=1)]
-                
-                if self._data_properties.x_test is not None:
-                    self._data_properties.x_test = self._data_properties.x_test[self._data_properties.x_test.isin(list(values)).any(axis=1)]
+                self._data_properties.x_train = self._data_properties.x_train[
+                    self._data_properties.x_train.isin(list(values)).any(axis=1)
+                ]
 
-            return self.copy()            
+                if self._data_properties.x_test is not None:
+                    self._data_properties.x_test = self._data_properties.x_test[
+                        self._data_properties.x_test.isin(list(values)).any(axis=1)
+                    ]
+            else:
+                self._data_properties.x_train = self._data_properties.x_train[
+                    self._data_properties.x_train.isin(list(values)).any(axis=1)
+                ]
+
+                if self._data_properties.x_test is not None:
+                    self._data_properties.x_test = self._data_properties.x_test[
+                        self._data_properties.x_test.isin(list(values)).any(axis=1)
+                    ]
+
+            return self.copy()
         else:
             data = self._data_properties.x_train.copy()
-           
+
             if not not_equal:
-                data = data[data.isin(list(values))].dropna(how='all')
+                data = data[data.isin(list(values))].dropna(how="all")
             else:
-                data = data[~data.isin(list(values))].dropna(how='all')
-                
+                data = data[~data.isin(list(values))].dropna(how="all")
+
             return data
 
     def where(self, *filter_columns, **columns):
@@ -307,7 +431,7 @@ class MethodBase(object):
             return filtered_data[list(filter_columns)]
         else:
             return filtered_data
-        
+
     def groupby(self, *groupby, replace=False):
         """
         Groups data by the provided columns.
@@ -330,12 +454,16 @@ class MethodBase(object):
             return ValueError("Please provided columns to groupby.")
 
         if replace:
-            self._data_properties.x_train = self._data_properties.x_train.groupby(list(groupby))
+            self._data_properties.x_train = self._data_properties.x_train.groupby(
+                list(groupby)
+            )
 
             if self._data_properties.x_test is not None:
-                self._data_properties.x_test = self._data_properties.x_test.groupby(list(groupby))
+                self._data_properties.x_test = self._data_properties.x_test.groupby(
+                    list(groupby)
+                )
 
-            return self.copy()            
+            return self.copy()
         else:
             data = self._data_properties.x_train.copy()
 
@@ -383,29 +511,45 @@ class MethodBase(object):
         """
 
         analysis = {}
-        numeric_analysis = ['count', 'min', 'max', 'mean', 'std', 'var', 'median', ('most_common', lambda x: pd.Series.mode(x)[0]), 'sum', 'mad', 'nunique']
-        other_analysis = ['count', ('most_common', lambda x: pd.Series.mode(x)[0]), 'nunique']
+        numeric_analysis = [
+            "count",
+            "min",
+            "max",
+            "mean",
+            "std",
+            "var",
+            "median",
+            ("most_common", lambda x: pd.Series.mode(x)[0]),
+            "sum",
+            "mad",
+            "nunique",
+        ]
+        other_analysis = [
+            "count",
+            ("most_common", lambda x: pd.Series.mode(x)[0]),
+            "nunique",
+        ]
 
         list_of_cols = _get_columns(list(cols), self._data_properties.x_train)
 
         if isinstance(data_filter, pd.DataFrame):
             data = data_filter
         else:
-            data = self._data_properties.x_train.copy()            
+            data = self._data_properties.x_train.copy()
 
         for col in list_of_cols:
             if col not in groupby:
-                #biufc - bool, int, unsigned, float, complex
-                if data[col].dtype.kind in 'biufc':
+                # biufc - bool, int, unsigned, float, complex
+                if data[col].dtype.kind in "biufc":
                     analysis[col] = numeric_analysis
                 else:
                     analysis[col] = other_analysis
 
         analyzed_data = data.groupby(groupby).agg(analysis)
-        
+
         return analyzed_data
 
-    def data_report(self, title='Profile Report', output_file='', suppress=False):
+    def data_report(self, title="Profile Report", output_file="", suppress=False):
         """
         Generates a full Exploratory Data Analysis report using Pandas Profiling.
 
@@ -437,9 +581,10 @@ class MethodBase(object):
         HTML display of Exploratory Data Analysis report
         """
 
-
         if SHELL == "ZMQInteractiveShell":
-            report = self._data_properties.x_train.profile_report(title=title, style={'full_width':True})
+            report = self._data_properties.x_train.profile_report(
+                title=title, style={"full_width": True}
+            )
         else:
             report = self._data_properties.x_train.profile_report(title=title)
 
@@ -448,9 +593,8 @@ class MethodBase(object):
 
         if not suppress:
             return report
-        
 
-    def describe(self, dataset='train'):
+    def describe(self, dataset="train"):
         """
         Describes your dataset using the DataFrameSummary library with basic descriptive info.
         Extends the DataFrame.describe() method to give more info.
@@ -471,8 +615,7 @@ class MethodBase(object):
             Dataframe describing your dataset with basic descriptive info
         """
 
-       
-        if dataset == 'train':            
+        if dataset == "train":
             x_train_summary = DataFrameSummary(self.x_train)
 
             return x_train_summary.summary()
@@ -481,8 +624,7 @@ class MethodBase(object):
 
             return x_test_summary.summary()
 
-
-    def column_info(self, dataset='train'):
+    def column_info(self, dataset="train"):
         """
         Describes your columns using the DataFrameSummary library with basic descriptive info.
 
@@ -510,7 +652,7 @@ class MethodBase(object):
             Dataframe describing your columns with basic descriptive info
         """
 
-        if dataset == 'train':            
+        if dataset == "train":
             x_train_summary = DataFrameSummary(self.x_train)
 
             return x_train_summary.columns_stats
@@ -519,7 +661,7 @@ class MethodBase(object):
 
             return x_test_summary.columns_stats
 
-    def describe_column(self, column, dataset='train'):
+    def describe_column(self, column, dataset="train"):
         """
         Analyzes a column and reports descriptive statistics about the columns.
 
@@ -574,7 +716,7 @@ class MethodBase(object):
             Dictionary mapping a statistic and its value for a specific column
         """
 
-        if dataset == 'train':            
+        if dataset == "train":
             x_train_summary = DataFrameSummary(self.x_train)
 
             return x_train_summary[column]
@@ -582,9 +724,8 @@ class MethodBase(object):
             x_test_summary = DataFrameSummary(self.x_test)
 
             return x_test_summary[column]
-            
 
-    def drop(self, *drop_columns, keep=[], regexp='', reason=''):
+    def drop(self, *drop_columns, keep=[], regexp="", reason=""):
         """
         Drops columns from the dataframe.
         
@@ -626,19 +767,20 @@ class MethodBase(object):
         else:
             regex_columns = []
 
-        drop_columns = list(set(set(drop_columns).union(regex_columns)).difference(keep))
-        
+        drop_columns = list(
+            set(set(drop_columns).union(regex_columns)).difference(keep)
+        )
+
         self._data_properties.x_train = self.x_train.drop(drop_columns, axis=1)
 
         if self._data_properties.x_test is not None:
             self._data_properties.x_test = self.x_test.drop(drop_columns, axis=1)
 
         if self.report is not None:
-            self.report.log('Dropped columns: {}. {}'.format(", ".join(drop_columns), reason))
+            self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
 
         return self.copy()
 
-    
     def encode_target(self):
         """
         Encodes target variables with value between 0 and n_classes-1.
@@ -654,13 +796,23 @@ class MethodBase(object):
         """
 
         if not self._data_properties.target_field:
-            raise ValueError('Please set the `target_field` field variable before encoding.')
-    
-        self._data_properties.x_train, self._data_properties.x_test, self._data_properties.target_mapping = label_encoder(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=self._data_properties.target_field, target=True)
+            raise ValueError(
+                "Please set the `target_field` field variable before encoding."
+            )
+
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+            self._data_properties.target_mapping,
+        ) = label_encoder(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=self._data_properties.target_field,
+            target=True,
+        )
 
         if self.report is not None:
-            self.report.log('Encoded the target variable as numeric values.')
+            self.report.log("Encoded the target variable as numeric values.")
 
         return self.copy()
 
@@ -684,14 +836,83 @@ class MethodBase(object):
             True to write 'index' column, by default False
         """
 
-        index = kwargs.pop('index', index)
-        chunksize = kwargs.pop('chunksize', 10000)
+        index = kwargs.pop("index", index)
+        chunksize = kwargs.pop("chunksize", 10000)
 
-        self._data_properties.x_train.to_csv(name + '_train.csv', index=index, chunksize=chunksize, **kwargs)
+        self._data_properties.x_train.to_csv(
+            name + "_train.csv", index=index, chunksize=chunksize, **kwargs
+        )
 
         if self._data_properties.x_test is not None:
-            self._data_properties.x_test.to_csv(name + '_test.csv', index=index, chunksize=chunksize, **kwargs)
+            self._data_properties.x_test.to_csv(
+                name + "_test.csv", index=index, chunksize=chunksize, **kwargs
+            )
 
+    def checklist(self):
+        """
+        Displays a checklist dashboard with reminders for a Data Science project.
+        """
+
+        data_checkboxes = []
+        clean_checkboxes = []
+        analysis_checkboxes = [
+            [widgets.Label(value="Univariate Analysis")],
+            [widgets.Label(value="Multivariate Analysis")],
+            [widgets.Label(value="Timeseries Analysis")],
+        ]
+        issue_checkboxes = []
+        preparation_checkboxes = []
+
+        for item in DATA_CHECKLIST:
+            data_checkboxes.append(
+                widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            )
+        data_box = widgets.VBox(data_checkboxes)
+
+        for item in CLEANING_CHECKLIST:
+            clean_checkboxes.append(
+                widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            )
+        clean_box = widgets.VBox(clean_checkboxes)
+
+        for item in UNI_ANALYSIS_CHECKLIST:
+            analysis_checkboxes[0].append(
+                widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            )
+        uni_box = widgets.VBox(analysis_checkboxes[0])
+
+        for item in MULTI_ANALYSIS_CHECKLIST:
+            analysis_checkboxes[1].append(
+                widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            )
+
+        multi_box = widgets.VBox(analysis_checkboxes[1])
+
+        analysis_box = widgets.HBox([uni_box, multi_box])
+
+        for item in ISSUES_CHECKLIST:
+            issue_checkboxes.append(
+                widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            )
+        issue_box = widgets.VBox(issue_checkboxes)
+
+        for item in PREPARATION_CHECKLIST:
+            preparation_checkboxes.append(
+                widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            )
+        prep_box = widgets.VBox(preparation_checkboxes)
+
+        tab_list = [data_box, clean_box, analysis_box, issue_box, prep_box]
+
+        tab = widgets.Tab()
+        tab.children = tab_list
+        tab.set_title(0, "Data")
+        tab.set_title(1, "Cleaning")
+        tab.set_title(2, "Analysis")
+        tab.set_title(3, "Issues")
+        tab.set_title(4, "Preparation")
+
+        display(tab)
 
     def visualize_raincloud(self, x_col: str, y_col=None, **params):
         """
@@ -819,7 +1040,17 @@ class MethodBase(object):
 
         raincloud(y_col, x_col, self.x_train)
 
-    def visualize_barplot(self, x_col, *cols, groupby=None, method=None, orient='v', stacked=False, output_file='', **barplot_kwargs):
+    def visualize_barplot(
+        self,
+        x_col,
+        *cols,
+        groupby=None,
+        method=None,
+        orient="v",
+        stacked=False,
+        output_file="",
+        **barplot_kwargs,
+    ):
         """
         Plots a bar plot for the given columns provided using Bokeh.
 
@@ -860,20 +1091,41 @@ class MethodBase(object):
             Whether to stack the different columns resulting in a stacked bar chart,
             by default False
         """
-        
-        barplot(x_col, list(cols), self._data_properties.x_train, groupby=groupby, method=method, orient=orient, stacked=stacked, **barplot_kwargs)
 
-    def visualize_scatterplot(self, x_col: str, y_col: str, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
+        barplot(
+            x_col,
+            list(cols),
+            self._data_properties.x_train,
+            groupby=groupby,
+            method=method,
+            orient=orient,
+            stacked=stacked,
+            **barplot_kwargs,
+        )
+
+    def visualize_scatterplot(
+        self,
+        x_col: str,
+        y_col: str,
+        z_col=None,
+        category=None,
+        title="Scatter Plot",
+        size=8,
+        output_file="",
+        **scatterplot_kwargs,
+    ):
         """
         Plots a scatterplot for the given x and y columns provided using Bokeh.
 
-        For a list of possible scatterplot_kwargs please check out the following links:
+        For a list of possible scatterplot_kwargs for 2 dimensional data please check out the following links:
 
         https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.scatter
 
         https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#userguide-styling-line-properties 
 
-        https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#userguide-styling-fill-properties 
+        For more information on key word arguments for 3d data, please check them out here:
+
+        https://www.plotly.express/plotly_express/#plotly_express.scatter_3d
         
         Parameters
         ----------
@@ -882,6 +1134,9 @@ class MethodBase(object):
 
         y_col : str
             Y column name
+
+        z_col : str
+            Z column name, 
 
         category : str, optional
             Category to group your data, by default None
@@ -893,12 +1148,6 @@ class MethodBase(object):
             Size of the circle, can either be a number
             or a column name to scale the size, by default 8
 
-        fill_color : color value, optional
-            Colour or Colour palette to set fill colour
-
-        line_color : color value, optional
-            Colour or Colour palette to set line colour
-
         output_file : str, optional
             Output html file name for image
 
@@ -906,9 +1155,21 @@ class MethodBase(object):
             See above links for list of possible scatterplot options.
         """
 
-        scatterplot(x_col, y_col, self._data_properties.x_train, title=title, category=category, size=size, output_file=output_file, **scatterplot_kwargs)
+        scatterplot(
+            x_col,
+            y_col,
+            z=z_col,
+            data=self._data_properties.x_train,
+            title=title,
+            category=category,
+            size=size,
+            output_file=output_file,
+            **scatterplot_kwargs,
+        )
 
-    def visualize_lineplot(self, x_col: str, *y_cols, title='Line Plot', output_file='', **lineplot_kwargs):
+    def visualize_lineplot(
+        self, x_col: str, *y_cols, title="Line Plot", output_file="", **lineplot_kwargs
+    ):
         """
         Plots a lineplot for the given x and y columns provided using Bokeh.
 
@@ -965,4 +1226,11 @@ class MethodBase(object):
             and https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.line 
         """
 
-        lineplot(x_col, list(y_cols), self._data_properties.x_train, title=title, output_file=output_file, **lineplot_kwargs)
+        lineplot(
+            x_col,
+            list(y_cols),
+            self._data_properties.x_train,
+            title=title,
+            output_file=output_file,
+            **lineplot_kwargs,
+        )

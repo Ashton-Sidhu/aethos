@@ -1,8 +1,8 @@
-pyautoml.Model package
-=========================
+Modelling package
+===================
 
-Module contents
----------------
+Models
+-------
 
 .. automodule:: pyautoml.modelling
    :members:

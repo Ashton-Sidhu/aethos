@@ -1,4 +1,4 @@
 todo:
-  keyword: "TODO"
+  keyword: ["TODO", "# TODO", "#TODO", "TODO:", "# TODO:", "#TODO:"]
   reopenClosed: false
   autoassign: false

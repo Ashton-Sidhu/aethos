@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import pandas_bokeh
+import plotly.express as px
 import ptitprince as pt
 
 
@@ -23,23 +24,35 @@ def raincloud(col: str, target_col: str, data, **params):
         Parameters for the RainCloud visualization
     """
 
-    _, ax = plt.subplots(figsize=(12,8))
+    _, ax = plt.subplots(figsize=(12, 8))
 
     if not params:
-        params = {'x': col,
-                'y': target_col,
-                'data': data.infer_objects(),
-                'pointplot': True,
-                'width_viol': 0.8,
-                'width_box': .4,
-                'orient': 'h',
-                'move': 0.,
-                'ax': ax
-                }
-                
+        params = {
+            "x": col,
+            "y": target_col,
+            "data": data.infer_objects(),
+            "pointplot": True,
+            "width_viol": 0.8,
+            "width_box": 0.4,
+            "orient": "h",
+            "move": 0.0,
+            "ax": ax,
+        }
+
     ax = pt.RainCloud(**params)
 
-def barplot(x, y, data, groupby=None, method=None, orient='v', stacked=False, output_file='', **barplot_kwargs):
+
+def barplot(
+    x,
+    y,
+    data,
+    groupby=None,
+    method=None,
+    orient="v",
+    stacked=False,
+    output_file="",
+    **barplot_kwargs,
+):
     """
     Visualizes a bar plot.
 
@@ -72,37 +85,45 @@ def barplot(x, y, data, groupby=None, method=None, orient='v', stacked=False, ou
         by default False
     """
 
-    alpha = barplot_kwargs.pop('alpha', 0.6)
+    alpha = barplot_kwargs.pop("alpha", 0.6)
     data_copy = data[[x] + y].copy()
     data_copy = data_copy.set_index(x)
 
     if groupby:
-        data_copy = data_copy.groupby(groupby, as_index=False)        
+        data_copy = data_copy.groupby(groupby, as_index=False)
         data_copy = getattr(data_copy, method)()
 
-    if orient == 'v':
+    if orient == "v":
 
         p_bar = data_copy.plot_bokeh.bar(
-                                        figsize=(1500,500), # For now until auto scale is implemented
-                                        stacked=stacked,
-                                        alpha=alpha,
-                                        **barplot_kwargs
-                                        )
-                        
-    else:        
+            figsize=(1500, 500),  # For now until auto scale is implemented
+            stacked=stacked,
+            alpha=alpha,
+            **barplot_kwargs,
+        )
+
+    else:
 
         p_bar = data_copy.plot_bokeh.barh(
-                                        figsize=(1500,500),
-                                        stacked=stacked,
-                                        alpha=alpha,
-                                        **barplot_kwargs                                        
-                                        )
+            figsize=(1500, 500), stacked=stacked, alpha=alpha, **barplot_kwargs
+        )
 
     if output_file:
         pandas_bokeh.output_file(output_file)
         pandas_bokeh.save(p_bar)
 
-def scatterplot(x: str, y: str, data, category=None, title='Scatter Plot', size=8, output_file='', **scatterplot_kwargs):
+
+def scatterplot(
+    x: str,
+    y: str,
+    z=None,
+    data=None,
+    category=None,
+    title="Scatter Plot",
+    size=8,
+    output_file="",
+    **scatterplot_kwargs,
+):
     """
     Plots a scatter plot.
     
@@ -113,6 +134,9 @@ def scatterplot(x: str, y: str, data, category=None, title='Scatter Plot', size=
 
     y : str
         Y axis column
+
+    z: str
+        Z axis column
 
     data : Dataframe
         Dataframe
@@ -131,24 +155,33 @@ def scatterplot(x: str, y: str, data, category=None, title='Scatter Plot', size=
         If a name is provided save the plot to an html file, by default ''
     """
 
-    fill_alpha = scatterplot_kwargs.pop('fill_alpha', 0.6)
-    data[[x, y]] = data[[x, y]].apply(pd.to_numeric)
+    if z is None:
+        fill_alpha = scatterplot_kwargs.pop("fill_alpha", 0.6)
+        data[[x, y]] = data[[x, y]].apply(pd.to_numeric)
 
-    p_scatter = data.plot_bokeh.scatter(
-        x=x,
-        y=y,
-        category=category,
-        title=title,
-        size=size,
-        fill_alpha=fill_alpha,
-        **scatterplot_kwargs,
-    )
+        p_scatter = data.plot_bokeh.scatter(
+            x=x,
+            y=y,
+            category=category,
+            title=title,
+            size=size,
+            fill_alpha=fill_alpha,
+            **scatterplot_kwargs,
+        )
 
-    if output_file:
-        pandas_bokeh.output_file(output_file)
-        pandas_bokeh.save(p_scatter)
+        if output_file:
+            pandas_bokeh.output_file(output_file)
+            pandas_bokeh.save(p_scatter)
 
-def lineplot(x: str, y: list, data, title='Line Plot', output_file='', **lineplot_kwargs):
+    else:
+        fig = px.scatter_3d(data, x=x, y=y, z=z, **scatterplot_kwargs)
+
+        fig.show()
+
+
+def lineplot(
+    x: str, y: list, data, title="Line Plot", output_file="", **lineplot_kwargs
+):
     """
     Plots a line plot.
     
@@ -172,13 +205,9 @@ def lineplot(x: str, y: list, data, title='Line Plot', output_file='', **lineplo
 
     data_copy = data[[x] + y].copy()
     data_copy = data_copy.set_index(x)
-    xlabel = lineplot_kwargs.pop('xlabel', x)
+    xlabel = lineplot_kwargs.pop("xlabel", x)
 
-    p_line = data_copy.plot_bokeh.line(
-        title=title,
-        xlabel=xlabel,
-        **lineplot_kwargs
-    )
+    p_line = data_copy.plot_bokeh.line(title=title, xlabel=xlabel, **lineplot_kwargs)
 
     if output_file:
         pandas_bokeh.output_file(output_file)

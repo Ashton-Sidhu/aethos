@@ -8,18 +8,12 @@ from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import PorterStemmer
 from nltk.tokenize import RegexpTokenizer, word_tokenize
 
-from pyautoml.util import _function_input_validation
+NLTK_STEMMERS = {"porter": PorterStemmer()}
 
-NLTK_STEMMERS = {
-    'porter': PorterStemmer()
-}
-
-NLTK_LEMMATIZERS = {
-    'wordnet': WordNetLemmatizer()
-}
+NLTK_LEMMATIZERS = {"wordnet": WordNetLemmatizer()}
 
 
-def split_sentences(x_train, x_test=None, list_of_cols=[], new_col_name='_sentences'):
+def split_sentences(x_train, x_test=None, list_of_cols=[], new_col_name="_sentences"):
     """
     Splits text by its sentences and then saves that list in a new column.
 
@@ -46,16 +40,16 @@ def split_sentences(x_train, x_test=None, list_of_cols=[], new_col_name='_senten
     """
 
     for col in list_of_cols:
-        x_train[col +
-                    new_col_name] = pd.Series(map(sent_tokenize, x_train[col]))
+        x_train[col + new_col_name] = pd.Series(map(sent_tokenize, x_train[col]))
         if x_test is not None:
-            x_test[col +
-                        new_col_name] = pd.Series(map(sent_tokenize, x_test[col]))
+            x_test[col + new_col_name] = pd.Series(map(sent_tokenize, x_test[col]))
 
     return x_train, x_test
 
 
-def nltk_stem(x_train, x_test=None, list_of_cols=[], stemmer='porter', new_col_name="_stemmed"):
+def nltk_stem(
+    x_train, x_test=None, list_of_cols=[], stemmer="porter", new_col_name="_stemmed"
+):
     """
     Stems all the text in a column.
 
@@ -93,7 +87,6 @@ def nltk_stem(x_train, x_test=None, list_of_cols=[], stemmer='porter', new_col_n
     # Create partial for speed purposes
     func = partial(_apply_text_method, transformer=stem.stem)
 
-    
     for col in list_of_cols:
         x_train[col + new_col_name] = map(func, x_train[col])
 
@@ -103,7 +96,9 @@ def nltk_stem(x_train, x_test=None, list_of_cols=[], stemmer='porter', new_col_n
     return x_train, x_test
 
 
-def nltk_word_tokenizer(x_train, x_test=None, list_of_cols=[], regexp='', new_col_name="_tokenized"):
+def nltk_word_tokenizer(
+    x_train, x_test=None, list_of_cols=[], regexp="", new_col_name="_tokenized"
+):
     """
     Splits text into its words. 
 
@@ -136,27 +131,28 @@ def nltk_word_tokenizer(x_train, x_test=None, list_of_cols=[], regexp='', new_co
 
     tokenizer = RegexpTokenizer(regexp)
 
-   
     for col in list_of_cols:
         if not regexp:
-            x_train[col +
-                        new_col_name] = pd.Series(map(word_tokenize, x_train[col]))
+            x_train[col + new_col_name] = pd.Series(map(word_tokenize, x_train[col]))
 
             if x_test is not None:
-                x_test[col +
-                            new_col_name] = pd.Series(map(word_tokenize, x_test[col]))
+                x_test[col + new_col_name] = pd.Series(map(word_tokenize, x_test[col]))
         else:
             x_train[col + new_col_name] = pd.Series(
-                map(tokenizer.tokenize, x_train[col]))
+                map(tokenizer.tokenize, x_train[col])
+            )
 
             if x_test is not None:
-                x_test[col +
-                            new_col_name] = pd.Series(map(tokenizer.tokenize, x_test[col]))
+                x_test[col + new_col_name] = pd.Series(
+                    map(tokenizer.tokenize, x_test[col])
+                )
 
     return x_train, x_test
 
 
-def nltk_remove_stopwords(x_train, x_test=None, list_of_cols=[], custom_stopwords=[], new_col_name='_rem_stop'):
+def nltk_remove_stopwords(
+    x_train, x_test=None, list_of_cols=[], custom_stopwords=[], new_col_name="_rem_stop"
+):
     """
     Removes stopwords following the nltk English stopwords list.
 
@@ -187,22 +183,45 @@ def nltk_remove_stopwords(x_train, x_test=None, list_of_cols=[], custom_stopword
     Returns 2 Dataframes if x_test is provided. 
     """
 
-    stop_words = stopwords.words('english')
+    stop_words = stopwords.words("english")
     stop_words.extend(custom_stopwords)
     stop_list = set(stop_words)
 
     for col in list_of_cols:
-        x_train[col + new_col_name] = list(map(lambda x: " ".join(
-            [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_train[col]))
-        
+        x_train[col + new_col_name] = list(
+            map(
+                lambda x: " ".join(
+                    [word for word in word_tokenize(x.lower()) if word not in stop_list]
+                ),
+                x_train[col],
+            )
+        )
+
         if x_test is not None:
-            x_test[col + new_col_name] = list(map(lambda x: " ".join(
-                [word for word in word_tokenize(x.lower()) if word not in stop_list]), x_test[col]))
+            x_test[col + new_col_name] = list(
+                map(
+                    lambda x: " ".join(
+                        [
+                            word
+                            for word in word_tokenize(x.lower())
+                            if word not in stop_list
+                        ]
+                    ),
+                    x_test[col],
+                )
+            )
 
     return x_train, x_test
 
 
-def remove_punctuation(x_train, x_test=None, list_of_cols=[], regexp='', exceptions=[], new_col_name='_rem_punct'):
+def remove_punctuation(
+    x_train,
+    x_test=None,
+    list_of_cols=[],
+    regexp="",
+    exceptions=[],
+    new_col_name="_rem_punct",
+):
     """
     Removes punctuation from a string.
 
@@ -241,19 +260,33 @@ def remove_punctuation(x_train, x_test=None, list_of_cols=[], regexp='', excepti
 
     for col in list_of_cols:
         if not regexp:
-            x_train[col + new_col_name] = list(map(lambda x: "".join(
-                [letter for letter in x if letter not in delete_punct]), x_train[col]))
-    
-            if x_test is not None:
-                x_test[col + new_col_name] = list(map(lambda x: "".join(
-                    [letter for letter in x if letter not in delete_punct]), x_test[col]))
-        else:
             x_train[col + new_col_name] = list(
-                map(lambda x: " ".join(tokenizer.tokenize(x)), x_train[col]))
+                map(
+                    lambda x: "".join(
+                        [letter for letter in x if letter not in delete_punct]
+                    ),
+                    x_train[col],
+                )
+            )
 
             if x_test is not None:
                 x_test[col + new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), x_test[col]))
+                    map(
+                        lambda x: "".join(
+                            [letter for letter in x if letter not in delete_punct]
+                        ),
+                        x_test[col],
+                    )
+                )
+        else:
+            x_train[col + new_col_name] = list(
+                map(lambda x: " ".join(tokenizer.tokenize(x)), x_train[col])
+            )
+
+            if x_test is not None:
+                x_test[col + new_col_name] = list(
+                    map(lambda x: " ".join(tokenizer.tokenize(x)), x_test[col])
+                )
 
     return x_train, x_test
 
@@ -278,9 +311,9 @@ def _apply_text_method(text_data, transformer=None):
         Transformed data
     """
 
-    transformed_text_data = ''
+    transformed_text_data = ""
 
     for word in text_data.split():
-        transformed_text_data += '{} '.format(transformer(word))
+        transformed_text_data += f"{transformer(word)} "
 
     return transformed_text_data.strip()

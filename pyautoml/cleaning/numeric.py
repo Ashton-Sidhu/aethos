@@ -1,22 +1,19 @@
-'''
+"""
 This file contains the following methods:
 
 replace_missing_mean_median_mode
 replace_missing_constant
-'''
+"""
 
 import pandas as pd
+from pyautoml.cleaning.categorical import replace_missing_new_category
+from pyautoml.util import _get_columns, _numeric_input_conditions, drop_replace_columns
 from sklearn.impute import SimpleImputer
 
-from pyautoml.cleaning.categorical import replace_missing_new_category
-from pyautoml.util import (_get_columns, _numeric_input_conditions,
-                           drop_replace_columns)
 
-#TODO: Implement KNN, Interpolation, Extrapolation, Hot-Deck imputation for replacing missing x_train
-
-
-
-def replace_missing_mean_median_mode(x_train, x_test=None, list_of_cols=[], strategy=''):
+def replace_missing_mean_median_mode(
+    x_train, x_test=None, list_of_cols=[], strategy=""
+):
     """
     Replaces missing values in every numeric column with the mean, median or mode of that column specified by strategy.
 
@@ -48,24 +45,25 @@ def replace_missing_mean_median_mode(x_train, x_test=None, list_of_cols=[], stra
 
     Returns 2 Dataframes test if x_test is provided.  
     """
-    
-    if strategy != 'most_frequent':    
+
+    if strategy != "most_frequent":
         list_of_cols = _numeric_input_conditions(list_of_cols, x_train)
     else:
         list_of_cols = _get_columns(list_of_cols, x_train)
-    
+
     imp = SimpleImputer(strategy=strategy)
-    
+
     fit_data = imp.fit_transform(x_train[list_of_cols])
     fit_df = pd.DataFrame(fit_data, columns=list_of_cols)
     x_train = drop_replace_columns(x_train, list_of_cols, fit_df)
 
-    if x_test is not None:        
+    if x_test is not None:
         fit_x_test = imp.transform(x_test[list_of_cols])
-        fit_test_df = pd.DataFrame(fit_x_test, columns=list_of_cols)      
+        fit_test_df = pd.DataFrame(fit_x_test, columns=list_of_cols)
         x_test = drop_replace_columns(x_test, list_of_cols, fit_test_df)
 
     return x_train, x_test
+
 
 def replace_missing_constant(x_train, x_test=None, col_to_constant=None, constant=0):
     """
@@ -99,13 +97,22 @@ def replace_missing_constant(x_train, x_test=None, col_to_constant=None, constan
     >>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
 
     >>> replace_missing_constant(1, ['a', 'b', 'c'])
-    """   
+    """
 
     if isinstance(col_to_constant, dict):
-        x_train, x_test = replace_missing_new_category(col_to_cateogory=col_to_constant, x_train=x_train, x_test=x_test)
+        x_train, x_test = replace_missing_new_category(
+            col_to_cateogory=col_to_constant, x_train=x_train, x_test=x_test
+        )
     elif isinstance(col_to_constant, list):
-        x_train, x_test = replace_missing_new_category(constant=constant, col_to_category=col_to_constant, x_train=x_train, x_test=x_test)
+        x_train, x_test = replace_missing_new_category(
+            constant=constant,
+            col_to_category=col_to_constant,
+            x_train=x_train,
+            x_test=x_test,
+        )
     else:
-        x_train, x_test = replace_missing_new_category(constant=constant, x_train=x_train, x_test=x_test)
+        x_train, x_test = replace_missing_new_category(
+            constant=constant, x_train=x_train, x_test=x_test
+        )
 
     return x_train, x_test

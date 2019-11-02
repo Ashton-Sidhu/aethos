@@ -5,36 +5,63 @@ from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import (_contructor_data_properties, _input_columns,
-                           _numeric_input_conditions, label_encoder)
+from pyautoml.util import (
+    _contructor_data_properties,
+    _input_columns,
+    _numeric_input_conditions,
+    label_encoder,
+)
 
 
 class Preprocess(MethodBase):
-
-    
-    def __init__(self, step=None, x_train=None, x_test=None, test_split_percentage=0.2, split=True, target_field="", report_name=None):
+    def __init__(
+        self,
+        step=None,
+        x_train=None,
+        x_test=None,
+        test_split_percentage=0.2,
+        split=True,
+        target_field="",
+        report_name=None,
+    ):
 
         _data_properties = _contructor_data_properties(step)
 
-        if _data_properties is None:        
-            super().__init__(x_train=x_train, x_test=x_test, test_split_percentage=test_split_percentage,
-                        split=split, target_field=target_field, target_mapping=None, report_name=report_name)
+        if _data_properties is None:
+            super().__init__(
+                x_train=x_train,
+                x_test=x_test,
+                test_split_percentage=test_split_percentage,
+                split=split,
+                target_field=target_field,
+                target_mapping=None,
+                report_name=report_name,
+            )
         else:
-            super().__init__(x_train=_data_properties.x_train, x_test=_data_properties.x_test, test_split_percentage=test_split_percentage,
-                        split=_data_properties.split, target_field=_data_properties.target_field, target_mapping=_data_properties.target_mapping, report_name=_data_properties.report_name)
-                        
+            super().__init__(
+                x_train=_data_properties.x_train,
+                x_test=_data_properties.x_test,
+                test_split_percentage=test_split_percentage,
+                split=_data_properties.split,
+                target_field=_data_properties.target_field,
+                target_mapping=_data_properties.target_mapping,
+                report_name=_data_properties.report_name,
+            )
 
         if self._data_properties.report is not None:
             self.report.write_header("Preprocessing")
 
-        
-    def normalize_numeric(self, *list_args, list_of_cols=[], **normalize_params):
+    def normalize_numeric(
+        self, *list_args, list_of_cols=[], keep_col=True, **normalize_params
+    ):
         """
-        Function that normalizes all numeric values between 0 and 1 to bring features into same domain.
+        Function that normalizes all numeric values between 2 values to bring features into same domain.
         
         If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
 
         If a list of columns is provided use the list, otherwise use arguments.
+
+        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html#sklearn.preprocessing.MinMaxScaler 
 
         This function can be found in `preprocess/numeric.py`     
         
@@ -46,9 +73,11 @@ class Preprocess(MethodBase):
         list_of_cols : list, optional
             A list of specific columns to apply this technique to., by default []
 
+        feature_range : tuple(int or float, int or float), optional
+            Min and max range to normalize values to, by default (0, 1)
+
         normalize_params : dict, optional
-            Parmaters to pass into MinMaxScaler() constructor
-            from Scikit-Learn, by default {}
+            Parmaters to pass into MinMaxScaler() constructor from Scikit-Learn
         
         Returns
         -------
@@ -56,28 +85,150 @@ class Preprocess(MethodBase):
             Returns a deep copy of the Preprocess object.
         """
 
-        report_info = technique_reason_repo['preprocess']['numeric']['standardize']
-        
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        report_info = technique_reason_repo["preprocess"]["numeric"]["standardize"]
+
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = preprocess_normalize(x_train=self._data_properties.x_train,
-                                                                                            x_test=self._data_properties.x_test,
-                                                                                            list_of_cols=list_of_cols,
-                                                                                            **normalize_params,
-                                                                                            )
+        self._data_properties.x_train, self._data_properties.x_test = scale(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            method="minmax",
+            keep_col=keep_col,
+            **normalize_params,
+        )
 
         if self.report is not None:
             if list_of_cols:
                 self.report.report_technique(report_info, list_of_cols)
             else:
-                list_of_cols = _numeric_input_conditions(list_of_cols, self._data_properties.x_train)
+                list_of_cols = _numeric_input_conditions(
+                    list_of_cols, self._data_properties.x_train
+                )
                 self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
+    def normalize_quantile_range(
+        self, *list_args, list_of_cols=[], keep_col=True, **robust_params
+    ):
+        """
+        Scale features using statistics that are robust to outliers.
 
-    def split_sentences(self, *list_args, list_of_cols=[], new_col_name='_sentences'):
+        This Scaler removes the median and scales the data according to the quantile range (defaults to IQR: Interquartile Range).
+        The IQR is the range between the 1st quartile (25th quantile) and the 3rd quartile (75th quantile).
+
+        Standardization of a dataset is a common requirement for many machine learning estimators.
+        Typically this is done by removing the mean and scaling to unit variance.
+        However, outliers can often influence the sample mean / variance in a negative way.
+        In such cases, the median and the interquartile range often give better results.
+        
+        If `list_of_cols` is not provided, the strategy will be applied to all numeric columns.
+
+        If a list of columns is provided use the list, otherwise use arguments.
+
+        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html#sklearn.preprocessing.RobustScaler
+
+        This function can be found in `preprocess/numeric.py`     
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        with_centering : boolean, True by default
+            If True, center the data before scaling.
+            This will cause transform to raise an exception when attempted on sparse matrices,
+            because centering them entails building a dense matrix which in common use cases is likely to be too large to fit in memory.
+        
+        with_scaling : boolean, True by default
+            If True, scale the data to interquartile range.
+
+        quantile_range : tuple (q_min, q_max), 0.0 < q_min < q_max < 100.0
+            Default: (25.0, 75.0) = (1st quantile, 3rd quantile) = IQR Quantile range used to calculate scale_.
+
+        robust_params : dict, optional
+            Parmaters to pass into MinMaxScaler() constructor from Scikit-Learn
+        
+        Returns
+        -------
+        Preprocess:
+            Returns a deep copy of the Preprocess object.
+        """
+
+        report_info = technique_reason_repo["preprocess"]["numeric"]["robust"]
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = scale(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            method="robust",
+            keep_col=keep_col,
+            **robust_params,
+        )
+
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(
+                    list_of_cols, self._data_properties.x_train
+                )
+                self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def normalize_log(self, *list_args, list_of_cols=[], base=1):
+        """
+        Scales data logarithmically.
+
+        Options are 1 for natural log, 2 for base2, 10 for base10.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        base : str, optional
+            Base to logarithmically scale by, by default ''
+        
+        Returns
+        -------
+        Preprocess:
+            Returns a deep copy of the Preprocess object.
+        """
+
+        report_info = technique_reason_repo["preprocess"]["numeric"]["log"]
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = log_scale(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            base=base,
+        )
+
+        if self.report is not None:
+            if list_of_cols:
+                self.report.report_technique(report_info, list_of_cols)
+            else:
+                list_of_cols = _numeric_input_conditions(
+                    list_of_cols, self._data_properties.x_train
+                )
+                self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def split_sentences(self, *list_args, list_of_cols=[], new_col_name="_sentences"):
         """
         Splits text data into sentences and saves it into another column for analysis.
 
@@ -100,22 +251,25 @@ class Preprocess(MethodBase):
             Returns a deep copy of the Preprocess object.
         """
 
-        report_info = technique_reason_repo['preprocess']['text']['split_sentence']
+        report_info = technique_reason_repo["preprocess"]["text"]["split_sentence"]
 
-        list_of_cols = _input_columns(list_args, list_of_cols)        
-    
-        self._data_properties.x_train, self._data_properties.x_test = split_sentences(x_train=self._data_properties.x_train, 
-                                                                                        x_test=self._data_properties.x_test,
-                                                                                        list_of_cols=list_of_cols,
-                                                                                        new_col_name=new_col_name,
-                                                                                        )
-    
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        self._data_properties.x_train, self._data_properties.x_test = split_sentences(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            new_col_name=new_col_name,
+        )
+
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
-    def stem_nltk(self, *list_args, list_of_cols=[], stemmer='porter', new_col_name='_stemmed'):
+    def stem_nltk(
+        self, *list_args, list_of_cols=[], stemmer="porter", new_col_name="_stemmed"
+    ):
         """
         Transforms text to their word stem, base or root form. 
         For example:
@@ -148,19 +302,26 @@ class Preprocess(MethodBase):
             Copy of preprocess object
         """
 
-        report_info = technique_reason_repo['preprocess']['text']['stem']
+        report_info = technique_reason_repo["preprocess"]["text"]["stem"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self._data_properties.x_train, self._data_properties.x_test = nltk_stem(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, stemmer=stemmer, new_col_name=new_col_name)
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            stemmer=stemmer,
+            new_col_name=new_col_name,
+        )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
-    def split_words_nltk(self, *list_args, list_of_cols=[], regexp='', new_col_name="_tokenized"):
+    def split_words_nltk(
+        self, *list_args, list_of_cols=[], regexp="", new_col_name="_tokenized"
+    ):
         """
         Splits text into its words using nltk punkt tokenizer by default. 
     
@@ -186,19 +347,29 @@ class Preprocess(MethodBase):
             Copy of preprocess object
         """
 
-        report_info = technique_reason_repo['preprocess']['text']['split_words']
+        report_info = technique_reason_repo["preprocess"]["text"]["split_words"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = nltk_word_tokenizer(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, new_col_name=new_col_name)
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = nltk_word_tokenizer(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            regexp=regexp,
+            new_col_name=new_col_name,
+        )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
-    def remove_stopwords_nltk(self, *list_args, list_of_cols=[], custom_stopwords=[], new_col_name="_rem_stop"):
+    def remove_stopwords_nltk(
+        self, *list_args, list_of_cols=[], custom_stopwords=[], new_col_name="_rem_stop"
+    ):
         """
         Removes stopwords following the nltk English stopwords list.
 
@@ -226,19 +397,34 @@ class Preprocess(MethodBase):
             Copy of preprocess object
         """
 
-        report_info = technique_reason_repo['preprocess']['text']['remove_stopwords']
+        report_info = technique_reason_repo["preprocess"]["text"]["remove_stopwords"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = nltk_remove_stopwords(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, custom_stopwords=custom_stopwords, new_col_name=new_col_name)
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = nltk_remove_stopwords(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            custom_stopwords=custom_stopwords,
+            new_col_name=new_col_name,
+        )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
-    def remove_punctuation(self, *list_args, list_of_cols=[], regexp='', exceptions=[], new_col_name='_rem_punct'):
+    def remove_punctuation(
+        self,
+        *list_args,
+        list_of_cols=[],
+        regexp="",
+        exceptions=[],
+        new_col_name="_rem_punct",
+    ):
         """
         Removes punctuation from every string entry.
 
@@ -272,15 +458,24 @@ class Preprocess(MethodBase):
             Copy of preprocess object
         """
 
-        report_info = technique_reason_repo['preprocess']['text']['remove_punctuation']
+        report_info = technique_reason_repo["preprocess"]["text"]["remove_punctuation"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = remove_punctuation(
-            x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols, regexp=regexp, exceptions=exceptions, new_col_name=new_col_name)
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = remove_punctuation(
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+            regexp=regexp,
+            exceptions=exceptions,
+            new_col_name=new_col_name,
+        )
 
         if self.report is not None:
-            self.report.report_technique(report_info)
+            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -305,13 +500,16 @@ class Preprocess(MethodBase):
         Preprocess
             Copy of preprocess object
         """
-    
-        report_info = technique_reason_repo['preprocess']['categorical']['label_encode']
+
+        report_info = technique_reason_repo["preprocess"]["categorical"]["label_encode"]
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self._data_properties.x_train, self._data_properties.x_test, _ = label_encoder(
-                x_train=self._data_properties.x_train, x_test=self._data_properties.x_test, list_of_cols=list_of_cols)
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
+            list_of_cols=list_of_cols,
+        )
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
