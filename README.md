@@ -44,7 +44,7 @@ Secondly there were alot of people that wanted to try data science that were in 
 For more info see my [vision statememt](https://github.com/Ashton-Sidhu/py-automl/blob/develop/VISION.md).
 
 ## Usage
-For full documentation on all the techniques and models, click [here](https://py-automl.readthedocs.io/en/latest/?badge=latest)
+For full documentation on all the techniques and models, click [here](https://py-automl.readthedocs.io/en/latest/?badge=latest) or [here](https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#)
 
 Examples can be viewed [here](https://github.com/Ashton-Sidhu/py-automl/tree/develop/examples)
 

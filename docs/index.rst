@@ -167,7 +167,7 @@ For modelling docmentation click `here <https://py-automl.readthedocs.io/en/late
 Model Analysis API
 ==================
 
-For modelling analysis documentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.modelling.html#module-pyautoml.modelling.model_analysis/>`_.
+For modelling analysis documentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.model_analysis.html#module-pyautoml.modelling.model_analysis/>`_.
 
 Examples
 ========
