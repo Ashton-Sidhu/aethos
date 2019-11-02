@@ -211,7 +211,7 @@ class MethodBase(object):
         Property function for the training predictor variable
         """
 
-        return self._data_properties.y_train
+        return self._data_properties.x_train[self._data_properties.target_field] if self._data_properties.target_field else None
 
     @y_train.setter
     def y_train(self, value):
@@ -232,7 +232,28 @@ class MethodBase(object):
         Property function for the testing predictor variable
         """
 
-        return self._data_properties.y_test
+        if self._data_properties.x_test is not None:
+            if self._data_properties.target_field:
+                return self._data_properties.x_test[self.target_field]
+            else:
+                return None
+        else:
+            return None
+
+    @y_test.setter
+    def y_test(self, value):
+        """
+        Setter function for the testing predictor variable
+        """
+
+        if self._data_properties.x_test is not None:
+            if self.target_field:
+                self._data_properties.x_test[self.target_field] = value
+            else:
+                self._data_properties.target_field = 'label'
+                self._data_properties.x_test['label'] = value
+                print('Added a target (predictor) field (column) named "label".')           
+
 
     @y_test.setter
     def y_test(self, value):

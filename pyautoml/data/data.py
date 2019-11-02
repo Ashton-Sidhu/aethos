@@ -20,17 +20,6 @@ class Data:
         self.report_name = report_name
         self.target_mapping = target_mapping
 
-        if self.target_field:
-            self.y_train = self.x_train[self.target_field]
-
-            if self.x_test is not None:
-                self.y_test = self.x_test[self.target_field]
-            else:
-                self.y_test = None
-        else:
-            self.y_train = None
-            self.y_test = None
-
         if report_name is not None:
             self.report = Report(report_name)
             self.report_name = self.report.filename
