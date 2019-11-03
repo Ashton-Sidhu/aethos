@@ -32,7 +32,8 @@ from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
-from pyautoml.base import SHELL, MethodBase, technique_reason_repo
+import pyautoml
+from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
@@ -209,7 +210,7 @@ class Model(MethodBase):
 
     def __repr__(self):
 
-        if SHELL == "ZMQInteractiveShell":
+        if pyautoml.shell == "ZMQInteractiveShell":
 
             display(self._train_result_data.head())  # Hack for jupyter notebooks
 

@@ -28,9 +28,7 @@ from pyautoml.util import (
 )
 from pyautoml.visualizations.visualize import *
 
-# TODO: Move to a config file
-
-SHELL = get_ipython().__class__.__name__
+# TODO: Move to a config fille
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
@@ -75,7 +73,7 @@ class MethodBase(object):
 
     def __repr__(self):
 
-        if SHELL == "ZMQInteractiveShell":
+        if pyautoml.shell == "ZMQInteractiveShell":
             display(self._data_properties.x_train.head())  # Hack for jupyter notebooks
 
             return ""
@@ -630,7 +628,7 @@ class MethodBase(object):
         HTML display of Exploratory Data Analysis report
         """
 
-        if SHELL == "ZMQInteractiveShell":
+        if pyautoml.shell == "ZMQInteractiveShell":
             report = self._data_properties.x_train.profile_report(
                 title=title, style={"full_width": True}
             )
