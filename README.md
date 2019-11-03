@@ -16,8 +16,8 @@ To track development of the project, you can view the [Trello board](https://tre
 - [Introduction](#introduction)
 - [Motivation](#motivation)
 - [Usage](#usage)
-- [Features](#features)
 - [Installation](#installation)
+- [Features](#features)
 - [Development Phases](#development-phases)
 - [Feedback](#feedback)
 - [Contributors](#contributors)
@@ -155,6 +155,20 @@ model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random for
 
 **NOTE:** In pandas you'll often see `df = df.method(...)` or `df.method(..., inplace=True)` when transforming your data. Then depending on how you developed your analysis, when a mistake is made you either have to restart the kernel or reload your data entirely. In `pyautoml` most methods will change the data inplace (methods that have the keyword argument `new_col_name` will create a new column) without having to go `df = df.method(...)`. To create a "checkpoint" that creates a copy of your current state just assign the method to a variable, for example:
 
+## Installation
+
+`pip install py-automl`
+
+To install associating corpora for nltk analysis:
+
+`pyautoml -ic` or `pyautoml --install-corpora`
+
+To install and use the extensions such as `qgrid` for interactive filtering and analysis with DataFrames:
+
+`pyautoml -ie` or `pyautoml --install-extensions`
+
+Currently working on condas implementation.
+
 ## Features
 
 - Python package that simplifies and automates cleaning, visualizing, preprocessing, feature engineering, and modelling techniques.
@@ -167,12 +181,6 @@ model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random for
 - Data visualizations
 - On prem deployment *
 - 3rd Party application integration (Azure, AWS, GC) *
-
-## Installation
-
-`pip install py-automl`
-
-Currently working on condas implementation.
 
 ## Development Phases
 
