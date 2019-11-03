@@ -3,6 +3,7 @@ import sys
 
 from setuptools import find_packages, setup
 from setuptools.command.install import install
+from subprocess import check_call
 
 VERSION = "0.6.1"
 
@@ -28,6 +29,7 @@ pkgs = [
     "spacy",
     "xgboost",
     "ipywidgets",
+    "qgrid"
 ]
 
 class VerifyVersionCommand(install):
@@ -43,7 +45,6 @@ class VerifyVersionCommand(install):
                 tag, VERSION
             )
             sys.exit(info)
-
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -66,8 +67,10 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
     ],
-    cmdclass={"verify": VerifyVersionCommand},
+    cmdclass={
+        "verify": VerifyVersionCommand,
+    },
     entry_points={"console_scripts": ["pyautoml=pyautoml.__main__:main"]},
 )

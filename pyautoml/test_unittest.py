@@ -648,6 +648,49 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_get_option(self):
+
+        import pyautoml
+
+        value = pyautoml.get_option('interactive_df')
+
+        self.assertFalse(value)
+
+    def test_set_option(self):
+
+        import pyautoml
+
+        pyautoml.set_option('interactive_df', True)
+        value = pyautoml.get_option('interactive_df')
+
+        self.assertTrue(value)
+
+    def test_reset_option(self):
+
+        import pyautoml
+
+        pyautoml.set_option('interactive_df', True)
+        pyautoml.reset_option('all')
+        value = pyautoml.get_option('interactive_df')
+
+        self.assertFalse(value)
+
+    def test_describe_option(self):
+
+        import pyautoml
+
+        pyautoml.describe_option('interactive_df')
+
+        self.assertTrue(True)
+
+    def test_options(self):
+
+        import pyautoml
+
+        value = pyautoml.options.interactive_df
+
+        self.assertFalse(False)
+
 
 if __name__ == "__main__":
     unittest.main()
