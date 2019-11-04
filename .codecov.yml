@@ -1,6 +1,6 @@
 ignore:
   - "pyautoml/*.yml"
   - "pyautoml/*/test_unittest.py"
-  - "config/.*"
+  - "pyautoml/config/.*"
   - "pyautoml/__main__.py"
   - "pyautoml/cli.py"
