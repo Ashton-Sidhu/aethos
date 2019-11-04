@@ -17,6 +17,7 @@ def use_qgrid(key):
     if pyautoml.shell == "ZMQInteractiveShell":
         if cf.get_option(key):
             qgrid.enable()
+            qgrid.set_defaults(show_toolbar=True)
         else:
             qgrid.disable()
 
