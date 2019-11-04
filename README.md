@@ -53,6 +53,21 @@ To start, we need to import the data science workflow stages as well as pandas.
 Before that, we can create a full data science folder structure by running `pyautoml create` from the command line and follow the command prompts.
 
 #### General Use
+To enable extensions, such as QGrid interactive filtering:
+
+```python
+import pyautoml
+pyautoml.set_option('interactive_df', True)
+pyautoml.options.interactive_df = True
+```
+
+If you do not want the extra import, you can do it from any of the Pyautoml stage objects (Clean, Preprocess, Feature, Model):
+
+```python
+from pyautoml import Clean
+clean = Clean(...)
+clean.set_option('interactive_df', True)
+```
 
 ```python
 from pyautoml import Clean, Preprocess, Feature
@@ -239,6 +254,8 @@ N/A
 [@microsoft](https://github.com/microsoft/) for their [interpret](https://github.com/microsoft/interpret) model explanation library.
 
 [@DistrictDataLabs](https://github.com/DistrictDataLabs?type=source) for their [yellowbrick](https://github.com/DistrictDataLabs/yellowbrick) visual analysis and model diagnostic tool.
+
+[@Quantopian](https://github.com/quantopian?type=source) for their interactive DataFrame library [qgrid](https://github.com/quantopian/qgrid).
 
 ## For Developers
 
