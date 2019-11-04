@@ -1197,7 +1197,7 @@ class MethodBase(object):
         scatterplot(
             x,
             y,
-            z=z_col,
+            z=z,
             data=self._data_properties.x_train,
             title=title,
             category=category,
