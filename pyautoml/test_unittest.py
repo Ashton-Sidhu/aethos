@@ -477,7 +477,7 @@ class Test_TestBase(unittest.TestCase):
         )
 
         clean = Clean(x_train=df, split=False)
-        clean.visualize_lineplot("date", "Google", "Apple", show_figure=False)
+        clean.lineplot("date", "Google", "Apple", show_figure=False)
 
         self.assertTrue(True)
 

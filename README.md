@@ -194,7 +194,7 @@ As you've started to notice, alot of tasks to clean the data and to explore the 
 Creating visualisations has never been easier to, for example viewing the mean survival rate based off the age of the passenger can be done as follows:
 
 ```python
-clean.visualize_barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age')
+clean.barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age')
 ```
 
 This will create an interactive Bokeh plot that can be exported as an html to be embedded or viewed on a webpage or just as an image file.

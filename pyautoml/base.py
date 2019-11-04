@@ -2,32 +2,23 @@ import copy
 import os
 import re
 
+import ipywidgets as widgets
 import numpy as np
 import pandas as pd
 import pandas_profiling
 import yaml
 from IPython import get_ipython
 from IPython.display import display
-from pandas_summary import DataFrameSummary
-import ipywidgets as widgets
 from ipywidgets import Layout
+from pandas_summary import DataFrameSummary
 
 import pyautoml
 from pyautoml.data.data import Data
-from pyautoml.util import (
-    _get_columns,
-    _set_item,
-    label_encoder,
-    split_data,
-    DATA_CHECKLIST,
-    CLEANING_CHECKLIST,
-    UNI_ANALYSIS_CHECKLIST,
-    MULTI_ANALYSIS_CHECKLIST,
-    ISSUES_CHECKLIST,
-    PREPARATION_CHECKLIST,
-)
+from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
+                           ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
+                           PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
+                           _get_columns, _set_item, label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
-
 
 # TODO: Move to a config file
 
@@ -854,7 +845,7 @@ class MethodBase(object):
 
         display(tab)
 
-    def visualize_raincloud(self, x_col: str, y_col=None, **params):
+    def raincloud(self, x_col: str, y_col=None, **params):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.
         This is used to offer eyeballed statistical inference, assessment of data distributions (useful to check assumptions),
@@ -971,8 +962,8 @@ class MethodBase(object):
         
         Examples
         --------
-        >>> clean.visualize_raincloud('col1') # Will plot col1 values on the x axis and your target variable values on the y axis
-        >>> clean.visualize_raincloud('col1', 'col2') # Will plot col1 on the x and col2 on the y axis
+        >>> clean.raincloud('col1') # Will plot col1 values on the x axis and your target variable values on the y axis
+        >>> clean.raincloud('col1', 'col2') # Will plot col1 on the x and col2 on the y axis
         """
 
         if y_col is None:
@@ -980,7 +971,7 @@ class MethodBase(object):
 
         raincloud(y_col, x_col, self.x_train)
 
-    def visualize_barplot(
+    def barplot(
         self,
         x_col,
         *cols,
@@ -1043,7 +1034,7 @@ class MethodBase(object):
             **barplot_kwargs
         )
 
-    def visualize_scatterplot(
+    def scatterplot(
         self,
         x_col: str,
         y_col: str,
@@ -1107,7 +1098,7 @@ class MethodBase(object):
             **scatterplot_kwargs
         )
 
-    def visualize_lineplot(
+    def lineplot(
         self, x_col: str, *y_cols, title="Line Plot", output_file="", **lineplot_kwargs
     ):
         """

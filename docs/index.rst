@@ -145,7 +145,7 @@ Creating visualisations has never been easier to, for example viewing the mean s
 
 .. code:: python
 
-    clean.visualize_barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age')
+    clean.barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age')
 
 This will create an interactive Bokeh plot that can be exported as an html to be embedded or viewed on a webpage or just as an image file.
 
