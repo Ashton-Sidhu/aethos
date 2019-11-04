@@ -126,7 +126,7 @@ clean.drop('Cabin') # Drop the cabin column
 #### Preprocessing and Feature Engineering
 
 ```python
-clean.visualize_barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
+clean.barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
 
 prep = Preprocess(clean) # To move onto preprocessing
 
