@@ -112,12 +112,12 @@ def run_crossvalidation(
     """
 
     # TODO: Make curves slightly bigger
-    visualizer_scores = CVScores(model, cv=cv, scoring=scoring)
+    visualizer_scores = CVScores(model, cv=cv, scoring=scoring, size=(1080,720))
     visualizer_scores.fit(x_train, y_train)
     visualizer_scores.show()
 
     if learning_curve:
-        visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring)
+        visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring, size=(1080,720))
         visualizer_lcurve.fit(x_train, y_train)
         visualizer_lcurve.show()
 
