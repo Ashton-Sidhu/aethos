@@ -51,7 +51,7 @@ def barplot(
     orient="v",
     stacked=False,
     output_file="",
-    **barplot_kwargs
+    **barplot_kwargs,
 ):
     """
     Visualizes a bar plot.
@@ -122,7 +122,7 @@ def scatterplot(
     title="Scatter Plot",
     size=8,
     output_file="",
-    **scatterplot_kwargs
+    **scatterplot_kwargs,
 ):
     """
     Plots a scatter plot.

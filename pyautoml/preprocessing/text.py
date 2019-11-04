@@ -314,6 +314,6 @@ def _apply_text_method(text_data, transformer=None):
     transformed_text_data = ""
 
     for word in text_data.split():
-        transformed_text_data += "{} ".format(transformer(word))
+        transformed_text_data += f"{transformer(word)} "
 
     return transformed_text_data.strip()

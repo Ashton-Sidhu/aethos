@@ -1,42 +1,60 @@
-pyautoml package
+Pyautoml package
 ================
 
-Subpackages
------------
-
 .. toctree::
+    :maxdepth: 4
 
-   pyautoml.cleaning
-   pyautoml.x_train
-   pyautoml.feature_engineering
-   pyautoml.preprocessing
-   pyautoml.modelling
-   pyautoml.reporting
+    pyautoml.base
+    pyautoml.cleaning
+    pyautoml.preprocessing
+    pyautoml.feature_engineering
+    pyautoml.modelling
+    pyautoml.model_analysis
 
-Submodules
-----------
-
-pyautoml.base module
---------------------
+Pyautoml Module
+----------------
 
 .. automodule:: pyautoml.base
    :members:
    :undoc-members:
    :show-inheritance:
 
-pyautoml.util module
---------------------
+Cleaning Module
+----------------
 
-.. automodule:: pyautoml.util
+.. automodule:: pyautoml.cleaning
    :members:
    :undoc-members:
    :show-inheritance:
 
+Preprocessing Module
+--------------------
 
-Module contents
+.. automodule:: pyautoml.preprocessing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Feature Module
 ---------------
 
-.. automodule:: pyautoml
+.. automodule:: pyautoml.feature_engineering
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Modelling Module
+----------------
+
+.. automodule:: pyautoml.modelling
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Model Analysis Module
+---------------------
+
+.. automodule:: pyautoml.modelling.model_analysis
    :members:
    :undoc-members:
    :show-inheritance:

@@ -15,9 +15,13 @@ from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
 
 from pyautoml.feature_engineering.util import pca
-from pyautoml.modelling.constants import (CLASS_METRICS_DESC,
-                                          INTERPRET_EXPLAINERS, PROBLEM_TYPE,
-                                          REG_METRICS_DESC, SHAP_LEARNERS)
+from pyautoml.modelling.constants import (
+    CLASS_METRICS_DESC,
+    INTERPRET_EXPLAINERS,
+    PROBLEM_TYPE,
+    REG_METRICS_DESC,
+    SHAP_LEARNERS,
+)
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.visualizations.visualize import *
 
@@ -32,8 +36,6 @@ class ModelBase(object):
         self.model_name = model_name
         self.x_train = model_object._data_properties.x_train
         self.x_test = model_object._data_properties.x_test
-        self.x_train_results = model_object._train_result_data
-        self.x_test_results = model_object._test_result_data
         self.report = model_object._data_properties.report
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
@@ -143,17 +145,12 @@ class ModelBase(object):
             Max number of bins, by default 20
 
         **summaryplot_kwargs
-            For more info see https://shap.readthedocs.io/en/latest/#plots
-        
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
+            For more info see https://shap.readthedocs.io/en/latest/#plots    
         """
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         self.shap.summary_plot(**summaryplot_kwargs)
@@ -163,7 +160,7 @@ class ModelBase(object):
         num_samples=0.6,
         sample_no=None,
         highlight_misclassified=False,
-        **decisionplot_kwargs
+        **decisionplot_kwargs,
     ):
         """
         Visualize model decisions using cumulative SHAP values.
@@ -271,11 +268,6 @@ class ModelBase(object):
         legend_location : str 
             Legend location. Any of "best", "upper right", "upper left", "lower left", "lower right", "right", "center left", "center right", "lower center", "upper center", "center".
     
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
-
         Returns
         -------
         DecisionPlotResult 
@@ -291,7 +283,7 @@ class ModelBase(object):
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         if highlight_misclassified:
@@ -322,11 +314,6 @@ class ModelBase(object):
             Whether to use the default Javascript output, or the (less developed) matplotlib output. Using matplotlib
             can be helpful in scenarios where rendering Javascript/HTML is inconvenient. 
         
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
-
         Example
         --------
         Plot two decision plots using the same feature order and x-axis.
@@ -337,7 +324,7 @@ class ModelBase(object):
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         if misclassified:
@@ -392,16 +379,11 @@ class ModelBase(object):
 
         cmap : str or matplotlib.colors.ColorMap 
             Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
-
-        Raises
-        ------
-        NotImplementedError
-            Currently implemented for Linear and Tree models.
         """
 
         if self.shap is None:
             raise NotImplementedError(
-                "SHAP is not implemented yet for {}".format(type(self))
+                f"SHAP is not implemented yet for {str(type(self))}"
             )
 
         self.shap.dependence_plot(feature, interaction, **dependenceplot_kwargs)
@@ -467,7 +449,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -485,7 +467,7 @@ class ModelBase(object):
         method="all",
         predictions="default",
         show=True,
-        **interpret_kwargs
+        **interpret_kwargs,
     ):
         """
         Plots an interpretable display that explains individual predictions of your model.
@@ -524,7 +506,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -537,7 +519,7 @@ class ModelBase(object):
                 method=method,
                 predictions=predictions,
                 show=show,
-                **interpret_kwargs
+                **interpret_kwargs,
             )
 
     def interpret_model_behavior(
@@ -571,7 +553,7 @@ class ModelBase(object):
                         method=explainer,
                         predictions=predictions,
                         show=False,
-                        **interpret_kwargs
+                        **interpret_kwargs,
                     )
                 )
 
@@ -590,19 +572,18 @@ class TextModel(ModelBase):
 
 
 class UnsupervisedModel(ModelBase):
-
-    # TODO: Add scatterplot of clusters
-
     def __init__(self, model_object, model_name, model, cluster_col):
 
         super().__init__(model_object, model, model_name)
 
         self.cluster_col = cluster_col
 
-        self.x_train[self.cluster_col] = self.x_train_results[self.cluster_col]
+        self.x_train[self.cluster_col] = model_object.x_train_results[self.cluster_col]
 
         if self.x_test is not None:
-            self.x_test[self.cluster_col] = self.x_test_results[self.cluster_col]
+            self.x_test[self.cluster_col] = model_object.x_test_results[
+                self.cluster_col
+            ]
 
     def filter_cluster(self, cluster_no: int):
         """
@@ -665,7 +646,13 @@ class UnsupervisedModel(ModelBase):
         reduced_df.columns = list(map(str, reduced_df.columns))
 
         if dim == 2:
-            scatterplot("0", "1", data=reduced_df, **kwargs)
+            scatterplot(
+                "0",
+                "1",
+                data=reduced_df,
+                color=reduced_df[self.cluster_col].tolist(),
+                **kwargs,
+            )
         else:
             scatterplot(
                 "0", "1", "2", data=reduced_df, color=self.cluster_col, **kwargs
@@ -688,15 +675,13 @@ class ClassificationModel(ModelBase):
         self.target_mapping = model_object.target_mapping
 
         self.y_pred = (
-            self.x_train_results[predictions_col]
+            model_object.x_train_results[predictions_col]
             if self.x_test is None
-            else self.x_test_results[predictions_col]
+            else model_object.x_test_results[predictions_col]
         )
 
         if self.report:
-            self.report.write_header(
-                "Analyzing Model {}: ".format(self.model_name.upper())
-            )
+            self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
 
         if self.target_mapping is None:
             self.classes = [
@@ -976,20 +961,35 @@ class ClassificationModel(ModelBase):
         Supported metrics are:
 
             'Accuracy': 'Measures how many observations, both positive and negative, were correctly classified.',
+            
             'Balanced Accuracy': 'The balanced accuracy in binary and multiclass classification problems to deal with imbalanced datasets. It is defined as the average of recall obtained on each class.',
+            
             'Average Precision': 'Summarizes a precision-recall curve as the weighted mean of precisions achieved at each threshold',
+            
             'ROC AUC': 'Shows how good at ranking predictions your model is. It tells you what is the probability that a randomly chosen positive instance is ranked higher than a randomly chosen negative instance.',
+            
             'Zero One Loss': 'Fraction of misclassifications.',
+            
             'Precision': 'It measures how many observations predicted as positive are positive. Good to use when False Positives are costly.',
+            
             'Recall': 'It measures how many observations out of all positive observations have we classified as positive. Good to use when catching call positive occurences, usually at the cost of false positive.',
+            
             'Matthews Correlation Coefficient': 'It’s a correlation between predicted classes and ground truth.',
+            
             'Log Loss': 'Difference between ground truth and predicted score for every observation and average those errors over all observations.',
+            
             'Jaccard': 'Defined as the size of the intersection divided by the size of the union of two label sets, is used to compare set of predicted labels for a sample to the corresponding set of true labels.',
+            
             'Hinge Loss': 'Computes the average distance between the model and the data using hinge loss, a one-sided metric that considers only prediction errors.',
+            
             'Hamming Loss': 'The Hamming loss is the fraction of labels that are incorrectly predicted.',
+            
             'F-Beta': 'It’s the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+            
             'F1': 'It’s the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+            
             'Cohen Kappa': 'Cohen Kappa tells you how much better is your model over the random classifier that predicts based on class frequencies. Works well for imbalanced problems.',
+            
             'Brier Loss': 'It is a measure of how far your predictions lie from the true values. Basically, it is a mean square error in the probability space.'
         
         Parameters
@@ -1127,9 +1127,7 @@ class ClassificationModel(ModelBase):
         else:
             annot = np.zeros_like(confusion_matrix, dtype=str)
 
-        df_cm = pd.DataFrame(
-            confusion_matrix, index=self.classes, columns=self.classes,
-        )
+        df_cm = pd.DataFrame(confusion_matrix, index=self.classes, columns=self.classes)
 
         heatmap = sns.heatmap(
             df_cm, annot=annot, square=True, cmap=plt.cm.get_cmap(cmap), fmt=""
@@ -1234,8 +1232,6 @@ class ClassificationModel(ModelBase):
 
 
 class RegressionModel(ModelBase):
-    # TODO: Summary statistics
-
     def __init__(self, model_object, model_name, model, predictions_col):
 
         self.y_train = model_object.y_train
@@ -1248,15 +1244,13 @@ class RegressionModel(ModelBase):
         super().__init__(model_object, model, model_name)
 
         self.y_pred = (
-            self.x_train_results[predictions_col]
+            model_object.x_train_results[predictions_col]
             if self.x_test is None
-            else self.x_test_results[predictions_col]
+            else model_object.x_test_results[predictions_col]
         )
 
         if self.report:
-            self.report.write_header(
-                "Analyzing Model {}: ".format(self.model_name.upper())
-            )
+            self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
 
         self.features = self.x_test.columns
 
@@ -1414,13 +1408,21 @@ class RegressionModel(ModelBase):
         
         Supported metrics are:
             'Explained Variance': 'Explained variance regression score function. Best possible score is 1.0, lower values are worse.',
+            
             'Max Error': 'Returns the single most maximum residual error.',
+            
             'Mean Absolute Error': 'Postive mean value of all residuals',
+            
             'Mean Squared Error': 'Mean of the squared sum the residuals',
+            
             'Root Mean Sqaured Error': 'Square root of the Mean Squared Error',
+            
             'Mean Squared Log Error': 'Mean of the squared sum of the log of all residuals',
+            
             'Median Absolute Error': 'Postive median value of all residuals',
+            
             'R2': 'R-squared (R2) is a statistical measure that represents the proportion of the variance for a dependent variable that is explained by an independent variable or variables in a regression model.',
+            
             'SMAPE': 'Symmetric mean absolute percentage error. It is an accuracy measure based on percentage (or relative) errors.'
 
         Parameters

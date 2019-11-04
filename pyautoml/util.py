@@ -32,10 +32,7 @@ UNI_ANALYSIS_CHECKLIST = {
     "Draw boxplots, histograms",
 }
 
-MULTI_ANALYSIS_CHECKLIST = {
-    "Draw scatter plots",
-    "Create correlation matrix",
-}
+MULTI_ANALYSIS_CHECKLIST = {"Draw scatter plots", "Create correlation matrix"}
 
 ISSUES_CHECKLIST = {
     "Impute missing values (mode, median, mean)",

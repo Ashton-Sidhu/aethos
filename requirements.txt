@@ -22,6 +22,7 @@ PyYAML==5.1.2
 impyute==0.0.8
 spacy==2.2.1
 xgboost==0.90
+qgrid==1.1.1
 ipywidgets
 SAlib
 dash

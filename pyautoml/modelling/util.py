@@ -68,7 +68,7 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
 
     if isinstance(gridsearch, dict):
         gridsearch_grid = gridsearch
-        print("Gridsearching with the following parameters: {}".format(gridsearch_grid))
+        print(f"Gridsearching with the following parameters: {gridsearch_grid}")
     else:
         raise ValueError("Invalid Gridsearch input.")
 
@@ -111,13 +111,12 @@ def run_crossvalidation(
         List of cross validation curves
     """
 
-    # TODO: Make curves slightly bigger
-    visualizer_scores = CVScores(model, cv=cv, scoring=scoring)
+    visualizer_scores = CVScores(model, cv=cv, scoring=scoring, size=(1080,720))
     visualizer_scores.fit(x_train, y_train)
     visualizer_scores.show()
 
     if learning_curve:
-        visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring)
+        visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring, size=(1080,720))
         visualizer_lcurve.fit(x_train, y_train)
         visualizer_lcurve.show()
 

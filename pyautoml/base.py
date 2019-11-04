@@ -20,18 +20,15 @@ from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
                            _get_columns, _set_item, label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
 
-# TODO: Move to a config file
-
-SHELL = get_ipython().__class__.__name__
+# TODO: Move to a config fille
 
 pkg_directory = os.path.dirname(pyautoml.__file__)
 
-with open("{}/technique_reasons.yml".format(pkg_directory), "r") as stream:
+with open(f"{pkg_directory}/technique_reasons.yml", "r") as stream:
     try:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
-
 
 class MethodBase(object):
     def __init__(self, **kwargs):
@@ -68,7 +65,7 @@ class MethodBase(object):
 
     def __repr__(self):
 
-        if SHELL == "ZMQInteractiveShell":
+        if pyautoml.shell == "ZMQInteractiveShell":
             display(self._data_properties.x_train.head())  # Hack for jupyter notebooks
 
             return ""
@@ -99,9 +96,7 @@ class MethodBase(object):
                 ## set raise a value error
                 if len(value) != x_train_length and len(value) != x_test_length:
                     raise ValueError(
-                        "Length of list: {} does not equal the number rows as the training set or test set.".format(
-                            str(len(value))
-                        )
+                        f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
                     )
 
                 self._data_properties.x_train, self._data_properties.x_test = _set_item(
@@ -117,9 +112,7 @@ class MethodBase(object):
                 for data in value:
                     if len(data) != x_train_length and len(data) != x_test_length:
                         raise ValueError(
-                            "Length of list: {} does not equal the number rows as the training set or test set.".format(
-                                str(len(data))
-                            )
+                            f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
                         )
 
                     (
@@ -195,6 +188,73 @@ class MethodBase(object):
         self._data_properties.x_test = value
 
     @property
+    def y_train(self):
+        """
+        Property function for the training predictor variable
+        """
+
+        return (
+            self._data_properties.x_train[self._data_properties.target_field]
+            if self._data_properties.target_field
+            else None
+        )
+
+    @y_train.setter
+    def y_train(self, value):
+        """
+        Setter function for the training predictor variable
+        """
+
+        if self.target_field:
+            self._data_properties.x_train[self.target_field] = value
+        else:
+            self._data_properties.target_field = "label"
+            self._data_properties.x_train["label"] = value
+            print('Added a target (predictor) field (column) named "label".')
+
+    @property
+    def y_test(self):
+        """
+        Property function for the testing predictor variable
+        """
+
+        if self._data_properties.x_test is not None:
+            if self._data_properties.target_field:
+                return self._data_properties.x_test[self.target_field]
+            else:
+                return None
+        else:
+            return None
+
+    @y_test.setter
+    def y_test(self, value):
+        """
+        Setter function for the testing predictor variable
+        """
+
+        if self._data_properties.x_test is not None:
+            if self.target_field:
+                self._data_properties.x_test[self.target_field] = value
+            else:
+                self._data_properties.target_field = "label"
+                self._data_properties.x_test["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
+
+    @y_test.setter
+    def y_test(self, value):
+        """
+        Setter function for the testing predictor variable
+        """
+
+        if self._data_properties.x_test is not None:
+            if self.target_field:
+                self._data_properties.x_test[self.target_field] = value
+            else:
+                self._data_properties.target_field = "label"
+                self._data_properties.x_test["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
+
+    @property
     def target_field(self):
         """
         Property function for the target field.
@@ -268,6 +328,56 @@ class MethodBase(object):
         """
 
         return copy.deepcopy(self)
+
+    def set_option(self, option, value):
+        """
+        Sets pyautoml options.
+        
+        Parameters
+        ----------
+        option : str
+            Pyautoml option
+        value :
+            Value for the pyautoml option
+        """
+
+        pyautoml.set_option(option, value) # pragma: no cover
+
+    def get_option(self, option):
+        """
+        Gets option value for Pyautoml options
+        
+        Parameters
+        ----------
+        option : str
+            Pyautoml option
+        """
+
+        pyautoml.get_option(option) # pragma: no cover
+
+    def reset_option(self, option):
+        """
+        Resets Pyautoml options back to their default values
+        
+        Parameters
+        ----------
+        option : str
+            Pyautoml option
+        """
+
+        pyautoml.reset_option(option) # pragma: no cover
+
+    def describe_option(self, option):
+        """
+        Describes Pyautoml option, giving more details.
+        
+        Parameters
+        ----------
+        option : str
+            Pyautoml option
+        """
+
+        pyautoml.describe_option(option) # pragma: no cover
 
     def search(self, *values, not_equal=False, replace=False):
         """
@@ -510,7 +620,7 @@ class MethodBase(object):
         HTML display of Exploratory Data Analysis report
         """
 
-        if SHELL == "ZMQInteractiveShell":
+        if pyautoml.shell == "ZMQInteractiveShell":
             report = self._data_properties.x_train.profile_report(
                 title=title, style={"full_width": True}
             )
@@ -706,9 +816,7 @@ class MethodBase(object):
             self._data_properties.x_test = self.x_test.drop(drop_columns, axis=1)
 
         if self.report is not None:
-            self.report.log(
-                "Dropped columns: {}. {}".format(", ".join(drop_columns), reason)
-            )
+            self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
 
         return self.copy()
 
@@ -980,7 +1088,7 @@ class MethodBase(object):
         orient="v",
         stacked=False,
         output_file="",
-        **barplot_kwargs
+        **barplot_kwargs,
     ):
         """
         Plots a bar plot for the given columns provided using Bokeh.
@@ -1031,7 +1139,7 @@ class MethodBase(object):
             method=method,
             orient=orient,
             stacked=stacked,
-            **barplot_kwargs
+            **barplot_kwargs,
         )
 
     def scatterplot(
@@ -1043,7 +1151,7 @@ class MethodBase(object):
         title="Scatter Plot",
         size=8,
         output_file="",
-        **scatterplot_kwargs
+        **scatterplot_kwargs,
     ):
         """
         Plots a scatterplot for the given x and y columns provided using Bokeh.
@@ -1095,7 +1203,7 @@ class MethodBase(object):
             category=category,
             size=size,
             output_file=output_file,
-            **scatterplot_kwargs
+            **scatterplot_kwargs,
         )
 
     def lineplot(
@@ -1163,5 +1271,5 @@ class MethodBase(object):
             self._data_properties.x_train,
             title=title,
             output_file=output_file,
-            **lineplot_kwargs
+            **lineplot_kwargs,
         )
