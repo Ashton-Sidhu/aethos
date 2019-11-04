@@ -953,7 +953,7 @@ class MethodBase(object):
 
         display(tab)
 
-    def raincloud(self, x_col: str, y_col=None, **params):
+    def raincloud(self, x=None, y=None, **params):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.
         This is used to offer eyeballed statistical inference, assessment of data distributions (useful to check assumptions),
@@ -1049,10 +1049,10 @@ class MethodBase(object):
 
         Parameters
         ----------
-        x_col : str
+        x : str
             X axis data, reference by column name, any data
 
-        y_col : str
+        y : str
             Y axis data, reference by column name, measurable data (numeric)
             by default target_field
 
@@ -1074,14 +1074,14 @@ class MethodBase(object):
         >>> clean.raincloud('col1', 'col2') # Will plot col1 on the x and col2 on the y axis
         """
 
-        if y_col is None:
+        if y is None:
             y_col = self.target_field
 
-        raincloud(y_col, x_col, self.x_train)
+        raincloud(y, x, self.x_train)
 
     def barplot(
         self,
-        x_col,
+        x,
         *cols,
         groupby=None,
         method=None,
@@ -1108,7 +1108,7 @@ class MethodBase(object):
         
         Parameters
         ----------
-        x_col : str
+        x : str
             Column name for the x axis.
 
         cols : str
@@ -1132,7 +1132,7 @@ class MethodBase(object):
         """
 
         barplot(
-            x_col,
+            x,
             list(cols),
             self._data_properties.x_train,
             groupby=groupby,
@@ -1144,9 +1144,9 @@ class MethodBase(object):
 
     def scatterplot(
         self,
-        x_col: str,
-        y_col: str,
-        z_col=None,
+        x=None,
+        y=None,
+        z=None,
         category=None,
         title="Scatter Plot",
         size=8,
@@ -1168,13 +1168,13 @@ class MethodBase(object):
         
         Parameters
         ----------
-        x_col : str
+        x : str
             X column name
 
-        y_col : str
+        y : str
             Y column name
 
-        z_col : str
+        z : str
             Z column name, 
 
         category : str, optional
@@ -1195,8 +1195,8 @@ class MethodBase(object):
         """
 
         scatterplot(
-            x_col,
-            y_col,
+            x,
+            y,
             z=z_col,
             data=self._data_properties.x_train,
             title=title,
@@ -1207,7 +1207,7 @@ class MethodBase(object):
         )
 
     def lineplot(
-        self, x_col: str, *y_cols, title="Line Plot", output_file="", **lineplot_kwargs
+        self, x: str, *y, title="Line Plot", output_file="", **lineplot_kwargs
     ):
         """
         Plots a lineplot for the given x and y columns provided using Bokeh.
@@ -1220,10 +1220,10 @@ class MethodBase(object):
         
         Parameters
         ----------
-        x_col : str
+        x : str
             X column name
 
-        y_cols : str or str(s)
+        y : str or str(s)
             Column names to plot on the y axis.
 
         title : str, optional
@@ -1266,8 +1266,8 @@ class MethodBase(object):
         """
 
         lineplot(
-            x_col,
-            list(y_cols),
+            x,
+            list(y),
             self._data_properties.x_train,
             title=title,
             output_file=output_file,
