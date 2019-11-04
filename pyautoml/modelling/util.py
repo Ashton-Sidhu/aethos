@@ -111,7 +111,6 @@ def run_crossvalidation(
         List of cross validation curves
     """
 
-    # TODO: Make curves slightly bigger
     visualizer_scores = CVScores(model, cv=cv, scoring=scoring, size=(1080,720))
     visualizer_scores.fit(x_train, y_train)
     visualizer_scores.show()
