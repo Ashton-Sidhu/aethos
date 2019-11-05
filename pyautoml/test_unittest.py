@@ -204,6 +204,45 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_dropcolumns_regex(self):
+
+        int_missing_data = [[1, 0, 0, 3], [0, 2, 3, 4], [0, 3, 4, 4], [1, 2, 3, 6]]
+        columns = ["agent.hi", "agent.user_name", "agent.hello", "message"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        clean = Clean(
+            x_train=data,
+            x_test=None,
+            split=False,
+            target_field="",
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+        clean.drop(
+            regexp=r"agent*"
+        )
+
+        validate = clean.x_train.columns == ['message']
+
+        self.assertTrue(validate)
+
+    def test_dropcolumns_error(self):
+
+        int_missing_data = [[1, 0, 0, 3], [0, 2, 3, 4], [0, 3, 4, 4], [1, 2, 3, 6]]
+        columns = ["col1", "col2", "col3", "py"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        clean = Clean(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+
+        self.assertRaises(TypeError, clean.drop, keep='col2')
+
     def test_getattr(self):
 
         int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]

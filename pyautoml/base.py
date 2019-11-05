@@ -14,10 +14,18 @@ from pandas_summary import DataFrameSummary
 
 import pyautoml
 from pyautoml.data.data import Data
-from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
-                           ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
-                           PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
-                           _get_columns, _set_item, label_encoder, split_data)
+from pyautoml.util import (
+    CLEANING_CHECKLIST,
+    DATA_CHECKLIST,
+    ISSUES_CHECKLIST,
+    MULTI_ANALYSIS_CHECKLIST,
+    PREPARATION_CHECKLIST,
+    UNI_ANALYSIS_CHECKLIST,
+    _get_columns,
+    _set_item,
+    label_encoder,
+    split_data,
+)
 from pyautoml.visualizations.visualize import *
 
 # TODO: Move to a config fille
@@ -29,6 +37,7 @@ with open(f"{pkg_directory}/technique_reasons.yml", "r") as stream:
         technique_reason_repo = yaml.safe_load(stream)
     except yaml.YAMLError as e:
         print("Could not load yaml file.")
+
 
 class MethodBase(object):
     def __init__(self, **kwargs):
@@ -341,7 +350,7 @@ class MethodBase(object):
             Value for the pyautoml option
         """
 
-        pyautoml.set_option(option, value) # pragma: no cover
+        pyautoml.set_option(option, value)  # pragma: no cover
 
     def get_option(self, option):
         """
@@ -353,7 +362,7 @@ class MethodBase(object):
             Pyautoml option
         """
 
-        pyautoml.get_option(option) # pragma: no cover
+        pyautoml.get_option(option)  # pragma: no cover
 
     def reset_option(self, option):
         """
@@ -365,7 +374,7 @@ class MethodBase(object):
             Pyautoml option
         """
 
-        pyautoml.reset_option(option) # pragma: no cover
+        pyautoml.reset_option(option)  # pragma: no cover
 
     def describe_option(self, option):
         """
@@ -377,7 +386,7 @@ class MethodBase(object):
             Pyautoml option
         """
 
-        pyautoml.describe_option(option) # pragma: no cover
+        pyautoml.describe_option(option)  # pragma: no cover
 
     def search(self, *values, not_equal=False, replace=False):
         """
@@ -789,26 +798,31 @@ class MethodBase(object):
         Examples
         --------
         >>> clean.drop('A', 'B', reason="Columns were unimportant")
-        >>> feature.drop('A', 'B', reason="SME deemed columns were unnecessary")
-        >>> preprocess.drop('A', 'B')        
+        >>> clean.drop('col1', keep=['col2'], regexp=r"col*") # Drop all columns that start with "col" except column 2
+        >>> preprocess.drop(keep=['A']) # Drop all columns except column 'A'
+        >>> preprocess.drop(regexp=r'col*') # Drop all columns that start with 'col'       
         """
 
-        data_columns = self.x_train.columns
+        if not isinstance(keep, list):
+            raise TypeError("Keep parameter must be a list.")
 
-        if not drop_columns:
-            drop_columns = data_columns
-        else:
-            drop_columns = set(data_columns).intersection(drop_columns)
+        # Handles if columns do not exist in the dataframe
+        data_columns = self.x_train.columns
+        regex_columns = []
 
         if regexp:
             regex = re.compile(regexp)
             regex_columns = list(filter(regex.search, data_columns))
-        else:
-            regex_columns = []
 
-        drop_columns = list(
-            set(set(drop_columns).union(regex_columns)).difference(keep)
-        )
+        drop_columns = set(drop_columns).union(regex_columns)
+
+        # If there are columns to be dropped, exclude the ones in the keep list
+        # If there are no columns to be dropped, drop everything except the keep list
+        if drop_columns:
+            drop_columns = list(drop_columns.difference(keep))
+        else:
+            keep = set(data_columns).difference(keep)
+            drop_columns = list(drop_columns.union(keep))
 
         self._data_properties.x_train = self.x_train.drop(drop_columns, axis=1)
 
