@@ -383,3 +383,37 @@ def replace_missing_indicator(
                 x_test = x_test.drop([col], axis=1)
 
     return x_train, x_test
+
+def remove_constant_columns(
+    x_train,
+    x_test=None,
+):
+    """
+    Adds a new column describing if the column provided is missing data
+    
+    Parameters
+    ----------
+    x_train: Dataframe or array like - 2d
+        Dataset
+        
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
+
+    Returns 2 Dataframes if x_test is provided.
+    """
+
+    columns = set(x_train.columns)
+
+    x_train = x_train.dropna(thresh=2, axis=1)
+
+    keep_columns = list(columns.intersection(x_train.columns))
+
+    if x_test is not None:
+        x_test = x_test[keep_columns]
+
+    return x_train, x_test
