@@ -2,6 +2,9 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import os
+from pathlib import Path
+import shutil
 
 from pyautoml import Model
 
@@ -1184,6 +1187,41 @@ class TestModelling(unittest.TestCase):
         ].tolist() == [1, 1]
 
         self.assertTrue(validate)
+
+    def test_pickle_model(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.adaboost_regression(random_state=2, run=True)
+        
+        model.ada_reg.to_pickle()
+
+        validate = os.path.exists(str(Path.home()) + '/.pyautoml/models/ada_reg.pkl')
+
+        shutil.rmtree(str(Path.home()) + '/.pyautoml/')
+
+        self.assertTrue(validate)
+
+    def test_pickle_model_analysis(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.adaboost_regression(random_state=2, run=True)
+        
+        model.to_pickle('ada_reg')
+
+        validate = os.path.exists(str(Path.home()) + '/.pyautoml/models/ada_reg.pkl')
+
+        shutil.rmtree(str(Path.home()) + '/.pyautoml/')
+
+        self.assertTrue(validate)
+
 
 
 if __name__ == "__main__":

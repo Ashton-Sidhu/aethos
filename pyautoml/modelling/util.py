@@ -1,6 +1,9 @@
 import inspect
 import multiprocessing as mp
 import warnings
+import os
+from pathlib import Path
+import pickle
 from functools import partial, wraps
 
 from pathos.multiprocessing import ProcessingPool
@@ -195,3 +198,23 @@ def _get_cv_type(cv_type, random_state, **kwargs):
         raise ValueError("Cross Validation type is invalid.")
 
     return cv_type, kwargs
+
+def to_pickle(model, name):
+    """
+    Writes model to a pickle file.
+    
+    Parameters
+    ----------
+    model: Model object
+        Model object to serialize
+
+    name : str
+        Name of the model
+    """
+
+    path = str(Path.home()) + '/.pyautoml/models/'
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    pickle.dump(model, open(path + name + '.pkl', 'wb'))

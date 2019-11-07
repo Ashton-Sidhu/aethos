@@ -3,7 +3,9 @@ import warnings
 
 import xgboost as xgb
 from IPython import display
+import os
 from pathos.multiprocessing import Pool
+from pathlib import Path
 from sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans, MeanShift
 from sklearn.ensemble import (
     AdaBoostClassifier,
@@ -43,6 +45,7 @@ from pyautoml.modelling.util import (
     add_to_queue,
     run_crossvalidation,
     run_gridsearch,
+    to_pickle
 )
 from pyautoml.util import (
     _contructor_data_properties,
@@ -404,6 +407,20 @@ class Model(MethodBase):
         # results_table = results_table.style.apply(_highlight_optimal, axis=1)
 
         return results_table
+
+    def to_pickle(self, name: str):
+        """
+        Writes model to a pickle file.
+        
+        Parameters
+        ----------
+        name : str
+            Name of the model
+        """
+
+        model_obj = self._models[name]
+
+        to_pickle(model_obj.model, model_obj.model_name)
 
     ################### TEXT MODELS ########################
 

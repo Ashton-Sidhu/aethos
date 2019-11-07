@@ -24,6 +24,7 @@ from pyautoml.modelling.constants import (
 )
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.visualizations.visualize import *
+from pyautoml.modelling.util import to_pickle
 
 
 class ModelBase(object):
@@ -563,6 +564,13 @@ class ModelBase(object):
             self.interpret.blackbox_global_explanation(
                 method=method, predictions=predictions, show=show, **interpret_kwargs
             )
+
+    def to_pickle(self):
+        """
+        Writes model to a pickle file.
+        """
+
+        to_pickle(self.model, self.model_name)
 
 
 class TextModel(ModelBase):
