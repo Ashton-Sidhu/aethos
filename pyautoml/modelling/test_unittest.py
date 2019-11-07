@@ -198,11 +198,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_unsupervised_defaultgridsearch(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data, _ = make_blobs(n_samples=1000, n_features=12, centers=8, random_state=42)
 
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+        data = pd.DataFrame(data=data)
 
-        model = Model(x_train=data, target_field="col3", report_name="gridsearch_test")
+        model = Model(x_train=data, target_field=5, report_name="gridsearch_test")
 
         gridsearch_params = {"max_iter": [300, 200]}
         model.kmeans(gridsearch=gridsearch_params, cv=2, run=True)
@@ -647,10 +647,10 @@ class TestModelling(unittest.TestCase):
 
     def test_unsupervisedcv(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data, _ = make_blobs(n_samples=1000, n_features=12, centers=8, random_state=42)
 
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.2)
+        data = pd.DataFrame(data=data)
+        model = Model(x_train=data, target_field=6, test_split_percentage=0.2)
         model.kmeans(cv=2, random_state=2, learning_curve=True)
 
         self.assertTrue(True)
