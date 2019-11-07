@@ -1207,12 +1207,12 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field="col3")
         model.adaboost_regression(random_state=2, run=True)
-        
+
         model.ada_reg.to_pickle()
 
-        validate = os.path.exists(str(Path.home()) + '/.pyautoml/models/ada_reg.pkl')
+        validate = os.path.exists(str(Path.home()) + "/.pyautoml/models/ada_reg.pkl")
 
-        shutil.rmtree(str(Path.home()) + '/.pyautoml/')
+        shutil.rmtree(str(Path.home()) + "/.pyautoml/")
 
         self.assertTrue(validate)
 
@@ -1224,15 +1224,14 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field="col3")
         model.adaboost_regression(random_state=2, run=True)
-        
-        model.to_pickle('ada_reg')
 
-        validate = os.path.exists(str(Path.home()) + '/.pyautoml/models/ada_reg.pkl')
+        model.to_pickle("ada_reg")
 
-        shutil.rmtree(str(Path.home()) + '/.pyautoml/')
+        validate = os.path.exists(str(Path.home()) + "/.pyautoml/models/ada_reg.pkl")
+
+        shutil.rmtree(str(Path.home()) + "/.pyautoml/")
 
         self.assertTrue(validate)
-
 
 
 if __name__ == "__main__":

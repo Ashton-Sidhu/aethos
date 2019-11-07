@@ -100,7 +100,9 @@ class Clean(MethodBase):
             Returns a deep copy of the Clean object.
         """
 
-        report_info = technique_reason_repo["clean"]["general"]["remove_constant_columns"]
+        report_info = technique_reason_repo["clean"]["general"][
+            "remove_constant_columns"
+        ]
 
         original_columns = set(list(self._data_properties.x_train.columns))
 
@@ -108,8 +110,7 @@ class Clean(MethodBase):
             self._data_properties.x_train,
             self._data_properties.x_test,
         ) = remove_columns_threshold(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self._data_properties.x_train, x_test=self._data_properties.x_test
         )
 
         if self.report is not None:

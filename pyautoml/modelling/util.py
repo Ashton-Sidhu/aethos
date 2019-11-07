@@ -114,12 +114,14 @@ def run_crossvalidation(
         List of cross validation curves
     """
 
-    visualizer_scores = CVScores(model, cv=cv, scoring=scoring, size=(1080,720))
+    visualizer_scores = CVScores(model, cv=cv, scoring=scoring, size=(1080, 720))
     visualizer_scores.fit(x_train, y_train)
     visualizer_scores.show()
 
     if learning_curve:
-        visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring, size=(1080,720))
+        visualizer_lcurve = LearningCurve(
+            model, cv=cv, scoring=scoring, size=(1080, 720)
+        )
         visualizer_lcurve.fit(x_train, y_train)
         visualizer_lcurve.show()
 
@@ -199,6 +201,7 @@ def _get_cv_type(cv_type, random_state, **kwargs):
 
     return cv_type, kwargs
 
+
 def to_pickle(model, name):
     """
     Writes model to a pickle file.
@@ -212,9 +215,9 @@ def to_pickle(model, name):
         Name of the model
     """
 
-    path = str(Path.home()) + '/.pyautoml/models/'
+    path = str(Path.home()) + "/.pyautoml/models/"
 
     if not os.path.exists(path):
         os.makedirs(path)
 
-    pickle.dump(model, open(path + name + '.pkl', 'wb'))
+    pickle.dump(model, open(path + name + ".pkl", "wb"))

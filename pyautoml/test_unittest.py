@@ -218,11 +218,9 @@ class Test_TestBase(unittest.TestCase):
             report_name="test",
             test_split_percentage=0.5,
         )
-        clean.drop(
-            regexp=r"agent*"
-        )
+        clean.drop(regexp=r"agent*")
 
-        validate = clean.x_train.columns == ['message']
+        validate = clean.x_train.columns == ["message"]
 
         self.assertTrue(validate)
 
@@ -241,7 +239,7 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        self.assertRaises(TypeError, clean.drop, keep='col2')
+        self.assertRaises(TypeError, clean.drop, keep="col2")
 
     def test_getattr(self):
 
@@ -691,7 +689,7 @@ class Test_TestBase(unittest.TestCase):
 
         import pyautoml
 
-        value = pyautoml.get_option('interactive_df')
+        value = pyautoml.get_option("interactive_df")
 
         self.assertFalse(value)
 
@@ -699,8 +697,8 @@ class Test_TestBase(unittest.TestCase):
 
         import pyautoml
 
-        pyautoml.set_option('interactive_df', True)
-        value = pyautoml.get_option('interactive_df')
+        pyautoml.set_option("interactive_df", True)
+        value = pyautoml.get_option("interactive_df")
 
         self.assertTrue(value)
 
@@ -708,9 +706,9 @@ class Test_TestBase(unittest.TestCase):
 
         import pyautoml
 
-        pyautoml.set_option('interactive_df', True)
-        pyautoml.reset_option('all')
-        value = pyautoml.get_option('interactive_df')
+        pyautoml.set_option("interactive_df", True)
+        pyautoml.reset_option("all")
+        value = pyautoml.get_option("interactive_df")
 
         self.assertFalse(value)
 
@@ -718,7 +716,7 @@ class Test_TestBase(unittest.TestCase):
 
         import pyautoml
 
-        pyautoml.describe_option('interactive_df')
+        pyautoml.describe_option("interactive_df")
 
         self.assertTrue(True)
 

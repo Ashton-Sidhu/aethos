@@ -48,10 +48,12 @@ _global_config = {}
 
 RegisteredOption = namedtuple("RegisteredOption", "key default doc validator cb")
 
+
 class OptionError(AttributeError, KeyError):
     """Exception for pandas.options, backwards compatible with KeyError
     checks
     """
+
 
 def register_option(key, default, doc="", validator=None, cb=None):
     """Register an option in the package-wide pandas config object
@@ -93,6 +95,7 @@ def register_option(key, default, doc="", validator=None, cb=None):
         key=key, default=default, doc=doc, validator=validator, cb=cb
     )
 
+
 def _select_options(pat):
     """returns a list of keys matching `pat`
     if pat=="all", returns all registered options
@@ -109,6 +112,7 @@ def _select_options(pat):
 
     return [k for k in keys if re.search(pat, k, re.I)]
 
+
 def _get_single_key(pat):
     keys = _select_options(pat)
     if len(keys) == 0:
@@ -118,6 +122,7 @@ def _get_single_key(pat):
     key = keys[0]
 
     return key
+
 
 def _get_registered_option(key):
     """
@@ -130,10 +135,12 @@ def _get_registered_option(key):
 
     return _registered_options.get(key)
 
+
 def _get_option(pat):
     key = _get_single_key(pat)
 
     return _global_config[key]
+
 
 def _set_option(*args, **kwargs):
     # must at least 1 arg deal with constraints later
@@ -157,6 +164,7 @@ def _set_option(*args, **kwargs):
         if o.cb:
             o.cb(key)
 
+
 def _build_option_description(k):
     """ Builds a formatted description of a registered option and prints it """
 
@@ -175,6 +183,7 @@ def _build_option_description(k):
         )
 
     return s
+
 
 def _describe_option(pat="", _print_desc=True):
 
@@ -210,6 +219,7 @@ def _reset_option(pat):
     for k in keys:
         _set_option(k, _registered_options[k].default)
 
+
 def pp_options_list(keys, width=80, _print=False):
     """ Builds a concise listing of available options, grouped by prefix """
 
@@ -243,6 +253,7 @@ def pp_options_list(keys, width=80, _print=False):
         print(s)
     else:
         return s
+
 
 class DictWrapper:
     """ provide attribute-style access to a nested dict"""
@@ -280,8 +291,8 @@ class DictWrapper:
     def __dir__(self):
         return list(self.d.keys())
 
-class CallableDynamicDoc:
 
+class CallableDynamicDoc:
     def __init__(self, func, doc_templ):
         self.__doc_tmpl__ = doc_templ
         self.__func__ = func
@@ -291,10 +302,11 @@ class CallableDynamicDoc:
 
     @property
     def __doc__(self):
-        opts_desc = _describe_option('all', _print_desc=False)
+        opts_desc = _describe_option("all", _print_desc=False)
         opts_list = pp_options_list(list(_registered_options.keys()))
-        
+
         return self.__doc_tmpl__.format(opts_desc=opts_desc, opts_list=opts_list)
+
 
 _get_option_tmpl = """
 get_option(pat)
@@ -430,6 +442,7 @@ reset_option = CallableDynamicDoc(_reset_option, _reset_option_tmpl)
 describe_option = CallableDynamicDoc(_describe_option, _describe_option_tmpl)
 options = DictWrapper(_global_config)
 
+
 @contextmanager
 def config_prefix(prefix):
     """contextmanager for multiple invocations of API with a common prefix
@@ -472,6 +485,7 @@ def config_prefix(prefix):
     get_option = _get_option
     register_option = _register_option
 
+
 def is_type_factory(_type):
     """
     Parameters
@@ -489,5 +503,6 @@ def is_type_factory(_type):
             raise ValueError(msg.format(typ=_type))
 
     return inner
+
 
 is_bool = is_type_factory(bool)

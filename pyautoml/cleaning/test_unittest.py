@@ -400,7 +400,10 @@ class TestCleaning(unittest.TestCase):
         clean = Clean(x_train=data, test_split_percentage=0.5)
         clean.remove_constant_columns()
 
-        validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == ['col1', 'col3']
+        validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == [
+            "col1",
+            "col3",
+        ]
 
         self.assertTrue(True)
 

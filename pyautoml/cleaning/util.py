@@ -384,10 +384,8 @@ def replace_missing_indicator(
 
     return x_train, x_test
 
-def remove_constant_columns(
-    x_train,
-    x_test=None,
-):
+
+def remove_constant_columns(x_train, x_test=None):
     """
     Adds a new column describing if the column provided is missing data
     

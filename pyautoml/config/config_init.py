@@ -1,7 +1,5 @@
 import pyautoml.config.config as cf
-from pyautoml.config.config import (
-    is_bool
-)
+from pyautoml.config.config import is_bool
 import pyautoml
 
 interactive_df_doc = """
@@ -10,6 +8,7 @@ interactive_df_doc = """
     Default value is False
     Valid values: False, True
 """
+
 
 def use_qgrid(key):
     import qgrid
@@ -21,10 +20,11 @@ def use_qgrid(key):
         else:
             qgrid.disable()
 
+
 cf.register_option(
     "interactive_df",
     default=False,
     doc=interactive_df_doc,
     validator=is_bool,
-    cb=use_qgrid
+    cb=use_qgrid,
 )

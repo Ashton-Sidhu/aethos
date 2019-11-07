@@ -46,7 +46,7 @@ from pyautoml.modelling.util import (
     add_to_queue,
     run_crossvalidation,
     run_gridsearch,
-    to_pickle
+    to_pickle,
 )
 from pyautoml.util import (
     _contructor_data_properties,
@@ -939,16 +939,16 @@ class Model(MethodBase):
 
             model = KMeans(**kwargs)
 
-            visualizer = KElbowVisualizer(model, k=(4,12))
+            visualizer = KElbowVisualizer(model, k=(4, 12))
             visualizer.fit(self.x_train)
             visualizer.show()
 
-            print(f'Optimal number of clusters is {visualizer.elbow_value_}.')
+            print(f"Optimal number of clusters is {visualizer.elbow_value_}.")
 
             return visualizer.elbow_value_
 
         report_info = technique_reason_repo["model"]["unsupervised"]["kmeans"]
-        n_clusters = kwargs.pop('n_clusters', None)
+        n_clusters = kwargs.pop("n_clusters", None)
         random_state = kwargs.pop("random_state", 42)
 
         if not n_clusters:
