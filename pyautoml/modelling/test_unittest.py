@@ -5,6 +5,7 @@ import pandas as pd
 import os
 from pathlib import Path
 import shutil
+from sklearn.datasets import make_blobs
 
 from pyautoml import Model
 
@@ -135,12 +136,22 @@ class TestModelling(unittest.TestCase):
 
     def test_model_kmeans(self):
 
-        data = [[1, 2], [2, 2], [2, 3], [8, 7], [8, 8], [25, 80]]
-
-        data = pd.DataFrame(data=data, columns=["col1", "col2"])
+        data, _ = make_blobs(n_samples=1000, n_features=12, centers=8, random_state=42)
+        data = pd.DataFrame(data=data)
 
         model = Model(x_train=data, split=False)
         model.kmeans(n_clusters=3, random_state=0, run=True)
+        validate = model.kmeans_clusters is not None
+
+        self.assertTrue(validate)
+
+    def test_model_kmeans_nok(self):
+
+        data, _ = make_blobs(n_samples=1000, n_features=12, centers=8, random_state=42)
+        data = pd.DataFrame(data=data)
+
+        model = Model(x_train=data, split=False)
+        model.kmeans(random_state=0, run=True)
         validate = model.kmeans_clusters is not None
 
         self.assertTrue(validate)

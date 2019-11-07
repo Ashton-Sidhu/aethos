@@ -33,6 +33,7 @@ from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from yellowbrick.cluster import KElbowVisualizer
 
 import pyautoml
 from pyautoml.base import MethodBase, technique_reason_repo
@@ -847,6 +848,8 @@ class Model(MethodBase):
         **kwargs,
     ):
         """
+        NOTE: If 'n_clusters' is not provided, k will automatically be determined using an elbow plot using distortion as the mteric to find the optimal number of clusters.
+
         K-means clustering is one of the simplest and popular unsupervised machine learning algorithms.
 
         The objective of K-means is simple: group similar data points together and discover underlying patterns.
@@ -932,10 +935,26 @@ class Model(MethodBase):
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
+        def find_optk():
+
+            model = KMeans(**kwargs)
+
+            visualizer = KElbowVisualizer(model, k=(4,12))
+            visualizer.fit(self.x_train)
+            visualizer.show()
+
+            print(f'Optimal number of clusters is {visualizer.elbow_value_}.')
+
+            return visualizer.elbow_value_
+
         report_info = technique_reason_repo["model"]["unsupervised"]["kmeans"]
+        n_clusters = kwargs.pop('n_clusters', None)
         random_state = kwargs.pop("random_state", 42)
 
-        model = KMeans(random_state=random_state, **kwargs)
+        if not n_clusters:
+            n_clusters = find_optk()
+
+        model = KMeans(random_state=random_state, n_clusters=n_clusters, **kwargs)
 
         model = self._run_unsupervised_model(
             model,
