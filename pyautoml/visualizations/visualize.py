@@ -3,7 +3,8 @@ import pandas as pd
 import pandas_bokeh
 import plotly.express as px
 import ptitprince as pt
-
+import seaborn as sns
+import numpy as np
 
 def raincloud(col: str, target_col: str, data, **params):
     """
@@ -212,3 +213,33 @@ def lineplot(
     if output_file:
         pandas_bokeh.output_file(output_file)
         pandas_bokeh.save(p_line)
+
+def correlation_matrix(df, data_labels=False, hide_mirror=False, **kwargs):
+    """
+    Plots a correlation matrix.
+    
+    Parameters
+    ----------
+    df : DataFrame
+        Data
+
+    data_labels : bool, optional
+        Whether to display the correlation values, by default False
+
+    hide_mirror : bool, optional
+        Whether to display the mirroring half of the correlation plot, by default False
+    """
+
+    corr = df.corr()
+
+    f, ax = plt.subplots(figsize=(11, 9))
+
+    if hide_mirror:
+        mask = np.zeros_like(corr, dtype=np.bool)
+        mask[np.triu_indices_from(mask)] = True
+    else:
+        mask = None
+
+    cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+    sns.heatmap(corr, cmap=cmap, vmax=.3, center=0, square=True, mask=mask, annot=data_labels, fmt='.2f', linewidths=0.5, cbar_kws={"shrink": 0.5})

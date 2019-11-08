@@ -1287,3 +1287,25 @@ class MethodBase(object):
             output_file=output_file,
             **lineplot_kwargs,
         )
+
+    def correlation_matrix(self, data_labels=False, hide_mirror=False, **kwargs):
+        """
+        Plots a correlation matrix of all the numerical variables.
+
+        For more information on possible kwargs please see: https://seaborn.pydata.org/generated/seaborn.heatmap.html
+        
+        Parameters
+        ----------
+        data_labels : bool, optional
+            True to display the correlation values in the plot, by default False
+
+        hide_mirror : bool, optional
+            Whether to display the mirroring half of the correlation plot, by default False
+        """
+
+        correlation_matrix(
+            self._data_properties.x_train,
+            data_labels=data_labels,
+            hide_mirror=hide_mirror,
+            **kwargs
+        )

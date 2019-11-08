@@ -728,6 +728,24 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertFalse(False)
 
+    def test_correlation_plot(self):
+
+        data = pd.DataFrame(np.random.rand(100, 10))
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="col3",
+            report_name=None,
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.correlation_matrix(data_labels=True, hide_mirror=True)
+
+        self.assertTrue(True)
+
 
 if __name__ == "__main__":
     unittest.main()
