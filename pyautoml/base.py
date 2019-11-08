@@ -296,6 +296,14 @@ class MethodBase(object):
         self._data_properties.target_mapping = value
 
     @property
+    def columns(self):
+        """
+        Property to return columns in the dataset.
+        """
+
+        return self._data_properties.x_train.columns.tolist()
+
+    @property
     def missing_values(self):
         """
         Property function that shows how many values are missing in each column.
