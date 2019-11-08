@@ -1,9 +1,9 @@
 import os
 import sys
+from subprocess import check_call
 
 from setuptools import find_packages, setup
 from setuptools.command.install import install
-from subprocess import check_call
 
 VERSION = "0.6.1"
 
@@ -30,6 +30,7 @@ pkgs = [
     "xgboost",
     "ipywidgets",
     "qgrid"
+    "python-dateutil<2.8.1"
 ]
 
 class VerifyVersionCommand(install):
