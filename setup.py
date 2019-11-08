@@ -29,7 +29,7 @@ pkgs = [
     "spacy",
     "xgboost",
     "ipywidgets",
-    "qgrid"
+    "qgrid",
     "python-dateutil<2.8.1"
 ]
 
