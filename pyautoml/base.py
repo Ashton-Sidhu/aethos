@@ -1307,5 +1307,5 @@ class MethodBase(object):
             self._data_properties.x_train,
             data_labels=data_labels,
             hide_mirror=hide_mirror,
-            **kwargs
+            **kwargs,
         )

@@ -30,8 +30,9 @@ pkgs = [
     "xgboost",
     "ipywidgets",
     "qgrid",
-    "python-dateutil<2.8.1"
+    "python-dateutil<2.8.1",
 ]
+
 
 class VerifyVersionCommand(install):
     """Custom command to verify that the git tag matches our version"""
@@ -46,6 +47,7 @@ class VerifyVersionCommand(install):
                 tag, VERSION
             )
             sys.exit(info)
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -70,8 +72,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Development Status :: 4 - Beta",
     ],
-    cmdclass={
-        "verify": VerifyVersionCommand,
-    },
+    cmdclass={"verify": VerifyVersionCommand},
     entry_points={"console_scripts": ["pyautoml=pyautoml.__main__:main"]},
 )
