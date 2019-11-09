@@ -3,6 +3,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
 from pyautoml import Clean
 from pyautoml.base import MethodBase
@@ -763,6 +764,24 @@ class Test_TestBase(unittest.TestCase):
         validate = base.columns
 
         self.assertTrue(len(validate) == 10)
+
+    def test_pairplot(self):
+
+        data = sns.load_dataset("iris")
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field='species',
+            report_name=None,
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.pairplot()
+
+        self.assertTrue(True)
 
 if __name__ == "__main__":
     unittest.main()

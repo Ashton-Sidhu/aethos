@@ -255,4 +255,35 @@ def correlation_matrix(df, data_labels=False, hide_mirror=False, **kwargs):
         fmt=".2f",
         linewidths=0.5,
         cbar_kws={"shrink": 0.5},
+        **kwargs
+    )
+
+# TODO: Make pair plots customizable using PairGrid
+def pairplot(df, kind='scatter', diag_kind='auto', hue=None, **kwargs):
+    """
+    Plots pairplots of the variables in the DataFrame
+    
+    Parameters
+    ----------
+    df : DataFrame
+            Data
+
+    kind : {'scatter', 'reg'}, optional
+        Type of plot for off-diag plots, by default 'scatter'
+
+    diag_kind : {'auto', 'hist', 'kde'}, optional
+        Type of plot for diagonal, by default 'auto'
+
+    hue : str, optional
+        Column to colour points by, by default None
+    """
+
+    sns.set(style="ticks", color_codes=True)
+
+    g = sns.pairplot(
+        df,
+        kind=kind,
+        diag_kind=diag_kind,
+        hue=hue,
+        **kwargs
     )

@@ -1317,3 +1317,45 @@ class MethodBase(object):
             hide_mirror=hide_mirror,
             **kwargs,
         )
+
+    def pairplot(self, kind='scatter', diag_kind='auto', hue=None, **kwargs):
+        """
+        Plots pairplots of the variables from the training data.
+
+        If hue is not provided and a target variable is set, the data will separated and highlighted by the classes in that column.
+
+        For more info and kwargs on pair plots, please see: https://seaborn.pydata.org/generated/seaborn.pairplot.html
+        
+        Parameters
+        ----------
+        df : DataFrame
+                Data
+
+        kind : {'scatter', 'reg'}, optional
+            Type of plot for off-diag plots, by default 'scatter'
+
+        diag_kind : {'auto', 'hist', 'kde'}, optional
+            Type of plot for diagonal, by default 'auto'
+
+        hue : str, optional
+            Column to colour points by, by default None
+
+        {x, y}_vars : lists of variable names, optional
+            Variables within data to use separately for the rows and columns of the figure; i.e. to make a non-square plot.
+
+        palette : dict or seaborn color palette
+            Set of colors for mapping the hue variable. If a dict, keys should be values in the hue variable.
+        """
+
+        if self.target_field and not hue:
+            hue = self.target_field
+        elif not self.target_field and hue:
+            hue = hue
+
+        pairplot(
+            self._data_properties.x_train,
+            kind=kind,
+            diag_kind=diag_kind,
+            hue=hue,
+            **kwargs
+        )
