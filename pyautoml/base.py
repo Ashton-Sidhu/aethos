@@ -1359,3 +1359,33 @@ class MethodBase(object):
             hue=hue,
             **kwargs
         )
+
+    def jointplot(self, x: str, y:str, kind='scatter', **kwargs):
+        """
+        Plots joint plots of 2 different variables.
+
+        For more info and kwargs for joint plots, see https://seaborn.pydata.org/generated/seaborn.jointplot.html
+        
+        Parameters
+        ----------
+            x : str
+                X axis column
+
+            y : str
+                y axis column
+
+            kind : { “scatter” | “reg” | “resid” | “kde” | “hex” }, optional
+                Kind of plot to draw, by default 'scatter'
+
+        Examples
+        --------
+        >>> clean.jointplot(x='x', y='y', kind='kde', annot_kws=dict(stat="r"))
+        """
+
+        jointplot(
+            x=x,
+            y=y,
+            df=self._data_properties.x_train,
+            kind=kind,
+            **kwargs
+        )

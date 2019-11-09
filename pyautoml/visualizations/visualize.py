@@ -266,7 +266,7 @@ def pairplot(df, kind='scatter', diag_kind='auto', hue=None, **kwargs):
     Parameters
     ----------
     df : DataFrame
-            Data
+        Data
 
     kind : {'scatter', 'reg'}, optional
         Type of plot for off-diag plots, by default 'scatter'
@@ -279,11 +279,44 @@ def pairplot(df, kind='scatter', diag_kind='auto', hue=None, **kwargs):
     """
 
     sns.set(style="ticks", color_codes=True)
+    palette = kwargs.pop('color', sns.color_palette('pastel'))    
 
     g = sns.pairplot(
         df,
         kind=kind,
         diag_kind=diag_kind,
         hue=hue,
+        palette=palette,
+        **kwargs
+    )
+
+def jointplot(x, y, df, kind='scatter', **kwargs):
+    """
+    Plots a joint plot of 2 variables.
+    
+    Parameters
+    ----------
+    x : str
+        X axis column
+
+    y : str
+        y axis column
+
+    df : DataFrame
+        Data
+
+    kind : { “scatter” | “reg” | “resid” | “kde” | “hex” }, optional
+        Kind of plot to draw, by default 'scatter'
+    """
+
+    sns.set(style="ticks", color_codes=True)
+    color = kwargs.pop('color', 'red')
+
+    g = sns.jointplot(
+        x=x,
+        y=y,
+        data=df,
+        kind=kind,
+        color=color,
         **kwargs
     )
