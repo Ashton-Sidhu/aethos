@@ -102,6 +102,10 @@ clean.describe_column('Fare') # Get indepth statistics about the 'Fare' column
 
 clean.missing_data # View your missing data at anytime
 
+clean.correlation_matrix() # Generate a correlation matrix for your training data
+
+clean.pairplot() # Generate pairplots for your training data features at any time
+
 clean.checklist() # Will provide an iteractive checklist to keep track of your cleaning tasks
 ```
 
@@ -183,6 +187,12 @@ To install and use the extensions such as `qgrid` for interactive filtering and 
 `pyautoml -ie` or `pyautoml --install-extensions`
 
 Currently working on condas implementation.
+
+To create a Data Science project run:
+
+`pyautoml -c` or `pyautomal --create`
+
+This will create a full folder strucuture for you to manage data, unit tests, experiments and source code.
 
 ## Features
 
