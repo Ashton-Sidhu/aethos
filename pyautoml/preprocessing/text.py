@@ -88,10 +88,10 @@ def nltk_stem(
     func = partial(_apply_text_method, transformer=stem.stem)
 
     for col in list_of_cols:
-        x_train[col + new_col_name] = map(func, x_train[col])
+        x_train[col + new_col_name] = pd.Series(map(func, x_train[col]))
 
         if x_test is not None:
-            x_test[col + new_col_name] = map(func, x_test[col])
+            x_test[col + new_col_name] = pd.Series(map(func, x_test[col]))
 
     return x_train, x_test
 
