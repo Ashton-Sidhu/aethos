@@ -987,19 +987,25 @@ class MethodBase(object):
         3) "Umberella", a boxplot
         4) "Thunder", a pointplot connecting the mean of the different categories (if `pointplot` is `True`)
 
-        Possible Params for Raincloud Plot
-        ----------------------------------
-        x : Iterable, np.array, or dataframe column name if 'data' is specified
-            Categorical data.
+        Useful parameter documentation
+        ------------------------------
+        https://seaborn.pydata.org/generated/seaborn.boxplot.html
 
-        y : Iterable, np.array, or dataframe column name if 'data' is specified
-            Measure data (Numeric)
+        https://seaborn.pydata.org/generated/seaborn.violinplot.html
+
+        https://seaborn.pydata.org/generated/seaborn.stripplot.html
+
+        Parameters
+        ----------
+        x : str
+            X axis data, reference by column name, any data
+
+        y : str
+            Y axis data, reference by column name, measurable data (numeric)
+            by default target_field
 
         hue : Iterable, np.array, or dataframe column name if 'data' is specified
             Second categorical data. Use it to obtain different clouds and rainpoints
-
-        data : Dataframe              
-            input pandas dataframe
 
         orient : str                  
             vertical if "v" (default), horizontal if "h"
@@ -1060,35 +1066,6 @@ class MethodBase(object):
             When hue nesting is used, whether elements should be shifted along the categorical axis.
 
         Source: https://micahallen.org/2018/03/15/introducing-raincloud-plots/
-
-        Useful parameter documentation
-        ------------------------------
-        https://seaborn.pydata.org/generated/seaborn.boxplot.html
-
-        https://seaborn.pydata.org/generated/seaborn.violinplot.html
-
-        https://seaborn.pydata.org/generated/seaborn.stripplot.html
-
-        Parameters
-        ----------
-        x : str
-            X axis data, reference by column name, any data
-
-        y : str
-            Y axis data, reference by column name, measurable data (numeric)
-            by default target_field
-
-        params : dict, optional
-            Parameters for the rain cloud plot, by default
-                { 'x'=target_col
-                'y'=col
-                'data'=data.infer_objects()
-                'pointplot'=True
-                'width_viol'=0.8
-                'width_box'=.4
-                'figsize'=(12,8)
-                'orient'='h'
-                'move'=0. }
         
         Examples
         --------
@@ -1214,6 +1191,11 @@ class MethodBase(object):
 
         **scatterplot_kwargs : optional
             See above links for list of possible scatterplot options.
+
+        Examples
+        --------
+        >>> clean.scatterplot(x='x', y='y') #2d
+        >>> clean.scatterplot(x='x', y='y', z='z') #3d
         """
 
         scatterplot(
@@ -1284,7 +1266,11 @@ class MethodBase(object):
 
         **lineplot_kwargs : optional
             For a list of possible keyword arguments for line plot please see https://github.com/PatrikHlobil/Pandas-Bokeh#lineplot
-            and https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.line 
+            and https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.line
+
+        Examples
+        --------
+        >>> clean.line_plot(x='x', y='y')
         """
 
         lineplot(
@@ -1309,6 +1295,10 @@ class MethodBase(object):
 
         hide_mirror : bool, optional
             Whether to display the mirroring half of the correlation plot, by default False
+
+        Examples
+        --------
+        >>> clean.correlation_matrix(data_labels=True)
         """
 
         correlation_matrix(
@@ -1345,6 +1335,10 @@ class MethodBase(object):
 
         palette : dict or seaborn color palette
             Set of colors for mapping the hue variable. If a dict, keys should be values in the hue variable.
+
+        Examples
+        --------
+        >>> clean.pairplot(kind='kde')
         """
 
         if self.target_field and not hue:
@@ -1379,7 +1373,7 @@ class MethodBase(object):
 
         Examples
         --------
-        >>> clean.jointplot(x='x', y='y', kind='kde', annot_kws=dict(stat="r"))
+        >>> clean.jointplot(x='x', y='y', kind='kde', color='crimson')
         """
 
         jointplot(

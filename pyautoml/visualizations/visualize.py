@@ -31,9 +31,6 @@ def raincloud(col: str, target_col: str, data, **params):
 
     if not params:
         params = {
-            "x": col,
-            "y": target_col,
-            "data": data.infer_objects(),
             "pointplot": True,
             "width_viol": 0.8,
             "width_box": 0.4,
@@ -42,8 +39,7 @@ def raincloud(col: str, target_col: str, data, **params):
             "ax": ax,
         }
 
-    ax = pt.RainCloud(**params)
-
+    ax = pt.RainCloud(x=col, y=target_col, data=data.infer_objects(), **params)
 
 def barplot(
     x,

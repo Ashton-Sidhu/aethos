@@ -801,5 +801,43 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+    def test_rainccloudplot(self):
+
+        data = sns.load_dataset("iris")
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field='species',
+            report_name=None,
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.raincloud(x='sepal_width', y='sepal_length')
+
+        self.assertTrue(True)
+
+    def test_barplot(self):
+
+        data = sns.load_dataset("iris")
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field='species',
+            report_name=None,
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.barplot('species', 'sepal_length', 'sepal_width', groupby='species', method='mean', orient='h')
+        base.barplot('species', 'sepal_length', 'sepal_width', groupby='species', method='mean', orient='v')
+
+        self.assertTrue(True)
+
+
 if __name__ == "__main__":
     unittest.main()
