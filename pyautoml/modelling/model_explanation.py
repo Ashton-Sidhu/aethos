@@ -369,7 +369,7 @@ class MSFTInterpret(object):
 
         return sensitivity_global
 
-    def create_dashboard(self):
+    def create_dashboard(self): # pragma: no cover
         """
         Displays an interpretable dashboard of already created interpretable plots.
         
