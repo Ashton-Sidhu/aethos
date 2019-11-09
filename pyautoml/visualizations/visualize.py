@@ -5,6 +5,7 @@ import plotly.express as px
 import ptitprince as pt
 import seaborn as sns
 import numpy as np
+from scipy import stats
 
 
 def raincloud(col: str, target_col: str, data, **params):
@@ -309,8 +310,12 @@ def jointplot(x, y, df, kind='scatter', **kwargs):
         Kind of plot to draw, by default 'scatter'
     """
 
+    #NOTE: Ignore the deprecation warning for showing the R^2 statistic until Seaborn reimplements it
+    import warnings
+    warnings.simplefilter('ignore', UserWarning)
+
     sns.set(style="ticks", color_codes=True)
-    color = kwargs.pop('color', 'red')
+    color = kwargs.pop('color', 'crimson')
 
     g = sns.jointplot(
         x=x,
@@ -319,4 +324,4 @@ def jointplot(x, y, df, kind='scatter', **kwargs):
         kind=kind,
         color=color,
         **kwargs
-    )
+    ).annotate(stats.pearsonr)
