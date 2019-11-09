@@ -109,7 +109,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = remove_columns_threshold(
+        ) = remove_constant_columns(
             x_train=self._data_properties.x_train, x_test=self._data_properties.x_test
         )
 
