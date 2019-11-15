@@ -14,10 +14,18 @@ from pandas_summary import DataFrameSummary
 
 import pyautoml
 from pyautoml.data.data import Data
-from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
-                           ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
-                           PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
-                           _get_columns, _set_item, label_encoder, split_data)
+from pyautoml.util import (
+    CLEANING_CHECKLIST,
+    DATA_CHECKLIST,
+    ISSUES_CHECKLIST,
+    MULTI_ANALYSIS_CHECKLIST,
+    PREPARATION_CHECKLIST,
+    UNI_ANALYSIS_CHECKLIST,
+    _get_columns,
+    _set_item,
+    label_encoder,
+    split_data,
+)
 from pyautoml.visualizations.visualize import *
 
 # TODO: Move to a config fille
@@ -1326,7 +1334,7 @@ class MethodBase(object):
             **kwargs,
         )
 
-    def pairplot(self, kind='scatter', diag_kind='auto', hue=None, **kwargs):
+    def pairplot(self, kind="scatter", diag_kind="auto", hue=None, **kwargs):
         """
         Plots pairplots of the variables from the training data.
 
@@ -1369,10 +1377,10 @@ class MethodBase(object):
             kind=kind,
             diag_kind=diag_kind,
             hue=hue,
-            **kwargs
+            **kwargs,
         )
 
-    def jointplot(self, x: str, y:str, kind='scatter', **kwargs):
+    def jointplot(self, x: str, y: str, kind="scatter", **kwargs):
         """
         Plots joint plots of 2 different variables.
 
@@ -1416,10 +1424,4 @@ class MethodBase(object):
         >>> clean.jointplot(x='x', y='y', kind='kde', color='crimson')
         """
 
-        jointplot(
-            x=x,
-            y=y,
-            df=self._data_properties.x_train,
-            kind=kind,
-            **kwargs
-        )
+        jointplot(x=x, y=y, df=self._data_properties.x_train, kind=kind, **kwargs)

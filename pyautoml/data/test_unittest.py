@@ -8,7 +8,6 @@ from pyautoml.util import *
 
 
 class TestData(unittest.TestCase):
-
     def test_standardizedata(self):
 
         data = [

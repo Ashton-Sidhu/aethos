@@ -41,6 +41,7 @@ def raincloud(col: str, target_col: str, data, **params):
 
     ax = pt.RainCloud(x=col, y=target_col, data=data.infer_objects(), **params)
 
+
 def barplot(
     x,
     y,
@@ -252,11 +253,12 @@ def correlation_matrix(df, data_labels=False, hide_mirror=False, **kwargs):
         fmt=".2f",
         linewidths=0.5,
         cbar_kws={"shrink": 0.5},
-        **kwargs
+        **kwargs,
     )
 
+
 # TODO: Make pair plots customizable using PairGrid
-def pairplot(df, kind='scatter', diag_kind='auto', hue=None, **kwargs):
+def pairplot(df, kind="scatter", diag_kind="auto", hue=None, **kwargs):
     """
     Plots pairplots of the variables in the DataFrame
     
@@ -276,18 +278,14 @@ def pairplot(df, kind='scatter', diag_kind='auto', hue=None, **kwargs):
     """
 
     sns.set(style="ticks", color_codes=True)
-    palette = kwargs.pop('color', sns.color_palette('pastel'))    
+    palette = kwargs.pop("color", sns.color_palette("pastel"))
 
     g = sns.pairplot(
-        df,
-        kind=kind,
-        diag_kind=diag_kind,
-        hue=hue,
-        palette=palette,
-        **kwargs
+        df, kind=kind, diag_kind=diag_kind, hue=hue, palette=palette, **kwargs
     )
 
-def jointplot(x, y, df, kind='scatter', **kwargs):
+
+def jointplot(x, y, df, kind="scatter", **kwargs):
     """
     Plots a joint plot of 2 variables.
     
@@ -306,18 +304,14 @@ def jointplot(x, y, df, kind='scatter', **kwargs):
         Kind of plot to draw, by default 'scatter'
     """
 
-    #NOTE: Ignore the deprecation warning for showing the R^2 statistic until Seaborn reimplements it
+    # NOTE: Ignore the deprecation warning for showing the R^2 statistic until Seaborn reimplements it
     import warnings
-    warnings.simplefilter('ignore', UserWarning)
+
+    warnings.simplefilter("ignore", UserWarning)
 
     sns.set(style="ticks", color_codes=True)
-    color = kwargs.pop('color', 'crimson')
+    color = kwargs.pop("color", "crimson")
 
-    g = sns.jointplot(
-        x=x,
-        y=y,
-        data=df,
-        kind=kind,
-        color=color,
-        **kwargs
-    ).annotate(stats.pearsonr)
+    g = sns.jointplot(x=x, y=y, data=df, kind=kind, color=color, **kwargs).annotate(
+        stats.pearsonr
+    )

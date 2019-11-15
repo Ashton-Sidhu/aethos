@@ -773,7 +773,7 @@ class Test_TestBase(unittest.TestCase):
             x_train=data,
             x_test=None,
             split=True,
-            target_field='species',
+            target_field="species",
             report_name=None,
             target_mapping=None,
             test_split_percentage=0.5,
@@ -791,13 +791,13 @@ class Test_TestBase(unittest.TestCase):
             x_train=data,
             x_test=None,
             split=True,
-            target_field='species',
+            target_field="species",
             report_name=None,
             target_mapping=None,
             test_split_percentage=0.5,
         )
 
-        base.jointplot(x='sepal_width', y='sepal_length')
+        base.jointplot(x="sepal_width", y="sepal_length")
 
         self.assertTrue(True)
 
@@ -809,13 +809,13 @@ class Test_TestBase(unittest.TestCase):
             x_train=data,
             x_test=None,
             split=True,
-            target_field='species',
+            target_field="species",
             report_name=None,
             target_mapping=None,
             test_split_percentage=0.5,
         )
 
-        base.raincloud(x='sepal_width', y='sepal_length')
+        base.raincloud(x="sepal_width", y="sepal_length")
 
         self.assertTrue(True)
 
@@ -827,14 +827,28 @@ class Test_TestBase(unittest.TestCase):
             x_train=data,
             x_test=None,
             split=True,
-            target_field='species',
+            target_field="species",
             report_name=None,
             target_mapping=None,
             test_split_percentage=0.5,
         )
 
-        base.barplot('species', 'sepal_length', 'sepal_width', groupby='species', method='mean', orient='h')
-        base.barplot('species', 'sepal_length', 'sepal_width', groupby='species', method='mean', orient='v')
+        base.barplot(
+            "species",
+            "sepal_length",
+            "sepal_width",
+            groupby="species",
+            method="mean",
+            orient="h",
+        )
+        base.barplot(
+            "species",
+            "sepal_length",
+            "sepal_width",
+            groupby="species",
+            method="mean",
+            orient="v",
+        )
 
         self.assertTrue(True)
 
@@ -846,7 +860,7 @@ class Test_TestBase(unittest.TestCase):
             x_train=data,
             x_test=None,
             split=False,
-            target_field='species',
+            target_field="species",
             report_name=None,
             target_mapping=None,
             test_split_percentage=0.5,
@@ -865,7 +879,7 @@ class Test_TestBase(unittest.TestCase):
             x_train=data,
             x_test=None,
             split=True,
-            target_field='species',
+            target_field="species",
             report_name=None,
             target_mapping=None,
             test_split_percentage=0.5,
@@ -878,7 +892,7 @@ class Test_TestBase(unittest.TestCase):
         self.assertTrue(validate)
 
     def test_normalize_column_names(self):
-        
+
         data = np.zeros((4, 4))
         columns = ["PID", "CapsLock", "space column name", "Caps Space"]
 
@@ -888,15 +902,19 @@ class Test_TestBase(unittest.TestCase):
             x_train=data,
             x_test=data,
             split=True,
-            target_field='species',
+            target_field="species",
             report_name=None,
             test_split_percentage=0.5,
         )
 
         base.standardize_column_names()
-        validate = base.columns == ["pid", "capslock", "space_column_name", "caps_space"] and base.x_test.columns.tolist() == base.x_train.columns.tolist()
+        validate = (
+            base.columns == ["pid", "capslock", "space_column_name", "caps_space"]
+            and base.x_test.columns.tolist() == base.x_train.columns.tolist()
+        )
 
         self.assertTrue(validate)
+
 
 if __name__ == "__main__":
     unittest.main()

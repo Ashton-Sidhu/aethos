@@ -53,14 +53,21 @@ class TestCleaning(unittest.TestCase):
         self.assertListEqual(validate, [[1, 0, 2], [0, 0, 1], [0.5, 0, 1.5]])
 
     def test_cleannumeric_splitmean(self):
-        int_missing_data = [[np.nan, 0, 2, 2], [0, np.nan, 1, 3], [1, 3, np.nan, 4], [1, 3, 4, np.nan]]
+        int_missing_data = [
+            [np.nan, 0, 2, 2],
+            [0, np.nan, 1, 3],
+            [1, 3, np.nan, 4],
+            [1, 3, 4, np.nan],
+        ]
 
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5)
         clean.replace_missing_mean()
-        validate = clean.x_train.isnull().values.any() and clean.x_test.isnull().values.any()
+        validate = (
+            clean.x_train.isnull().values.any() and clean.x_test.isnull().values.any()
+        )
 
         self.assertFalse(validate)
 

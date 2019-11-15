@@ -403,7 +403,7 @@ class ModelBase(object):
 
         print(", ".join(str(np.array(sample_list) + 1)))
 
-    def interpret_model(self, show=True): # pragma: no cover
+    def interpret_model(self, show=True):  # pragma: no cover
         """
         Displays a dashboard interpreting your model's performance, behaviour and individual predictions.
 
