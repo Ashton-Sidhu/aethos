@@ -260,6 +260,26 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertIsNotNone(base.col1)
 
+    def test_getattr_pandas(self):
+
+        int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            target_mapping=None,
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+
+        base.mean()
+
+        self.assertTrue(True)
+
     def test_setattr_new(self):
 
         int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]

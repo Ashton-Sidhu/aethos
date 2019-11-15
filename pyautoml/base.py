@@ -14,18 +14,10 @@ from pandas_summary import DataFrameSummary
 
 import pyautoml
 from pyautoml.data.data import Data
-from pyautoml.util import (
-    CLEANING_CHECKLIST,
-    DATA_CHECKLIST,
-    ISSUES_CHECKLIST,
-    MULTI_ANALYSIS_CHECKLIST,
-    PREPARATION_CHECKLIST,
-    UNI_ANALYSIS_CHECKLIST,
-    _get_columns,
-    _set_item,
-    label_encoder,
-    split_data,
-)
+from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
+                           ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
+                           PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
+                           _get_columns, _set_item, label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
 
 # TODO: Move to a config fille
@@ -142,13 +134,15 @@ class MethodBase(object):
 
             return self._data_properties.x_train.head()
 
-    def __getattr__(self, column):
+    def __getattr__(self, key):
 
-        try:
-            return self._data_properties.x_train[column]
-
-        except Exception as e:
-            raise AttributeError(e)
+        if key in self._data_properties.x_train.columns:
+            return self._data_properties.x_train[key]
+        else:
+            if hasattr(self._data_properties.x_train, key):
+                return getattr(self._data_properties.x_train, key)
+            else:
+                raise AttributeError(e)
 
     def __setattr__(self, item, value):
 
