@@ -838,6 +838,45 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+    def test_todf_1(self):
+
+        data = sns.load_dataset("iris")
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=False,
+            target_field='species',
+            report_name=None,
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        x_train = base.to_df()
+        validate = x_train.values.tolist() == data.values.tolist()
+
+        self.assertTrue(validate)
+
+    def test_todf_2(self):
+
+        data = sns.load_dataset("iris")
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field='species',
+            report_name=None,
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        x_train, x_test = base.to_df()
+
+        validate = x_train is not None and x_test is not None
+
+        self.assertTrue(validate)
+
 
 if __name__ == "__main__":
     unittest.main()

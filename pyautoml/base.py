@@ -14,18 +14,10 @@ from pandas_summary import DataFrameSummary
 
 import pyautoml
 from pyautoml.data.data import Data
-from pyautoml.util import (
-    CLEANING_CHECKLIST,
-    DATA_CHECKLIST,
-    ISSUES_CHECKLIST,
-    MULTI_ANALYSIS_CHECKLIST,
-    PREPARATION_CHECKLIST,
-    UNI_ANALYSIS_CHECKLIST,
-    _get_columns,
-    _set_item,
-    label_encoder,
-    split_data,
-)
+from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
+                           ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
+                           PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
+                           _get_columns, _set_item, label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
 
 # TODO: Move to a config fille
@@ -974,6 +966,23 @@ class MethodBase(object):
         tab.set_title(4, "Preparation")
 
         display(tab)
+
+    def to_df(self):
+        """
+        Return Dataframes for x_train and x_test if it exists.
+
+        Returns
+        -------
+        Dataframe, *Dataframe
+            Transformed dataframe with rows with a missing values in a specific column are missing
+
+        Returns 2 Dataframes test if x_test is provided.  
+        """
+
+        if self._data_properties.x_test is None:
+            return self._data_properties.x_train
+        else:
+            return self._data_properties.x_train, self._data_properties.x_test
 
     def raincloud(self, x=None, y=None, **params):
         """
