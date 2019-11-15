@@ -877,6 +877,26 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_normalize_column_names(self):
+        
+        data = np.zeros((4, 4))
+        columns = ["PID", "CapsLock", "space column name", "Caps Space"]
+
+        data = pd.DataFrame(data, columns=columns)
+
+        base = Clean(
+            x_train=data,
+            x_test=data,
+            split=True,
+            target_field='species',
+            report_name=None,
+            test_split_percentage=0.5,
+        )
+
+        base.standardize_column_names()
+        validate = base.columns == ["pid", "capslock", "space_column_name", "caps_space"] and base.x_test.columns.tolist() == base.x_train.columns.tolist()
+
+        self.assertTrue(validate)
 
 if __name__ == "__main__":
     unittest.main()

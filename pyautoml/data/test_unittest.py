@@ -8,61 +8,6 @@ from pyautoml.util import *
 
 
 class TestData(unittest.TestCase):
-    def test_normalizecolumnames_dfcolumnames(self):
-
-        data = np.zeros((4, 4))
-        columns = ["PID", "CapsLock", "space column name", "Caps Space"]
-
-        dataset = pd.DataFrame(data, columns=columns)
-        data = Data(
-            x_train=dataset,
-            x_test=None,
-            split=True,
-            target_field="",
-            target_mapping=None,
-            report_name=None,
-        )
-        new_df = data.normalize_column_names(dataset)
-
-        self.assertListEqual(
-            new_df.columns.tolist(),
-            ["pid", "capslock", "space_column_name", "caps_space"],
-        )
-        self.assertDictEqual(
-            data.colMapping,
-            {
-                "PID": "pid",
-                "CapsLock": "capslock",
-                "space column name": "space_column_name",
-                "Caps Space": "caps_space",
-            },
-        )
-
-    def test_normalizecolumnames_colmapping(self):
-
-        data = np.zeros((4, 4))
-        columns = ["PID", "CapsLock", "space column name", "Caps Space"]
-
-        dataset = pd.DataFrame(data, columns=columns)
-        data = Data(
-            x_train=dataset,
-            x_test=None,
-            split=True,
-            target_field="",
-            target_mapping=None,
-            report_name=None,
-        )
-        new_df = data.normalize_column_names(dataset)
-
-        self.assertDictEqual(
-            data.colMapping,
-            {
-                "PID": "pid",
-                "CapsLock": "capslock",
-                "space column name": "space_column_name",
-                "Caps Space": "caps_space",
-            },
-        )
 
     def test_standardizedata(self):
 

@@ -388,6 +388,15 @@ class MethodBase(object):
 
         pyautoml.describe_option(option)  # pragma: no cover
 
+    def standardize_column_names(self):
+        """
+        Utility function that standardizes all column names to lowercase and underscores for spaces.
+        """
+
+        self._data_properties.normalize_column_names()
+
+        return self.copy()
+
     def search(self, *values, not_equal=False, replace=False):
         """
         Searches the entire dataset for specified value(s) and returns rows that contain the values.

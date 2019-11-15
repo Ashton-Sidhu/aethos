@@ -12,7 +12,7 @@ class Data:
     ):
 
         self.field_types = {}
-        self.colMapping = {}
+        self.col_mapping = {}
         self.target_field = target_field
         self.x_train = x_train
         self.x_test = x_test
@@ -118,31 +118,24 @@ class Data:
 
         self.field_types = {k: v for k, v in self.field_types.items() if v != "ignore"}
 
-    def normalize_column_names(self, df):
+    def normalize_column_names(self):
         """
         Utility function that fixes unusual column names (e.g. Caps, Spaces)
         to make them suitable printing into code templates.
-        
-        Parameters
-        ----------
-        df : Dataframe
-            Pandas Dataframe of the data.
-        
-        Returns
-        -------
-        Dataframe
-            Dataframe whos column names have been normalized.
         """
 
         new_column_names = {}
         pattern = re.compile("\W+")
 
-        for name in df.columns:
+        for name in self.x_train.columns:
             new_column_names[name] = re.sub(pattern, "_", name.lower())
 
-        self.colMapping = new_column_names
+        self.col_mapping = new_column_names
 
-        return df.rename(index=str, columns=new_column_names)
+        self.x_train.rename(columns=new_column_names, inplace=True)
+
+        if self.x_test is not None:
+            self.x_test.rename(columns=new_column_names, inplace=True)
 
     def standardize_data(self, df, custom_cols={}):
         """
