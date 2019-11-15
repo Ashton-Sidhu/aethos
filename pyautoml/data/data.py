@@ -136,26 +136,3 @@ class Data:
 
         if self.x_test is not None:
             self.x_test.rename(columns=new_column_names, inplace=True)
-
-    def standardize_data(self, df, custom_cols={}):
-        """
-        ============= UNUSED ===================
-
-        Standarizes the properties of the dataset: column names and removes unimportant columns.
-        Initializes the types of each column (categorical, numeric, etc.)
-        
-        Arguments:
-            df {Dataframe} -- Dataframe of the data
-        
-        Keyword Arguments:
-            custom_cols {dict} -- Mapping of column name to a column type (numeric, str_categorical, num_categorical, text, etc.)  (default: {{}})
-        
-        Returns:
-            [Dataframe] -- Standardized version of the dataframe
-        """
-
-        df = self.normalize_column_names(df)
-        self.get_input_types(df, custom_cols)
-        self.standardized = True
-
-        return df
