@@ -14,7 +14,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
-        clean.remove_columns(0.5)
+        clean.drop_column_missing_threshold(0.5)
         validate = clean.x_train.columns.tolist()
 
         self.assertListEqual(validate, ["col1"])
@@ -26,7 +26,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
-        clean.remove_rows(0.5)
+        clean.drop_rows_missing_threshold(0.5)
         validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, np.array([(1, 0, 0)]).tolist())
@@ -217,7 +217,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
-        clean.remove_duplicate_rows()
+        clean.drop_duplicate_rows()
         validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 0, 2], [0, 2, 1]])
@@ -230,7 +230,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
-        clean.remove_duplicate_rows(list_of_cols=columns)
+        clean.drop_duplicate_rows(list_of_cols=columns)
         validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 0, 2], [0, 2, 1]])
@@ -243,7 +243,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5, split=False)
-        clean.remove_duplicate_columns()
+        clean.drop_duplicate_columns()
         validate = clean.x_train.values.tolist()
 
         self.assertListEqual(validate, [[1, 0], [0, 2], [1, 0]])
@@ -418,7 +418,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5)
-        clean.remove_constant_columns()
+        clean.drop_constant_columns()
 
         validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == [
             "col1",

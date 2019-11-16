@@ -48,9 +48,9 @@ class Clean(MethodBase):
         if self._data_properties.report is not None:
             self.report.write_header("Cleaning")
 
-    def remove_columns(self, threshold: float):
+    def drop_column_missing_threshold(self, threshold: float):
         """
-        Remove columns from the dataframe that have greater than or equal to the threshold value of missing columns.
+        Remove columns from the dataframe that have greater than or equal to the threshold value of missing values.
         Example: Remove columns where >= 50% of the data is missing.
 
         This function exists in `clean/utils.py`
@@ -67,7 +67,7 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>> clean.remove_columns(0.5)
+        >>> clean.drop_column_missing_threshold(0.5)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_columns"]
@@ -91,7 +91,7 @@ class Clean(MethodBase):
 
         return self.copy()
 
-    def remove_constant_columns(self):
+    def drop_constant_columns(self):
         """
         Remove columns from the data that only have one unique value.
 
@@ -104,7 +104,7 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>> clean.remove_constant_columns()
+        >>> clean.drop_constant_columns()
         """
 
         report_info = technique_reason_repo["clean"]["general"][
@@ -128,7 +128,7 @@ class Clean(MethodBase):
 
         return self.copy()
         
-    def remove_rows(self, threshold: float):
+    def drop_rows_missing_threshold(self, threshold: float):
         """
         Remove rows from the dataframe that have greater than or equal to the threshold value of missing rows.
         Example: Remove rows where > 50% of the data is missing.
@@ -147,7 +147,7 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>> clean.remove_rows(0.5)    
+        >>> clean.drop_rows_missing_threshold(0.5)    
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_rows"]
@@ -516,7 +516,7 @@ class Clean(MethodBase):
 
         return self.copy()
 
-    def remove_duplicate_rows(self, *list_args, list_of_cols=[]):
+    def drop_duplicate_rows(self, *list_args, list_of_cols=[]):
         """
         Remove rows from the data that are exact duplicates of each other and leave only 1.
         This can be used to reduce processing time or performance for algorithms where
@@ -541,9 +541,9 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>> clean.remove_duplicate_rows('col1', 'col2') # Only look at columns 1 and 2
-        >>> clean.remove_duplicate_rows(['col1', 'col2'])
-        >>> clean.remove_duplicate_rows()
+        >>> clean.drop_duplicate_rows('col1', 'col2') # Only look at columns 1 and 2
+        >>> clean.drop_duplicate_rows(['col1', 'col2'])
+        >>> clean.drop_duplicate_rows()
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_duplicate_rows"]
@@ -554,7 +554,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = remove_duplicate_rows(
+        ) = util.remove_duplicate_rows(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -565,7 +565,7 @@ class Clean(MethodBase):
 
         return self.copy()
 
-    def remove_duplicate_columns(self):
+    def drop_duplicate_columns(self):
         """
         Remove columns from the data that are exact duplicates of each other and leave only 1.
         
@@ -576,7 +576,7 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>> clean.remove_duplicate_columns()
+        >>> clean.drop_duplicate_columns()
         """
 
         report_info = technique_reason_repo["clean"]["general"][
@@ -586,7 +586,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = remove_duplicate_columns(
+        ) = util.remove_duplicate_columns(
             x_train=self._data_properties.x_train, x_test=self._data_properties.x_test
         )
 
@@ -632,7 +632,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = replace_missing_random_discrete(
+        ) = util.replace_missing_random_discrete(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -683,7 +683,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = replace_missing_knn(
+        ) = util.replace_missing_knn(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             k=k,
@@ -753,7 +753,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = replace_missing_interpolate(
+        ) = util.replace_missing_interpolate(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -907,7 +907,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = replace_missing_indicator(
+        ) = util.replace_missing_indicator(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,

@@ -33,7 +33,7 @@ class TestReport(unittest.TestCase):
         clean = Clean(
             x_train=data, test_split_percentage=0.5, split=False, report_name="test"
         )
-        clean.remove_columns(0.5)
+        clean.drop_column_missing_threshold(0.5)
 
         with open(clean._data_properties.report.filename) as f:
             content = f.read()
