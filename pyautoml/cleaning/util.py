@@ -17,9 +17,8 @@ import warnings
 import numpy as np
 import pandas as pd
 from impyute.imputation.cs import fast_knn
-from sklearn.impute import MissingIndicator
-
 from pyautoml.util import drop_replace_columns
+from sklearn.impute import MissingIndicator
 
 
 def remove_columns_threshold(x_train, x_test=None, threshold=0.5):
@@ -387,8 +386,8 @@ def replace_missing_indicator(
 
 def remove_constant_columns(x_train, x_test=None):
     """
-    Adds a new column describing if the column provided is missing data
-    
+    Removes columns that have only one unique value.
+
     Parameters
     ----------
     x_train: Dataframe or array like - 2d
@@ -405,10 +404,38 @@ def remove_constant_columns(x_train, x_test=None):
     Returns 2 Dataframes if x_test is provided.
     """
 
-    columns = set(x_train.columns)
-
     # If the number of unique values is not 0(all missing) or 1(constant or constant + missing)
     keep_columns = list(filter(lambda x: x_train.nunique()[x] not in [0, 1], x_train.columns))
+
+    x_train = x_train[keep_columns]
+
+    if x_test is not None:
+        x_test = x_test[keep_columns]
+
+    return x_train, x_test
+
+def remove_unique_columns(x_train, x_test):
+    """
+    Remove columns that have only unique values.
+
+    Parameters
+    ----------
+    x_train: Dataframe or array like - 2d
+        Dataset
+        
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific row are missing
+
+    Returns 2 Dataframes if x_test is provided.
+    """
+
+    # If the number of unique values is not 0(all missing) or 1(constant or constant + missing)
+    keep_columns = list(filter(lambda x: x_train.nunique()[x] != x_train.shape[0], x_train.columns))
 
     x_train = x_train[keep_columns]
 

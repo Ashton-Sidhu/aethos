@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-
 from pyautoml import Clean
 
 
@@ -422,6 +421,29 @@ class TestCleaning(unittest.TestCase):
 
         validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == [
             "col1",
+        ]
+
+        self.assertTrue(True)
+
+    def test_cleanutil_removeunique(self):
+
+        int_missing_data = [
+            [1, 8, np.NaN, np.NaN],
+            [2, 8, np.NaN, 1],
+            [3, 8, np.NaN, np.NaN],
+            [4, 8, np.NaN, 2],
+            [5, 8, np.NaN, np.NaN],
+            [6, 8, np.NaN, 3],
+        ]
+
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        clean = Clean(x_train=data, test_split_percentage=0.5)
+        clean.drop_unique_columns()
+
+        validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == [
+            "col2", "col3", "col4"
         ]
 
         self.assertTrue(True)

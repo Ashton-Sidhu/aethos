@@ -1,5 +1,4 @@
 import pandas as pd
-
 from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.cleaning import util
 from pyautoml.cleaning.categorical import *
@@ -117,6 +116,43 @@ class Clean(MethodBase):
             self._data_properties.x_train,
             self._data_properties.x_test,
         ) = util.remove_constant_columns(
+            x_train=self._data_properties.x_train, x_test=self._data_properties.x_test
+        )
+
+        if self.report is not None:
+            new_columns = original_columns.difference(
+                self._data_properties.x_train.columns
+            )
+            self.report.report_technique(report_info, new_columns)
+
+        return self.copy()
+
+    def drop_unique_columns(self):
+        """
+        Remove columns from the data that only have one unique value.
+
+        This function exists in `clean/utils.py`
+                
+        Returns
+        -------
+        Clean:
+            Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.drop_unique_columns()
+        """
+
+        report_info = technique_reason_repo["clean"]["general"][
+            "remove_unique_columns"
+        ]
+
+        original_columns = set(list(self._data_properties.x_train.columns))
+
+        (
+            self._data_properties.x_train,
+            self._data_properties.x_test,
+        ) = util.remove_unique_columns(
             x_train=self._data_properties.x_train, x_test=self._data_properties.x_test
         )
 

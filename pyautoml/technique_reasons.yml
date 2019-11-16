@@ -11,6 +11,9 @@ clean:
     remove_constant_columns: >
       Removed column(s) column_name_placeholder because there was only 1 unique value and would not add value.
 
+    remove_unique_columns: >
+      Removed column(s) column_name_placeholder because all the values were unique.
+
     remove_duplicate_rows: >
       Removed rows that are exact duplicates of each other and keep only 1 to increase computational performance.
     
