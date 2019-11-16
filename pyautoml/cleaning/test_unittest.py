@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from pyautoml import Clean
 
 
@@ -405,15 +406,15 @@ class TestCleaning(unittest.TestCase):
     def test_cleanutil_removeconstant(self):
 
         int_missing_data = [
-            [1, 8, 1],
-            [0, 8, 2],
-            [1, 8, 1],
-            [1, 8, 1],
-            [1, 8, 1],
-            [1, 8, 1],
+            [1, 8, np.NaN, np.NaN],
+            [0, 8, np.NaN, 1],
+            [1, 8, np.NaN, np.NaN],
+            [0, 8, np.NaN, 1],
+            [1, 8, np.NaN, np.NaN],
+            [0, 8, np.NaN, 1],
         ]
 
-        columns = ["col1", "col2", "col3"]
+        columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5)
@@ -421,11 +422,9 @@ class TestCleaning(unittest.TestCase):
 
         validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == [
             "col1",
-            "col3",
         ]
 
         self.assertTrue(True)
-
 
 if __name__ == "__main__":
     unittest.main()

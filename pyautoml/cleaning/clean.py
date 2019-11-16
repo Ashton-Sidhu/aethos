@@ -1,13 +1,12 @@
 import pandas as pd
+
 from pyautoml.base import MethodBase, technique_reason_repo
+from pyautoml.cleaning import util
 from pyautoml.cleaning.categorical import *
 from pyautoml.cleaning.numeric import *
-from pyautoml.cleaning.util import *
-from pyautoml.util import (
-    _contructor_data_properties,
-    _input_columns,
-    _numeric_input_conditions,
-)
+from pyautoml.cleaning.util import replace_missing_fill
+from pyautoml.util import (_contructor_data_properties, _input_columns,
+                           _numeric_input_conditions)
 
 
 class Clean(MethodBase):
@@ -51,8 +50,8 @@ class Clean(MethodBase):
 
     def remove_columns(self, threshold: float):
         """
-        Remove columns from the dataframe that have more than the threshold value of missing columns.
-        Example: Remove columns where > 50% of the data is missing.
+        Remove columns from the dataframe that have greater than or equal to the threshold value of missing columns.
+        Example: Remove columns where >= 50% of the data is missing.
 
         This function exists in `clean/utils.py`
         
@@ -65,6 +64,10 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.remove_columns(0.5)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_columns"]
@@ -74,7 +77,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = remove_columns_threshold(
+        ) = util.remove_columns_threshold(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             threshold=threshold,
@@ -98,6 +101,10 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.remove_constant_columns()
         """
 
         report_info = technique_reason_repo["clean"]["general"][
@@ -109,7 +116,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = remove_constant_columns(
+        ) = util.remove_constant_columns(
             x_train=self._data_properties.x_train, x_test=self._data_properties.x_test
         )
 
@@ -120,10 +127,10 @@ class Clean(MethodBase):
             self.report.report_technique(report_info, new_columns)
 
         return self.copy()
-
+        
     def remove_rows(self, threshold: float):
         """
-        Remove rows from the dataframe that have more than the threshold value of missing rows.
+        Remove rows from the dataframe that have greater than or equal to the threshold value of missing rows.
         Example: Remove rows where > 50% of the data is missing.
 
         This function exists in `clean/utils.py`.
@@ -137,6 +144,10 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.remove_rows(0.5)    
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_rows"]
@@ -144,7 +155,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = remove_rows_threshold(
+        ) = util.remove_rows_threshold(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             threshold=threshold,
@@ -180,6 +191,11 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.replace_missing_mean('col1', 'col2')
+        >>> clean.replace_missing_mean(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["numeric"]["mean"]
@@ -232,6 +248,11 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.replace_missing_median('col1', 'col2')
+        >>> clean.replace_missing_median(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["numeric"]["median"]
@@ -282,6 +303,11 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.replace_missing_mostcommon('col1', 'col2')
+        >>> clean.replace_missing_mostcommon(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["numeric"]["mode"]
@@ -342,8 +368,9 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>> replace_missing_constant(col_mapping={'a': 1, 'b': 2, 'c': 3})
-        >>> replace_missing_constant('col1', 'col2', constant=2)
+        >>> clean.replace_missing_constant(col_mapping={'a': 1, 'b': 2, 'c': 3})
+        >>> clean.replace_missing_constant('col1', 'col2', constant=2)
+        >>> clean.replace_missing_constant(['col1', 'col2'], constant=3)
         """
 
         report_info = technique_reason_repo["clean"]["numeric"]["constant"]
@@ -411,6 +438,7 @@ class Clean(MethodBase):
         --------
         >>> replace_missing_new_category(col_mapping={'col1': "Green", 'col2': "Canada", 'col3': "December"})
         >>> replace_missing_new_category('col1', 'col2', 'col3', new_category='Blue')
+        >>> replace_missing_new_category(['col1', 'col2', 'col3'], new_category='Blue')
         """
 
         report_info = technique_reason_repo["clean"]["categorical"]["new_category"]
@@ -462,6 +490,11 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.replace_missing_remove_row('col1', 'col2')
+        >>> clean.replace_missing_remove_row(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["categorical"]["remove_rows"]
@@ -505,6 +538,12 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.remove_duplicate_rows('col1', 'col2') # Only look at columns 1 and 2
+        >>> clean.remove_duplicate_rows(['col1', 'col2'])
+        >>> clean.remove_duplicate_rows()
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_duplicate_rows"]
@@ -534,6 +573,10 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.remove_duplicate_columns()
         """
 
         report_info = technique_reason_repo["clean"]["general"][
@@ -557,6 +600,9 @@ class Clean(MethodBase):
         Replace missing values in with a random number based off the distribution (number of occurences) 
         of the data.
 
+        For example if your data was [5, 5, NaN, 1, 2]
+        There would be a 50% chance that the NaN would be replaced with a 5, a 25% chance for 1 and a 25% chance for 2.
+
         If a list of columns is provided use the list, otherwise use arguemnts.
         
         Parameters
@@ -574,8 +620,8 @@ class Clean(MethodBase):
 
         Examples
         --------
-        >>> For example if your data was [5, 5, NaN, 1, 2]
-        >>> There would be a 50% chance that the NaN would be replaced with a 5, a 25% chance for 1 and a 25% chance for 2.
+        >>> clean.replace_missing_random_discrete('col1', 'col2')
+        >>> clean.replace_missing_random_discrete(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["general"]["random_discrete"]
@@ -605,9 +651,6 @@ class Clean(MethodBase):
         
         Parameters
         ----------
-        list_args : str(s), optional
-            Specific columns to apply this technique to.
-
         k : int, optional
             Number of rows around the missing data to look at, by default 5
 
@@ -629,6 +672,10 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        clean.replace_missing_knn(k=8, p=2)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["knn"]
@@ -692,6 +739,12 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.replace_missing_interpolate('col1', 'col2')
+        >>> clean.replace_missing_interpolate(['col1', 'col2'])
+        >>> clean.replace_missing_interpolate('col1', 'col2', method='pad', limit=3)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["interpolate"]
@@ -733,6 +786,11 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.replace_missing_backfill('col1', 'col2')
+        >>> clean.replace_missing_backfill(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["general"]["bfill"]
@@ -741,7 +799,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = replace_missing_fill(
+        ) = util.replace_missing_fill(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -774,6 +832,11 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.replace_missing_forwardfill('col1', 'col2')
+        >>> clean.replace_missing_forwardfill(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["general"]["ffill"]
@@ -782,7 +845,7 @@ class Clean(MethodBase):
         (
             self._data_properties.x_train,
             self._data_properties.x_test,
-        ) = replace_missing_fill(
+        ) = util.replace_missing_fill(
             x_train=self._data_properties.x_train,
             x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
@@ -829,6 +892,13 @@ class Clean(MethodBase):
         -------
         Clean:
             Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> clean.replace_missing_indicator('col1', 'col2')
+        >>> clean.replace_missing_indicator(['col1', 'col2'])
+        >>> clean.replace_missing_indicator(['col1', 'col2'], missing_indicator='missing', valid_indicator='not missing', keep_col=False)
+
         """
 
         report_info = technique_reason_repo["clean"]["general"]["indicator"]

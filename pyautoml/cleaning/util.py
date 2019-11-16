@@ -10,14 +10,16 @@ replace_missing_knn
 replace_missing_interpolate
 replace_missing_fill
 replace_missing_indicator
+remove_unique_columns_threshold
 """
 import warnings
 
 import numpy as np
 import pandas as pd
 from impyute.imputation.cs import fast_knn
-from pyautoml.util import drop_replace_columns
 from sklearn.impute import MissingIndicator
+
+from pyautoml.util import drop_replace_columns
 
 
 def remove_columns_threshold(x_train, x_test=None, threshold=0.5):
@@ -57,7 +59,7 @@ def remove_columns_threshold(x_train, x_test=None, threshold=0.5):
         return x_train[criteria_meeting_columns], None
 
 
-def remove_rows_threshold(x_train, x_test=None, threshold=0.5):
+def remove_rows_threshold(x_train: pd.DataFrame, x_test=None, threshold=0.5):
     """
     Remove rows from the dataframe that have more than the threshold value of missing rows.
     Example: Remove rows where > 50% of the data is missing
@@ -92,7 +94,6 @@ def remove_rows_threshold(x_train, x_test=None, threshold=0.5):
         x_test = x_test.dropna(thresh=round(x_test.shape[1] * threshold), axis=0)
 
     return x_train, x_test
-
 
 def remove_duplicate_rows(x_train, x_test=None, list_of_cols=[]):
     """
@@ -384,7 +385,6 @@ def replace_missing_indicator(
 
     return x_train, x_test
 
-
 def remove_constant_columns(x_train, x_test=None):
     """
     Adds a new column describing if the column provided is missing data
@@ -407,9 +407,10 @@ def remove_constant_columns(x_train, x_test=None):
 
     columns = set(x_train.columns)
 
-    x_train = x_train.dropna(thresh=2, axis=1)
+    # If the number of unique values is not 0(all missing) or 1(constant or constant + missing)
+    keep_columns = list(filter(lambda x: x_train.nunique()[x] not in [0, 1], x_train.columns))
 
-    keep_columns = list(columns.intersection(x_train.columns))
+    x_train = x_train[keep_columns]
 
     if x_test is not None:
         x_test = x_test[keep_columns]
