@@ -100,6 +100,8 @@ clean.describe() # Display a high level view of your data using an extended vers
 
 clean.describe_column('Fare') # Get indepth statistics about the 'Fare' column
 
+clean.mean() # Run pandas functions on the pyautoml objects
+
 clean.missing_data # View your missing data at anytime
 
 clean.correlation_matrix() # Generate a correlation matrix for your training data
@@ -108,6 +110,10 @@ clean.pairplot() # Generate pairplots for your training data features at any tim
 
 clean.checklist() # Will provide an iteractive checklist to keep track of your cleaning tasks
 ```
+
+**NOTE:** One of the benefits of using `pyautoml` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
+
+**NOTE:** If you are providing a list or a Series and your data is split into train and test, the new column is created in the dataset that matches the length of the data provided. If the length of the data provided matches both train and test data it is added to both. 
 
 #### Cleaning 
 
@@ -167,10 +173,6 @@ model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic 
 
 model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
 ```
-
-**NOTE:** One of the benefits of using `pyautoml` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
-
-**NOTE:** If you are providing a list or a Series and your data is split into train and test, the new column is created in the dataset that matches the length of the data provided. If the length of the data provided matches both train and test data it is added to both. To individually add new columns you can do the following:
 
 **NOTE:** In pandas you'll often see `df = df.method(...)` or `df.method(..., inplace=True)` when transforming your data. Then depending on how you developed your analysis, when a mistake is made you either have to restart the kernel or reload your data entirely. In `pyautoml` most methods will change the data inplace (methods that have the keyword argument `new_col_name` will create a new column) without having to go `df = df.method(...)`. To create a "checkpoint" that creates a copy of your current state just assign the method to a variable, for example:
 
