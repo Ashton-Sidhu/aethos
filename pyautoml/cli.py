@@ -23,13 +23,14 @@ def install_corpora(ctx, param, value):
 
 
 @click.command(context_settings=dict(help_option_names=[u"-h", u"--help"]))
-@click.option(u"-c", u"--create", is_flag=True, expose_value=True, callback=create)
+@click.option(u"-c", u"--create", is_flag=True, expose_value=True, callback=create, help='Create a Data Science project.')
 @click.option(
     u"-ie",
     u"--install-extensions",
     is_flag=True,
     expose_value=True,
     callback=install_extensions,
+    help='Install jupyter extensions.'
 )
 @click.option(
     u"-ic",
@@ -37,6 +38,7 @@ def install_corpora(ctx, param, value):
     is_flag=True,
     expose_value=True,
     callback=install_corpora,
+    help='Install required NLP corpora for NLTK analysis.'
 )
 def main(create, install_extensions, install_corpora):
     pass
