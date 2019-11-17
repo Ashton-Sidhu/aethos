@@ -1099,8 +1099,8 @@ class MethodBase(object):
 
     def barplot(
         self,
-        x,
-        y,
+        x: str,
+        y=None,
         groupby=None,
         method=None,
         orient="v",
@@ -1226,7 +1226,7 @@ class MethodBase(object):
         )
 
     def lineplot(
-        self, x: str, *y, title="Line Plot", output_file="", **lineplot_kwargs
+        self, x: str, y: list, title="Line Plot", output_file="", **lineplot_kwargs
     ):
         """
         Plots a lineplot for the given x and y columns provided using Bokeh.
@@ -1242,7 +1242,7 @@ class MethodBase(object):
         x : str
             X column name
 
-        y : str or str(s)
+        y : list
             Column names to plot on the y axis.
 
         title : str, optional
@@ -1290,7 +1290,7 @@ class MethodBase(object):
 
         lineplot(
             x,
-            list(y),
+            y,
             self._data_properties.x_train,
             title=title,
             output_file=output_file,
