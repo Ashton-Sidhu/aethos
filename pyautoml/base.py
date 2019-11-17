@@ -1414,3 +1414,40 @@ class MethodBase(object):
         """
 
         jointplot(x=x, y=y, df=self._data_properties.x_train, kind=kind, **kwargs)
+
+    def histogram(self, *x, **kwargs):
+        """
+        Plots a histogram of the given column(s).
+
+        For more histogram key word arguments, please see https://seaborn.pydata.org/generated/seaborn.distplot.html
+
+        Parameters
+        ----------
+        x: str or str(s)
+            Column(s) to plot histograms for.
+
+        bins : argument for matplotlib hist(), or None, optional
+            Specification of hist bins, or None to use Freedman-Diaconis rule.
+
+        hist : bool, optional
+            Whether to plot a (normed) histogram.
+
+        kde : bool, optional
+            Whether to plot a gaussian kernel density estimate.
+
+        rug : bool, optional
+            Whether to draw a rugplot on the support axis.
+
+        fit : random variable object, optional
+            An object with fit method, returning a tuple that can be passed to a pdf method a positional arguments following an grid of values to evaluate the pdf on.
+
+        Examples
+        --------
+        >>> clean.histogram('col1')
+        >>> clean.histogram('col1', 'col2')
+        >>> clean.histogram('col1', kde=False)
+        >>> clean.histogram('col1', 'col2', hist=False)
+        >>> clean.histogram('col1', kde=False, fit=stat.normal)
+        """
+
+        histogram(list(x), data=self._data_properties.x_train, **kwargs)

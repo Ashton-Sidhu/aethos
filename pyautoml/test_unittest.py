@@ -919,7 +919,7 @@ class Test_TestBase(unittest.TestCase):
             x_train=data,
             x_test=data,
             split=True,
-            target_field="species",
+            target_field="",
             report_name=None,
             test_split_percentage=0.5,
         )
@@ -931,6 +931,42 @@ class Test_TestBase(unittest.TestCase):
         )
 
         self.assertTrue(validate)
+
+    def test_histogram_1(self):
+
+        data = sns.load_dataset("iris")
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="species",
+            report_name=None,
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.histogram('sepal_length')
+
+        self.assertTrue(True)
+
+    def test_histogram_multi(self):
+
+        data = sns.load_dataset("iris")
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="species",
+            report_name=None,
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.histogram('sepal_length', 'sepal_width')
+
+        self.assertTrue(True)
 
 
 if __name__ == "__main__":
