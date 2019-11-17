@@ -190,6 +190,27 @@ class MethodBase(object):
         self._data_properties.x_test = value
 
     @property
+    def plot_colors(self): # pragama: no cover
+        """
+        Displays all plot colour names
+        """
+
+        from IPython.display import IFrame
+
+        IFrame('https://python-graph-gallery.com/wp-content/uploads/100_Color_names_python.png')
+
+    @property
+    def plot_colorpalettes(self): # pragma: no cover
+        """
+        Displays color palette configuration guide.
+        """
+
+        from IPython.display import IFrame
+
+        IFrame('https://seaborn.pydata.org/tutorial/color_palettes.html')
+
+
+    @property
     def y_train(self):
         """
         Property function for the training predictor variable
