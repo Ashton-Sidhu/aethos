@@ -4,7 +4,6 @@ import unittest
 import numpy as np
 import pandas as pd
 import seaborn as sns
-
 from pyautoml import Clean
 from pyautoml.base import MethodBase
 
@@ -854,18 +853,16 @@ class Test_TestBase(unittest.TestCase):
         )
 
         base.barplot(
-            "species",
-            "sepal_length",
-            "sepal_width",
-            groupby="species",
+            x="species",
+            y=["sepal_length",
+                "sepal_width"],
             method="mean",
             orient="h",
         )
         base.barplot(
-            "species",
-            "sepal_length",
-            "sepal_width",
-            groupby="species",
+            x="species",
+            y=["sepal_length",
+                "sepal_width"],
             method="mean",
             orient="v",
         )

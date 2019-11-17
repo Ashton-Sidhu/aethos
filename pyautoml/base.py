@@ -6,13 +6,12 @@ import ipywidgets as widgets
 import numpy as np
 import pandas as pd
 import pandas_profiling
+import pyautoml
 import yaml
 from IPython import get_ipython
 from IPython.display import display
 from ipywidgets import Layout
 from pandas_summary import DataFrameSummary
-
-import pyautoml
 from pyautoml.data.data import Data
 from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
                            ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
@@ -1101,7 +1100,7 @@ class MethodBase(object):
     def barplot(
         self,
         x,
-        *cols,
+        y,
         groupby=None,
         method=None,
         orient="v",
@@ -1130,11 +1129,8 @@ class MethodBase(object):
         x : str
             Column name for the x axis.
 
-        cols : str
+        y : list
             Columns you would like to see plotted against the x_col
-
-        groupby : str
-            Data to groupby - x-axis, optional, by default None
 
         method : str
             Method to aggregate groupy data
@@ -1152,9 +1148,8 @@ class MethodBase(object):
 
         barplot(
             x,
-            list(cols),
+            y,
             self._data_properties.x_train,
-            groupby=groupby,
             method=method,
             orient=orient,
             stacked=stacked,

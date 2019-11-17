@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import pandas_bokeh
 import plotly.express as px
 import ptitprince as pt
 import seaborn as sns
-import numpy as np
 from scipy import stats
 
 
@@ -46,7 +46,6 @@ def barplot(
     x,
     y,
     data,
-    groupby=None,
     method=None,
     orient="v",
     stacked=False,
@@ -69,9 +68,6 @@ def barplot(
     data : Dataframe
         Dataset
 
-    groupby : str
-        Data to groupby - xaxis, optional, by default None
-
     method : str
         Method to aggregate groupy data
         Examples: min, max, mean, etc., optional
@@ -80,6 +76,7 @@ def barplot(
     orient : str, optional
         Orientation of graph, 'h' for horizontal
         'v' for vertical, by default 'v'
+
     stacked : bool
         Whether to stack the different columns resulting in a stacked bar chart,
         by default False
@@ -89,9 +86,8 @@ def barplot(
     data_copy = data[[x] + y].copy()
     data_copy = data_copy.set_index(x)
 
-    if groupby:
-        data_copy = data_copy.groupby(groupby, as_index=False)
-        data_copy = getattr(data_copy, method)()
+    data_copy = data_copy.groupby(x, as_index=False)
+    data_copy = getattr(data_copy, method)()
 
     if orient == "v":
 

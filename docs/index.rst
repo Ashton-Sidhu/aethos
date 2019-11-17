@@ -84,7 +84,7 @@ Cleaning
 
     # As you've started to notice, alot of tasks to clean the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation).
 
-    clean.barplot('Age', 'Survived', groupby='Age', method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
+    clean.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
 
 Preprocessing and Feature Engineering
 ====================================
