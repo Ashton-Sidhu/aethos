@@ -83,7 +83,7 @@ def barplot(
     """
 
     alpha = barplot_kwargs.pop("alpha", 0.6)
-    y = y.append(x)
+    y.append(x)
     data_copy = data[y].copy()
     data_copy = data_copy.set_index(x)
 
@@ -200,7 +200,7 @@ def lineplot(
         If a name is provided save the plot to an html file, by default ''
     """
 
-    y = y.append(x)
+    y.append(x)
     data_copy = data[y].copy()
     data_copy = data_copy.set_index(x)
     xlabel = lineplot_kwargs.pop("xlabel", x)
@@ -325,7 +325,7 @@ def histogram(x: list, data: pd.DataFrame, **kwargs):
         Dataframe of the data.
     """
 
-    sns.set(color_codes=True)
+    sns.set(style="ticks", color_codes=True)
     sns.set_palette(sns.color_palette("pastel"))
 
     if len(x) == 1:
@@ -334,3 +334,5 @@ def histogram(x: list, data: pd.DataFrame, **kwargs):
     else:
         for col in x:
             sns.distplot(data[col], label=col, **kwargs)
+
+        plt.legend()
