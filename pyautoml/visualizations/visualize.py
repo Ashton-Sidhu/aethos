@@ -83,7 +83,8 @@ def barplot(
     """
 
     alpha = barplot_kwargs.pop("alpha", 0.6)
-    data_copy = data[y.append(x)].copy()
+    y = y.append(x)
+    data_copy = data[y].copy()
     data_copy = data_copy.set_index(x)
 
     data_copy = data_copy.groupby(x, as_index=False)
@@ -199,7 +200,8 @@ def lineplot(
         If a name is provided save the plot to an html file, by default ''
     """
 
-    data_copy = data[y.append(x)].copy()
+    y = y.append(x)
+    data_copy = data[y].copy()
     data_copy = data_copy.set_index(x)
     xlabel = lineplot_kwargs.pop("xlabel", x)
 
