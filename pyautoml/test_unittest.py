@@ -1,3 +1,4 @@
+import ast
 import os
 import unittest
 
@@ -967,6 +968,48 @@ class Test_TestBase(unittest.TestCase):
         base.histogram('sepal_length', 'sepal_width')
 
         self.assertTrue(True)
+
+    def test_json_normalize_nonsplit(self):
+
+        data = pd.DataFrame({
+            'col1':[1, 2], 
+            'col2':[ast.literal_eval("{'foo':1, 'bar':2, 'baz':{'foo':2, 'x':1}}"),
+                    ast.literal_eval("{'foo':3, 'bar':5, 'baz':{'foo':2, 'x':1}}")]
+            })
+
+        base = Clean(
+            x_train=data,
+            x_test=None,
+            split=False,
+            target_field="",
+            report_name=None,
+            test_split_percentage=0.5,
+        )
+
+        base.expand_json_column('col2')
+
+        self.assertListEqual(base.columns, ['col1', 'foo', 'bar', 'baz_foo', 'baz_x'])
+
+    def test_json_normalize_split(self):
+
+        data = pd.DataFrame({
+            'col1':[1, 2], 
+            'col2':[ast.literal_eval("{'foo':1, 'bar':2, 'baz':{'foo':2, 'x':1}}"),
+                    ast.literal_eval("{'foo':3, 'bar':5, 'baz':{'foo':2, 'x':1}}")]
+            })
+
+        base = Clean(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name=None,
+            test_split_percentage=0.5,
+        )
+
+        base.expand_json_column('col2')
+
+        self.assertListEqual(base.x_test.columns.tolist(), ['col1', 'foo', 'bar', 'baz_foo', 'baz_x'])
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ import yaml
 from IPython import get_ipython
 from IPython.display import display
 from ipywidgets import Layout
+from pandas.io.json import json_normalize
 from pandas_summary import DataFrameSummary
 from pyautoml.data.data import Data
 from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
@@ -418,6 +419,27 @@ class MethodBase(object):
         self._data_properties.normalize_column_names()
 
         return self.copy()
+
+    def expand_json_column(self, col):
+        """
+        Utility function that expands a column that has JSON elements into columns, where each JSON key is a column. 
+
+        Parameters
+        ----------
+        cols: str
+            Column in the data that has the nested data.
+        """
+
+        df = json_normalize(self._data_properties.x_train[col], sep='_')
+        self._data_properties.x_train.drop(col, axis=1, inplace=True)            
+        self._data_properties.x_train = pd.concat([self._data_properties.x_train, df], axis=1)
+
+        if self._data_properties.x_test is not None:
+            df = json_normalize(self._data_properties.x_test[col], sep='_')
+            self._data_properties.x_test.drop(col, axis=1, inplace=True)            
+            self._data_properties.x_test = pd.concat([self._data_properties.x_test, df], axis=1)
+
+        return self.copy()            
 
     def search(self, *values, not_equal=False, replace=False):
         """
