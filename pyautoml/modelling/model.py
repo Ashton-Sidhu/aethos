@@ -1,59 +1,34 @@
 import multiprocessing
+import os
 import warnings
+from pathlib import Path
 
+import pyautoml
 import xgboost as xgb
 from IPython import display
-import os
 from pathos.multiprocessing import Pool
-from pathlib import Path
+from pyautoml.base import MethodBase, technique_reason_repo
+from pyautoml.modelling.default_gridsearch_params import *
+from pyautoml.modelling.model_analysis import *
+from pyautoml.modelling.text import *
+from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
+                                     add_to_queue, run_crossvalidation,
+                                     run_gridsearch, to_pickle)
+from pyautoml.util import _input_columns, _set_item, _validate_model_name
 from sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans, MeanShift
-from sklearn.ensemble import (
-    AdaBoostClassifier,
-    AdaBoostRegressor,
-    BaggingClassifier,
-    BaggingRegressor,
-    GradientBoostingClassifier,
-    GradientBoostingRegressor,
-    IsolationForest,
-    RandomForestClassifier,
-    RandomForestRegressor,
-)
-from sklearn.linear_model import (
-    BayesianRidge,
-    ElasticNet,
-    Lasso,
-    LinearRegression,
-    LogisticRegression,
-    Ridge,
-    RidgeClassifier,
-    SGDClassifier,
-    SGDRegressor,
-)
+from sklearn.ensemble import (AdaBoostClassifier, AdaBoostRegressor,
+                              BaggingClassifier, BaggingRegressor,
+                              GradientBoostingClassifier,
+                              GradientBoostingRegressor, IsolationForest,
+                              RandomForestClassifier, RandomForestRegressor)
+from sklearn.linear_model import (BayesianRidge, ElasticNet, Lasso,
+                                  LinearRegression, LogisticRegression, Ridge,
+                                  RidgeClassifier, SGDClassifier, SGDRegressor)
 from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from yellowbrick.cluster import KElbowVisualizer
-
-import pyautoml
-from pyautoml.base import MethodBase, technique_reason_repo
-from pyautoml.modelling.default_gridsearch_params import *
-from pyautoml.modelling.model_analysis import *
-from pyautoml.modelling.text import *
-from pyautoml.modelling.util import (
-    _get_cv_type,
-    _run_models_parallel,
-    add_to_queue,
-    run_crossvalidation,
-    run_gridsearch,
-    to_pickle,
-)
-from pyautoml.util import (
-    _contructor_data_properties,
-    _input_columns,
-    _set_item,
-    _validate_model_name,
-)
 
 
 class Model(MethodBase):
@@ -68,27 +43,26 @@ class Model(MethodBase):
         report_name=None,
     ):
 
-        _data_properties = _contructor_data_properties(step)
-
-        if _data_properties is None:
+        if isinstance(x_train, pd.DataFrame):
             super().__init__(
                 x_train=x_train,
                 x_test=x_test,
-                test_split_percentage=test_split_percentage,
                 split=split,
                 target_field=target_field,
                 target_mapping=None,
                 report_name=report_name,
+                test_split_percentage=test_split_percentage,
             )
         else:
+            step = x_train
             super().__init__(
-                x_train=x_train,
-                x_test=x_test,
-                test_split_percentage=test_split_percentage,
-                split=split,
-                target_field=target_field,
-                target_mapping=target_mapping,
-                report_name=report_name,
+                x_train=step.x_train,
+                x_test=step.x_test,
+                test_split_percentage=step.test_split_percentage,
+                split=step.split,
+                target_field=step.target_field,
+                target_mapping=step.target_mapping,
+                report_name=step.report_name,
             )
 
         if self.report is not None:

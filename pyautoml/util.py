@@ -265,32 +265,6 @@ def _input_columns(list_args: list, list_of_cols: list):
 
     return column_list
 
-
-def _contructor_data_properties(step_obj):
-    """
-    Strips down a step object like Clean, Preprocess, Feature, etc and returns its data properties
-    
-    Parameters
-    ----------
-    step_obj : object
-        Step object such as Clean, Preprocess, Feature
-
-    Returns
-    -------
-    _data_properties: object
-        Data object
-    """
-
-    if not step_obj:
-        return None
-    else:
-        # Big hack until I implement a self __deepcopy__ implementation
-        try:
-            return step_obj._data_properties
-        except:
-            return step_obj
-
-
 def _validate_model_name(model_obj, model_name: str) -> bool:
     """
     Validates the inputted model name. If the object already has an

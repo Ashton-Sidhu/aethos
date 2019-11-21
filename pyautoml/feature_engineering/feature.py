@@ -1,17 +1,15 @@
 import pandas as pd
-
 from pyautoml.base import MethodBase, technique_reason_repo
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *
 from pyautoml.feature_engineering.util import *
-from pyautoml.util import _contructor_data_properties, _input_columns, label_encoder
+from pyautoml.util import _input_columns, label_encoder
 
 
 class Feature(MethodBase):
     def __init__(
         self,
-        step=None,
         x_train=None,
         x_test=None,
         test_split_percentage=0.2,
@@ -20,29 +18,28 @@ class Feature(MethodBase):
         report_name=None,
     ):
 
-        _data_properties = _contructor_data_properties(step)
-
-        if _data_properties is None:
+        if isinstance(x_train, pd.DataFrame):
             super().__init__(
                 x_train=x_train,
                 x_test=x_test,
-                test_split_percentage=test_split_percentage,
                 split=split,
                 target_field=target_field,
                 target_mapping=None,
                 report_name=report_name,
+                test_split_percentage=test_split_percentage,
             )
         else:
+            step = x_train
             super().__init__(
-                x_train=x_train,
-                x_test=x_test,
-                test_split_percentage=test_split_percentage,
-                split=split,
-                target_field=target_field,
-                target_mapping=target_mapping,
-                report_name=report_name,
+                x_train=step.x_train,
+                x_test=step.x_test,
+                test_split_percentage=step.test_split_percentage,
+                split=step.split,
+                target_field=step.target_field,
+                target_mapping=step.target_mapping,
+                report_name=step.report_name,
             )
-
+            
         if self.report is not None:
             self.report.write_header("Feature Engineering")
 

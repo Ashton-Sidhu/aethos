@@ -13,7 +13,6 @@ from IPython.display import display
 from ipywidgets import Layout
 from pandas.io.json import json_normalize
 from pandas_summary import DataFrameSummary
-from pyautoml.data.data import Data
 from pyautoml.reporting.report import Report
 from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
                            ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
@@ -37,6 +36,7 @@ class MethodBase(object):
 
         self.x_train = x_train
         self.x_test = x_test
+        self.split = split
         self.target_field = target_field
         self.target_mapping = target_mapping
         self.report_name = report_name
@@ -128,6 +128,9 @@ class MethodBase(object):
 
     def __getattr__(self, key):
 
+        if key in self.__dict__:
+            return getattr(self, key)
+
         if key in self.x_train.columns:
             return self.x_train[key]
         else:
@@ -138,15 +141,14 @@ class MethodBase(object):
 
     def __setattr__(self, item, value):
 
-        if item not in self.__dict__:  # any normal attributes are handled normally
+        if item not in self.__dict__ or hasattr(self, item):  # any normal attributes are handled normally
             dict.__setattr__(self, item, value)
         else:
             self.__setitem__(item, value)
 
     def __deepcopy__(self, memo):
 
-        data_props = copy.deepcopy(self._data_properties)
-        new_inst = type(self)(data_props)
+        new_inst = type(self)(self)
 
         return new_inst
 
@@ -237,38 +239,6 @@ class MethodBase(object):
                 self.target_field = "label"
                 self.x_test["label"] = value
                 print('Added a target (predictor) field (column) named "label".')
-
-    @property
-    def target_field(self):
-        """
-        Property function for the target field.
-        """
-
-        return self.target_field
-
-    @target_field.setter
-    def target_field(self, value):
-        """
-        Setter for the target field
-        """
-
-        self.target_field = value
-
-    @property
-    def target_mapping(self):
-        """
-        Property function for the label mapping
-        """
-
-        return self.target_mapping
-
-    @target_mapping.setter
-    def target_mapping(self, value):
-        """
-        Setter for the label mapping
-        """
-
-        self.target_mapping = value
 
     @property
     def columns(self):
