@@ -34,16 +34,16 @@ class Feature(MethodBase):
             )
         else:
             super().__init__(
-                x_train=_data_properties.x_train,
-                x_test=_data_properties.x_test,
+                x_train=x_train,
+                x_test=x_test,
                 test_split_percentage=test_split_percentage,
-                split=_data_properties.split,
-                target_field=_data_properties.target_field,
-                target_mapping=_data_properties.target_mapping,
-                report_name=_data_properties.report_name,
+                split=split,
+                target_field=target_field,
+                target_mapping=target_mapping,
+                report_name=report_name,
             )
 
-        if self._data_properties.report is not None:
+        if self.report is not None:
             self.report.write_header("Feature Engineering")
 
     def onehot_encode(
@@ -85,11 +85,11 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (
-            self._data_properties.x_train,
-            self._data_properties.x_test,
+            self.x_train,
+            self.x_test,
         ) = feature_one_hot_encode(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             keep_col=keep_col,
             **onehot_kwargs,
@@ -135,9 +135,9 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test = feature_tfidf(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+        self.x_train, self.x_test = feature_tfidf(
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             keep_col=keep_col,
             **tfidf_kwargs,
@@ -184,11 +184,11 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (
-            self._data_properties.x_train,
-            self._data_properties.x_test,
+            self.x_train,
+            self.x_test,
         ) = feature_bag_of_words(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             keep_col=keep_col,
             **bow_kwargs,
@@ -249,11 +249,11 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (
-            self._data_properties.x_train,
-            self._data_properties.x_test,
+            self.x_train,
+            self.x_test,
         ) = feature_hash_vectorizer(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             keep_col=keep_col,
             **hash_kwargs,
@@ -294,11 +294,11 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (
-            self._data_properties.x_train,
-            self._data_properties.x_test,
+            self.x_train,
+            self.x_test,
         ) = nltk_feature_postag(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
         )
@@ -338,11 +338,11 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (
-            self._data_properties.x_train,
-            self._data_properties.x_test,
+            self.x_train,
+            self.x_test,
         ) = spacy_feature_postag(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
         )
@@ -380,11 +380,11 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (
-            self._data_properties.x_train,
-            self._data_properties.x_test,
+            self.x_train,
+            self.x_test,
         ) = nltk_feature_noun_phrases(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
         )
@@ -422,11 +422,11 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (
-            self._data_properties.x_train,
-            self._data_properties.x_test,
+            self.x_train,
+            self.x_test,
         ) = spacy_feature_noun_phrases(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
         )
@@ -471,11 +471,11 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (
-            self._data_properties.x_train,
-            self._data_properties.x_test,
+            self.x_train,
+            self.x_test,
         ) = polynomial_features(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             **poly_kwargs,
         )
@@ -519,11 +519,11 @@ class Feature(MethodBase):
             2     1     0     1     1
         """
 
-        self._data_properties.x_train, self._data_properties.x_test = apply(
-            x_train=self._data_properties.x_train,
+        self.x_train, self.x_test = apply(
+            x_train=self.x_train,
             func=func,
             output_col=output_col,
-            x_test=self._data_properties.x_test,
+            x_test=self.x_test,
         )
 
         if self.report is not None:
@@ -557,9 +557,9 @@ class Feature(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._data_properties.x_train, self._data_properties.x_test, _ = label_encoder(
-            x_train=self._data_properties.x_train,
-            x_test=self._data_properties.x_test,
+        self.x_train, self.x_test, _ = label_encoder(
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
         )
 
@@ -623,30 +623,30 @@ class Feature(MethodBase):
 
         report_info = technique_reason_repo["feature"]["general"]["pca"]
 
-        if self._data_properties.target_field:
-            train_target_data = self._data_properties.x_train[self.target_field]
+        if self.target_field:
+            train_target_data = self.x_train[self.target_field]
             test_target_data = (
-                self._data_properties.x_test[self.target_field]
-                if self._data_properties.x_test is not None
+                self.x_test[self.target_field]
+                if self.x_test is not None
                 else None
             )
-            x_train = self._data_properties.x_train.drop(self.target_field, axis=1)
+            x_train = self.x_train.drop(self.target_field, axis=1)
             x_test = (
-                self._data_properties.x_test.drop(self.target_field, axis=1)
-                if self._data_properties.x_test is not None
+                self.x_test.drop(self.target_field, axis=1)
+                if self.x_test is not None
                 else None
             )
         else:
-            x_train = self._data_properties.x_train
-            x_test = self._data_properties.x_test
+            x_train = self.x_train
+            x_test = self.x_test
 
-        self._data_properties.x_train, self._data_properties.x_test = pca(
+        self.x_train, self.x_test = pca(
             x_train=x_train, x_test=x_test, **pca_kwargs
         )
 
-        if self._data_properties.target_field:
-            self._data_properties.x_train[self.target_field] = train_target_data
-            self._data_properties.x_test[self.target_field] = (
+        if self.target_field:
+            self.x_train[self.target_field] = train_target_data
+            self.x_test[self.target_field] = (
                 test_target_data if test_target_data is not None else None
             )
 

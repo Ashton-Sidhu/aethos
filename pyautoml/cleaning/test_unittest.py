@@ -170,7 +170,7 @@ class TestCleaning(unittest.TestCase):
         clean.replace_missing_new_category(list_of_cols=list_col)
 
         # Replacing NaNs with strings for validations as regular assert does == and to compare NaNs you need `is`
-        clean._data_properties.x_train = clean.x_train.fillna("NaN was here")
+        clean.x_train = clean.x_train.fillna("NaN was here")
         validate = clean.x_train.values.tolist()
 
         self.assertListEqual(
