@@ -35,9 +35,9 @@ class ModelBase(object):
 
         self.model = model
         self.model_name = model_name
-        self.x_train = model_object._data_properties.x_train
-        self.x_test = model_object._data_properties.x_test
-        self.report = model_object._data_properties.report
+        self.x_train = model_object.x_train
+        self.x_test = model_object.x_test
+        self.report = model_object.report
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
             self.shap = Shap(
@@ -702,7 +702,7 @@ class ClassificationModel(ModelBase):
 
         if hasattr(model, "predict_proba"):
             self.probabilities = model.predict_proba(
-                model_object._data_properties.x_test
+                model_object.x_test
             )
 
     def accuracy(self, **kwargs):

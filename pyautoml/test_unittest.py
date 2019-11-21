@@ -314,7 +314,7 @@ class Test_TestBase(unittest.TestCase):
             target_mapping=None,
             test_split_percentage=0.5,
         )
-        base._data_properties.target_field = "col3"
+        base.target_field = "col3"
 
         self.assertEqual("col3", base.target_field)
 
@@ -655,7 +655,7 @@ class Test_TestBase(unittest.TestCase):
         )
 
         base.y_train = [1, 1]
-        validate = base._data_properties.x_train["label"].tolist() == [
+        validate = base.x_train["label"].tolist() == [
             1,
             1,
         ] and base.y_train.tolist() == [1, 1]
@@ -700,7 +700,7 @@ class Test_TestBase(unittest.TestCase):
 
         base.y_test = [1, 1]
 
-        validate = base.y_test.tolist() == [1, 1] and base._data_properties.x_test[
+        validate = base.y_test.tolist() == [1, 1] and base.x_test[
             "label"
         ].tolist() == [1, 1]
 
