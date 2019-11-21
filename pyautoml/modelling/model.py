@@ -82,43 +82,43 @@ class Model(MethodBase):
             )
         else:
             super().__init__(
-                x_train=x_train,
-                x_test=x_test,
+                x_train=_data_properties.x_train,
+                x_test=_data_properties.x_test,
                 test_split_percentage=test_split_percentage,
-                split=split,
-                target_field=target_field,
-                target_mapping=target_mapping,
-                report_name=report_name,
+                split=_data_properties.split,
+                target_field=_data_properties.target_field,
+                target_mapping=_data_properties.target_mapping,
+                report_name=_data_properties.report_name,
             )
 
-        if self.report is not None:
+        if self._data_properties.report is not None:
             self.report.write_header("Modelling")
 
-        self._train_result_data = self.x_train.copy()
+        self._train_result_data = self._data_properties.x_train.copy()
         self._test_result_data = (
-            self.x_test.copy()
-            if self.x_test is not None
+            self._data_properties.x_test.copy()
+            if self._data_properties.x_test is not None
             else None
         )
 
-        if self.target_field:
+        if self._data_properties.target_field:
             if split:
                 if isinstance(step, Model):
-                    self.x_train = step.x_train
-                    self.x_test = step.x_test
+                    self._data_properties.x_train = step._data_properties.x_train
+                    self._data_properties.x_test = step._data_properties.x_test
                 else:
-                    self.x_train = self.x_train.drop(
-                        [self.target_field], axis=1
+                    self._data_properties.x_train = self._data_properties.x_train.drop(
+                        [self._data_properties.target_field], axis=1
                     )
-                    self.x_test = self.x_test.drop(
-                        [self.target_field], axis=1
+                    self._data_properties.x_test = self._data_properties.x_test.drop(
+                        [self._data_properties.target_field], axis=1
                     )
             else:
                 if isinstance(step, Model):
-                    self.x_train = step.x_train
+                    self._data_properties.x_train = step._data_properties.x_train
                 else:
-                    self.x_train = self.x_train.drop(
-                        [self.target_field], axis=1
+                    self._data_properties.x_train = self._data_properties.x_train.drop(
+                        [self._data_properties.target_field], axis=1
                     )
 
         if isinstance(step, Model):
@@ -145,7 +145,7 @@ class Model(MethodBase):
             return self._models[key]
 
         try:
-            if not self.split:
+            if not self._data_properties.split:
                 return self._train_result_data[key]
             else:
                 return self._test_result_data[key]
@@ -165,13 +165,13 @@ class Model(MethodBase):
         if key in self.__dict__:
             dict.__setitem__(self.__dict__, key, value)
         else:
-            if not self.split:
+            if not self._data_properties.split:
                 self._train_result_data[key] = value
 
                 return self._train_result_data.head()
             else:
-                x_train_length = self.x_train.shape[0]
-                x_test_length = self.x_test.shape[0]
+                x_train_length = self._data_properties.x_train.shape[0]
+                x_test_length = self._data_properties.x_test.shape[0]
 
                 if isinstance(value, list):
                     ## If the number of entries in the list does not match the number of rows in the training or testing
@@ -229,8 +229,8 @@ class Model(MethodBase):
         """
 
         return (
-            self.x_train_results[self.target_field]
-            if self.target_field
+            self.x_train_results[self._data_properties.target_field]
+            if self._data_properties.target_field
             else None
         )
 
@@ -243,7 +243,7 @@ class Model(MethodBase):
         if self.target_field:
             self.x_train_results[self.target_field] = value
         else:
-            self.target_field = "label"
+            self._data_properties.target_field = "label"
             self.x_train_results["label"] = value
             print('Added a target (predictor) field (column) named "label".')
 
@@ -254,7 +254,7 @@ class Model(MethodBase):
         """
 
         if self.x_test_results is not None:
-            if self.target_field:
+            if self._data_properties.target_field:
                 return self.x_test_results[self.target_field]
             else:
                 return None
@@ -267,11 +267,11 @@ class Model(MethodBase):
         Setter function for the testing predictor variable
         """
 
-        if self.x_test is not None:
+        if self._data_properties.x_test is not None:
             if self.target_field:
                 self.x_test_results[self.target_field] = value
             else:
-                self.target_field = "label"
+                self._data_properties.target_field = "label"
                 self.x_test_results["label"] = value
                 print('Added a target (predictor) field (column) named "label".')
 
@@ -478,8 +478,8 @@ class Model(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
-            x_train=self.x_train,
-            x_test=self.x_test,
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
             **summarizer_kwargs,
@@ -555,8 +555,8 @@ class Model(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self._train_result_data, self._test_result_data = gensim_textrank_keywords(
-            x_train=self.x_train,
-            x_test=self.x_test,
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
             **keyword_kwargs,
@@ -689,8 +689,8 @@ class Model(MethodBase):
         report_info = technique_reason_repo["model"]["text"]["word2vec"]
 
         w2v_model = gensim_word2vec(
-            x_train=self.x_train,
-            x_test=self.x_test,
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
             prep=prep,
             col_name=col_name,
             **kwargs,
@@ -818,8 +818,8 @@ class Model(MethodBase):
         report_info = technique_reason_repo["model"]["text"]["doc2vec"]
 
         d2v_model = gensim_doc2vec(
-            x_train=self.x_train,
-            x_test=self.x_test,
+            x_train=self._data_properties.x_train,
+            x_test=self._data_properties.x_test,
             prep=prep,
             col_name=col_name,
             **kwargs,
@@ -5658,7 +5658,7 @@ class Model(MethodBase):
         if cv:
             cv_scores = run_crossvalidation(
                 model,
-                self.x_train,
+                self._data_properties.x_train,
                 self.y_train,
                 cv=cv,
                 scoring=score,
@@ -5674,15 +5674,15 @@ class Model(MethodBase):
             model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
         # Train a model and predict on the test test.
-        model.fit(self.x_train, self.y_train)
+        model.fit(self._data_properties.x_train, self.y_train)
 
         self._train_result_data[new_col_name] = model.predict(
-            self.x_train
+            self._data_properties.x_train
         )
 
-        if self.x_test is not None:
+        if self._data_properties.x_test is not None:
             self._test_result_data[new_col_name] = model.predict(
-                self.x_test
+                self._data_properties.x_test
             )
 
         # Report the results
@@ -5724,7 +5724,7 @@ class Model(MethodBase):
         if cv:
             cv_scores = run_crossvalidation(
                 model,
-                self.x_train,
+                self._data_properties.x_train,
                 self.y_train,
                 cv=cv,
                 scoring=score,
@@ -5745,28 +5745,28 @@ class Model(MethodBase):
             cv = cv if cv else 5
             model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
-            model.fit(self.x_train, self.y_train)
+            model.fit(self._data_properties.x_train, self.y_train)
 
             self._train_result_data[new_col_name] = model.predict(
-                self.x_train
+                self._data_properties.x_train
             )
 
         else:
             if hasattr(model, "predict"):
-                model.fit(self.x_train)
+                model.fit(self._data_properties.x_train)
 
                 self._train_result_data[new_col_name] = model.predict(
-                    self.x_train
+                    self._data_properties.x_train
                 )
             else:
                 self._train_result_data[new_col_name] = model.fit_predict(
-                    self.x_train
+                    self._data_properties.x_train
                 )
 
-        if self.x_test is not None:
+        if self._data_properties.x_test is not None:
             if hasattr(model, "predict"):
                 self._test_result_data[new_col_name] = model.predict(
-                    self.x_test
+                    self._data_properties.x_test
                 )
             else:
                 warnings.warn(

@@ -35,11 +35,11 @@ class TestReport(unittest.TestCase):
         )
         clean.drop_column_missing_threshold(0.5)
 
-        with open(clean.report.filename) as f:
+        with open(clean._data_properties.report.filename) as f:
             content = f.read()
         validate = "col2" in content and "col3" in content
 
-        os.remove(clean.report.filename)
+        os.remove(clean._data_properties.report.filename)
 
         self.assertTrue(validate)
 
@@ -55,11 +55,11 @@ class TestReport(unittest.TestCase):
         )
         clean_data = clean.replace_missing_new_category()
 
-        with open(clean.report.filename) as f:
+        with open(clean._data_properties.report.filename) as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
 
-        os.remove(clean.report.filename)
+        os.remove(clean._data_properties.report.filename)
 
         self.assertTrue(validate)
 
@@ -75,11 +75,11 @@ class TestReport(unittest.TestCase):
         )
         preprocess.normalize_numeric()
 
-        with open(preprocess.report.filename) as f:
+        with open(preprocess._data_properties.report.filename) as f:
             content = f.read()
         validate = "col1" in content and "col2" in content and "col3" in content
 
-        os.remove(preprocess.report.filename)
+        os.remove(preprocess._data_properties.report.filename)
 
         self.assertTrue(validate)
 
@@ -95,11 +95,11 @@ class TestReport(unittest.TestCase):
         )
         feature.bag_of_words()
 
-        with open(feature.report.filename) as f:
+        with open(feature._data_properties.report.filename) as f:
             content = f.read()
         validate = "representation" in content
 
-        os.remove(feature.report.filename)
+        os.remove(feature._data_properties.report.filename)
 
         self.assertTrue(validate)
 
