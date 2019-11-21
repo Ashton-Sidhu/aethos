@@ -88,8 +88,7 @@ clean # Glance at your training data
 
 clean[clean.Age > 25] # Filter the data
 
-clean.new_col = [1, 2] # Add a new column to the data, based off the length of the data provided, it will add it to the train or test set.
-clean['new_col'] = [1, 2] # Another way
+clean['new_col'] = [1, 2]  # Add a new column to the data, based off the length of the data provided, it will add it to the train or test set.
 
 clean.x_train['new_col'] = [1,2] # This is the exact same as the either of code above
 clean.x_test['new_col'] = [1,2]

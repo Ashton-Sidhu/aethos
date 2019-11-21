@@ -280,10 +280,11 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+
     def test_setattr_new(self):
 
-        int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-        columns = ["col1", "col2", "col3"]
+        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         base = MethodBase(
@@ -295,10 +296,67 @@ class Test_TestBase(unittest.TestCase):
             report_name="test",
             test_split_percentage=0.5,
         )
-        base.col4 = 4
+        base['col5'] = 4
 
-        self.assertIsNotNone(base.col4)
+        self.assertListEqual(base.col5.tolist(), [4, 4])
 
+    def test_setattr_testset(self):
+
+        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            target_mapping=None,
+            report_name="test",
+            test_split_percentage=0.25,
+        )
+        base['col5'] = [4]
+
+        self.assertListEqual(base.x_test['col5'].tolist(), [4])
+
+    def test_setattr_trainset(self):
+
+        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            target_mapping=None,
+            report_name="test",
+            test_split_percentage=0.75,
+        )
+        base['col5'] = [4]
+
+        self.assertListEqual(base['col5'].tolist(), [4])
+    
+    def test_setattr_bothset(self):
+
+        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            target_mapping=None,
+            report_name="test",
+            test_split_percentage=0.75,
+        )
+        base['col5'] = ([4], [4,4,4])
+
+        self.assertListEqual(base['col5'].tolist(), [4])
+        self.assertListEqual(base.x_test['col5'].tolist(), [4,4,4])
     def test_setattr_old(self):
 
         int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
