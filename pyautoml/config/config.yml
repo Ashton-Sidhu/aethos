@@ -1,0 +1,9 @@
+report:
+  # Directory where reports are saved, default is $HOME/.pyautoml/reports/
+  dir: ''
+
+models:
+  # Directory where any pickled models would be stored
+  dir: ''
+  # Directory where any deployment packages are stored
+  deployment_dir: ''

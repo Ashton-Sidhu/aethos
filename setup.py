@@ -66,6 +66,7 @@ setup(
     long_description_content_type="text/markdown",
     include_package_data=True,
     keywords="datascience, machinelearning, automation, analysis",
+    data_files=[(str(os.path.join(os.path.expanduser('~'), '.pyautoml')), ['pyautoml/config/config.yml'])],
     python_requires=">= 3.6",
     classifiers=[
         "Programming Language :: Python :: 3.6",

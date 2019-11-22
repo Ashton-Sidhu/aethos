@@ -442,7 +442,6 @@ reset_option = CallableDynamicDoc(_reset_option, _reset_option_tmpl)
 describe_option = CallableDynamicDoc(_describe_option, _describe_option_tmpl)
 options = DictWrapper(_global_config)
 
-
 @contextmanager
 def config_prefix(prefix):
     """contextmanager for multiple invocations of API with a common prefix

@@ -1,2 +1,2 @@
 include README.md
-include pyautoml/technique_reasons.yml 
+include pyautoml/config/technique_reasons.yml 

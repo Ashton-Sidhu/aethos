@@ -3,11 +3,11 @@ import os
 import warnings
 from pathlib import Path
 
-import pyautoml
 import xgboost as xgb
 from IPython import display
 from pathos.multiprocessing import Pool
-from pyautoml.base import MethodBase, technique_reason_repo
+from pyautoml.base import MethodBase
+from pyautoml.config import technique_reason_repo, shell
 from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
@@ -34,7 +34,6 @@ from yellowbrick.cluster import KElbowVisualizer
 class Model(MethodBase):
     def __init__(
         self,
-        step=None,
         x_train=None,
         x_test=None,
         test_split_percentage=0.2,
@@ -42,6 +41,7 @@ class Model(MethodBase):
         target_field="",
         report_name=None,
     ):
+        step = x_train
 
         if isinstance(x_train, pd.DataFrame):
             super().__init__(
@@ -54,7 +54,6 @@ class Model(MethodBase):
                 test_split_percentage=test_split_percentage,
             )
         else:
-            step = x_train
             super().__init__(
                 x_train=step.x_train,
                 x_test=step.x_test,
@@ -95,7 +94,7 @@ class Model(MethodBase):
                         [self.target_field], axis=1
                     )
 
-        if isinstance(step, Model):
+        if isinstance(x_train, Model):
             self._models = step._models
             self._queued_models = step._queued_models
         else:
@@ -188,7 +187,7 @@ class Model(MethodBase):
 
     def __repr__(self):
 
-        if pyautoml.shell == "ZMQInteractiveShell":
+        if shell == "ZMQInteractiveShell":
 
             display(self._train_result_data.head())  # Hack for jupyter notebooks
 
@@ -369,17 +368,6 @@ class Model(MethodBase):
         # Move descriptions column to end of dataframe.
         descriptions = results_table.pop("Description")
         results_table["Description"] = descriptions
-
-        # def _highlight_optimal(x):
-
-        #     if "loss" in x.name.lower():
-        #         is_min = x == x.min()
-        #         return ["background-color: green" if v else "" for v in is_min]
-        #     else:
-        #         is_max = x == x.max()
-        #         return ["background-color: green" if v else "" for v in is_max]
-
-        # results_table = results_table.style.apply(_highlight_optimal, axis=1)
 
         return results_table
 

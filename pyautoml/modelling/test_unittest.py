@@ -1212,7 +1212,7 @@ class TestModelling(unittest.TestCase):
 
         validate = os.path.exists(str(Path.home()) + "/.pyautoml/models/ada_reg.pkl")
 
-        shutil.rmtree(str(Path.home()) + "/.pyautoml/")
+        shutil.rmtree(str(Path.home()) + "/.pyautoml/models/")
 
         self.assertTrue(validate)
 
@@ -1229,7 +1229,7 @@ class TestModelling(unittest.TestCase):
 
         validate = os.path.exists(str(Path.home()) + "/.pyautoml/models/ada_reg.pkl")
 
-        shutil.rmtree(str(Path.home()) + "/.pyautoml/")
+        shutil.rmtree(str(Path.home()) + "/.pyautoml/models/")
 
         self.assertTrue(validate)
 

@@ -1,6 +1,6 @@
 import pyautoml.config.config as cf
 from pyautoml.config.config import is_bool
-import pyautoml
+from pyautoml.config import shell
 
 interactive_df_doc = """
 : bool
@@ -13,7 +13,7 @@ interactive_df_doc = """
 def use_qgrid(key):
     import qgrid
 
-    if pyautoml.shell == "ZMQInteractiveShell":
+    if shell == "ZMQInteractiveShell":
         if cf.get_option(key):
             qgrid.enable()
             qgrid.set_defaults(show_toolbar=True)

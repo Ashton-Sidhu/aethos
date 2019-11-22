@@ -7,29 +7,18 @@ import numpy as np
 import pandas as pd
 import pandas_profiling
 import pyautoml
-import yaml
 from IPython import get_ipython
 from IPython.display import display
 from ipywidgets import Layout
 from pandas.io.json import json_normalize
 from pandas_summary import DataFrameSummary
+from pyautoml.config import shell
 from pyautoml.reporting.report import Report
 from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
                            ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
                            PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
                            _get_columns, _set_item, label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
-
-# TODO: Move to a config fille
-
-pkg_directory = os.path.dirname(pyautoml.__file__)
-
-with open(f"{pkg_directory}/technique_reasons.yml", "r") as stream:
-    try:
-        technique_reason_repo = yaml.safe_load(stream)
-    except yaml.YAMLError as e:
-        print("Could not load yaml file.")
-
 
 class MethodBase(object):
     def __init__(self, x_train, x_test, split, target_field, target_mapping, report_name, test_split_percentage):
@@ -58,7 +47,7 @@ class MethodBase(object):
 
     def __repr__(self):
 
-        if pyautoml.shell == "ZMQInteractiveShell":
+        if shell == "ZMQInteractiveShell":
             display(self.x_train.head())  # Hack for jupyter notebooks
 
             return ""
@@ -623,7 +612,7 @@ class MethodBase(object):
         HTML display of Exploratory Data Analysis report
         """
 
-        if pyautoml.shell == "ZMQInteractiveShell":
+        if shell == "ZMQInteractiveShell":
             report = self.x_train.profile_report(
                 title=title, style={"full_width": True}
             )

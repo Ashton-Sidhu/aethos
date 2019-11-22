@@ -1,6 +1,7 @@
 import pandas as pd
 from pyautoml import *
-from pyautoml.base import MethodBase, technique_reason_repo
+from pyautoml.base import MethodBase
+from pyautoml.config import technique_reason_repo
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *

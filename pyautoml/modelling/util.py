@@ -2,11 +2,12 @@ import inspect
 import multiprocessing as mp
 import warnings
 import os
-from pathlib import Path
 import pickle
 from functools import partial, wraps
+from pathlib import Path
 
 from pathos.multiprocessing import ProcessingPool
+from pyautoml.config import cfg
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
 
@@ -215,7 +216,10 @@ def to_pickle(model, name):
         Name of the model
     """
 
-    path = str(Path.home()) + "/.pyautoml/models/"
+    if not cfg['models']['dir']: # pragma: no cover
+        path = str(Path.home()) + "/.pyautoml/models/"
+    else:
+        path = cfg['models']['dir']
 
     if not os.path.exists(path):
         os.makedirs(path)

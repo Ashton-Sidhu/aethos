@@ -1,5 +1,6 @@
 import pandas as pd
-from pyautoml.base import MethodBase, technique_reason_repo
+from pyautoml.base import MethodBase
+from pyautoml.config import technique_reason_repo
 from pyautoml.feature_engineering.categorical import *
 from pyautoml.feature_engineering.numeric import *
 from pyautoml.feature_engineering.text import *

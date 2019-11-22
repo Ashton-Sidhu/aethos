@@ -5,15 +5,23 @@ __all__ = [
     "reset_option",
     "describe_option",
     "options",
+    "cfg",
+    "shell",
+    "technique_reason_repo"
 ]
 
-from pandas._config import config
+from . import config
 
-from pandas._config.config import (
+from .config import (
     describe_option,
     get_option,
-    option_context,
     options,
     reset_option,
     set_option,
+)
+
+from .user_config import (
+    cfg,
+    shell,
+    technique_reason_repo
 )

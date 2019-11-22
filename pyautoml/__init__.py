@@ -1,19 +1,16 @@
+import os
+import sys
+import yaml
+
 import interpret
 import pandas as pd
+# let init-time option registration happen
+import pyautoml.config.config_init
 import shap
 from bokeh.io import output_notebook
 from IPython import get_ipython
-
-from pyautoml.config.config import (
-    get_option,
-    set_option,
-    reset_option,
-    describe_option,
-    options,
-)
-
-# let init-time option registration happen
-import pyautoml.config.config_init
+from pyautoml.config.config import (describe_option, get_option, options,
+                                    reset_option, set_option)
 
 from .cleaning import Clean
 from .feature_engineering import Feature

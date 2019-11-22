@@ -1,16 +1,20 @@
 import os
 import platform
 import subprocess
-import sys
 from datetime import datetime
+from pyautoml.config import cfg
 
 
 class Report:
     def __init__(self, report_name):
 
-        # TODO: Move making the directory on first time run to some config file
-        if not os.path.exists("pyautoml_reports/"):
-            os.makedirs("pyautoml_reports")
+        if not cfg['report']['dir']: #pragma: no cover
+            report_dir = os.path.join(os.path.expanduser('~'), '.pyautoml', 'reports')
+        else:
+            report_dir = cfg['report']['dir']
+
+        if not os.path.exists(report_dir):
+            os.makedirs(report_dir)
 
         self.report_name = report_name
 
