@@ -21,8 +21,8 @@ class Report:
         if os.path.exists(self.report_name):
             self.filename = self.report_name
         else:
-            self.filename = "pyautoml_reports/{}{}.txt".format(
-                report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")
+            self.filename = "{}/{}{}.txt".format(
+                report_dir, report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")
             )
             self.report_environtment()
 
