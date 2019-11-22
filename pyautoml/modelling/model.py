@@ -67,6 +67,8 @@ class Model(MethodBase):
         if self.report is not None:
             self.report.write_header("Modelling")
 
+        
+        # Create a master dataset that houses training data + results
         self._train_result_data = self.x_train.copy()
         self._test_result_data = (
             self.x_test.copy()
@@ -74,6 +76,7 @@ class Model(MethodBase):
             else None
         )
 
+        # For supervised learning approaches, drop the target column
         if self.target_field:
             if split:
                 if isinstance(step, Model):
