@@ -40,8 +40,8 @@ Implementation
 """
 
 import re
-from contextlib import contextmanager
 from collections import namedtuple
+from contextlib import contextmanager
 
 _registered_options = {}
 _global_config = {}
@@ -505,3 +505,4 @@ def is_type_factory(_type):
 
 
 is_bool = is_type_factory(bool)
+is_list = is_type_factory(list)

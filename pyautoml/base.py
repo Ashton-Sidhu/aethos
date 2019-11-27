@@ -6,12 +6,13 @@ import ipywidgets as widgets
 import numpy as np
 import pandas as pd
 import pandas_profiling
-import pyautoml
 from IPython import get_ipython
 from IPython.display import display
 from ipywidgets import Layout
 from pandas.io.json import json_normalize
 from pandas_summary import DataFrameSummary
+
+import pyautoml
 from pyautoml.config import shell
 from pyautoml.reporting.report import Report
 from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
@@ -19,6 +20,7 @@ from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
                            PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
                            _get_columns, _set_item, label_encoder, split_data)
 from pyautoml.visualizations.visualize import *
+
 
 class MethodBase(object):
     def __init__(self, x_train, x_test, split, target_field, target_mapping, report_name, test_split_percentage):
@@ -451,6 +453,7 @@ class MethodBase(object):
         """
 
         filtered_data = self.x_train.copy()
+
 
         for col in columns.keys():
             if isinstance(columns[col], list):

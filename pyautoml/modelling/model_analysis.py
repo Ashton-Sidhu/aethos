@@ -14,17 +14,14 @@ import sklearn
 from bokeh.models import BoxSelectTool
 from bokeh.plotting import figure, output_file
 
+from pyautoml.config.config import _global_config
 from pyautoml.feature_engineering.util import pca
-from pyautoml.modelling.constants import (
-    CLASS_METRICS_DESC,
-    INTERPRET_EXPLAINERS,
-    PROBLEM_TYPE,
-    REG_METRICS_DESC,
-    SHAP_LEARNERS,
-)
+from pyautoml.modelling.constants import (CLASS_METRICS_DESC,
+                                          INTERPRET_EXPLAINERS, PROBLEM_TYPE,
+                                          REG_METRICS_DESC, SHAP_LEARNERS)
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
-from pyautoml.visualizations.visualize import *
 from pyautoml.modelling.util import to_pickle
+from pyautoml.visualizations.visualize import *
 
 
 class ModelBase(object):
@@ -959,10 +956,11 @@ class ClassificationModel(ModelBase):
 
         return sklearn.metrics.brier_score_loss(self.y_test, self.y_pred, **kwargs)
 
-    # TODO: Add sorting
     def metrics(self, *metrics):
         """
         Measures how well your model performed against certain metrics.
+
+        If a project metrics has been specified, it will display those metrics, otherwise it will display the specified metrics or all metrics.
 
         For more detailed information and parameters please see the following link: https://scikit-learn.org/stable/modules/classes.html#classification-metrics
         
@@ -1032,7 +1030,10 @@ class ClassificationModel(ModelBase):
             map(lambda x: CLASS_METRICS_DESC[x], metric_table.index)
         )
 
-        filt_metrics = list(metrics) if metrics else metric_table.index
+        if not metrics and _global_config['project_metrics']:
+            filt_metrics = _global_config['project_metrics']
+        else:
+            filt_metrics = list(metrics) if metrics else metric_table.index
 
         if self.report:
             self.report.log("Metrics:\n")
@@ -1412,6 +1413,8 @@ class RegressionModel(ModelBase):
         """
         Measures how well your model performed against certain metrics.
 
+        If a project metrics has been specified, it will display those metrics, otherwise it will display the specified metrics or all metrics.
+
         For more detailed information and parameters please see the following link: https://scikit-learn.org/stable/modules/classes.html#regression-metrics
         
         Supported metrics are:
@@ -1458,7 +1461,10 @@ class RegressionModel(ModelBase):
             map(lambda x: REG_METRICS_DESC[x], metric_table.index)
         )
 
-        filt_metrics = list(metrics) if metrics else metric_table.index
+        if not metrics and _global_config['project_metrics']:
+            filt_metrics = _global_config['project_metrics']
+        else:
+            filt_metrics = list(metrics) if metrics else metric_table.index
 
         if self.report:
             self.report.log("Metrics:\n")
