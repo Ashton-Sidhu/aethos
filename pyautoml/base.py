@@ -282,56 +282,6 @@ class MethodBase(object):
 
         return copy.deepcopy(self)
 
-    def set_option(self, option, value):
-        """
-        Sets pyautoml options.
-        
-        Parameters
-        ----------
-        option : str
-            Pyautoml option
-        value :
-            Value for the pyautoml option
-        """
-
-        pyautoml.set_option(option, value)  # pragma: no cover
-
-    def get_option(self, option):
-        """
-        Gets option value for Pyautoml options
-        
-        Parameters
-        ----------
-        option : str
-            Pyautoml option
-        """
-
-        pyautoml.get_option(option)  # pragma: no cover
-
-    def reset_option(self, option):
-        """
-        Resets Pyautoml options back to their default values
-        
-        Parameters
-        ----------
-        option : str
-            Pyautoml option
-        """
-
-        pyautoml.reset_option(option)  # pragma: no cover
-
-    def describe_option(self, option):
-        """
-        Describes Pyautoml option, giving more details.
-        
-        Parameters
-        ----------
-        option : str
-            Pyautoml option
-        """
-
-        pyautoml.describe_option(option)  # pragma: no cover
-
     def standardize_column_names(self):
         """
         Utility function that standardizes all column names to lowercase and underscores for spaces.

@@ -56,21 +56,13 @@ Before that, we can create a full data science folder structure by running `pyau
 To enable extensions, such as QGrid interactive filtering:
 
 ```python
-import pyautoml
-pyautoml.set_option('interactive_df', True)
-pyautoml.options.interactive_df = True
-```
-
-If you do not want the extra import, you can do it from any of the Pyautoml stage objects (Clean, Preprocess, Feature, Model):
-
-```python
-from pyautoml import Clean
-clean = Clean(...)
-clean.set_option('interactive_df', True)
+import pyautoml as py
+py.set_option('interactive_df', True)
+py.options.interactive_df = True
 ```
 
 ```python
-from pyautoml import Clean, Preprocess, Feature
+import pyautoml as py
 import pandas as pd
 
 x_train = pd.read_csv('data/train.csv') # load data into pandas
@@ -79,7 +71,7 @@ x_train = pd.read_csv('data/train.csv') # load data into pandas
 # By default, if no test data (x_test) is provided, then the data is split with 20% going to the test set
 # Specify predictor field as 'Survived'
 # Specify report name
-clean = Clean(x_train=x_train, target_field='Survived', report_name='Titanic')
+clean = py.Clean(x_train=x_train, target_field='Survived', report_name='Titanic')
 
 clean.x_train # View your training data
 clean.x_test # View your testing data
@@ -137,9 +129,9 @@ clean.drop('Cabin') # Drop the cabin column
 ```python
 clean.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
 
-prep = Preprocess(clean) # To move onto preprocessing
+prep = py.Preprocess(clean) # To move onto preprocessing
 
-feature = Feature(clean) # to move onto feature engineering
+feature = py.Feature(clean) # to move onto feature engineering
 
 feature.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode these columns and then drop the original columns
 ```
@@ -147,7 +139,7 @@ feature.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode thes
 #### Modelling
 
 ```python
-model = Model(feature) # To move onto modelling
+model = py.Model(feature) # To move onto modelling
 
 # Models can be run in various ways
 

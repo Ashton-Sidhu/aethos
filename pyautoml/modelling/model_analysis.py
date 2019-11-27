@@ -1004,7 +1004,7 @@ class ClassificationModel(ModelBase):
             Specific type of metrics to view
         """
 
-        metrics = {
+        metric_list = {
             "Accuracy": self.accuracy(),
             "Balanced Accuracy": self.balanced_accuracy(),
             "Average Precision": self.average_precision(),
@@ -1024,11 +1024,12 @@ class ClassificationModel(ModelBase):
         }
 
         metric_table = pd.DataFrame(
-            index=metrics.keys(), columns=[self.model_name], data=metrics.values()
+            index=metric_list.keys(), columns=[self.model_name], data=metric_list.values()
         )
         metric_table["Description"] = list(
             map(lambda x: CLASS_METRICS_DESC[x], metric_table.index)
         )
+        pd.set_option('display.max_colwidth', -1)
 
         if not metrics and _global_config['project_metrics']:
             filt_metrics = _global_config['project_metrics']
@@ -1341,7 +1342,11 @@ class RegressionModel(ModelBase):
             Mean squared log error.
         """
 
-        return sklearn.metrics.mean_squared_log_error(self.y_test, self.y_pred)
+        try:
+            return sklearn.metrics.mean_squared_log_error(self.y_test, self.y_pred)
+        except ValueError as e:
+            warnings.warn('Mean Squared Logarithmic Error cannot be used when targets contain negative values.')
+            return -999
 
     def median_abs_error(self, **kwargs):
         """
@@ -1442,7 +1447,7 @@ class RegressionModel(ModelBase):
             Specific type of metrics to view
         """
 
-        metrics = {
+        metric_list = {
             "Explained Variance": self.explained_variance(),
             "Max Error": self.max_error(),
             "Mean Absolute Error": self.mean_abs_error(),
@@ -1455,11 +1460,12 @@ class RegressionModel(ModelBase):
         }
 
         metric_table = pd.DataFrame(
-            index=metrics.keys(), columns=[self.model_name], data=metrics.values()
+            index=metric_list.keys(), columns=[self.model_name], data=metric_list.values()
         )
         metric_table["Description"] = list(
             map(lambda x: REG_METRICS_DESC[x], metric_table.index)
         )
+        pd.set_option('display.max_colwidth', -1)
 
         if not metrics and _global_config['project_metrics']:
             filt_metrics = _global_config['project_metrics']
