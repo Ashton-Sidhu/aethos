@@ -1031,7 +1031,7 @@ class ClassificationModel(ModelBase):
         )
         pd.set_option('display.max_colwidth', -1)
 
-        if not metrics and _global_config['project_metrics']:
+        if not metrics and _global_config['project_metrics']: # pragma: no cover
             filt_metrics = _global_config['project_metrics']
         else:
             filt_metrics = list(metrics) if metrics else metric_table.index
@@ -1467,7 +1467,7 @@ class RegressionModel(ModelBase):
         )
         pd.set_option('display.max_colwidth', -1)
 
-        if not metrics and _global_config['project_metrics']:
+        if not metrics and _global_config['project_metrics']: # pragma: no cover
             filt_metrics = _global_config['project_metrics']
         else:
             filt_metrics = list(metrics) if metrics else metric_table.index

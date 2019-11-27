@@ -1,6 +1,5 @@
 import os
 import sys
-import yaml
 
 import interpret
 import pandas as pd
