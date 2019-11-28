@@ -7,7 +7,8 @@ from functools import partial, wraps
 from pathlib import Path
 
 from pathos.multiprocessing import ProcessingPool
-from pyautoml.config import cfg
+from pyautoml.config import cfg, DEFAULT_MODEL_DIR
+from pyautoml.util import _make_dir
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
 
@@ -217,7 +218,7 @@ def to_pickle(model, name):
     """
 
     if not cfg["models"]["dir"]:  # pragma: no cover
-        path = str(Path.home()) + "/.pyautoml/models/"
+        path = DEFAULT_MODEL_DIR
     else:
         path = cfg["models"]["dir"]
 

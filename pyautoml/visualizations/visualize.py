@@ -6,9 +6,13 @@ import plotly.express as px
 import ptitprince as pt
 import seaborn as sns
 from scipy import stats
+from pyautoml.config import cfg, DEFAULT_IMAGE_DIR
+from pyautoml.util import _make_dir
+import os
+from pathlib import Path
+from bokeh.io import export_png
 
-
-def raincloud(col: str, target_col: str, data, **params):
+def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **params):
     """
     Visualizes 2 columns using raincloud.
     
@@ -25,9 +29,12 @@ def raincloud(col: str, target_col: str, data, **params):
 
     params: dict
         Parameters for the RainCloud visualization
+
+    ouput_file : str
+        Output file name for the image including extension (.jpg, .png, etc.)
     """
 
-    _, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(12, 8))
 
     if not params:
         params = {
@@ -41,6 +48,9 @@ def raincloud(col: str, target_col: str, data, **params):
 
     ax = pt.RainCloud(x=col, y=target_col, data=data.infer_objects(), **params)
 
+    if output_file: # pragma: no cover
+        img_dir = _make_image_dir()
+        fig.savefig(os.path.join(img_dir, output_file))
 
 def barplot(
     x,
@@ -84,31 +94,32 @@ def barplot(
 
     alpha = barplot_kwargs.pop("alpha", 0.6)
     y.append(x)
-    data_copy = data[y].copy()
-    data_copy = data_copy.set_index(x)
 
+    data_copy = data[y].copy()
     data_copy = data_copy.groupby(x, as_index=False)
     data_copy = getattr(data_copy, method)()
+    data_copy = data_copy.set_index(x)
 
     if orient == "v":
 
         p_bar = data_copy.plot_bokeh.bar(
-            figsize=(1500, 500),  # For now until auto scale is implemented
             stacked=stacked,
             alpha=alpha,
             **barplot_kwargs,
         )
 
     else:
-
         p_bar = data_copy.plot_bokeh.barh(
-            figsize=(1500, 500), stacked=stacked, alpha=alpha, **barplot_kwargs
+            stacked=stacked, alpha=alpha, **barplot_kwargs
         )
 
-    if output_file:
-        pandas_bokeh.output_file(output_file)
-        pandas_bokeh.save(p_bar)
+    if output_file: # pragma: no cover
+        img_dir = _make_image_dir()
 
+        if Path(output_file).suffix == '.html':
+            pandas_bokeh.output_file(os.path.join(img_dir, output_file))
+        else:
+            export_png(p_bar, os.path.join(img_dir, output_file))
 
 def scatterplot(
     x: str,
@@ -166,12 +177,20 @@ def scatterplot(
             **scatterplot_kwargs,
         )
 
-        if output_file:
-            pandas_bokeh.output_file(output_file)
-            pandas_bokeh.save(p_scatter)
+        if output_file: # pragma: no cover
+            img_dir = _make_image_dir()
+
+            if Path(output_file).suffix == '.html':
+                pandas_bokeh.output_file(os.path.join(img_dir, output_file))
+            else:
+                export_png(p_scatter, os.path.join(img_dir, output_file))
 
     else:
         fig = px.scatter_3d(data, x=x, y=y, z=z, **scatterplot_kwargs)
+
+        if output_file: # pragma: no cover
+            img_dir = _make_image_dir()
+            fig.write_image(os.path.join(img_dir, output_file))
 
         fig.show()
 
@@ -207,12 +226,16 @@ def lineplot(
 
     p_line = data_copy.plot_bokeh.line(title=title, xlabel=xlabel, **lineplot_kwargs)
 
-    if output_file:
-        pandas_bokeh.output_file(output_file)
-        pandas_bokeh.save(p_line)
+    if output_file: # pragma: no cover
+        img_dir = _make_image_dir()
+
+        if Path(output_file).suffix == '.html':
+            pandas_bokeh.output_file(os.path.join(img_dir, output_file))
+        else:
+            export_png(p_line, os.path.join(img_dir, output_file))
 
 
-def correlation_matrix(df, data_labels=False, hide_mirror=False, **kwargs):
+def correlation_matrix(df, data_labels=False, hide_mirror=False, output_file='', **kwargs):
     """
     Plots a correlation matrix.
     
@@ -226,11 +249,14 @@ def correlation_matrix(df, data_labels=False, hide_mirror=False, **kwargs):
 
     hide_mirror : bool, optional
         Whether to display the mirroring half of the correlation plot, by default False
+
+    ouput_file : str
+        Output file name for the image including extension (.jpg, .png, etc.)
     """
 
     corr = df.corr()
 
-    f, ax = plt.subplots(figsize=(11, 9))
+    fig, ax = plt.subplots(figsize=(11, 9))
 
     if hide_mirror:
         mask = np.zeros_like(corr, dtype=np.bool)
@@ -254,9 +280,13 @@ def correlation_matrix(df, data_labels=False, hide_mirror=False, **kwargs):
         **kwargs,
     )
 
+    if output_file: # pragma: no cover
+        img_dir = _make_image_dir()
+        fig.savefig(os.path.join(img_dir, output_file))
+
 
 # TODO: Make pair plots customizable using PairGrid
-def pairplot(df, kind="scatter", diag_kind="auto", hue=None, **kwargs):
+def pairplot(df, kind="scatter", diag_kind="auto", hue=None, output_file=None, **kwargs):
     """
     Plots pairplots of the variables in the DataFrame
     
@@ -273,6 +303,9 @@ def pairplot(df, kind="scatter", diag_kind="auto", hue=None, **kwargs):
 
     hue : str, optional
         Column to colour points by, by default None
+
+    ouput_file : str
+        Output file name for the image including extension (.jpg, .png, etc.)
     """
 
     palette = kwargs.pop("color", sns.color_palette("pastel"))
@@ -281,8 +314,12 @@ def pairplot(df, kind="scatter", diag_kind="auto", hue=None, **kwargs):
         df, kind=kind, diag_kind=diag_kind, hue=hue, palette=palette, **kwargs
     )
 
+    if output_file: # pragma: no cover
+        img_dir = _make_image_dir()
+        g.savefig(os.path.join(img_dir, output_file))
 
-def jointplot(x, y, df, kind="scatter", **kwargs):
+
+def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
     """
     Plots a joint plot of 2 variables.
     
@@ -299,6 +336,9 @@ def jointplot(x, y, df, kind="scatter", **kwargs):
 
     kind : { “scatter” | “reg” | “resid” | “kde” | “hex” }, optional
         Kind of plot to draw, by default 'scatter'
+
+    ouput_file : str
+        Output file name for the image including extension (.jpg, .png, etc.)
     """
 
     # NOTE: Ignore the deprecation warning for showing the R^2 statistic until Seaborn reimplements it
@@ -313,8 +353,12 @@ def jointplot(x, y, df, kind="scatter", **kwargs):
         stats.pearsonr
     )
 
+    if output_file: # pragma: no cover
+        img_dir = _make_image_dir()
+        g.savefig(os.path.join(img_dir, output_file))    
 
-def histogram(x: list, data: pd.DataFrame, **kwargs):
+
+def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
     """
     Plots a histogram.
     
@@ -322,18 +366,37 @@ def histogram(x: list, data: pd.DataFrame, **kwargs):
     ----------
     x : list
         Columns to plot histogram for.
+
     data : pd.DataFrame
         Dataframe of the data.
+
+    ouput_file : str
+        Output file name for the image including extension (.jpg, .png, etc.)
     """
 
     sns.set(style="ticks", color_codes=True)
     sns.set_palette(sns.color_palette("pastel"))
 
     if len(x) == 1:
-        sns.distplot(data[x], rug=True, **kwargs)
+        g = sns.distplot(data[x], rug=True, **kwargs)
 
     else:
         for col in x:
-            sns.distplot(data[col], label=col, **kwargs)
+            g = sns.distplot(data[col], label=col, **kwargs)
 
         plt.legend()
+
+    if output_file: # pragma: no cover
+        img_dir = _make_image_dir()
+        g.figure.savefig(os.path.join(img_dir, output_file))  
+
+def _make_image_dir(): # pragma: no cover
+
+    if not cfg["images"]["dir"]:
+        image_dir = DEFAULT_IMAGE_DIR
+    else:
+        image_dir = cfg["images"]["dir"]
+
+    _make_dir(image_dir)
+
+    return image_dir

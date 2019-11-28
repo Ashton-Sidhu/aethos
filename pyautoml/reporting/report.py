@@ -2,29 +2,57 @@ import os
 import platform
 import subprocess
 from datetime import datetime
-from pyautoml.config import cfg
+from pyautoml.config import cfg, DEFAULT_REPORT_DIR, DEFAULT_IMAGE_DIR
+from pyautoml.util import _make_dir
+from docx import Document
+from docx.enum.style import WD_STYLE_TYPE
+from docx.shared import Inches, Pt
 
 
 class Report:
     def __init__(self, report_name):
 
         if not cfg["report"]["dir"]:  # pragma: no cover
-            report_dir = os.path.join(os.path.expanduser("~"), ".pyautoml", "reports")
+            report_dir = DEFAULT_REPORT_DIR
         else:
             report_dir = cfg["report"]["dir"]
 
-        if not os.path.exists(report_dir):
-            os.makedirs(report_dir)
+        _make_dir(report_dir)
 
         self.report_name = report_name
-
+        self.docx=True
+        
         if os.path.exists(self.report_name):
             self.filename = self.report_name
+            self.docx_filename = self.filename.replace('.txt', '.docx')
+
+            if self.docx:
+                self.doc = Document(docx=self.docx_filename)
+                style = self.doc.styles
+                if not style['Indent']:                
+                    style.add_style('Indent', WD_STYLE_TYPE.PARAGRAPH)
+                    paragraph_format = style.paragraph_format
+                    paragraph_format.left_indent = Inches(0.25)
         else:
-            self.filename = "{}/{}{}.txt".format(
+            self.filename = "{}/{}{}".format(
                 report_dir, report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")
             )
+
+            if self.docx:
+                self.doc = Document()
+                style = self.doc.styles.add_style('Indent', WD_STYLE_TYPE.PARAGRAPH)
+                paragraph_format = style.paragraph_format
+                paragraph_format.left_indent = Inches(0.25)
+                self.docx_filename = self.filename + '.docx'
+
+            self.filename += '.txt'
+
             self.report_environtment()
+
+        if not cfg["images"]["dir"]:
+            self.image_dir = DEFAULT_IMAGE_DIR
+        else:
+            self.image_dir = cfg["images"]["dir"]
 
     def write_header(self, header: str):
         """
@@ -37,21 +65,20 @@ class Report:
             Examples: 'Cleaning', 'Feature Engineering', 'Modelling', etc.
         """
 
+        write = True
+
         if os.path.exists(self.filename):
-
-            write = False
-
             with open(self.filename, "r") as f:
-                if header not in f.read():
-                    write = True
-
-            if write:
-                with open(self.filename, "a+") as f:
-                    f.write("\n" + header + "\n\n")
-
-        else:
+                if header in f.read():
+                    write = False
+        
+        if write:
+            if self.docx:
+                self.doc.add_heading(header)
+                self.doc.save(self.docx_filename)
+            
             with open(self.filename, "a+") as f:
-                f.write(header + "\n\n")
+                f.write("\n" + header + "\n\n")
 
     def write_contents(self, content: str):
         """
@@ -66,21 +93,20 @@ class Report:
         write = True
 
         if os.path.exists(self.filename):
-            write = False
-
             with open(self.filename, "r") as f:
-                if content not in f.read():
-                    write = True
+                if content in f.read():
+                    write = False
 
         if write:
+            if self.docx:
+                self.doc.add_paragraph(content, style='Indent')
+                self.doc.save(self.docx_filename)
+
             with open(self.filename, "a+") as f:
                 f.writelines(content)
 
     def report_technique(self, technique: str, list_of_cols=[]):
         """
-        IN ALPHA V1
-        ============
-
         Writes analytic technique info to the report detailing what analysis was run
         and why it was ran.
         
@@ -104,9 +130,6 @@ class Report:
 
     def log(self, log: str):
         """
-        IN ALPHA V1
-        ============
-
         Logs info to the report file.
         
         Parameters
@@ -161,9 +184,9 @@ class Report:
 
         self.write_header("Environment")
 
-        self.log("OS Version          : {}".format(platform.platform()))
-        self.log("System              : {}".format(system))
-        self.log("Machine             : {}".format(platform.machine()))
+        self.write_contents("OS Version          : {}\n".format(platform.platform()))
+        self.write_contents("System              : {}\n".format(system))
+        self.write_contents("Machine             : {}\n".format(platform.machine()))
 
         if system == "Windows":
             memory = subprocess.check_output(
@@ -173,9 +196,9 @@ class Report:
             for m in memory.split("  \r\n")[1:-1]:
                 total_mem += int(m)
 
-            self.log("Processor           : {}".format(platform.processor()))
-            self.log(
-                "Memory              : {:.2f} GB".format(round(total_mem / (1024 ** 2)))
+            self.write_contents("Processor           : {}\n".format(platform.processor()))
+            self.write_contents(
+                "Memory              : {:.2f} GB\n".format(round(total_mem / (1024 ** 2)))
             )
         elif platform.system() == "Darwin":
             processor = subprocess.check_output(
@@ -186,9 +209,9 @@ class Report:
             memory = subprocess.check_output(
                 "sysctl -n hw.memsize", shell=True, universal_newlines=True
             )
-            self.log("Processor           : {}".format(processor.strip()))
-            self.log(
-                "Memory              : {}".format(
+            self.write_contents("Processor           : {}\n".format(processor.strip()))
+            self.write_contents(
+                "Memory              : {}\n".format(
                     round(int(memory.strip()) / (1024 ** 2))
                 )
             )
@@ -203,13 +226,19 @@ class Report:
 
             memory = [int(s) for s in lines[0].split() if s.isdigit()][0]
             processor = processor.replace("\t", "").split("model name:")[1].strip()
-            self.log("Processor           : {}".format(processor))
-            self.log(
-                "Memory              : {:.2f} GB".format(round(memory / (1024 ** 2)))
+            self.write_contents("Processor           : {}\n".format(processor))
+            self.write_contents(
+                "Memory              : {:.2f} GB\n".format(round(memory / (1024 ** 2)))
             )
 
-        self.log("CPU Count           : {}".format(os.cpu_count()))
+        self.write_contents("CPU Count           : {}\n".format(os.cpu_count()))
+        self.write_contents("Python Version      : {}\n".format(platform.python_version()))
+        self.write_contents("Python Compiler     : {}\n".format(platform.python_compiler()))
+        self.write_contents("Python Build        : {}\n".format(platform.python_build()))
 
-        self.log("Python Version      : {}".format(platform.python_version()))
-        self.log("Python Compiler     : {}".format(platform.python_compiler()))
-        self.log("Python Build        : {}".format(platform.python_build()))
+    def write_image(self, name): # pragma: no cover
+
+        if self.docx:
+            self.doc.add_picture(os.path.join(self.image_dir, name), width=Inches(6), height=Inches(4))
+
+            self.doc.save(self.docx_filename)

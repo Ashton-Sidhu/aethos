@@ -911,7 +911,7 @@ class MethodBase(object):
         else:
             return self.x_train, self.x_test
 
-    def raincloud(self, x=None, y=None, **params):
+    def raincloud(self, x=None, y=None, output_file="", **params):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.
         This is used to offer eyeballed statistical inference, assessment of data distributions (useful to check assumptions),
@@ -942,6 +942,9 @@ class MethodBase(object):
 
         hue : Iterable, np.array, or dataframe column name if 'data' is specified
             Second categorical data. Use it to obtain different clouds and rainpoints
+
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
 
         orient : str                  
             vertical if "v" (default), horizontal if "h"
@@ -1007,18 +1010,21 @@ class MethodBase(object):
         --------
         >>> clean.raincloud('col1') # Will plot col1 values on the x axis and your target variable values on the y axis
         >>> clean.raincloud('col1', 'col2') # Will plot col1 on the x and col2 on the y axis
+        >>> clean.raincloud('col1', 'col2', output_file='raincloud.png')
         """
 
         if y is None:
-            y_col = self.target_field
+            y = self.target_field
 
-        raincloud(y, x, self.x_train)
+        raincloud(y, x, self.x_train, output_file=output_file, **params)
+
+        if output_file:
+            self.report.write_image(output_file)
 
     def barplot(
         self,
         x: str,
         y=None,
-        groupby=None,
         method=None,
         orient="v",
         stacked=False,
@@ -1061,6 +1067,13 @@ class MethodBase(object):
         stacked : bool
             Whether to stack the different columns resulting in a stacked bar chart,
             by default False
+
+        output_file : str, optional
+            Output html file name for image
+
+        Examples
+        --------
+
         """
 
         barplot(
@@ -1070,8 +1083,12 @@ class MethodBase(object):
             method=method,
             orient=orient,
             stacked=stacked,
+            output_file=output_file,
             **barplot_kwargs,
         )
+
+        if output_file:
+            self.report.write_image(output_file)
 
     def scatterplot(
         self,
@@ -1128,6 +1145,7 @@ class MethodBase(object):
         --------
         >>> clean.scatterplot(x='x', y='y') #2d
         >>> clean.scatterplot(x='x', y='y', z='z') #3d
+        >>> clean.scatterplot(x='x', y='y', z='z', output_file='scatt')
         """
 
         scatterplot(
@@ -1141,6 +1159,9 @@ class MethodBase(object):
             output_file=output_file,
             **scatterplot_kwargs,
         )
+
+        if output_file:
+            self.report.write_image(output_file)
 
     def lineplot(
         self, x: str, y: list, title="Line Plot", output_file="", **lineplot_kwargs
@@ -1203,13 +1224,17 @@ class MethodBase(object):
         Examples
         --------
         >>> clean.line_plot(x='x', y='y')
+        >>> clean.line_plot(x='x', y='y', output_file='line')
         """
 
         lineplot(
             x, y, self.x_train, title=title, output_file=output_file, **lineplot_kwargs,
         )
 
-    def correlation_matrix(self, data_labels=False, hide_mirror=False, **kwargs):
+        if output_file:
+            self.report.write_image(output_file)
+
+    def correlation_matrix(self, data_labels=False, hide_mirror=False, output_file="", **kwargs):
         """
         Plots a correlation matrix of all the numerical variables.
 
@@ -1223,16 +1248,23 @@ class MethodBase(object):
         hide_mirror : bool, optional
             Whether to display the mirroring half of the correlation plot, by default False
 
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
         Examples
         --------
         >>> clean.correlation_matrix(data_labels=True)
+        >>> clean.correlation_matrix(data_labels=True, output_file='corr.png')
         """
 
         correlation_matrix(
-            self.x_train, data_labels=data_labels, hide_mirror=hide_mirror, **kwargs,
+            self.x_train, data_labels=data_labels, hide_mirror=hide_mirror, output_file=output_file, **kwargs,
         )
 
-    def pairplot(self, kind="scatter", diag_kind="auto", hue=None, **kwargs):
+        if output_file:
+            self.report.write_image(output_file)
+
+    def pairplot(self, kind="scatter", diag_kind="auto", hue=None, output_file='', **kwargs):
         """
         Plots pairplots of the variables from the training data.
 
@@ -1260,9 +1292,13 @@ class MethodBase(object):
         palette : dict or seaborn color palette
             Set of colors for mapping the hue variable. If a dict, keys should be values in the hue variable.
 
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
         Examples
         --------
         >>> clean.pairplot(kind='kde')
+        >>> clean.pairplot(kind='kde', output_file='pair.png')
         """
 
         if self.target_field and not hue:
@@ -1271,10 +1307,13 @@ class MethodBase(object):
             hue = hue
 
         pairplot(
-            self.x_train, kind=kind, diag_kind=diag_kind, hue=hue, **kwargs,
+            self.x_train, kind=kind, diag_kind=diag_kind, hue=hue, output_file=output_file, **kwargs,
         )
 
-    def jointplot(self, x: str, y: str, kind="scatter", **kwargs):
+        if output_file:
+            self.report.write_image(output_file)
+
+    def jointplot(self, x: str, y: str, kind="scatter", output_file='', **kwargs):
         """
         Plots joint plots of 2 different variables.
 
@@ -1311,16 +1350,23 @@ class MethodBase(object):
             Axis limits to set before plotting.
 
         {joint, marginal, annot}_kws : dicts, optional
-            Additional keyword arguments for the plot components.            
+            Additional keyword arguments for the plot components.
+
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
 
         Examples
         --------
         >>> clean.jointplot(x='x', y='y', kind='kde', color='crimson')
+        >>> clean.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        jointplot(x=x, y=y, df=self.x_train, kind=kind, **kwargs)
+        jointplot(x=x, y=y, df=self.x_train, kind=kind, output_file=output_file, **kwargs)
+        
+        if output_file:
+            self.report.write_image(output_file)
 
-    def histogram(self, *x, **kwargs):
+    def histogram(self, *x, output_file='', **kwargs):
         """
         Plots a histogram of the given column(s).
 
@@ -1346,6 +1392,9 @@ class MethodBase(object):
         fit : random variable object, optional
             An object with fit method, returning a tuple that can be passed to a pdf method a positional arguments following an grid of values to evaluate the pdf on.
 
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
         Examples
         --------
         >>> clean.histogram('col1')
@@ -1353,6 +1402,10 @@ class MethodBase(object):
         >>> clean.histogram('col1', kde=False)
         >>> clean.histogram('col1', 'col2', hist=False)
         >>> clean.histogram('col1', kde=False, fit=stat.normal)
+        >>> clean.histogram('col1', kde=False, output_file='hist.png')
         """
 
-        histogram(list(x), data=self.x_train, **kwargs)
+        histogram(list(x), data=self.x_train, output_file=output_file, **kwargs)
+
+        if output_file:
+            self.report.write_image(output_file)

@@ -1,5 +1,6 @@
 import collections
 from collections import OrderedDict
+import os
 
 import numpy as np
 import pandas as pd
@@ -330,3 +331,16 @@ def _set_item(
         x_test[column] = value
 
     return x_train, x_test
+
+def _make_dir(path: str):
+    """
+    Makes directory if it does exist.
+    
+    Parameters
+    ----------
+    path : str
+        Path of directory or file
+    """
+
+    if not os.path.exists(path):
+        os.makedirs(path)
