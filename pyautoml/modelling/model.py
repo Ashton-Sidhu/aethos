@@ -9,10 +9,16 @@ from pyautoml.base import MethodBase
 from pyautoml.config import technique_reason_repo, shell
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
-from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
-                                     add_to_queue, run_crossvalidation,
-                                     run_gridsearch, to_pickle)
+from pyautoml.modelling.util import (
+    _get_cv_type,
+    _run_models_parallel,
+    add_to_queue,
+    run_crossvalidation,
+    run_gridsearch,
+    to_pickle,
+)
 from pyautoml.util import _input_columns, _set_item, _validate_model_name
+
 
 class Model(MethodBase):
     def __init__(
@@ -50,14 +56,9 @@ class Model(MethodBase):
         if self.report is not None:
             self.report.write_header("Modelling")
 
-        
         # Create a master dataset that houses training data + results
         self._train_result_data = self.x_train.copy()
-        self._test_result_data = (
-            self.x_test.copy()
-            if self.x_test is not None
-            else None
-        )
+        self._test_result_data = self.x_test.copy() if self.x_test is not None else None
 
         # For supervised learning approaches, drop the target column
         if self.target_field:
@@ -66,19 +67,13 @@ class Model(MethodBase):
                     self.x_train = step.x_train
                     self.x_test = step.x_test
                 else:
-                    self.x_train = self.x_train.drop(
-                        [self.target_field], axis=1
-                    )
-                    self.x_test = self.x_test.drop(
-                        [self.target_field], axis=1
-                    )
+                    self.x_train = self.x_train.drop([self.target_field], axis=1)
+                    self.x_test = self.x_test.drop([self.target_field], axis=1)
             else:
                 if isinstance(step, Model):
                     self.x_train = step.x_train
                 else:
-                    self.x_train = self.x_train.drop(
-                        [self.target_field], axis=1
-                    )
+                    self.x_train = self.x_train.drop([self.target_field], axis=1)
 
         if isinstance(x_train, Model):
             self._models = step._models
@@ -187,11 +182,7 @@ class Model(MethodBase):
         Property function for the training predictor variable
         """
 
-        return (
-            self.x_train_results[self.target_field]
-            if self.target_field
-            else None
-        )
+        return self.x_train_results[self.target_field] if self.target_field else None
 
     @y_train.setter
     def y_train(self, value):
@@ -1673,8 +1664,8 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
         """
-        
-        from sklearn.mixture import GaussianMixture        
+
+        from sklearn.mixture import GaussianMixture
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -1789,7 +1780,7 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
+
         from sklearn.linear_model import LogisticRegression
 
         if not _validate_model_name(self, model_name):
@@ -1912,7 +1903,7 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
+
         from sklearn.linear_model import RidgeClassifier
 
         if not _validate_model_name(self, model_name):
@@ -2092,7 +2083,7 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
+
         from sklearn.linear_model import SGDClassifier
 
         if not _validate_model_name(self, model_name):
@@ -2209,7 +2200,7 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
-        from sklearn.ensemble import AdaBoostClassifier  
+        from sklearn.ensemble import AdaBoostClassifier
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -2688,8 +2679,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
-        from sklearn.ensemble import RandomForestClassifier       
+
+        from sklearn.ensemble import RandomForestClassifier
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -2804,7 +2795,7 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
+
         from sklearn.naive_bayes import BernoulliNB
 
         if not _validate_model_name(self, model_name):
@@ -3019,7 +3010,7 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
+
         from sklearn.naive_bayes import MultinomialNB
 
         if not _validate_model_name(self, model_name):
@@ -3193,7 +3184,7 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
+
         from sklearn.tree import DecisionTreeClassifier
 
         if not _validate_model_name(self, model_name):
@@ -3672,7 +3663,7 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
+
         import xgboost as xgb
 
         if not _validate_model_name(self, model_name):
@@ -5696,14 +5687,10 @@ class Model(MethodBase):
         # Train a model and predict on the test test.
         model.fit(self.x_train, self.y_train)
 
-        self._train_result_data[new_col_name] = model.predict(
-            self.x_train
-        )
+        self._train_result_data[new_col_name] = model.predict(self.x_train)
 
         if self.x_test is not None:
-            self._test_result_data[new_col_name] = model.predict(
-                self.x_test
-            )
+            self._test_result_data[new_col_name] = model.predict(self.x_test)
 
         # Report the results
         if self.report is not None:
@@ -5767,27 +5754,19 @@ class Model(MethodBase):
 
             model.fit(self.x_train, self.y_train)
 
-            self._train_result_data[new_col_name] = model.predict(
-                self.x_train
-            )
+            self._train_result_data[new_col_name] = model.predict(self.x_train)
 
         else:
             if hasattr(model, "predict"):
                 model.fit(self.x_train)
 
-                self._train_result_data[new_col_name] = model.predict(
-                    self.x_train
-                )
+                self._train_result_data[new_col_name] = model.predict(self.x_train)
             else:
-                self._train_result_data[new_col_name] = model.fit_predict(
-                    self.x_train
-                )
+                self._train_result_data[new_col_name] = model.fit_predict(self.x_train)
 
         if self.x_test is not None:
             if hasattr(model, "predict"):
-                self._test_result_data[new_col_name] = model.predict(
-                    self.x_test
-                )
+                self._test_result_data[new_col_name] = model.predict(self.x_test)
             else:
                 warnings.warn(
                     "Model does not have a predict function, unable to predict on the test data set. Consider combining your datasets into 1 and set `model.x_test = None`"

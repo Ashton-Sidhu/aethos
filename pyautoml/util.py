@@ -265,6 +265,7 @@ def _input_columns(list_args: list, list_of_cols: list):
 
     return column_list
 
+
 def _validate_model_name(model_obj, model_name: str) -> bool:
     """
     Validates the inputted model name. If the object already has an

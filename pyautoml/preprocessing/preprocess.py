@@ -5,8 +5,7 @@ from pyautoml.config import technique_reason_repo
 from pyautoml.preprocessing.categorical import *
 from pyautoml.preprocessing.numeric import *
 from pyautoml.preprocessing.text import *
-from pyautoml.util import (_input_columns, _numeric_input_conditions,
-                           label_encoder)
+from pyautoml.util import _input_columns, _numeric_input_conditions, label_encoder
 
 
 class Preprocess(MethodBase):
@@ -96,9 +95,7 @@ class Preprocess(MethodBase):
             if list_of_cols:
                 self.report.report_technique(report_info, list_of_cols)
             else:
-                list_of_cols = _numeric_input_conditions(
-                    list_of_cols, self.x_train
-                )
+                list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
                 self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
@@ -170,9 +167,7 @@ class Preprocess(MethodBase):
             if list_of_cols:
                 self.report.report_technique(report_info, list_of_cols)
             else:
-                list_of_cols = _numeric_input_conditions(
-                    list_of_cols, self.x_train
-                )
+                list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
                 self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
@@ -215,9 +210,7 @@ class Preprocess(MethodBase):
             if list_of_cols:
                 self.report.report_technique(report_info, list_of_cols)
             else:
-                list_of_cols = _numeric_input_conditions(
-                    list_of_cols, self.x_train
-                )
+                list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
                 self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
@@ -345,10 +338,7 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = nltk_word_tokenizer(
+        (self.x_train, self.x_test,) = nltk_word_tokenizer(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -395,10 +385,7 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = nltk_remove_stopwords(
+        (self.x_train, self.x_test,) = nltk_remove_stopwords(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -456,10 +443,7 @@ class Preprocess(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = remove_punctuation(
+        (self.x_train, self.x_test,) = remove_punctuation(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -500,9 +484,7 @@ class Preprocess(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self.x_train, self.x_test, _ = label_encoder(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
+            x_train=self.x_train, x_test=self.x_test, list_of_cols=list_of_cols,
         )
 
         if self.report is not None:

@@ -94,6 +94,7 @@ def remove_rows_threshold(x_train: pd.DataFrame, x_test=None, threshold=0.5):
 
     return x_train, x_test
 
+
 def remove_duplicate_rows(x_train, x_test=None, list_of_cols=[]):
     """
     Removes rows that are exact duplicates of each other.
@@ -361,18 +362,24 @@ def replace_missing_indicator(
     """
 
     for col in list_of_cols:
-        x_train[col + "_missing"] = [missing_indicator if x else valid_indicator for x in x_train[col].isnull()]
-            
+        x_train[col + "_missing"] = [
+            missing_indicator if x else valid_indicator for x in x_train[col].isnull()
+        ]
+
         if not keep_col:
             x_train = x_train.drop([col], axis=1)
 
         if x_test is not None:
-            x_test[col + "_missing"] = [missing_indicator if x else valid_indicator for x in x_test[col].isnull()]
+            x_test[col + "_missing"] = [
+                missing_indicator if x else valid_indicator
+                for x in x_test[col].isnull()
+            ]
 
             if not keep_col:
                 x_test = x_test.drop([col], axis=1)
 
     return x_train, x_test
+
 
 def remove_constant_columns(x_train, x_test=None):
     """
@@ -395,7 +402,9 @@ def remove_constant_columns(x_train, x_test=None):
     """
 
     # If the number of unique values is not 0(all missing) or 1(constant or constant + missing)
-    keep_columns = list(filter(lambda x: x_train.nunique()[x] not in [0, 1], x_train.columns))
+    keep_columns = list(
+        filter(lambda x: x_train.nunique()[x] not in [0, 1], x_train.columns)
+    )
 
     x_train = x_train[keep_columns]
 
@@ -403,6 +412,7 @@ def remove_constant_columns(x_train, x_test=None):
         x_test = x_test[keep_columns]
 
     return x_train, x_test
+
 
 def remove_unique_columns(x_train, x_test):
     """
@@ -425,7 +435,9 @@ def remove_unique_columns(x_train, x_test):
     """
 
     # If the number of unique values is not 0(all missing) or 1(constant or constant + missing)
-    keep_columns = list(filter(lambda x: x_train.nunique()[x] != x_train.shape[0], x_train.columns))
+    keep_columns = list(
+        filter(lambda x: x_train.nunique()[x] != x_train.shape[0], x_train.columns)
+    )
 
     x_train = x_train[keep_columns]
 

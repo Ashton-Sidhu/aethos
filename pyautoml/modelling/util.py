@@ -216,10 +216,10 @@ def to_pickle(model, name):
         Name of the model
     """
 
-    if not cfg['models']['dir']: # pragma: no cover
+    if not cfg["models"]["dir"]:  # pragma: no cover
         path = str(Path.home()) + "/.pyautoml/models/"
     else:
-        path = cfg['models']['dir']
+        path = cfg["models"]["dir"]
 
     if not os.path.exists(path):
         os.makedirs(path)

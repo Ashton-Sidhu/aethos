@@ -71,6 +71,8 @@ project_metric_doc = """
         
         'SMAPE': 'Symmetric mean absolute percentage error. It is an accuracy measure based on percentage (or relative) errors.
     """
+
+
 def use_qgrid(key):
     import qgrid
 
@@ -81,11 +83,13 @@ def use_qgrid(key):
         else:
             qgrid.disable()
 
+
 def use_itable(key):
     import itables.interactive
     import itables.options as opt
 
     opt.lengthMenu = [5, 10, 20, 50, 100, 200, 500]
+
 
 cf.register_option(
     "interactive_df",
@@ -104,8 +108,5 @@ cf.register_option(
 )
 
 cf.register_option(
-    "project_metrics",
-    default=[],
-    doc=project_metric_doc,
-    validator=is_list
+    "project_metrics", default=[], doc=project_metric_doc, validator=is_list
 )

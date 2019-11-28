@@ -8,10 +8,10 @@ from pyautoml.config import cfg
 class Report:
     def __init__(self, report_name):
 
-        if not cfg['report']['dir']: #pragma: no cover
-            report_dir = os.path.join(os.path.expanduser('~'), '.pyautoml', 'reports')
+        if not cfg["report"]["dir"]:  # pragma: no cover
+            report_dir = os.path.join(os.path.expanduser("~"), ".pyautoml", "reports")
         else:
-            report_dir = cfg['report']['dir']
+            report_dir = cfg["report"]["dir"]
 
         if not os.path.exists(report_dir):
             os.makedirs(report_dir)

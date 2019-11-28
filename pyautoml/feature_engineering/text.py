@@ -197,7 +197,9 @@ def nltk_feature_postag(
         x_train[col + new_col_name] = pd.Series([TextBlob(x) for x in x_train[col]])
 
         if x_test is not None:
-            x_test[col + new_col_name] = pd.Series([TextBlob(x).tags for x in x_test[col]])
+            x_test[col + new_col_name] = pd.Series(
+                [TextBlob(x).tags for x in x_test[col]]
+            )
 
     return x_train, x_test
 
@@ -235,10 +237,14 @@ def nltk_feature_noun_phrases(
     list_of_cols = _get_columns(list_of_cols, x_train)
 
     for col in list_of_cols:
-        x_train[col + new_col_name] = pd.Series([TextBlob(x).noun_phrases for x in x_train[col]])
+        x_train[col + new_col_name] = pd.Series(
+            [TextBlob(x).noun_phrases for x in x_train[col]]
+        )
 
         if x_test is not None:
-            x_test[col + new_col_name] = pd.Series([TextBlob(x).noun_phrases for x in x_train[col]])
+            x_test[col + new_col_name] = pd.Series(
+                [TextBlob(x).noun_phrases for x in x_train[col]]
+            )
 
     return x_train, x_test
 
@@ -282,22 +288,17 @@ def spacy_feature_postag(
     for col in list_of_cols:
         transformed_text = map(nlp, x_train[col])
         x_train[col + new_col_name] = pd.Series(
-            map(
-                lambda x: [(token, token.pos_) for token in x],
-                transformed_text,
-            )
+            map(lambda x: [(token, token.pos_) for token in x], transformed_text,)
         )
 
         if x_test is not None:
             transformed_text = map(nlp, x_test[col])
             x_test[col + new_col_name] = pd.Series(
-                map(
-                    lambda x: [(token, token.pos_) for token in x],
-                    transformed_text,
-                )
+                map(lambda x: [(token, token.pos_) for token in x], transformed_text,)
             )
 
     return x_train, x_test
+
 
 # TODO: Double check spacy noun phrase implementation
 def spacy_feature_noun_phrases(
@@ -343,7 +344,10 @@ def spacy_feature_noun_phrases(
         if x_test is not None:
             transformed_text = map(nlp, x_test[col])
             x_test[col + new_col_name] = pd.Series(
-                map(lambda x: [str(phrase) for phrase in x.noun_chunks], transformed_text)
+                map(
+                    lambda x: [str(phrase) for phrase in x.noun_chunks],
+                    transformed_text,
+                )
             )
 
     return x_train, x_test

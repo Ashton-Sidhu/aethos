@@ -280,7 +280,6 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
-
     def test_setattr_new(self):
 
         int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
@@ -296,7 +295,7 @@ class Test_TestBase(unittest.TestCase):
             report_name="test",
             test_split_percentage=0.5,
         )
-        base['col5'] = 4
+        base["col5"] = 4
 
         self.assertListEqual(base.col5.tolist(), [4, 4])
 
@@ -315,9 +314,9 @@ class Test_TestBase(unittest.TestCase):
             report_name="test",
             test_split_percentage=0.25,
         )
-        base['col5'] = [4]
+        base["col5"] = [4]
 
-        self.assertListEqual(base.x_test['col5'].tolist(), [4])
+        self.assertListEqual(base.x_test["col5"].tolist(), [4])
 
     def test_setattr_trainset(self):
 
@@ -334,10 +333,10 @@ class Test_TestBase(unittest.TestCase):
             report_name="test",
             test_split_percentage=0.75,
         )
-        base['col5'] = [4]
+        base["col5"] = [4]
 
-        self.assertListEqual(base['col5'].tolist(), [4])
-    
+        self.assertListEqual(base["col5"].tolist(), [4])
+
     def test_setattr_bothset(self):
 
         int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
@@ -353,10 +352,11 @@ class Test_TestBase(unittest.TestCase):
             report_name="test",
             test_split_percentage=0.75,
         )
-        base['col5'] = ([4], [4,4,4])
+        base["col5"] = ([4], [4, 4, 4])
 
-        self.assertListEqual(base['col5'].tolist(), [4])
-        self.assertListEqual(base.x_test['col5'].tolist(), [4,4,4])
+        self.assertListEqual(base["col5"].tolist(), [4])
+        self.assertListEqual(base.x_test["col5"].tolist(), [4, 4, 4])
+
     def test_setattr_old(self):
 
         int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
@@ -758,12 +758,13 @@ class Test_TestBase(unittest.TestCase):
 
         base.y_test = [1, 1]
 
-        validate = base.y_test.tolist() == [1, 1] and base.x_test[
-            "label"
-        ].tolist() == [1, 1]
+        validate = base.y_test.tolist() == [1, 1] and base.x_test["label"].tolist() == [
+            1,
+            1,
+        ]
 
         self.assertTrue(validate)
-        
+
     def test_correlation_plot(self):
 
         data = pd.DataFrame(np.random.rand(100, 10))
@@ -869,18 +870,10 @@ class Test_TestBase(unittest.TestCase):
         )
 
         base.barplot(
-            x="species",
-            y=["sepal_length",
-                "sepal_width"],
-            method="mean",
-            orient="h",
+            x="species", y=["sepal_length", "sepal_width"], method="mean", orient="h",
         )
         base.barplot(
-            x="species",
-            y=["sepal_length",
-                "sepal_width"],
-            method="mean",
-            orient="v",
+            x="species", y=["sepal_length", "sepal_width"], method="mean", orient="v",
         )
 
         self.assertTrue(True)
@@ -962,7 +955,7 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.histogram('sepal_length')
+        base.histogram("sepal_length")
 
         self.assertTrue(True)
 
@@ -980,17 +973,21 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.histogram('sepal_length', 'sepal_width')
+        base.histogram("sepal_length", "sepal_width")
 
         self.assertTrue(True)
 
     def test_json_normalize_nonsplit(self):
 
-        data = pd.DataFrame({
-            'col1':[1, 2], 
-            'col2':[ast.literal_eval("{'foo':1, 'bar':2, 'baz':{'foo':2, 'x':1}}"),
-                    ast.literal_eval("{'foo':3, 'bar':5, 'baz':{'foo':2, 'x':1}}")]
-            })
+        data = pd.DataFrame(
+            {
+                "col1": [1, 2],
+                "col2": [
+                    ast.literal_eval("{'foo':1, 'bar':2, 'baz':{'foo':2, 'x':1}}"),
+                    ast.literal_eval("{'foo':3, 'bar':5, 'baz':{'foo':2, 'x':1}}"),
+                ],
+            }
+        )
 
         base = Clean(
             x_train=data,
@@ -1001,17 +998,21 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.expand_json_column('col2')
+        base.expand_json_column("col2")
 
-        self.assertListEqual(base.columns, ['col1', 'foo', 'bar', 'baz_foo', 'baz_x'])
+        self.assertListEqual(base.columns, ["col1", "foo", "bar", "baz_foo", "baz_x"])
 
     def test_json_normalize_split(self):
 
-        data = pd.DataFrame({
-            'col1':[1, 2], 
-            'col2':[ast.literal_eval("{'foo':1, 'bar':2, 'baz':{'foo':2, 'x':1}}"),
-                    ast.literal_eval("{'foo':3, 'bar':5, 'baz':{'foo':2, 'x':1}}")]
-            })
+        data = pd.DataFrame(
+            {
+                "col1": [1, 2],
+                "col2": [
+                    ast.literal_eval("{'foo':1, 'bar':2, 'baz':{'foo':2, 'x':1}}"),
+                    ast.literal_eval("{'foo':3, 'bar':5, 'baz':{'foo':2, 'x':1}}"),
+                ],
+            }
+        )
 
         base = Clean(
             x_train=data,
@@ -1022,9 +1023,11 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.expand_json_column('col2')
+        base.expand_json_column("col2")
 
-        self.assertListEqual(base.x_test.columns.tolist(), ['col1', 'foo', 'bar', 'baz_foo', 'baz_x'])
+        self.assertListEqual(
+            base.x_test.columns.tolist(), ["col1", "foo", "bar", "baz_foo", "baz_x"]
+        )
 
 
 if __name__ == "__main__":

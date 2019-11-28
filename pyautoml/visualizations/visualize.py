@@ -313,6 +313,7 @@ def jointplot(x, y, df, kind="scatter", **kwargs):
         stats.pearsonr
     )
 
+
 def histogram(x: list, data: pd.DataFrame, **kwargs):
     """
     Plots a histogram.

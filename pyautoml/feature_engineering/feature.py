@@ -40,7 +40,7 @@ class Feature(MethodBase):
                 target_mapping=step.target_mapping,
                 report_name=step.report_name,
             )
-            
+
         if self.report is not None:
             self.report.write_header("Feature Engineering")
 
@@ -82,10 +82,7 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = feature_one_hot_encode(
+        (self.x_train, self.x_test,) = feature_one_hot_encode(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -181,10 +178,7 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = feature_bag_of_words(
+        (self.x_train, self.x_test,) = feature_bag_of_words(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -246,10 +240,7 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = feature_hash_vectorizer(
+        (self.x_train, self.x_test,) = feature_hash_vectorizer(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -291,10 +282,7 @@ class Feature(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = nltk_feature_postag(
+        (self.x_train, self.x_test,) = nltk_feature_postag(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -335,10 +323,7 @@ class Feature(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = spacy_feature_postag(
+        (self.x_train, self.x_test,) = spacy_feature_postag(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -377,10 +362,7 @@ class Feature(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = nltk_feature_noun_phrases(
+        (self.x_train, self.x_test,) = nltk_feature_noun_phrases(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -419,10 +401,7 @@ class Feature(MethodBase):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = spacy_feature_noun_phrases(
+        (self.x_train, self.x_test,) = spacy_feature_noun_phrases(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -468,10 +447,7 @@ class Feature(MethodBase):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (
-            self.x_train,
-            self.x_test,
-        ) = polynomial_features(
+        (self.x_train, self.x_test,) = polynomial_features(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -518,10 +494,7 @@ class Feature(MethodBase):
         """
 
         self.x_train, self.x_test = apply(
-            x_train=self.x_train,
-            func=func,
-            output_col=output_col,
-            x_test=self.x_test,
+            x_train=self.x_train, func=func, output_col=output_col, x_test=self.x_test,
         )
 
         if self.report is not None:
@@ -556,9 +529,7 @@ class Feature(MethodBase):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self.x_train, self.x_test, _ = label_encoder(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
+            x_train=self.x_train, x_test=self.x_test, list_of_cols=list_of_cols,
         )
 
         if self.report is not None:
@@ -624,9 +595,7 @@ class Feature(MethodBase):
         if self.target_field:
             train_target_data = self.x_train[self.target_field]
             test_target_data = (
-                self.x_test[self.target_field]
-                if self.x_test is not None
-                else None
+                self.x_test[self.target_field] if self.x_test is not None else None
             )
             x_train = self.x_train.drop(self.target_field, axis=1)
             x_test = (
@@ -638,9 +607,7 @@ class Feature(MethodBase):
             x_train = self.x_train
             x_test = self.x_test
 
-        self.x_train, self.x_test = pca(
-            x_train=x_train, x_test=x_test, **pca_kwargs
-        )
+        self.x_train, self.x_test = pca(x_train=x_train, x_test=x_test, **pca_kwargs)
 
         if self.target_field:
             self.x_train[self.target_field] = train_target_data

@@ -443,10 +443,13 @@ class TestCleaning(unittest.TestCase):
         clean.drop_unique_columns()
 
         validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == [
-            "col2", "col3", "col4"
+            "col2",
+            "col3",
+            "col4",
         ]
 
         self.assertTrue(True)
+
 
 if __name__ == "__main__":
     unittest.main()

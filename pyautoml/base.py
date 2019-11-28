@@ -15,15 +15,32 @@ from pandas_summary import DataFrameSummary
 import pyautoml
 from pyautoml.config import shell
 from pyautoml.reporting.report import Report
-from pyautoml.util import (CLEANING_CHECKLIST, DATA_CHECKLIST,
-                           ISSUES_CHECKLIST, MULTI_ANALYSIS_CHECKLIST,
-                           PREPARATION_CHECKLIST, UNI_ANALYSIS_CHECKLIST,
-                           _get_columns, _set_item, label_encoder, split_data)
+from pyautoml.util import (
+    CLEANING_CHECKLIST,
+    DATA_CHECKLIST,
+    ISSUES_CHECKLIST,
+    MULTI_ANALYSIS_CHECKLIST,
+    PREPARATION_CHECKLIST,
+    UNI_ANALYSIS_CHECKLIST,
+    _get_columns,
+    _set_item,
+    label_encoder,
+    split_data,
+)
 from pyautoml.visualizations.visualize import *
 
 
 class MethodBase(object):
-    def __init__(self, x_train, x_test, split, target_field, target_mapping, report_name, test_split_percentage):
+    def __init__(
+        self,
+        x_train,
+        x_test,
+        split,
+        target_field,
+        target_mapping,
+        report_name,
+        test_split_percentage,
+    ):
 
         self.x_train = x_train
         self.x_test = x_test
@@ -35,9 +52,7 @@ class MethodBase(object):
 
         if split and x_test is None:
             # Generate train set and test set.
-            self.x_train, self.x_test = split_data(
-                self.x_train, test_split_percentage
-            )
+            self.x_train, self.x_test = split_data(self.x_train, test_split_percentage)
             self.x_train.reset_index(drop=True, inplace=True)
             self.x_test.reset_index(drop=True, inplace=True)
 
@@ -99,10 +114,7 @@ class MethodBase(object):
                             f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
                         )
 
-                    (
-                        self.x_train,
-                        self.x_test,
-                    ) = _set_item(
+                    (self.x_train, self.x_test,) = _set_item(
                         self.x_train,
                         self.x_test,
                         column,
@@ -132,7 +144,9 @@ class MethodBase(object):
 
     def __setattr__(self, item, value):
 
-        if item not in self.__dict__ or hasattr(self, item):  # any normal attributes are handled normally
+        if item not in self.__dict__ or hasattr(
+            self, item
+        ):  # any normal attributes are handled normally
             dict.__setattr__(self, item, value)
         else:
             self.__setitem__(item, value)
@@ -144,25 +158,26 @@ class MethodBase(object):
         return new_inst
 
     @property
-    def plot_colors(self): # pragama: no cover
+    def plot_colors(self):  # pragama: no cover
         """
         Displays all plot colour names
         """
 
         from IPython.display import IFrame
 
-        IFrame('https://python-graph-gallery.com/wp-content/uploads/100_Color_names_python.png')
+        IFrame(
+            "https://python-graph-gallery.com/wp-content/uploads/100_Color_names_python.png"
+        )
 
     @property
-    def plot_colorpalettes(self): # pragma: no cover
+    def plot_colorpalettes(self):  # pragma: no cover
         """
         Displays color palette configuration guide.
         """
 
         from IPython.display import IFrame
 
-        IFrame('https://seaborn.pydata.org/tutorial/color_palettes.html')
-
+        IFrame("https://seaborn.pydata.org/tutorial/color_palettes.html")
 
     @property
     def y_train(self):
@@ -170,11 +185,7 @@ class MethodBase(object):
         Property function for the training predictor variable
         """
 
-        return (
-            self.x_train[self.target_field]
-            if self.target_field
-            else None
-        )
+        return self.x_train[self.target_field] if self.target_field else None
 
     @y_train.setter
     def y_train(self, value):
@@ -246,14 +257,7 @@ class MethodBase(object):
         """
 
         dataframes = list(
-            filter(
-                lambda x: x is not None,
-                [
-                    self.x_train,
-                    self.x_train,
-                    self.x_test,
-                ],
-            )
+            filter(lambda x: x is not None, [self.x_train, self.x_train, self.x_test,],)
         )
 
         for dataframe in dataframes:
@@ -312,16 +316,16 @@ class MethodBase(object):
             Column in the data that has the nested data.
         """
 
-        df = json_normalize(self.x_train[col], sep='_')
-        self.x_train.drop(col, axis=1, inplace=True)            
+        df = json_normalize(self.x_train[col], sep="_")
+        self.x_train.drop(col, axis=1, inplace=True)
         self.x_train = pd.concat([self.x_train, df], axis=1)
 
         if self.x_test is not None:
-            df = json_normalize(self.x_test[col], sep='_')
-            self.x_test.drop(col, axis=1, inplace=True)            
+            df = json_normalize(self.x_test[col], sep="_")
+            self.x_test.drop(col, axis=1, inplace=True)
             self.x_test = pd.concat([self.x_test, df], axis=1)
 
-        return self.copy()            
+        return self.copy()
 
     def search(self, *values, not_equal=False, replace=False):
         """
@@ -346,18 +350,14 @@ class MethodBase(object):
 
         if replace:
             if not_equal:
-                self.x_train = self.x_train[
-                    self.x_train.isin(list(values)).any(axis=1)
-                ]
+                self.x_train = self.x_train[self.x_train.isin(list(values)).any(axis=1)]
 
                 if self.x_test is not None:
                     self.x_test = self.x_test[
                         self.x_test.isin(list(values)).any(axis=1)
                     ]
             else:
-                self.x_train = self.x_train[
-                    self.x_train.isin(list(values)).any(axis=1)
-                ]
+                self.x_train = self.x_train[self.x_train.isin(list(values)).any(axis=1)]
 
                 if self.x_test is not None:
                     self.x_test = self.x_test[
@@ -404,7 +404,6 @@ class MethodBase(object):
 
         filtered_data = self.x_train.copy()
 
-
         for col in columns.keys():
             if isinstance(columns[col], list):
                 filtered_data = filtered_data[filtered_data[col].isin(columns[col])]
@@ -438,14 +437,10 @@ class MethodBase(object):
             return ValueError("Please provided columns to groupby.")
 
         if replace:
-            self.x_train = self.x_train.groupby(
-                list(groupby)
-            )
+            self.x_train = self.x_train.groupby(list(groupby))
 
             if self.x_test is not None:
-                self.x_test = self.x_test.groupby(
-                    list(groupby)
-                )
+                self.x_test = self.x_test.groupby(list(groupby))
 
             return self.copy()
         else:
@@ -789,11 +784,7 @@ class MethodBase(object):
                 "Please set the `target_field` field variable before encoding."
             )
 
-        (
-            self.x_train,
-            self.x_test,
-            self.target_mapping,
-        ) = label_encoder(
+        (self.x_train, self.x_test, self.target_mapping,) = label_encoder(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=self.target_field,
@@ -1215,12 +1206,7 @@ class MethodBase(object):
         """
 
         lineplot(
-            x,
-            y,
-            self.x_train,
-            title=title,
-            output_file=output_file,
-            **lineplot_kwargs,
+            x, y, self.x_train, title=title, output_file=output_file, **lineplot_kwargs,
         )
 
     def correlation_matrix(self, data_labels=False, hide_mirror=False, **kwargs):
@@ -1243,10 +1229,7 @@ class MethodBase(object):
         """
 
         correlation_matrix(
-            self.x_train,
-            data_labels=data_labels,
-            hide_mirror=hide_mirror,
-            **kwargs,
+            self.x_train, data_labels=data_labels, hide_mirror=hide_mirror, **kwargs,
         )
 
     def pairplot(self, kind="scatter", diag_kind="auto", hue=None, **kwargs):
@@ -1288,11 +1271,7 @@ class MethodBase(object):
             hue = hue
 
         pairplot(
-            self.x_train,
-            kind=kind,
-            diag_kind=diag_kind,
-            hue=hue,
-            **kwargs,
+            self.x_train, kind=kind, diag_kind=diag_kind, hue=hue, **kwargs,
         )
 
     def jointplot(self, x: str, y: str, kind="scatter", **kwargs):

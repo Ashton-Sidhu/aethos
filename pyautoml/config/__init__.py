@@ -7,7 +7,7 @@ __all__ = [
     "options",
     "cfg",
     "shell",
-    "technique_reason_repo"
+    "technique_reason_repo",
 ]
 
 from . import config
@@ -20,8 +20,4 @@ from .config import (
     set_option,
 )
 
-from .user_config import (
-    cfg,
-    shell,
-    technique_reason_repo
-)
+from .user_config import cfg, shell, technique_reason_repo

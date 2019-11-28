@@ -16,9 +16,13 @@ from bokeh.plotting import figure, output_file
 
 from pyautoml.config.config import _global_config
 from pyautoml.feature_engineering.util import pca
-from pyautoml.modelling.constants import (CLASS_METRICS_DESC,
-                                          INTERPRET_EXPLAINERS, PROBLEM_TYPE,
-                                          REG_METRICS_DESC, SHAP_LEARNERS)
+from pyautoml.modelling.constants import (
+    CLASS_METRICS_DESC,
+    INTERPRET_EXPLAINERS,
+    PROBLEM_TYPE,
+    REG_METRICS_DESC,
+    SHAP_LEARNERS,
+)
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.modelling.util import to_pickle
 from pyautoml.visualizations.visualize import *
@@ -698,9 +702,7 @@ class ClassificationModel(ModelBase):
         self.features = self.x_test.columns
 
         if hasattr(model, "predict_proba"):
-            self.probabilities = model.predict_proba(
-                model_object.x_test
-            )
+            self.probabilities = model.predict_proba(model_object.x_test)
 
     def accuracy(self, **kwargs):
         """
@@ -1024,14 +1026,18 @@ class ClassificationModel(ModelBase):
         }
 
         metric_table = pd.DataFrame(
-            index=metric_list.keys(), columns=[self.model_name], data=metric_list.values()
+            index=metric_list.keys(),
+            columns=[self.model_name],
+            data=metric_list.values(),
         )
-        metric_table["Description"] = [CLASS_METRICS_DESC[x] for x in metric_table.index]
+        metric_table["Description"] = [
+            CLASS_METRICS_DESC[x] for x in metric_table.index
+        ]
 
-        pd.set_option('display.max_colwidth', -1)
+        pd.set_option("display.max_colwidth", -1)
 
-        if not metrics and _global_config['project_metrics']: # pragma: no cover
-            filt_metrics = _global_config['project_metrics']
+        if not metrics and _global_config["project_metrics"]:  # pragma: no cover
+            filt_metrics = _global_config["project_metrics"]
         else:
             filt_metrics = list(metrics) if metrics else metric_table.index
 
@@ -1344,7 +1350,9 @@ class RegressionModel(ModelBase):
         try:
             return sklearn.metrics.mean_squared_log_error(self.y_test, self.y_pred)
         except ValueError as e:
-            warnings.warn('Mean Squared Logarithmic Error cannot be used when targets contain negative values.')
+            warnings.warn(
+                "Mean Squared Logarithmic Error cannot be used when targets contain negative values."
+            )
             return -999
 
     def median_abs_error(self, **kwargs):
@@ -1459,14 +1467,16 @@ class RegressionModel(ModelBase):
         }
 
         metric_table = pd.DataFrame(
-            index=metric_list.keys(), columns=[self.model_name], data=metric_list.values()
+            index=metric_list.keys(),
+            columns=[self.model_name],
+            data=metric_list.values(),
         )
         metric_table["Description"] = [REG_METRICS_DESC[x] for x in metric_table.index]
-        
-        pd.set_option('display.max_colwidth', -1)
 
-        if not metrics and _global_config['project_metrics']: # pragma: no cover
-            filt_metrics = _global_config['project_metrics']
+        pd.set_option("display.max_colwidth", -1)
+
+        if not metrics and _global_config["project_metrics"]:  # pragma: no cover
+            filt_metrics = _global_config["project_metrics"]
         else:
             filt_metrics = list(metrics) if metrics else metric_table.index
 
