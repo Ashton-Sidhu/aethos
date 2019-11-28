@@ -31,6 +31,7 @@ pkgs = [
     "ipywidgets",
     "qgrid",
     "python-dateutil<2.8.1",
+    "itables"
 ]
 
 

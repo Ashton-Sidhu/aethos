@@ -9,6 +9,13 @@ interactive_df_doc = """
     Valid values: False, True
 """
 
+interactive_table_doc = """
+: bool
+    Use iTable library to interact with pandas dataframe.
+    Default value is False
+    Valid values: False, True
+"""
+
 project_metric_doc = """
 : list
     Set a default project metric to evaluate models against.
@@ -74,6 +81,11 @@ def use_qgrid(key):
         else:
             qgrid.disable()
 
+def use_itable(key):
+    import itables.interactive
+    import itables.options as opt
+
+    opt.lengthMenu = [5, 10, 20, 50, 100, 200, 500]
 
 cf.register_option(
     "interactive_df",
@@ -81,6 +93,14 @@ cf.register_option(
     doc=interactive_df_doc,
     validator=is_bool,
     cb=use_qgrid,
+)
+
+cf.register_option(
+    "interactive_table",
+    default=False,
+    doc=interactive_table_doc,
+    validator=is_bool,
+    cb=use_itable,
 )
 
 cf.register_option(
