@@ -3,33 +3,16 @@ import os
 import warnings
 from pathlib import Path
 
-import xgboost as xgb
 from IPython import display
 from pathos.multiprocessing import Pool
 from pyautoml.base import MethodBase
 from pyautoml.config import technique_reason_repo, shell
-from pyautoml.modelling.default_gridsearch_params import *
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
 from pyautoml.modelling.util import (_get_cv_type, _run_models_parallel,
                                      add_to_queue, run_crossvalidation,
                                      run_gridsearch, to_pickle)
 from pyautoml.util import _input_columns, _set_item, _validate_model_name
-from sklearn.cluster import DBSCAN, AgglomerativeClustering, KMeans, MeanShift
-from sklearn.ensemble import (AdaBoostClassifier, AdaBoostRegressor,
-                              BaggingClassifier, BaggingRegressor,
-                              GradientBoostingClassifier,
-                              GradientBoostingRegressor, IsolationForest,
-                              RandomForestClassifier, RandomForestRegressor)
-from sklearn.linear_model import (BayesianRidge, ElasticNet, Lasso,
-                                  LinearRegression, LogisticRegression, Ridge,
-                                  RidgeClassifier, SGDClassifier, SGDRegressor)
-from sklearn.mixture import GaussianMixture
-from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
-from sklearn.svm import SVC, SVR, LinearSVC, LinearSVR, OneClassSVM
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from yellowbrick.cluster import KElbowVisualizer
-
 
 class Model(MethodBase):
     def __init__(
@@ -897,10 +880,14 @@ class Model(MethodBase):
             UnsupervisedModel object to view results and further analysis
         """
 
+        from sklearn.cluster import KMeans
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
         def find_optk():
+
+            from yellowbrick.cluster import KElbowVisualizer
 
             model = KMeans(**kwargs)
 
@@ -1029,6 +1016,8 @@ class Model(MethodBase):
             UnsupervisedModel object to view results and further analysis
         """
 
+        from sklearn.cluster import DBSCAN
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
@@ -1148,6 +1137,8 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and analyze results
         """
+
+        from sklearn.ensemble import IsolationForest
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -1273,6 +1264,8 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and analyze results
         """
+
+        from sklearn.svm import OneClassSVM
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -1404,6 +1397,8 @@ class Model(MethodBase):
             UnsupervisedModel object to view results and further analysis
         """
 
+        from sklearn.cluster import AgglomerativeClustering
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
@@ -1520,6 +1515,8 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
         """
+
+        from sklearn.cluster import MeanShift
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -1676,6 +1673,8 @@ class Model(MethodBase):
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
         """
+        
+        from sklearn.mixture import GaussianMixture        
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -1790,6 +1789,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+        
+        from sklearn.linear_model import LogisticRegression
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -1911,6 +1912,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+        
+        from sklearn.linear_model import RidgeClassifier
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -2089,6 +2092,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+        
+        from sklearn.linear_model import SGDClassifier
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -2203,6 +2208,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        from sklearn.ensemble import AdaBoostClassifier  
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -2332,6 +2339,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        from sklearn.ensemble import BaggingClassifier
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -2509,6 +2518,8 @@ class Model(MethodBase):
             ClassificationModel object to view results and analyze results
         """
 
+        from sklearn.ensemble import GradientBoostingClassifier
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
@@ -2677,6 +2688,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+        
+        from sklearn.ensemble import RandomForestClassifier       
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -2791,6 +2804,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+        
+        from sklearn.naive_bayes import BernoulliNB
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -2893,6 +2908,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        from sklearn.naive_bayes import GaussianNB
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -3002,6 +3019,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+        
+        from sklearn.naive_bayes import MultinomialNB
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -3174,6 +3193,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+        
+        from sklearn.tree import DecisionTreeClassifier
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -3319,6 +3340,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        from sklearn.svm import LinearSVC
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -3468,6 +3491,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+
+        from sklearn.svm import SVC
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -3647,6 +3672,8 @@ class Model(MethodBase):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
+        
+        import xgboost as xgb
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -3754,6 +3781,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        from sklearn.linear_model import LinearRegression
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -3873,6 +3902,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        from sklearn.linear_model import BayesianRidge
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -4005,6 +4036,8 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        from sklearn.linear_model import ElasticNet
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
@@ -4131,6 +4164,8 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        from sklearn.linear_model import Lasso
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
@@ -4243,6 +4278,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        from sklearn.linear_model import Ridge
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -4429,6 +4466,8 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        from sklearn.linear_model import SGDRegressor
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
@@ -4538,6 +4577,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        from sklearn.ensemble import AdaBoostRegressor
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -4660,6 +4701,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        from sklearn.ensemble import BaggingRegressor
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -4837,6 +4880,8 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        from sklearn.ensemble import GradientBoostingRegressor
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
@@ -4987,6 +5032,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        from sklearn.ensemble import RandomForestRegressor
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -5144,6 +5191,8 @@ class Model(MethodBase):
             RegressionModel object to view results and analyze results
         """
 
+        from sklearn.tree import DecisionTreeRegressor
+
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
 
@@ -5268,6 +5317,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        from sklearn.svm import LinearSVR
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -5399,6 +5450,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        from sklearn.svm import SVR
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")
@@ -5569,6 +5622,8 @@ class Model(MethodBase):
         RegressionModel
             RegressionModel object to view results and analyze results
         """
+
+        import xgboost as xgb
 
         if not _validate_model_name(self, model_name):
             raise AttributeError("Invalid model name. Please choose another one.")

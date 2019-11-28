@@ -1,6 +1,3 @@
-import os
-import sys
-
 import interpret
 import pandas as pd
 # let init-time option registration happen
