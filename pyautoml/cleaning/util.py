@@ -361,23 +361,13 @@ def replace_missing_indicator(
     """
 
     for col in list_of_cols:
-        x_train[col + "_missing"] = list(
-            map(
-                lambda x: missing_indicator if x else valid_indicator,
-                x_train[col].isnull(),
-            )
-        )
-
+        x_train[col + "_missing"] = [missing_indicator if x else valid_indicator for x in x_train[col].isnull()]
+            
         if not keep_col:
             x_train = x_train.drop([col], axis=1)
 
         if x_test is not None:
-            x_test[col + "_missing"] = list(
-                map(
-                    lambda x: missing_indicator if x else valid_indicator,
-                    x_test[col].isnull(),
-                )
-            )
+            x_test[col + "_missing"] = [missing_indicator if x else valid_indicator for x in x_test[col].isnull()]
 
             if not keep_col:
                 x_test = x_test.drop([col], axis=1)

@@ -36,14 +36,10 @@ def gensim_textrank_summarizer(
     """
 
     for col in list_of_cols:
-        x_train.loc[:, col + new_col_name] = list(
-            map(lambda x: summarize(x, **algo_kwargs), x_train[col])
-        )
+        x_train.loc[:, col + new_col_name] = [summarize(x, **algo_kwargs) for x in x_train[col]]
 
         if x_test is not None:
-            x_test.loc[:, col + new_col_name] = list(
-                map(lambda x: summarize(x, **algo_kwargs), x_test[col])
-            )
+            x_test.loc[:, col + new_col_name] = [summarize(x, **algo_kwargs) for x in x_test[col]]
 
     return x_train, x_test
 
@@ -83,14 +79,10 @@ def gensim_textrank_keywords(
     """
 
     for col in list_of_cols:
-        x_train.loc[:, col + new_col_name] = list(
-            map(lambda x: keywords(x, **algo_kwargs), x_train[col])
-        )
+        x_train.loc[:, col + new_col_name] = [keywords(x, **algo_kwargs) for x in x_train[col]]
 
         if x_test is not None:
-            x_test.loc[:, col + new_col_name] = list(
-                map(lambda x: keywords(x, **algo_kwargs), x_test[col])
-            )
+            x_test.loc[:, col + new_col_name] = [keywords(x, **algo_kwargs) for x in x_test[col]]
 
     return x_train, x_test
 

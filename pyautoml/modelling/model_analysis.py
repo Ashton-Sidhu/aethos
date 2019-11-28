@@ -1026,9 +1026,8 @@ class ClassificationModel(ModelBase):
         metric_table = pd.DataFrame(
             index=metric_list.keys(), columns=[self.model_name], data=metric_list.values()
         )
-        metric_table["Description"] = list(
-            map(lambda x: CLASS_METRICS_DESC[x], metric_table.index)
-        )
+        metric_table["Description"] = [CLASS_METRICS_DESC[x] for x in metric_table.index]
+
         pd.set_option('display.max_colwidth', -1)
 
         if not metrics and _global_config['project_metrics']: # pragma: no cover
@@ -1462,9 +1461,8 @@ class RegressionModel(ModelBase):
         metric_table = pd.DataFrame(
             index=metric_list.keys(), columns=[self.model_name], data=metric_list.values()
         )
-        metric_table["Description"] = list(
-            map(lambda x: REG_METRICS_DESC[x], metric_table.index)
-        )
+        metric_table["Description"] = [REG_METRICS_DESC[x] for x in metric_table.index]
+        
         pd.set_option('display.max_colwidth', -1)
 
         if not metrics and _global_config['project_metrics']: # pragma: no cover
