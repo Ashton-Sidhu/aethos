@@ -222,8 +222,6 @@ def to_pickle(model, name):
     else:
         path = cfg["models"]["dir"]
 
-    print(path)
-
     if not os.path.exists(path):
         os.makedirs(path)
 

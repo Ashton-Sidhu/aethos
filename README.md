@@ -212,10 +212,10 @@ This will create a full folder strucuture for you to manage data, unit tests, ex
 #### Phase 2
   - [x]	Data visualizations
   - [x]	Models and Evaluation
-  - [ ]	Reporting V2
+  - [x]	Reporting V2
 
 #### Phase 3
-  - [ ] Quality of life/addons - IPR
+  - [x] Quality of life/addons
   - [ ] Parallelization
 
 #### Phase 4
