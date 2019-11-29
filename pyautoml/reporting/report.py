@@ -28,7 +28,7 @@ class Report:
             self.filename = self.report_name
             self.docx_filename = self.filename.replace(".txt", ".docx")
 
-            if self.docx:
+            if self.docx: # pragma: no cover
                 self.doc = Document(docx=self.docx_filename)
                 style = self.doc.styles
                 if not style["Indent"]:
@@ -40,7 +40,7 @@ class Report:
                 report_dir, report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")
             )
 
-            if self.docx:
+            if self.docx: # pragma: no cover
                 self.doc = Document()
                 style = self.doc.styles.add_style("Indent", WD_STYLE_TYPE.PARAGRAPH)
                 paragraph_format = style.paragraph_format
@@ -75,7 +75,7 @@ class Report:
                     write = False
 
         if write:
-            if self.docx:
+            if self.docx: # pragma: no cover
                 self.doc.add_heading(header, level=level)
                 self.doc.save(self.docx_filename)
 
@@ -100,7 +100,7 @@ class Report:
                     write = False
 
         if write:
-            if self.docx:
+            if self.docx: # pragma: no cover
                 self.doc.add_paragraph(content, style="Indent")
                 self.doc.save(self.docx_filename)
 
@@ -190,7 +190,7 @@ class Report:
         self.write_contents("System              : {}\n".format(system))
         self.write_contents("Machine             : {}\n".format(platform.machine()))
 
-        if system == "Windows":
+        if system == "Windows": # pragma: no cover
             memory = subprocess.check_output(
                 "wmic memorychip get capacity", shell=True, universal_newlines=True
             )
@@ -206,7 +206,7 @@ class Report:
                     round(total_mem / (1024 ** 2))
                 )
             )
-        elif platform.system() == "Darwin":
+        elif platform.system() == "Darwin": # pragma: no cover
             processor = subprocess.check_output(
                 "/usr/sbin/sysctl -n machdep.cpu.brand_string",
                 shell=True,
@@ -262,7 +262,7 @@ class Report:
         self.write_header("Metrics", level=2)
         self.write_contents(df.to_string())
 
-        if self.docx:
+        if self.docx: # pragma: no cover
             t = self.doc.add_table(df.shape[0] + 1, df.shape[1])
 
             t.style = "Light List Accent 1"

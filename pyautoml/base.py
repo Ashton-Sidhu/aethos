@@ -158,7 +158,7 @@ class MethodBase(object):
         return new_inst
 
     @property
-    def plot_colors(self):  # pragama: no cover
+    def plot_colors(self):  # pragma: no cover
         """
         Displays all plot colour names
         """
