@@ -222,7 +222,9 @@ def to_pickle(model, name):
     else:
         path = cfg["models"]["dir"]
 
+    print(path)
+
     if not os.path.exists(path):
         os.makedirs(path)
 
-    pickle.dump(model, open(path + name + ".pkl", "wb"))
+    pickle.dump(model, open(os.path.join(path, name + ".pkl"), "wb"))
