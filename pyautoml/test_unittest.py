@@ -636,6 +636,86 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+    def test_missing_data(self):
+
+        int_missing_data = [[np.NaN, np.NaN, np.NaN], [0, 2, 3], [np.NaN, np.NaN, np.NaN], [np.NaN, np.NaN, np.NaN]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="",
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.missing_values
+
+        self.assertTrue(True)
+
+    def test_describe(self):
+
+        int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="",
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.describe()
+
+        self.assertTrue(True)
+
+    def test_describe_col(self):
+
+        int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="",
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        base.describe_column('col1')
+
+        self.assertTrue(True)
+
+    def test_repr(self):
+
+        int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = MethodBase(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="",
+            target_mapping=None,
+            test_split_percentage=0.5,
+        )
+
+        print(base)
+
+        self.assertTrue(True)
+        
     def test_checklist(self):
 
         int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]

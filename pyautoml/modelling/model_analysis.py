@@ -26,6 +26,7 @@ from pyautoml.modelling.constants import (
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.modelling.util import to_pickle
 from pyautoml.visualizations.visualize import *
+from pyautoml.visualizations.visualize import _make_image_dir
 
 
 class ModelBase(object):
@@ -105,7 +106,7 @@ class ModelBase(object):
 
         return sorted_features
 
-    def summary_plot(self, **summaryplot_kwargs):
+    def summary_plot(self, output_file='', **summaryplot_kwargs):
         """
         Create a SHAP summary plot, colored by feature values when they are provided.
 
@@ -113,6 +114,9 @@ class ModelBase(object):
 
         Parameters
         ----------
+        output_file: str
+            Output file name including extension (.png, .jpg, etc.) to save image as.
+
         max_display : int
             How many top features to include in the plot (default is 20, or 7 for interaction plots), by default None
             
@@ -147,7 +151,11 @@ class ModelBase(object):
             Max number of bins, by default 20
 
         **summaryplot_kwargs
-            For more info see https://shap.readthedocs.io/en/latest/#plots    
+            For more info see https://shap.readthedocs.io/en/latest/#plots
+
+        Examples
+        --------
+        >>> model.model_name.summary_plot()
         """
 
         if self.shap is None:
@@ -155,13 +163,17 @@ class ModelBase(object):
                 f"SHAP is not implemented yet for {str(type(self))}"
             )
 
-        self.shap.summary_plot(**summaryplot_kwargs)
+        self.shap.summary_plot(output_file=output_file, **summaryplot_kwargs)
+
+        if output_file and self.report:
+            self.report.write_image(output_file)
 
     def decision_plot(
         self,
         num_samples=0.6,
         sample_no=None,
         highlight_misclassified=False,
+        output_file='',
         **decisionplot_kwargs,
     ):
         """
@@ -205,6 +217,9 @@ class ModelBase(object):
 
         Parameters
         ----------
+        output_file: str
+            Output file name including extension (.png, .jpg, etc.) to save image as.
+
         num_samples : int, float, or 'all', optional
             Number of samples to display, if less than 1 it will treat it as a percentage, 'all' will include all samples
             , by default 0.6
@@ -275,10 +290,9 @@ class ModelBase(object):
         DecisionPlotResult 
             If return_objects=True (the default). Returns None otherwise.
 
-        Example
+        Examples
         --------
-        Plot two decision plots using the same feature order and x-axis.
-
+        >>> # Plot two decision plots using the same feature order and x-axis.
         >>> r = model.model_name.decision_plot()
         >>> model.model_name.decision_plot(no_sample=42, feature_order=r.feature_idx, xlim=r.xlim)
         """
@@ -294,9 +308,14 @@ class ModelBase(object):
 
             decisionplot_kwargs["highlight"] = self.shap.misclassified_values
 
-        return self.shap.decision_plot(num_samples, sample_no, **decisionplot_kwargs)
+        dp = self.shap.decision_plot(num_samples, sample_no, output_file=output_file, **decisionplot_kwargs)
 
-    def force_plot(self, sample_no=None, misclassified=False, **forceplot_kwargs):
+        if output_file and self.report:
+            self.report.write_image(output_file)
+
+        return dp
+
+    def force_plot(self, sample_no=None, misclassified=False, output_file='', **forceplot_kwargs):
         """
         Visualize the given SHAP values with an additive force layout
         
@@ -308,6 +327,9 @@ class ModelBase(object):
         misclassified : bool, optional
             True to only show the misclassified results, by default False
 
+        output_file: str
+            Output file name including extension (.png, .jpg, etc.) to save image as.
+
         link : "identity" or "logit"
             The transformation used when drawing the tick mark labels. Using logit will change log-odds numbers
             into probabilities. 
@@ -316,7 +338,7 @@ class ModelBase(object):
             Whether to use the default Javascript output, or the (less developed) matplotlib output. Using matplotlib
             can be helpful in scenarios where rendering Javascript/HTML is inconvenient. 
         
-        Example
+        Examples
         --------
         Plot two decision plots using the same feature order and x-axis.
 
@@ -337,10 +359,15 @@ class ModelBase(object):
                 self.shap.misclassified_values
             ]
 
-        return self.shap.force_plot(sample_no, **forceplot_kwargs)
+        fp = self.shap.force_plot(sample_no, output_file=output_file, **forceplot_kwargs)
+
+        if output_file and self.report:
+            self.report.write_image(output_file)
+
+        return fp
 
     def dependence_plot(
-        self, feature: str, interaction="auto", **dependenceplot_kwargs
+        self, feature: str, interaction="auto", output_file='', **dependenceplot_kwargs
     ):
         """
         A dependence plot is a scatter plot that shows the effect a single feature has on the predictions made by the mode.
@@ -363,6 +390,9 @@ class ModelBase(object):
 
         interaction : "auto", None, int, or string
             The index of the feature used to color the plot. The name of a feature can also be passed as a string. If "auto" then shap.common.approximate_interactions is used to pick what seems to be the strongest interaction (note that to find to true stongest interaction you need to compute the SHAP interaction values).
+        
+        output_file: str
+            Output file name including extension (.png, .jpg, etc.) to save image as.
 
         x_jitter : float (0 - 1)
             Adds random jitter to feature values. May increase plot readability when feature is discrete.
@@ -381,6 +411,10 @@ class ModelBase(object):
 
         cmap : str or matplotlib.colors.ColorMap 
             Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
+
+        Examples
+        --------
+        model.model_name.dependence_plot('col1')
         """
 
         if self.shap is None:
@@ -388,7 +422,12 @@ class ModelBase(object):
                 f"SHAP is not implemented yet for {str(type(self))}"
             )
 
-        self.shap.dependence_plot(feature, interaction, **dependenceplot_kwargs)
+        dp = self.shap.dependence_plot(feature, interaction, output_file=output_file, **dependenceplot_kwargs)
+
+        if output_file and self.report:
+            self.report.write_image(output_file)
+
+        return dp
 
     def shap_get_misclassified_index(self):
         """
@@ -410,6 +449,8 @@ class ModelBase(object):
 
         If you have run any other `interpret` functions, they will be included in the dashboard, otherwise all the other intrepretable methods will be included in the dashboard.
         """
+
+        warnings.simplefilter('ignore')
 
         if show:
             self.interpret.create_dashboard()
@@ -441,6 +482,8 @@ class ModelBase(object):
         show : bool, optional 
             False to not display the plot, by default True
         """
+        
+        warnings.simplefilter('ignore')
 
         dashboard = []
 
@@ -497,6 +540,8 @@ class ModelBase(object):
             False to not display the plot, by default True
         """
 
+        warnings.simplefilter('ignore')
+
         dashboard = []
 
         if method == "all":
@@ -545,6 +590,8 @@ class ModelBase(object):
         show : bool, optional 
             False to not display the plot, by default True
         """
+
+        warnings.simplefilter('ignore')
 
         dashboard = []
 
@@ -614,7 +661,7 @@ class UnsupervisedModel(ModelBase):
         else:
             return self.x_test[self.x_test[self.cluster_col] == cluster_no]
 
-    def plot_clusters(self, dim=2, reduce="pca", **kwargs):
+    def plot_clusters(self, dim=2, reduce="pca", output_file='', **kwargs):
         """
         Plots the clusters in either 2d or 3d space with each cluster point highlighted
         as a different colour.
@@ -633,8 +680,12 @@ class UnsupervisedModel(ModelBase):
         ----------
         dim : 2 or 3, optional
             Dimension of the plot, either 2 for 2d, 3 for 3d, by default 2
+
         reduce : str, optional
             Dimension reduction strategy i.e. pca, by default "pca"
+
+        output_file: str
+            Output file name including extension (.png, .jpg, etc.) to save image as.
         """
 
         if dim != 2 and dim != 3:
@@ -660,11 +711,12 @@ class UnsupervisedModel(ModelBase):
                 "1",
                 data=reduced_df,
                 color=reduced_df[self.cluster_col].tolist(),
+                output_file=output_file,
                 **kwargs,
             )
         else:
             scatterplot(
-                "0", "1", "2", data=reduced_df, color=self.cluster_col, **kwargs
+                "0", "1", "2", data=reduced_df, color=self.cluster_col, output_file=output_file, **kwargs
             )
 
 
@@ -1042,10 +1094,9 @@ class ClassificationModel(ModelBase):
             filt_metrics = list(metrics) if metrics else metric_table.index
 
         if self.report:
-            self.report.log("Metrics:\n")
-            self.report.log(metric_table.loc[filt_metrics, :].to_string())
+            self.report.write_metrics(metric_table.loc[filt_metrics, :].round(3))
 
-        return metric_table.loc[filt_metrics, :]
+        return metric_table.loc[filt_metrics, :].round(3)
 
     def confusion_matrix(
         self,
@@ -1057,6 +1108,7 @@ class ClassificationModel(ModelBase):
         cmap="Blues",
         title_fontsize="large",
         text_fontsize="medium",
+        output_file='',
     ):
         """
         Prints a confusion matrix as a heatmap.
@@ -1094,7 +1146,10 @@ class ClassificationModel(ModelBase):
             Size of the title, by default 'large'
 
         text_fontsize : str
-            Size of the text of the rest of the plot, by default 'medium'        
+            Size of the text of the rest of the plot, by default 'medium' 
+
+        output_file: str
+            Output file name including extension (.png, .jpg, etc.) to save image as.       
         """
 
         y_true = self.y_test
@@ -1161,11 +1216,14 @@ class ClassificationModel(ModelBase):
         )
         plt.show()
 
-        if self.report:
-            self.report.log("CONFUSION MATRIX:\n")
-            self.report.log(df_cm.to_string())
+        if output_file: # pragma: no cover
+            image_dir = _make_image_dir()
+            heatmap.figure.savefig(os.path.join(image_dir, output_file))
 
-    def roc_curve(self, figsize=(450, 550), output_file=""):
+            if self.report:
+                self.report.write_image(os.path.join(image_dir, output_file))
+
+    def roc_curve(self, figsize=(600, 450), output_file=""):
         """
         Plots an ROC curve and displays the ROC statistics (area under the curve).
 
@@ -1212,10 +1270,18 @@ class ClassificationModel(ModelBase):
         p.legend.location = "bottom_right"
         p.legend.click_policy = "hide"
 
-        if output_file:
-            output_file(
-                output_file + ".html", title="ROC Curve (area = {:.2f})".format(roc_auc)
-            )
+        if output_file: # pragma: no cover
+            image_dir = _make_image_dir()
+
+            if Path(output_file).suffix == '.html':
+                output_file(
+                    os.path.join(image_dir, output_file), title="ROC Curve (area = {:.2f})".format(roc_auc)
+                )
+            else:
+                bokeh.io.export_png(p, os.path.join(image_dir, output_file))
+
+            if self.report:
+                self.report.write_image(os.path.join(image_dir, output_file))
 
         bokeh.io.show(p)
 
@@ -1481,7 +1547,6 @@ class RegressionModel(ModelBase):
             filt_metrics = list(metrics) if metrics else metric_table.index
 
         if self.report:
-            self.report.log("Metrics:\n")
-            self.report.log(metric_table.loc[filt_metrics, :].to_string())
+            self.report.write_metrics(metric_table.loc[filt_metrics, :].round(3))
 
-        return metric_table.loc[filt_metrics, :]
+        return metric_table.loc[filt_metrics, :].round(3)

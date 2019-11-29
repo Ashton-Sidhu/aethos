@@ -2,8 +2,11 @@ import interpret
 import numpy as np
 import pandas as pd
 import shap
+import matplotlib.pyplot as pl
+from pyautoml.visualizations.visualize import _make_image_dir
 
 from pyautoml.modelling.constants import INTERPRET_EXPLAINERS
+import os
 
 
 class Shap(object):
@@ -24,7 +27,6 @@ class Shap(object):
                 self.x_test
             )
         elif learner == "kernel":
-
             if hasattr(self.model, "predict_proba"):
                 func = self.model.predict_proba
             else:
@@ -45,19 +47,29 @@ class Shap(object):
         # As per SHAP guidelines, test data needs to be dense for plotting functions
         self.x_test_array = self.x_test.values
 
-    def summary_plot(self, **summaryplot_kwargs):
+    def summary_plot(self, output_file='', **summaryplot_kwargs):
         """
         Plots a SHAP summary plot.
+
+        Parameters
+        ----------
+        output_file: str
+            Output file name including extension (.png, .jpg, etc.) to save image as.
         """
 
         shap.summary_plot(
             self.shap_values,
             self.x_test_array,
             feature_names=self.x_train.columns,
+            show=False,
             **summaryplot_kwargs,
         )
 
-    def decision_plot(self, num_samples=0.25, sample_no=None, **decisionplot_kwargs):
+        if output_file: # pragma: no cover
+            image_dir = _make_image_dir()
+            pl.savefig(os.path.join(image_dir, output_file))
+
+    def decision_plot(self, num_samples=0.25, sample_no=None, output_file='', **decisionplot_kwargs):
         """
         Plots a SHAP decision plot.
         
@@ -99,16 +111,23 @@ class Shap(object):
         if highlight is not None:
             highlight = highlight[samples]
 
-        return shap.decision_plot(
+        s = shap.decision_plot(
             self.expected_value,
             self.shap_values[samples],
             self.x_train.columns,
             return_objects=return_objects,
             highlight=highlight,
+            show=False,
             **decisionplot_kwargs,
         )
 
-    def force_plot(self, sample_no=None, **forceplot_kwargs):
+        if output_file: # pragma: no cover
+            image_dir = _make_image_dir()
+            pl.savefig(os.path.join(image_dir, output_file))
+
+        return s
+
+    def force_plot(self, sample_no=None, output_file='', **forceplot_kwargs):
         """
         Plots a SHAP force plot.
         """
@@ -123,14 +142,20 @@ class Shap(object):
         else:
             samples = slice(0, len(shap_values))
 
-        return shap.force_plot(
+        s = shap.force_plot(
             self.expected_value,
             shap_values[samples],
             self.x_train.columns,
             **forceplot_kwargs,
         )
 
-    def dependence_plot(self, feature, interaction=None, **dependenceplot_kwargs):
+        if output_file: # pragma: no cover
+            image_dir = _make_image_dir()
+            pl.savefig(os.path.join(image_dir, output_file))
+
+        return s
+
+    def dependence_plot(self, feature, interaction=None, output_file='', **dependenceplot_kwargs):
         """
         Plots a SHAP dependence plot.
         """
@@ -142,8 +167,13 @@ class Shap(object):
             self.shap_values,
             self.x_test,
             interaction_index=interaction,
+            show=False,
             **dependenceplot_kwargs,
         )
+
+        if output_file: # pragma: no cover
+            image_dir = _make_image_dir()
+            pl.savefig(os.path.join(image_dir, output_file))
 
     def _calculate_misclassified(self) -> list:
         """

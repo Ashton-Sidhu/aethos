@@ -71,6 +71,13 @@ project_metric_doc = """
         
         'SMAPE': 'Symmetric mean absolute percentage error. It is an accuracy measure based on percentage (or relative) errors.
     """
+    
+word_doc = """
+: bool
+    Write report in a word file
+    Default value is False
+    Valid values: False, True
+"""
 
 
 def use_qgrid(key):
@@ -109,4 +116,11 @@ cf.register_option(
 
 cf.register_option(
     "project_metrics", default=[], doc=project_metric_doc, validator=is_list
+)
+
+cf.register_option(
+    "word_report",
+    default=False,
+    doc=word_doc,
+    validator=is_bool,
 )

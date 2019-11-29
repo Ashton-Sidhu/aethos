@@ -286,7 +286,7 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
         True if model name is valid, false otherwise
     """
 
-    if hasattr(model_obj, model_name):
+    if hasattr(model_obj, model_name) and model_name not in model_obj._models:
         return False
 
     return True

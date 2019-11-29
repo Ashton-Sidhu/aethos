@@ -3,10 +3,12 @@ import platform
 import subprocess
 from datetime import datetime
 from pyautoml.config import cfg, DEFAULT_REPORT_DIR, DEFAULT_IMAGE_DIR
+from pyautoml.config.config import _global_config
 from pyautoml.util import _make_dir
 from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Inches, Pt
+import pandas as pd
 
 
 class Report:
@@ -20,7 +22,7 @@ class Report:
         _make_dir(report_dir)
 
         self.report_name = report_name
-        self.docx=True
+        self.docx = _global_config['word_report']
         
         if os.path.exists(self.report_name):
             self.filename = self.report_name
@@ -34,7 +36,7 @@ class Report:
                     paragraph_format = style.paragraph_format
                     paragraph_format.left_indent = Inches(0.25)
         else:
-            self.filename = "{}/{}{}".format(
+            self.filename = "{}/{}-{}".format(
                 report_dir, report_name, datetime.now().strftime("%d-%m-%Y_%I-%M-%S%p")
             )
 
@@ -54,7 +56,7 @@ class Report:
         else:
             self.image_dir = cfg["images"]["dir"]
 
-    def write_header(self, header: str):
+    def write_header(self, header: str, level=1):
         """
         Writes a header to a report file
         
@@ -74,7 +76,7 @@ class Report:
         
         if write:
             if self.docx:
-                self.doc.add_heading(header)
+                self.doc.add_heading(header, level=level)
                 self.doc.save(self.docx_filename)
             
             with open(self.filename, "a+") as f:
@@ -240,5 +242,26 @@ class Report:
 
         if self.docx:
             self.doc.add_picture(os.path.join(self.image_dir, name), width=Inches(6), height=Inches(4))
+
+            self.doc.save(self.docx_filename)
+
+    def write_metrics(self, df: pd.DataFrame):
+
+        self.write_header('Metrics', level=2)
+        self.write_contents(df.to_string())
+
+        if self.docx:
+            t = self.doc.add_table(df.shape[0]+1, df.shape[1])
+
+            t.style = 'Light List Accent 1'
+
+            # add the header rows.
+            for j in range(df.shape[-1]):
+                t.cell(0, j).text = df.columns[j]
+
+            # add the rest of the data frame
+            for i in range(df.shape[0]):
+                for j in range(df.shape[-1]):
+                    t.cell(i+1, j).text = str(df.values[i, j])
 
             self.doc.save(self.docx_filename)

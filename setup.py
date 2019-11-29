@@ -32,7 +32,8 @@ pkgs = [
     "qgrid",
     "python-dateutil<2.8.1",
     "itables",
-    "selenium"
+    "selenium",
+    "python-docx"
 ]
 
 

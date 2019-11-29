@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pandas_profiling
 from IPython import get_ipython
-from IPython.display import display
+from IPython.display import display, HTML
 from ipywidgets import Layout
 from pandas.io.json import json_normalize
 from pandas_summary import DataFrameSummary
@@ -140,7 +140,7 @@ class MethodBase(object):
             if hasattr(self.x_train, key):
                 return getattr(self.x_train, key)
             else:
-                raise AttributeError(e)
+                raise AttributeError()
 
     def __setattr__(self, item, value):
 
@@ -257,12 +257,15 @@ class MethodBase(object):
         """
 
         dataframes = list(
-            filter(lambda x: x is not None, [self.x_train, self.x_train, self.x_test,],)
+            filter(lambda x: x is not None, [self.x_train, self.x_test,],)
         )
 
-        for dataframe in dataframes:
+        missing_df = []
+        for ind, dataframe in enumerate(dataframes):
+            caption = 'Train set missing values.' if ind == 0 else 'Test set missing values.'
+
             if not dataframe.isnull().values.any():
-                print("No missing values!")
+                print("No missing values!") # pragma: no cover
             else:
                 total = dataframe.isnull().sum().sort_values(ascending=False)
                 percent = (
@@ -272,7 +275,22 @@ class MethodBase(object):
                     [total, percent], axis=1, keys=["Total", "Percent"]
                 )
 
-                display(missing_data.T)
+                missing_df.append(missing_data.style.format({'Percent': "{:.2%}"}).set_caption(caption))
+
+        def multi_table(table_list):
+            ''' Acceps a list of IpyTable objects and returns a table which contains each IpyTable in a cell
+            '''
+            return HTML(
+                '<table><tr style="background-color:white;">' + 
+                ''.join(['<td style=\'padding-right:25px\'>' + table._repr_html_() + '</td>' for table in table_list]) +
+                '</tr></table>'
+            )
+
+        if shell == "ZMQInteractiveShell":
+            display(multi_table(missing_df))
+        else:
+            for table in missing_df:
+                print(table)
 
     def copy(self):
         """
@@ -285,6 +303,13 @@ class MethodBase(object):
         """
 
         return copy.deepcopy(self)
+
+    def log(self, msg: str):
+        """
+        Logs notes to the report file
+        """
+
+        self.report.log(msg)
 
     def standardize_column_names(self):
         """
@@ -1018,7 +1043,7 @@ class MethodBase(object):
 
         raincloud(y, x, self.x_train, output_file=output_file, **params)
 
-        if output_file:
+        if output_file and self.report: # pragma: no cover
             self.report.write_image(output_file)
 
     def barplot(
@@ -1087,7 +1112,7 @@ class MethodBase(object):
             **barplot_kwargs,
         )
 
-        if output_file:
+        if output_file and self.report: # pragma: no cover
             self.report.write_image(output_file)
 
     def scatterplot(
@@ -1160,7 +1185,7 @@ class MethodBase(object):
             **scatterplot_kwargs,
         )
 
-        if output_file:
+        if output_file and self.report: # pragma: no cover
             self.report.write_image(output_file)
 
     def lineplot(
@@ -1231,7 +1256,7 @@ class MethodBase(object):
             x, y, self.x_train, title=title, output_file=output_file, **lineplot_kwargs,
         )
 
-        if output_file:
+        if output_file and self.report: # pragma: no cover
             self.report.write_image(output_file)
 
     def correlation_matrix(self, data_labels=False, hide_mirror=False, output_file="", **kwargs):
@@ -1261,7 +1286,7 @@ class MethodBase(object):
             self.x_train, data_labels=data_labels, hide_mirror=hide_mirror, output_file=output_file, **kwargs,
         )
 
-        if output_file:
+        if output_file and self.report: # pragma: no cover
             self.report.write_image(output_file)
 
     def pairplot(self, kind="scatter", diag_kind="auto", hue=None, output_file='', **kwargs):
@@ -1310,7 +1335,7 @@ class MethodBase(object):
             self.x_train, kind=kind, diag_kind=diag_kind, hue=hue, output_file=output_file, **kwargs,
         )
 
-        if output_file:
+        if output_file and self.report: # pragma: no cover
             self.report.write_image(output_file)
 
     def jointplot(self, x: str, y: str, kind="scatter", output_file='', **kwargs):
@@ -1363,7 +1388,7 @@ class MethodBase(object):
 
         jointplot(x=x, y=y, df=self.x_train, kind=kind, output_file=output_file, **kwargs)
         
-        if output_file:
+        if output_file and self.report: # pragma: no cover
             self.report.write_image(output_file)
 
     def histogram(self, *x, output_file='', **kwargs):
@@ -1407,5 +1432,5 @@ class MethodBase(object):
 
         histogram(list(x), data=self.x_train, output_file=output_file, **kwargs)
 
-        if output_file:
+        if output_file and self.report: # pragma: no cover
             self.report.write_image(output_file)
