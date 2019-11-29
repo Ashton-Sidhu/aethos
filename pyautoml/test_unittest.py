@@ -638,7 +638,12 @@ class Test_TestBase(unittest.TestCase):
 
     def test_missing_data(self):
 
-        int_missing_data = [[np.NaN, np.NaN, np.NaN], [0, 2, 3], [np.NaN, np.NaN, np.NaN], [np.NaN, np.NaN, np.NaN]]
+        int_missing_data = [
+            [np.NaN, np.NaN, np.NaN],
+            [0, 2, 3],
+            [np.NaN, np.NaN, np.NaN],
+            [np.NaN, np.NaN, np.NaN],
+        ]
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
@@ -692,7 +697,7 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.describe_column('col1')
+        base.describe_column("col1")
 
         self.assertTrue(True)
 
@@ -715,7 +720,7 @@ class Test_TestBase(unittest.TestCase):
         print(base)
 
         self.assertTrue(True)
-        
+
     def test_checklist(self):
 
         int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]

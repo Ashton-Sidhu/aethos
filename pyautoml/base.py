@@ -262,10 +262,12 @@ class MethodBase(object):
 
         missing_df = []
         for ind, dataframe in enumerate(dataframes):
-            caption = 'Train set missing values.' if ind == 0 else 'Test set missing values.'
+            caption = (
+                "Train set missing values." if ind == 0 else "Test set missing values."
+            )
 
             if not dataframe.isnull().values.any():
-                print("No missing values!") # pragma: no cover
+                print("No missing values!")  # pragma: no cover
             else:
                 total = dataframe.isnull().sum().sort_values(ascending=False)
                 percent = (
@@ -275,15 +277,26 @@ class MethodBase(object):
                     [total, percent], axis=1, keys=["Total", "Percent"]
                 )
 
-                missing_df.append(missing_data.style.format({'Percent': "{:.2%}"}).set_caption(caption))
+                missing_df.append(
+                    missing_data.style.format({"Percent": "{:.2%}"}).set_caption(
+                        caption
+                    )
+                )
 
         def multi_table(table_list):
-            ''' Acceps a list of IpyTable objects and returns a table which contains each IpyTable in a cell
-            '''
+            """ Acceps a list of IpyTable objects and returns a table which contains each IpyTable in a cell
+            """
             return HTML(
-                '<table><tr style="background-color:white;">' + 
-                ''.join(['<td style=\'padding-right:25px\'>' + table._repr_html_() + '</td>' for table in table_list]) +
-                '</tr></table>'
+                '<table><tr style="background-color:white;">'
+                + "".join(
+                    [
+                        "<td style='padding-right:25px'>"
+                        + table._repr_html_()
+                        + "</td>"
+                        for table in table_list
+                    ]
+                )
+                + "</tr></table>"
             )
 
         if shell == "ZMQInteractiveShell":
@@ -1043,7 +1056,7 @@ class MethodBase(object):
 
         raincloud(y, x, self.x_train, output_file=output_file, **params)
 
-        if output_file and self.report: # pragma: no cover
+        if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
     def barplot(
@@ -1112,7 +1125,7 @@ class MethodBase(object):
             **barplot_kwargs,
         )
 
-        if output_file and self.report: # pragma: no cover
+        if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
     def scatterplot(
@@ -1185,7 +1198,7 @@ class MethodBase(object):
             **scatterplot_kwargs,
         )
 
-        if output_file and self.report: # pragma: no cover
+        if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
     def lineplot(
@@ -1256,10 +1269,12 @@ class MethodBase(object):
             x, y, self.x_train, title=title, output_file=output_file, **lineplot_kwargs,
         )
 
-        if output_file and self.report: # pragma: no cover
+        if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
-    def correlation_matrix(self, data_labels=False, hide_mirror=False, output_file="", **kwargs):
+    def correlation_matrix(
+        self, data_labels=False, hide_mirror=False, output_file="", **kwargs
+    ):
         """
         Plots a correlation matrix of all the numerical variables.
 
@@ -1283,13 +1298,19 @@ class MethodBase(object):
         """
 
         correlation_matrix(
-            self.x_train, data_labels=data_labels, hide_mirror=hide_mirror, output_file=output_file, **kwargs,
+            self.x_train,
+            data_labels=data_labels,
+            hide_mirror=hide_mirror,
+            output_file=output_file,
+            **kwargs,
         )
 
-        if output_file and self.report: # pragma: no cover
+        if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
-    def pairplot(self, kind="scatter", diag_kind="auto", hue=None, output_file='', **kwargs):
+    def pairplot(
+        self, kind="scatter", diag_kind="auto", hue=None, output_file="", **kwargs
+    ):
         """
         Plots pairplots of the variables from the training data.
 
@@ -1332,13 +1353,18 @@ class MethodBase(object):
             hue = hue
 
         pairplot(
-            self.x_train, kind=kind, diag_kind=diag_kind, hue=hue, output_file=output_file, **kwargs,
+            self.x_train,
+            kind=kind,
+            diag_kind=diag_kind,
+            hue=hue,
+            output_file=output_file,
+            **kwargs,
         )
 
-        if output_file and self.report: # pragma: no cover
+        if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
-    def jointplot(self, x: str, y: str, kind="scatter", output_file='', **kwargs):
+    def jointplot(self, x: str, y: str, kind="scatter", output_file="", **kwargs):
         """
         Plots joint plots of 2 different variables.
 
@@ -1386,12 +1412,14 @@ class MethodBase(object):
         >>> clean.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        jointplot(x=x, y=y, df=self.x_train, kind=kind, output_file=output_file, **kwargs)
-        
-        if output_file and self.report: # pragma: no cover
+        jointplot(
+            x=x, y=y, df=self.x_train, kind=kind, output_file=output_file, **kwargs
+        )
+
+        if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
-    def histogram(self, *x, output_file='', **kwargs):
+    def histogram(self, *x, output_file="", **kwargs):
         """
         Plots a histogram of the given column(s).
 
@@ -1432,5 +1460,5 @@ class MethodBase(object):
 
         histogram(list(x), data=self.x_train, output_file=output_file, **kwargs)
 
-        if output_file and self.report: # pragma: no cover
+        if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)

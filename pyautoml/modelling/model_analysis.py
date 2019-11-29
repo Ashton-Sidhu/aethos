@@ -106,7 +106,7 @@ class ModelBase(object):
 
         return sorted_features
 
-    def summary_plot(self, output_file='', **summaryplot_kwargs):
+    def summary_plot(self, output_file="", **summaryplot_kwargs):
         """
         Create a SHAP summary plot, colored by feature values when they are provided.
 
@@ -173,7 +173,7 @@ class ModelBase(object):
         num_samples=0.6,
         sample_no=None,
         highlight_misclassified=False,
-        output_file='',
+        output_file="",
         **decisionplot_kwargs,
     ):
         """
@@ -308,14 +308,18 @@ class ModelBase(object):
 
             decisionplot_kwargs["highlight"] = self.shap.misclassified_values
 
-        dp = self.shap.decision_plot(num_samples, sample_no, output_file=output_file, **decisionplot_kwargs)
+        dp = self.shap.decision_plot(
+            num_samples, sample_no, output_file=output_file, **decisionplot_kwargs
+        )
 
         if output_file and self.report:
             self.report.write_image(output_file)
 
         return dp
 
-    def force_plot(self, sample_no=None, misclassified=False, output_file='', **forceplot_kwargs):
+    def force_plot(
+        self, sample_no=None, misclassified=False, output_file="", **forceplot_kwargs
+    ):
         """
         Visualize the given SHAP values with an additive force layout
         
@@ -359,7 +363,9 @@ class ModelBase(object):
                 self.shap.misclassified_values
             ]
 
-        fp = self.shap.force_plot(sample_no, output_file=output_file, **forceplot_kwargs)
+        fp = self.shap.force_plot(
+            sample_no, output_file=output_file, **forceplot_kwargs
+        )
 
         if output_file and self.report:
             self.report.write_image(output_file)
@@ -367,7 +373,7 @@ class ModelBase(object):
         return fp
 
     def dependence_plot(
-        self, feature: str, interaction="auto", output_file='', **dependenceplot_kwargs
+        self, feature: str, interaction="auto", output_file="", **dependenceplot_kwargs
     ):
         """
         A dependence plot is a scatter plot that shows the effect a single feature has on the predictions made by the mode.
@@ -422,7 +428,9 @@ class ModelBase(object):
                 f"SHAP is not implemented yet for {str(type(self))}"
             )
 
-        dp = self.shap.dependence_plot(feature, interaction, output_file=output_file, **dependenceplot_kwargs)
+        dp = self.shap.dependence_plot(
+            feature, interaction, output_file=output_file, **dependenceplot_kwargs
+        )
 
         if output_file and self.report:
             self.report.write_image(output_file)
@@ -450,7 +458,7 @@ class ModelBase(object):
         If you have run any other `interpret` functions, they will be included in the dashboard, otherwise all the other intrepretable methods will be included in the dashboard.
         """
 
-        warnings.simplefilter('ignore')
+        warnings.simplefilter("ignore")
 
         if show:
             self.interpret.create_dashboard()
@@ -482,8 +490,8 @@ class ModelBase(object):
         show : bool, optional 
             False to not display the plot, by default True
         """
-        
-        warnings.simplefilter('ignore')
+
+        warnings.simplefilter("ignore")
 
         dashboard = []
 
@@ -540,7 +548,7 @@ class ModelBase(object):
             False to not display the plot, by default True
         """
 
-        warnings.simplefilter('ignore')
+        warnings.simplefilter("ignore")
 
         dashboard = []
 
@@ -591,7 +599,7 @@ class ModelBase(object):
             False to not display the plot, by default True
         """
 
-        warnings.simplefilter('ignore')
+        warnings.simplefilter("ignore")
 
         dashboard = []
 
@@ -661,7 +669,7 @@ class UnsupervisedModel(ModelBase):
         else:
             return self.x_test[self.x_test[self.cluster_col] == cluster_no]
 
-    def plot_clusters(self, dim=2, reduce="pca", output_file='', **kwargs):
+    def plot_clusters(self, dim=2, reduce="pca", output_file="", **kwargs):
         """
         Plots the clusters in either 2d or 3d space with each cluster point highlighted
         as a different colour.
@@ -716,7 +724,13 @@ class UnsupervisedModel(ModelBase):
             )
         else:
             scatterplot(
-                "0", "1", "2", data=reduced_df, color=self.cluster_col, output_file=output_file, **kwargs
+                "0",
+                "1",
+                "2",
+                data=reduced_df,
+                color=self.cluster_col,
+                output_file=output_file,
+                **kwargs,
             )
 
 
@@ -1108,7 +1122,7 @@ class ClassificationModel(ModelBase):
         cmap="Blues",
         title_fontsize="large",
         text_fontsize="medium",
-        output_file='',
+        output_file="",
     ):
         """
         Prints a confusion matrix as a heatmap.
@@ -1216,7 +1230,7 @@ class ClassificationModel(ModelBase):
         )
         plt.show()
 
-        if output_file: # pragma: no cover
+        if output_file:  # pragma: no cover
             image_dir = _make_image_dir()
             heatmap.figure.savefig(os.path.join(image_dir, output_file))
 
@@ -1270,12 +1284,13 @@ class ClassificationModel(ModelBase):
         p.legend.location = "bottom_right"
         p.legend.click_policy = "hide"
 
-        if output_file: # pragma: no cover
+        if output_file:  # pragma: no cover
             image_dir = _make_image_dir()
 
-            if Path(output_file).suffix == '.html':
+            if Path(output_file).suffix == ".html":
                 output_file(
-                    os.path.join(image_dir, output_file), title="ROC Curve (area = {:.2f})".format(roc_auc)
+                    os.path.join(image_dir, output_file),
+                    title="ROC Curve (area = {:.2f})".format(roc_auc),
                 )
             else:
                 bokeh.io.export_png(p, os.path.join(image_dir, output_file))

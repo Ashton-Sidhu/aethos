@@ -71,7 +71,7 @@ project_metric_doc = """
         
         'SMAPE': 'Symmetric mean absolute percentage error. It is an accuracy measure based on percentage (or relative) errors.
     """
-    
+
 word_doc = """
 : bool
     Write report in a word file
@@ -119,8 +119,5 @@ cf.register_option(
 )
 
 cf.register_option(
-    "word_report",
-    default=False,
-    doc=word_doc,
-    validator=is_bool,
+    "word_report", default=False, doc=word_doc, validator=is_bool,
 )

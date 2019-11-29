@@ -47,7 +47,7 @@ class Shap(object):
         # As per SHAP guidelines, test data needs to be dense for plotting functions
         self.x_test_array = self.x_test.values
 
-    def summary_plot(self, output_file='', **summaryplot_kwargs):
+    def summary_plot(self, output_file="", **summaryplot_kwargs):
         """
         Plots a SHAP summary plot.
 
@@ -65,11 +65,13 @@ class Shap(object):
             **summaryplot_kwargs,
         )
 
-        if output_file: # pragma: no cover
+        if output_file:  # pragma: no cover
             image_dir = _make_image_dir()
             pl.savefig(os.path.join(image_dir, output_file))
 
-    def decision_plot(self, num_samples=0.25, sample_no=None, output_file='', **decisionplot_kwargs):
+    def decision_plot(
+        self, num_samples=0.25, sample_no=None, output_file="", **decisionplot_kwargs
+    ):
         """
         Plots a SHAP decision plot.
         
@@ -121,13 +123,13 @@ class Shap(object):
             **decisionplot_kwargs,
         )
 
-        if output_file: # pragma: no cover
+        if output_file:  # pragma: no cover
             image_dir = _make_image_dir()
             pl.savefig(os.path.join(image_dir, output_file))
 
         return s
 
-    def force_plot(self, sample_no=None, output_file='', **forceplot_kwargs):
+    def force_plot(self, sample_no=None, output_file="", **forceplot_kwargs):
         """
         Plots a SHAP force plot.
         """
@@ -149,13 +151,15 @@ class Shap(object):
             **forceplot_kwargs,
         )
 
-        if output_file: # pragma: no cover
+        if output_file:  # pragma: no cover
             image_dir = _make_image_dir()
             pl.savefig(os.path.join(image_dir, output_file))
 
         return s
 
-    def dependence_plot(self, feature, interaction=None, output_file='', **dependenceplot_kwargs):
+    def dependence_plot(
+        self, feature, interaction=None, output_file="", **dependenceplot_kwargs
+    ):
         """
         Plots a SHAP dependence plot.
         """
@@ -171,7 +175,7 @@ class Shap(object):
             **dependenceplot_kwargs,
         )
 
-        if output_file: # pragma: no cover
+        if output_file:  # pragma: no cover
             image_dir = _make_image_dir()
             pl.savefig(os.path.join(image_dir, output_file))
 

@@ -22,17 +22,17 @@ class Report:
         _make_dir(report_dir)
 
         self.report_name = report_name
-        self.docx = _global_config['word_report']
-        
+        self.docx = _global_config["word_report"]
+
         if os.path.exists(self.report_name):
             self.filename = self.report_name
-            self.docx_filename = self.filename.replace('.txt', '.docx')
+            self.docx_filename = self.filename.replace(".txt", ".docx")
 
             if self.docx:
                 self.doc = Document(docx=self.docx_filename)
                 style = self.doc.styles
-                if not style['Indent']:                
-                    style.add_style('Indent', WD_STYLE_TYPE.PARAGRAPH)
+                if not style["Indent"]:
+                    style.add_style("Indent", WD_STYLE_TYPE.PARAGRAPH)
                     paragraph_format = style.paragraph_format
                     paragraph_format.left_indent = Inches(0.25)
         else:
@@ -42,12 +42,12 @@ class Report:
 
             if self.docx:
                 self.doc = Document()
-                style = self.doc.styles.add_style('Indent', WD_STYLE_TYPE.PARAGRAPH)
+                style = self.doc.styles.add_style("Indent", WD_STYLE_TYPE.PARAGRAPH)
                 paragraph_format = style.paragraph_format
                 paragraph_format.left_indent = Inches(0.25)
-                self.docx_filename = self.filename + '.docx'
+                self.docx_filename = self.filename + ".docx"
 
-            self.filename += '.txt'
+            self.filename += ".txt"
 
             self.report_environtment()
 
@@ -73,12 +73,12 @@ class Report:
             with open(self.filename, "r") as f:
                 if header in f.read():
                     write = False
-        
+
         if write:
             if self.docx:
                 self.doc.add_heading(header, level=level)
                 self.doc.save(self.docx_filename)
-            
+
             with open(self.filename, "a+") as f:
                 f.write("\n" + header + "\n\n")
 
@@ -101,7 +101,7 @@ class Report:
 
         if write:
             if self.docx:
-                self.doc.add_paragraph(content, style='Indent')
+                self.doc.add_paragraph(content, style="Indent")
                 self.doc.save(self.docx_filename)
 
             with open(self.filename, "a+") as f:
@@ -198,9 +198,13 @@ class Report:
             for m in memory.split("  \r\n")[1:-1]:
                 total_mem += int(m)
 
-            self.write_contents("Processor           : {}\n".format(platform.processor()))
             self.write_contents(
-                "Memory              : {:.2f} GB\n".format(round(total_mem / (1024 ** 2)))
+                "Processor           : {}\n".format(platform.processor())
+            )
+            self.write_contents(
+                "Memory              : {:.2f} GB\n".format(
+                    round(total_mem / (1024 ** 2))
+                )
             )
         elif platform.system() == "Darwin":
             processor = subprocess.check_output(
@@ -234,26 +238,34 @@ class Report:
             )
 
         self.write_contents("CPU Count           : {}\n".format(os.cpu_count()))
-        self.write_contents("Python Version      : {}\n".format(platform.python_version()))
-        self.write_contents("Python Compiler     : {}\n".format(platform.python_compiler()))
-        self.write_contents("Python Build        : {}\n".format(platform.python_build()))
+        self.write_contents(
+            "Python Version      : {}\n".format(platform.python_version())
+        )
+        self.write_contents(
+            "Python Compiler     : {}\n".format(platform.python_compiler())
+        )
+        self.write_contents(
+            "Python Build        : {}\n".format(platform.python_build())
+        )
 
-    def write_image(self, name): # pragma: no cover
+    def write_image(self, name):  # pragma: no cover
 
         if self.docx:
-            self.doc.add_picture(os.path.join(self.image_dir, name), width=Inches(6), height=Inches(4))
+            self.doc.add_picture(
+                os.path.join(self.image_dir, name), width=Inches(6), height=Inches(4)
+            )
 
             self.doc.save(self.docx_filename)
 
     def write_metrics(self, df: pd.DataFrame):
 
-        self.write_header('Metrics', level=2)
+        self.write_header("Metrics", level=2)
         self.write_contents(df.to_string())
 
         if self.docx:
-            t = self.doc.add_table(df.shape[0]+1, df.shape[1])
+            t = self.doc.add_table(df.shape[0] + 1, df.shape[1])
 
-            t.style = 'Light List Accent 1'
+            t.style = "Light List Accent 1"
 
             # add the header rows.
             for j in range(df.shape[-1]):
@@ -262,6 +274,6 @@ class Report:
             # add the rest of the data frame
             for i in range(df.shape[0]):
                 for j in range(df.shape[-1]):
-                    t.cell(i+1, j).text = str(df.values[i, j])
+                    t.cell(i + 1, j).text = str(df.values[i, j])
 
             self.doc.save(self.docx_filename)

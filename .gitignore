@@ -123,3 +123,4 @@ datasets/
 pyautoml_reports/
 
 pyautoml_web/*/sources/*
+__init__.py

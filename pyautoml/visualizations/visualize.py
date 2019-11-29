@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 from bokeh.io import export_png
 
+
 def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **params):
     """
     Visualizes 2 columns using raincloud.
@@ -48,9 +49,10 @@ def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **p
 
     ax = pt.RainCloud(x=col, y=target_col, data=data.infer_objects(), **params)
 
-    if output_file: # pragma: no cover
+    if output_file:  # pragma: no cover
         img_dir = _make_image_dir()
         fig.savefig(os.path.join(img_dir, output_file))
+
 
 def barplot(
     x,
@@ -103,9 +105,7 @@ def barplot(
     if orient == "v":
 
         p_bar = data_copy.plot_bokeh.bar(
-            stacked=stacked,
-            alpha=alpha,
-            **barplot_kwargs,
+            stacked=stacked, alpha=alpha, **barplot_kwargs,
         )
 
     else:
@@ -113,13 +113,14 @@ def barplot(
             stacked=stacked, alpha=alpha, **barplot_kwargs
         )
 
-    if output_file: # pragma: no cover
+    if output_file:  # pragma: no cover
         img_dir = _make_image_dir()
 
-        if Path(output_file).suffix == '.html':
+        if Path(output_file).suffix == ".html":
             pandas_bokeh.output_file(os.path.join(img_dir, output_file))
         else:
             export_png(p_bar, os.path.join(img_dir, output_file))
+
 
 def scatterplot(
     x: str,
@@ -177,10 +178,10 @@ def scatterplot(
             **scatterplot_kwargs,
         )
 
-        if output_file: # pragma: no cover
+        if output_file:  # pragma: no cover
             img_dir = _make_image_dir()
 
-            if Path(output_file).suffix == '.html':
+            if Path(output_file).suffix == ".html":
                 pandas_bokeh.output_file(os.path.join(img_dir, output_file))
             else:
                 export_png(p_scatter, os.path.join(img_dir, output_file))
@@ -188,7 +189,7 @@ def scatterplot(
     else:
         fig = px.scatter_3d(data, x=x, y=y, z=z, **scatterplot_kwargs)
 
-        if output_file: # pragma: no cover
+        if output_file:  # pragma: no cover
             img_dir = _make_image_dir()
             fig.write_image(os.path.join(img_dir, output_file))
 
@@ -226,16 +227,18 @@ def lineplot(
 
     p_line = data_copy.plot_bokeh.line(title=title, xlabel=xlabel, **lineplot_kwargs)
 
-    if output_file: # pragma: no cover
+    if output_file:  # pragma: no cover
         img_dir = _make_image_dir()
 
-        if Path(output_file).suffix == '.html':
+        if Path(output_file).suffix == ".html":
             pandas_bokeh.output_file(os.path.join(img_dir, output_file))
         else:
             export_png(p_line, os.path.join(img_dir, output_file))
 
 
-def correlation_matrix(df, data_labels=False, hide_mirror=False, output_file='', **kwargs):
+def correlation_matrix(
+    df, data_labels=False, hide_mirror=False, output_file="", **kwargs
+):
     """
     Plots a correlation matrix.
     
@@ -280,13 +283,15 @@ def correlation_matrix(df, data_labels=False, hide_mirror=False, output_file='',
         **kwargs,
     )
 
-    if output_file: # pragma: no cover
+    if output_file:  # pragma: no cover
         img_dir = _make_image_dir()
         fig.savefig(os.path.join(img_dir, output_file))
 
 
 # TODO: Make pair plots customizable using PairGrid
-def pairplot(df, kind="scatter", diag_kind="auto", hue=None, output_file=None, **kwargs):
+def pairplot(
+    df, kind="scatter", diag_kind="auto", hue=None, output_file=None, **kwargs
+):
     """
     Plots pairplots of the variables in the DataFrame
     
@@ -314,7 +319,7 @@ def pairplot(df, kind="scatter", diag_kind="auto", hue=None, output_file=None, *
         df, kind=kind, diag_kind=diag_kind, hue=hue, palette=palette, **kwargs
     )
 
-    if output_file: # pragma: no cover
+    if output_file:  # pragma: no cover
         img_dir = _make_image_dir()
         g.savefig(os.path.join(img_dir, output_file))
 
@@ -353,9 +358,9 @@ def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
         stats.pearsonr
     )
 
-    if output_file: # pragma: no cover
+    if output_file:  # pragma: no cover
         img_dir = _make_image_dir()
-        g.savefig(os.path.join(img_dir, output_file))    
+        g.savefig(os.path.join(img_dir, output_file))
 
 
 def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
@@ -386,11 +391,12 @@ def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
 
         plt.legend()
 
-    if output_file: # pragma: no cover
+    if output_file:  # pragma: no cover
         img_dir = _make_image_dir()
-        g.figure.savefig(os.path.join(img_dir, output_file))  
+        g.figure.savefig(os.path.join(img_dir, output_file))
 
-def _make_image_dir(): # pragma: no cover
+
+def _make_image_dir():  # pragma: no cover
 
     if not cfg["images"]["dir"]:
         image_dir = DEFAULT_IMAGE_DIR
