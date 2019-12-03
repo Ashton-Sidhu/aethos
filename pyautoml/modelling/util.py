@@ -9,8 +9,10 @@ from pathlib import Path
 from pathos.multiprocessing import ProcessingPool
 from pyautoml.config import cfg, DEFAULT_MODEL_DIR
 from pyautoml.util import _make_dir
+from pyautoml.visualizations.visualize import _make_image_dir
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
+import matplotlib.pyplot as plt
 
 
 def add_to_queue(model_function):
@@ -84,7 +86,7 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
     return model
 
 
-def run_crossvalidation(model, x_train, y_train, cv=5, scoring="accuracy"):
+def run_crossvalidation(model, x_train, y_train, cv=5, scoring="accuracy", report=None, model_name=None):
     """
     Runs cross validation on a certain model.
     
@@ -106,13 +108,22 @@ def run_crossvalidation(model, x_train, y_train, cv=5, scoring="accuracy"):
         Scoring method, by default 'accuracy'
     """
 
-    visualizer_scores = CVScores(model, cv=cv, scoring=scoring, size=(600, 450))
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,5))
+    visualizer_scores = CVScores(model, cv=cv, scoring=scoring, ax=axes[0])
     visualizer_scores.fit(x_train, y_train)
-    visualizer_scores.show()
+    visualizer_scores.finalize()
 
-    visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring, size=(600, 450))
+
+    visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring, ax=axes[1])
     visualizer_lcurve.fit(x_train, y_train)
+    visualizer_lcurve.finalize()
+    
+    visualizer_scores.show()
     visualizer_lcurve.show()
+
+    if report: # pragma: no cover
+        imgdir = _make_image_dir()
+        fig.savefig(os.path.join(imgdir, model_name))
 
 
 def _run_models_parallel(model_obj):

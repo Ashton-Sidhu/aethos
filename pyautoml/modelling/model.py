@@ -19,6 +19,8 @@ from pyautoml.modelling.util import (
 )
 from pyautoml.util import _input_columns, _set_item, _validate_model_name
 
+warnings.simplefilter('ignore', FutureWarning)
+
 
 class Model(MethodBase):
     def __init__(
@@ -5516,11 +5518,12 @@ class Model(MethodBase):
 
         if cv:
             cv_scores = run_crossvalidation(
-                model, self.x_train, self.y_train, cv=cv, scoring=score,
+                model, self.x_train, self.y_train, cv=cv, scoring=score, report=self.report, model_name=model_name,
             )
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
-            return
+            if not run:
+                return
 
         if gridsearch:
             cv = cv if cv else 5
@@ -5573,11 +5576,12 @@ class Model(MethodBase):
 
         if cv:
             cv_scores = run_crossvalidation(
-                model, self.x_train, self.y_train, cv=cv, scoring=score,
+                model, self.x_train, self.y_train, cv=cv, scoring=score, report=self.report, model_name=model_name,
             )
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
-            return
+            if not run:
+                return
 
         if gridsearch:
 
