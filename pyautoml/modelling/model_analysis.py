@@ -1288,10 +1288,9 @@ class ClassificationModel(ModelBase):
 
         if self.multiclass:
             raise NotImplementedError('ROC Curve not implemented for multiclassification problems yet.')
-        
-        roc_auc = self.roc_auc()
-
         else:
+            roc_auc = self.roc_auc()
+            
             roc_plot = sklearn.metrics.plot_roc_curve(self.model, self.x_test, self.y_test)
             roc_plot.ax_.set_xlabel('False Positive Rate or (1 - Specifity)')
             roc_plot.ax_.set_ylabel('True Positive Rate or (Sensitivity)')
