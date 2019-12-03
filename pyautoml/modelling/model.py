@@ -2672,6 +2672,12 @@ class Model(MethodBase):
 
             Note that these weights will be multiplied with sample_weight (passed through the fit method) if sample_weight is specified.
 
+        ccp_alphanon-negative : float, optional (default=0.0)
+            Complexity parameter used for Minimal Cost-Complexity Pruning.
+            The subtree with the largest cost complexity that is smaller than ccp_alpha will be chosen.
+            By default, no pruning is performed.
+            See Minimal Cost-Complexity Pruning for details.
+
         Returns
         -------
         ClassificationModel
@@ -3176,6 +3182,12 @@ class Model(MethodBase):
             Whether to presort the data to speed up the finding of best splits in fitting.
             For the default settings of a decision tree on large datasets, setting this to true may slow down the training process.
             When using either a smaller dataset or a restricted depth, this may speed up the training.
+
+        ccp_alphanon-negative : float, optional (default=0.0)
+            Complexity parameter used for Minimal Cost-Complexity Pruning.
+            The subtree with the largest cost complexity that is smaller than ccp_alpha will be chosen.
+            By default, no pruning is performed.
+            See Minimal Cost-Complexity Pruning for details.
 
         Returns
         -------
@@ -5016,6 +5028,12 @@ class Model(MethodBase):
         oob_score : bool (default=False)
             Whether to use out-of-bag samples to estimate the generalization accuracy.
 
+        ccp_alphanon-negative : float, optional (default=0.0)
+            Complexity parameter used for Minimal Cost-Complexity Pruning.
+            The subtree with the largest cost complexity that is smaller than ccp_alpha will be chosen.
+            By default, no pruning is performed.
+            See Minimal Cost-Complexity Pruning for details.
+
         Returns
         -------
         RegressionModel
@@ -5173,6 +5191,12 @@ class Model(MethodBase):
             Whether to presort the data to speed up the finding of best splits in fitting.
             For the default settings of a decision tree on large datasets, setting this to true may slow down the training process.
             When using either a smaller dataset or a restricted depth, this may speed up the training.
+
+        ccp_alphanon-negative : float, optional (default=0.0)
+            Complexity parameter used for Minimal Cost-Complexity Pruning.
+            The subtree with the largest cost complexity that is smaller than ccp_alpha will be chosen.
+            By default, no pruning is performed.
+            See Minimal Cost-Complexity Pruning for details.
 
         Returns
         -------

@@ -4,15 +4,12 @@ import warnings
 from collections import OrderedDict
 from itertools import compress
 
-import bokeh
 import interpret
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import sklearn
-from bokeh.models import BoxSelectTool
-from bokeh.plotting import figure, output_file
 
 from pyautoml.config.config import _global_config
 from pyautoml.feature_engineering.util import pca
@@ -748,6 +745,8 @@ class ClassificationModel(ModelBase):
 
         self.probabilities = None
         self.target_mapping = model_object.target_mapping
+        self.multiclass = len(np.unique(list(self.y_train) + list(self.y_test))) > 2
+
 
         self.y_pred = (
             model_object.x_train_results[predictions_col]
@@ -827,11 +826,14 @@ class ClassificationModel(ModelBase):
             ROC AUC Score
         """
 
-        fpr, tpr, thresholds = sklearn.metrics.roc_curve(
-            self.y_test, self.y_pred, **kwargs
-        )
+        multi_class = kwargs.pop('multi_class', 'ovr')
 
-        return sklearn.metrics.auc(fpr, tpr, **kwargs)
+        if self.multiclass:
+            roc_auc = sklearn.metrics.roc_auc_score(self.y_test, self.probabilities, multi_class=multi_class, **kwargs)
+        else:
+            roc_auc = sklearn.metrics.roc_auc_score(self.y_test, self.y_pred, **kwargs)
+
+        return roc_auc
 
     def zero_one_loss(self, **kwargs):
         """
@@ -861,7 +863,12 @@ class ClassificationModel(ModelBase):
             Recall
         """
 
-        return sklearn.metrics.recall_score(self.y_test, self.y_pred, **kwargs)
+        avg = kwargs.pop('average', 'macro')
+
+        if self.multiclass:
+            return sklearn.metrics.recall_score(self.y_test, self.y_pred, average=avg, **kwargs)
+        else:
+            return sklearn.metrics.recall_score(self.y_test, self.y_pred, **kwargs)
 
     def precision(self, **kwargs):
         """
@@ -877,7 +884,12 @@ class ClassificationModel(ModelBase):
             Precision
         """
 
-        return sklearn.metrics.precision_score(self.y_test, self.y_pred, **kwargs)
+        avg = kwargs.pop('average', 'macro')
+
+        if self.multiclass:
+            return sklearn.metrics.precision_score(self.y_test, self.y_pred, average=avg, **kwargs)
+        else:
+            return sklearn.metrics.precision_score(self.y_test, self.y_pred, **kwargs)
 
     def matthews_corr_coef(self, **kwargs):
         """
@@ -925,7 +937,12 @@ class ClassificationModel(ModelBase):
             Jaccard Score
         """
 
-        return sklearn.metrics.jaccard_score(self.y_test, self.y_pred, **kwargs)
+        avg = kwargs.pop('average', 'macro')
+
+        if self.multiclass:
+            return sklearn.metrics.jaccard_score(self.y_test, self.y_pred, average=avg, **kwargs)
+        else:
+            return sklearn.metrics.jaccard_score(self.y_test, self.y_pred, **kwargs)
 
     def hinge_loss(self, **kwargs):
         """
@@ -973,7 +990,12 @@ class ClassificationModel(ModelBase):
             Fbeta score
         """
 
-        return sklearn.metrics.fbeta_score(self.y_test, self.y_pred, beta, **kwargs)
+        avg = kwargs.pop('average', 'macro')
+
+        if self.multiclass:
+            return sklearn.metrics.fbeta_score(self.y_test, self.y_pred, beta, average=avg, **kwargs)
+        else:
+            return sklearn.metrics.fbeta_score(self.y_test, self.y_pred, beta, **kwargs)
 
     def f1(self, **kwargs):
         """
@@ -988,8 +1010,12 @@ class ClassificationModel(ModelBase):
         float
             F1 Score
         """
+        avg = kwargs.pop('average', 'macro')
 
-        return sklearn.metrics.f1_score(self.y_test, self.y_pred, **kwargs)
+        if self.multiclass:
+            return sklearn.metrics.f1_score(self.y_test, self.y_pred, average=avg, **kwargs)
+        else:
+            return sklearn.metrics.f1_score(self.y_test, self.y_pred, **kwargs)
 
     def cohen_kappa(self, **kwargs):
         """
@@ -1016,17 +1042,24 @@ class ClassificationModel(ModelBase):
         
         The Brier score is appropriate for binary and categorical outcomes that can be structured as true or false,
         but is inappropriate for ordinal variables which can take on three or more values (this is because the Brier score assumes that all possible outcomes are equivalently “distant” from one another)
+
         Returns
         -------
         float
             Brier loss
         """
 
+        if self.multiclass:
+            warnings.warn('Brier Loss can only be used for binary classification.')
+            return -999
+
         return sklearn.metrics.brier_score_loss(self.y_test, self.y_pred, **kwargs)
 
     def metrics(self, *metrics):
         """
         Measures how well your model performed against certain metrics.
+
+        For multiclassification problems, the 'macro' average is used.
 
         If a project metrics has been specified, it will display those metrics, otherwise it will display the specified metrics or all metrics.
 
@@ -1237,68 +1270,42 @@ class ClassificationModel(ModelBase):
             if self.report:
                 self.report.write_image(os.path.join(image_dir, output_file))
 
-    def roc_curve(self, figsize=(600, 450), output_file=""):
+    def roc_curve(self, title=True, output_file=""):
         """
         Plots an ROC curve and displays the ROC statistics (area under the curve).
 
         Parameters
         ----------
         figsize : tuple(int, int), optional
-            Figure size, by default (450,550)
+            Figure size, by default (600,450)
+
+        title : bool
+            Whether to display title, by default True
 
         output_file : str, optional
             If a name is provided save the plot to an html file, by default ''
         """
 
-        if len(np.unique(list(self.y_train) + list(self.y_test))) > 2:
-            raise NotImplementedError(
-                "ROC Curve is currently not implemented for multiclassification problems."
-            )
+        if self.multiclass:
+            raise NotImplementedError('ROC Curve not implemented for multiclassification problems yet.')
+        
+        roc_auc = self.roc_auc()
 
-        y_true = self.y_test
-        y_pred = self.y_pred
-
-        fpr, tpr, thresholds = sklearn.metrics.roc_curve(y_true, y_pred)
-        roc_auc = sklearn.metrics.roc_auc_score(y_true, y_pred)
-
-        step = 1 / (len(fpr) - 1)
-        random = np.arange(0, 1 + step, step)
-
-        p = figure(
-            plot_width=figsize[0],
-            plot_height=figsize[1],
-            title="ROC Curve (Area = {:.2f})".format(roc_auc),
-            x_range=[0, 1],
-            y_range=[0, 1],
-            x_axis_label="False Positive Rate or (1 - Specifity)",
-            y_axis_label="True Positive Rate or (Sensitivity)",
-            tooltips=[("False Positive Rate", "$x"), ("True Positve Rate", "$y")],
-            tools="pan,wheel_zoom,tap,box_zoom,reset",
-            active_drag="box_zoom",
-            active_scroll="wheel_zoom",
-        )
-
-        p.line(fpr, tpr, color="blue", alpha=0.8, legend="ROC")
-        p.line(random, random, color="orange", line_dash="dashed", legend="Baseline")
-
-        p.legend.location = "bottom_right"
-        p.legend.click_policy = "hide"
+        else:
+            roc_plot = sklearn.metrics.plot_roc_curve(self.model, self.x_test, self.y_test)
+            roc_plot.ax_.set_xlabel('False Positive Rate or (1 - Specifity)')
+            roc_plot.ax_.set_ylabel('True Positive Rate or (Sensitivity)')
+            if title:
+                roc_plot.figure_.suptitle('ROC Curve (area = {:.2f})'.format(roc_auc))
 
         if output_file:  # pragma: no cover
             image_dir = _make_image_dir()
-
-            if Path(output_file).suffix == ".html":
-                output_file(
-                    os.path.join(image_dir, output_file),
-                    title="ROC Curve (area = {:.2f})".format(roc_auc),
-                )
-            else:
-                bokeh.io.export_png(p, os.path.join(image_dir, output_file))
+            roc_plot.figure_.savefig(os.path.join(image_dir, output_file))            
 
             if self.report:
                 self.report.write_image(os.path.join(image_dir, output_file))
 
-        bokeh.io.show(p)
+        return roc_plot
 
     def classification_report(self):
         """
