@@ -168,13 +168,11 @@ class Model(MethodBase):
 
     def __repr__(self):
 
-        if shell == "ZMQInteractiveShell":
+        return self._train_result_data.to_string()
 
-            display(self._train_result_data.head())  # Hack for jupyter notebooks
-
-            return ""
-        else:
-            return str(self._train_result_data.head())
+    def _repr_html_(self):
+        
+        return self._train_result_data.head().to_html(show_dimensions=True, notebook=True)
 
     @property
     def y_train(self):
