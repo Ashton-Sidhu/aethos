@@ -67,7 +67,7 @@ class MethodBase(object):
         return self.x_train.to_string()
 
     def _repr_html_(self):
-        
+
         return self.x_train.head().to_html(show_dimensions=True, notebook=True)
 
     def __getitem__(self, column):

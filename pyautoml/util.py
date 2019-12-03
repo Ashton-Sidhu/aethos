@@ -95,7 +95,7 @@ def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
 
     if target:
         target_mapping = dict(
-            zip(range(len(label_encode.classes_)) , label_encode.classes_)
+            zip(range(len(label_encode.classes_)), label_encode.classes_)
         )
 
     return x_train, x_test, target_mapping
