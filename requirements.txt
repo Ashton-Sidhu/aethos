@@ -19,7 +19,6 @@ ipython
 interpret
 scikit_learn
 PyYAML
-impyute
 spacy
 xgboost
 qgrid

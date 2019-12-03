@@ -16,9 +16,8 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from impyute.imputation.cs import fast_knn
 from pyautoml.util import drop_replace_columns
-from sklearn.impute import MissingIndicator
+from sklearn.impute import MissingIndicator, KNNImputer
 
 
 def remove_columns_threshold(x_train, x_test=None, threshold=0.5):
@@ -213,7 +212,7 @@ def replace_missing_knn(x_train, x_test=None, **knn_kwargs):
     x_test: Dataframe or array like - 2d
         Testing dataset, by default None.
 
-    k : int, optional
+    n_neighbors : int, optional
         Number of rows around the missing data to look at, by default 5
     
     Returns
@@ -224,17 +223,17 @@ def replace_missing_knn(x_train, x_test=None, **knn_kwargs):
     Returns 2 Dataframes if x_test is provided.
     """
 
-    neighbors = knn_kwargs.pop("k", 5)
-
+    neighbors = knn_kwargs.pop("n_neighbors", 5)
     columns = x_train.columns
+    knn = KNNImputer(n_neighbors=neighbors, **knn_kwargs)
 
-    train_knn_transformed = fast_knn(x_train.values, k=neighbors, **knn_kwargs)
+    train_knn_transformed = knn.fit_transform(x_train.values)
 
     if x_test is not None:
         warnings.warn(
-            "If test data does not come from the same distribution of the training data, it may lead to erroneous results."
+            "If your test data does not come from the same distribution of the training data, it may lead to erroneous results."
         )
-        test_knn_transformed = fast_knn(x_test.values, k=neighbors, **knn_kwargs)
+        test_knn_transformed = knn.fit_transform(x_test.values)
 
     return (
         pd.DataFrame(data=train_knn_transformed, columns=columns),

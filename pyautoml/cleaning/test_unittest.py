@@ -287,7 +287,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Clean(x_train=data, test_split_percentage=0.5)
-        clean.replace_missing_knn(k=4, p=2)
+        clean.replace_missing_knn(k=4)
 
         validate = np.any(clean.x_train.isnull()) and np.any(clean.x_test.isnull())
 

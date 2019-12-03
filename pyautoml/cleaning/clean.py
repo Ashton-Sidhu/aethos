@@ -613,26 +613,37 @@ class Clean(MethodBase):
         """
         Replaces missing data with data from similar records based off a distance metric.
 
-        For more info see: https://impyute.readthedocs.io/en/master/api/cross_sectional_imputation.html, fast_knn
+        For more info see: https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html#sklearn.impute.KNNImputer
         
         Parameters
         ----------
-        k : int, optional
-            Number of rows around the missing data to look at, by default 5
+        missing_values : number, string, np.nan or None, default=`np.nan`
+            The placeholder for the missing values. All occurrences of missing_values will be imputed.
 
-        eps: nonnegative float, optional
-            Return approximate nearest neighbors;
-            The kth returned value is guaranteed to be no further than (1+eps) times the distance to the real kth nearest neighbor
-        
-        p : float, 1<=p<=infinity, optional
-            Which Minkowski p-norm to use. 
-            1 is the sum-of-absolute-values Manhattan distance
-            2 is the usual Euclidean distance
-            infinity is the maximum-coordinate-difference distance
+        k : int, default=5
+            Number of neighboring samples to use for imputation.
 
-        distance_upper_bound: nonnegative float, optional
-            Return only neighbors within this distance.
-            This is used to prune tree searches, so if you are doing a series of nearest-neighbor queries, it may help to supply the distance to the nearest neighbor of the most recent point.
+        weights : {‘uniform’, ‘distance’} or callable, default=’uniform’
+            Weight function used in prediction. Possible values:
+
+                ‘uniform’ : uniform weights. All points in each neighborhood are weighted equally.
+
+                ‘distance’ : weight points by the inverse of their distance. in this case, closer neighbors of a query point will have a greater influence than neighbors which are further away.
+
+                callable : a user-defined function which accepts an array of distances, and returns an array of the same shape containing the weights.
+
+        metric : {‘nan_euclidean’} or callable, default=’nan_euclidean’
+            Distance metric for searching neighbors. Possible values:
+
+                ‘nan_euclidean’
+
+                callable : a user-defined function which conforms to the definition of _pairwise_callable(X, Y, metric, **kwds).
+                The function accepts two arrays, X and Y, and a missing_values keyword in kwds and returns a scalar distance value.
+
+        add_indicator : bool, default=False
+            If True, a MissingIndicator transform will stack onto the output of the imputer’s transform.
+            This allows a predictive estimator to account for missingness despite imputation.
+            If a feature has no missing values at fit/train time, the feature won’t appear on the missing indicator even if there are missing values at transform/test time.
 
         Returns
         -------
@@ -641,13 +652,13 @@ class Clean(MethodBase):
 
         Examples
         --------
-        clean.replace_missing_knn(k=8, p=2)
+        clean.replace_missing_knn(k=8)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["knn"]
 
         (self.x_train, self.x_test,) = util.replace_missing_knn(
-            x_train=self.x_train, x_test=self.x_test, k=k, **knn_kwargs
+            x_train=self.x_train, x_test=self.x_test, n_neighbors=k, **knn_kwargs
         )
 
         if self.report is not None:

@@ -10,7 +10,7 @@ VERSION = "0.7.0"
 pkgs = [
     "numpy",
     "pandas>=0.25",
-    "scikit-learn",
+    "scikit-learn>=0.22",
     "textblob",
     "matplotlib<3.2.0",
     "pandas_summary",
@@ -25,7 +25,6 @@ pkgs = [
     "shap",
     "interpret",
     "yellowbrick",
-    "impyute",
     "spacy",
     "xgboost",
     "ipywidgets",
