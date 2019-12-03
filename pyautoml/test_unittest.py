@@ -565,7 +565,7 @@ class Test_TestBase(unittest.TestCase):
                 "A": [1, 1, 2, 2],
                 "B": [1, 2, 3, 4],
                 "C": np.random.randn(4),
-                "D": ["B", "A", "B", "B"],
+                "D": ["Bca", "Abc", "Bca", "Bca"],
             }
         )
 
@@ -574,12 +574,12 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=False,
             target_field="D",
-            report_name="test",
+            report_name="",
             test_split_percentage=0.5,
         )
         clean.encode_target()
 
-        self.assertDictEqual(clean.target_mapping, {0: "A", 1: "B"})
+        self.assertDictEqual(clean.target_mapping, {0: "Abc", 1: "Bca"})
 
     def test_lineplot(self):
 

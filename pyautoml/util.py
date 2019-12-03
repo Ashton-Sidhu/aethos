@@ -95,9 +95,8 @@ def label_encoder(x_train, x_test=None, list_of_cols=[], target=False):
 
     if target:
         target_mapping = dict(
-            zip(x_train[list_of_cols], label_encode.inverse_transform(x_train[col]))
+            zip(range(len(label_encode.classes_)) , label_encode.classes_)
         )
-        target_mapping = OrderedDict(sorted(target_mapping.items()))
 
     return x_train, x_test, target_mapping
 

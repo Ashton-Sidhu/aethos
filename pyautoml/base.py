@@ -823,7 +823,7 @@ class MethodBase(object):
         (self.x_train, self.x_test, self.target_mapping,) = label_encoder(
             x_train=self.x_train,
             x_test=self.x_test,
-            list_of_cols=self.target_field,
+            list_of_cols=[self.target_field],
             target=True,
         )
 
