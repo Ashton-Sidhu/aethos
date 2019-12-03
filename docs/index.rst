@@ -124,7 +124,7 @@ Modelling
     model.logistic_regression(random_state=42, run=True) # Train a logistic regression model
     model.logistic_regression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42, run=True) # Running gridsearch with the best params
 
-    model.logistic_regression(cv=5, learning_curve=True) # Crossvalidates a logistic regression model and displays the scores and the learning curve
+    model.logistic_regression(cv=5) # Crossvalidates a logistic regression model and displays the scores and the learning curve
 
     model.logistic_regression(random_state=42) # Adds a logistic regression model to the queue
     model.random_forest() # Adds a random forest model to the queue

@@ -84,9 +84,7 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
     return model
 
 
-def run_crossvalidation(
-    model, x_train, y_train, cv=5, scoring="accuracy", learning_curve=False
-):
+def run_crossvalidation(model, x_train, y_train, cv=5, scoring="accuracy"):
     """
     Runs cross validation on a certain model.
     
@@ -106,28 +104,15 @@ def run_crossvalidation(
 
     scoring : str, optional
         Scoring method, by default 'accuracy'
-
-    learning_curve : bool, optional
-        If true plot learning curve, by default False
-    
-    Returns
-    -------
-    list
-        List of cross validation curves
     """
 
     visualizer_scores = CVScores(model, cv=cv, scoring=scoring, size=(600, 450))
     visualizer_scores.fit(x_train, y_train)
     visualizer_scores.show()
 
-    if learning_curve:
-        visualizer_lcurve = LearningCurve(
-            model, cv=cv, scoring=scoring, size=(600, 450)
-        )
-        visualizer_lcurve.fit(x_train, y_train)
-        visualizer_lcurve.show()
-
-    return visualizer_scores.cv_scores_
+    visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring, size=(600, 450))
+    visualizer_lcurve.fit(x_train, y_train)
+    visualizer_lcurve.show()
 
 
 def _run_models_parallel(model_obj):

@@ -171,8 +171,10 @@ class Model(MethodBase):
         return self._train_result_data.to_string()
 
     def _repr_html_(self):
-        
-        return self._train_result_data.head().to_html(show_dimensions=True, notebook=True)
+
+        return self._train_result_data.head().to_html(
+            show_dimensions=True, notebook=True
+        )
 
     @property
     def y_train(self):
@@ -369,7 +371,7 @@ class Model(MethodBase):
         list_of_cols=[],
         new_col_name="_summarized",
         model_name="model_summarize_gensim",
-        run=False,
+        run=True,
         **summarizer_kwargs,
     ):
         """
@@ -436,7 +438,7 @@ class Model(MethodBase):
         list_of_cols=[],
         new_col_name="_extracted_keywords",
         model_name="model_extracted_keywords_gensim",
-        run=False,
+        run=True,
         **keyword_kwargs,
     ):
         """
@@ -507,7 +509,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def word2vec(self, col_name, prep=False, model_name="w2v", run=False, **kwargs):
+    def Word2Vec(self, col_name, prep=False, model_name="w2v", run=True, **kwargs):
         """
         The underlying assumption of Word2Vec is that two words sharing similar contexts also share a similar meaning and consequently a similar vector representation from the model.
         For instance: "dog", "puppy" and "pup" are often used in similar situations, with similar surrounding words like "good", "fluffy" or "cute", and according to Word2Vec they will therefore share a similar vector representation.
@@ -641,7 +643,7 @@ class Model(MethodBase):
         return self._models[model_name]
 
     @add_to_queue
-    def doc2vec(self, col_name, prep=False, model_name="d2v", run=False, **kwargs):
+    def Doc2Vec(self, col_name, prep=False, model_name="d2v", run=True, **kwargs):
         """
         The underlying assumption of Word2Vec is that two words sharing similar contexts also share a similar meaning and consequently a similar vector representation from the model.
         For instance: "dog", "puppy" and "pup" are often used in similar situations, with similar surrounding words like "good", "fluffy" or "cute", and according to Word2Vec they will therefore share a similar vector representation.
@@ -772,15 +774,14 @@ class Model(MethodBase):
     ################### UNSUPERVISED MODELS ########################
 
     @add_to_queue
-    def kmeans(
+    def KMeans(
         self,
         cv=None,
         gridsearch=None,
         score="homogeneity_score",
-        learning_curve=False,
         model_name="km",
         new_col_name="kmeans_clusters",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -823,9 +824,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'homogenity_score'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "kmeans"
@@ -905,7 +903,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -914,15 +911,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def dbscan(
+    def DBScan(
         self,
         cv=None,
         gridsearch=None,
         score="homogeneity_score",
-        learning_curve=False,
         model_name="dbs",
         new_col_name="dbscan_clusters",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -961,9 +957,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'homogenity_score'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "dbscan"
@@ -1022,7 +1015,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -1031,15 +1023,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def isolation_forest(
+    def IsolationForest(
         self,
         cv=None,
         gridsearch=None,
         score="homogeneity_score",
-        learning_curve=False,
         model_name="iso_forest",
         new_col_name="iso_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -1078,9 +1069,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "iso_forest"
@@ -1145,7 +1133,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -1155,15 +1142,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def oneclass_svm(
+    def OneClassSVM(
         self,
         cv=None,
         gridsearch=None,
         score="homogeneity_score",
-        learning_curve=False,
         model_name="ocsvm",
         new_col_name="ocsvm_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -1200,9 +1186,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "ocsvm"
@@ -1271,7 +1254,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -1280,15 +1262,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def agglomerative_clustering(
+    def AgglomerativeClustering(
         self,
         cv=None,
         gridsearch=None,
         score="homogeneity_score",
-        learning_curve=False,
         model_name="agglom",
         new_col_name="agglom_clusters",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -1335,9 +1316,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'homogenity_score'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "agglom"
@@ -1403,7 +1381,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -1412,15 +1389,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def mean_shift(
+    def MeanShift(
         self,
         cv=None,
         gridsearch=None,
         score="homogeneity_score",
-        learning_curve=False,
         model_name="mshift",
         new_col_name="mshift_clusters",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -1461,9 +1437,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'homogenity_score'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "mshift"
@@ -1522,7 +1495,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -1531,15 +1503,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def gaussian_mixture_clustering(
+    def GaussianMixtureClustering(
         self,
         cv=None,
         gridsearch=None,
         score="homogeneity_score",
-        learning_curve=False,
         model_name="gm_cluster",
         new_col_name="gm_clusters",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -1586,9 +1557,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'homogenity_score'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "gm_cluster"
@@ -1681,7 +1649,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -1693,15 +1660,14 @@ class Model(MethodBase):
 
     # NOTE: This entire process may need to be reworked.
     @add_to_queue
-    def logistic_regression(
+    def LogisticRegression(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="log_reg",
         new_col_name="log_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -1742,9 +1708,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "log_reg"
@@ -1799,7 +1762,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -1809,15 +1771,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def ridge_classification(
+    def RidgeClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="ridge_cls",
         new_col_name="ridge_cls_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -1858,9 +1819,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "ridge_cls"
@@ -1921,7 +1879,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -1931,15 +1888,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def sgd_classification(
+    def SGDClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="sgd_cls",
         new_col_name="sgd_cls_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -1981,9 +1937,6 @@ class Model(MethodBase):
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
         
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
-
         model_name : str, optional
             Name for this model, by default "sgd_cls"
 
@@ -2101,7 +2054,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -2111,15 +2063,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def adaboost_classification(
+    def ADABoostClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="ada_cls",
         new_col_name="ada_cls_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -2163,9 +2114,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "ada_cls"
@@ -2217,7 +2165,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -2227,15 +2174,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def bagging_classification(
+    def BaggingClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="bag_cls",
         new_col_name="bag_cls_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -2279,9 +2225,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "bag_cls"
@@ -2348,7 +2291,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -2358,15 +2300,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def gradient_boosting_classification(
+    def GradientBoostingClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="grad_cls",
         new_col_name="grad_cls_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -2411,9 +2352,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "grad_cls"
@@ -2526,7 +2464,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -2536,15 +2473,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def random_forest_classification(
+    def RandomForestClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="rf_cls",
         new_col_name="rf_cls_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -2588,9 +2524,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "rf_cls"
@@ -2703,7 +2636,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -2713,15 +2645,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def nb_bernoulli_classification(
+    def BernoulliClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="bern",
         new_col_name="bern_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -2766,9 +2697,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "bern"
@@ -2818,7 +2746,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -2827,15 +2754,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def nb_gaussian_classification(
+    def GaussianClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="gauss",
         new_col_name="gauss_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -2876,9 +2802,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "gauss"
@@ -2922,7 +2845,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -2931,15 +2853,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def nb_multinomial_classification(
+    def MultinomialClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="multi",
         new_col_name="multi_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -2984,9 +2905,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "multi"
@@ -3033,7 +2951,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -3042,15 +2959,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def decision_tree_classification(
+    def DecisionTreeClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="dt_cls",
         new_col_name="dt_cls_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -3091,9 +3007,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "dt_cls"
@@ -3214,7 +3127,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -3224,15 +3136,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def linearsvc(
+    def LinearSVC(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="linsvc",
         new_col_name="linsvc_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -3278,9 +3189,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "linsvc"
@@ -3361,7 +3269,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -3371,15 +3278,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def svc(
+    def SVC(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="svc_cls",
         new_col_name="svc_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -3427,9 +3333,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "linsvc_cls"
@@ -3512,7 +3415,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -3522,15 +3424,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def xgboost_classification(
+    def XGBoostClassification(
         self,
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
         model_name="xgb_cls",
         new_col_name="xgb_cls_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -3577,9 +3478,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'accuracy'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "xgb_cls"
@@ -3699,7 +3597,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -3711,15 +3608,14 @@ class Model(MethodBase):
     ################### REGRESSION MODELS ########################
 
     @add_to_queue
-    def linear_regression(
+    def LinearRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="lin_reg",
         new_col_name="linreg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -3753,9 +3649,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "lin_reg"
@@ -3802,7 +3695,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -3812,15 +3704,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def bayesian_ridge_regression(
+    def BayesianRidgeRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="bayridge_reg",
         new_col_name="bayridge_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -3855,9 +3746,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "bayridge_reg"
@@ -3923,7 +3811,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -3933,15 +3820,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def elasticnet_regression(
+    def ElasticnetRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="elastic",
         new_col_name="elastic_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -3975,9 +3861,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "elastic"
@@ -4056,7 +3939,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -4066,15 +3948,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def lasso_regression(
+    def LassoRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="lasso",
         new_col_name="lasso_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -4110,9 +3991,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "lasso"
@@ -4184,7 +4062,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -4194,15 +4071,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def ridge_regression(
+    def RidgeRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="ridge_reg",
         new_col_name="ridge_reg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -4236,9 +4112,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "ridge"
@@ -4299,7 +4172,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -4309,15 +4181,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def sgd_regression(
+    def SGDRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="sgd_reg",
         new_col_name="sgd_reg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -4358,9 +4229,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "sgd_reg"
@@ -4486,7 +4354,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -4496,15 +4363,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def adaboost_regression(
+    def ADABoostRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="ada_reg",
         new_col_name="ada_reg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -4541,9 +4407,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "ada_reg"
@@ -4598,7 +4461,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -4608,15 +4470,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def bagging_regression(
+    def BaggingRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="bag_reg",
         new_col_name="bag_reg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -4653,9 +4514,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default ‘neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "bag_reg"
@@ -4722,7 +4580,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -4732,15 +4589,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def gradient_boosting_regression(
+    def GradientBoostingRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="grad_reg",
         new_col_name="grad_reg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -4777,9 +4633,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'neg_mean_squared_error'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "grad_reg"
@@ -4900,7 +4753,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -4910,15 +4762,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def random_forest_regression(
+    def RandomForestRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="rf_reg",
         new_col_name="rf_reg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -4955,9 +4806,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'neg_mean_squared_error'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "rf_reg"
@@ -5059,7 +4907,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -5069,15 +4916,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def decision_tree_regression(
+    def DecisionTreeRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="dt_reg",
         new_col_name="dt_reg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -5111,9 +4957,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'neg_mean_squared_error'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "dt_reg"
@@ -5223,7 +5066,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -5233,15 +5075,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def linearsvr(
+    def LinearSVR(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="linsvr",
         new_col_name="linsvr_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -5278,9 +5119,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'neg_mean_squared_error’
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "linsvr_cls"
@@ -5350,7 +5188,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -5360,15 +5197,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def svr(
+    def SVR(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="svr_reg",
         new_col_name="svr_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -5407,9 +5243,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'neg_mean_squared_error'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "linsvr"
@@ -5482,7 +5315,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             **kwargs,
@@ -5491,15 +5323,14 @@ class Model(MethodBase):
         return model
 
     @add_to_queue
-    def xgboost_regression(
+    def XGBoostRegression(
         self,
         cv=None,
         gridsearch=None,
         score="neg_mean_squared_error",
-        learning_curve=False,
         model_name="xgb_reg",
         new_col_name="xgb_reg_predictions",
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -5539,9 +5370,6 @@ class Model(MethodBase):
 
         score : str, optional
             Scoring metric to evaluate models, by default 'neg_mean_squared_error'
-
-        learning_curve : bool, optional
-            When running cross validation, True to display a learning curve, by default False
 
         model_name : str, optional
             Name for this model, by default "xgb_reg"
@@ -5655,7 +5483,6 @@ class Model(MethodBase):
             cv=cv,
             gridsearch=gridsearch,
             score=score,
-            learning_curve=learning_curve,
             run=run,
             verbose=verbose,
             random_state=random_state,
@@ -5676,8 +5503,7 @@ class Model(MethodBase):
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -5690,17 +5516,11 @@ class Model(MethodBase):
 
         if cv:
             cv_scores = run_crossvalidation(
-                model,
-                self.x_train,
-                self.y_train,
-                cv=cv,
-                scoring=score,
-                learning_curve=learning_curve,
+                model, self.x_train, self.y_train, cv=cv, scoring=score,
             )
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
-            if not run:
-                return cv_scores
+            return
 
         if gridsearch:
             cv = cv if cv else 5
@@ -5726,6 +5546,8 @@ class Model(MethodBase):
 
         self._models[model_name] = model_type(self, model_name, model, new_col_name)
 
+        print(model)
+
         return self._models[model_name]
 
     # TODO: Consider whether gridsearch/cv is necessary
@@ -5738,8 +5560,7 @@ class Model(MethodBase):
         cv=None,
         gridsearch=None,
         score="accuracy",
-        learning_curve=False,
-        run=False,
+        run=True,
         verbose=2,
         **kwargs,
     ):
@@ -5752,17 +5573,11 @@ class Model(MethodBase):
 
         if cv:
             cv_scores = run_crossvalidation(
-                model,
-                self.x_train,
-                self.y_train,
-                cv=cv,
-                scoring=score,
-                learning_curve=learning_curve,
+                model, self.x_train, self.y_train, cv=cv, scoring=score,
             )
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
-            if not run:
-                return cv_scores
+            return
 
         if gridsearch:
 
@@ -5806,5 +5621,7 @@ class Model(MethodBase):
         self._models[model_name] = UnsupervisedModel(
             self, model_name, model, new_col_name
         )
+
+        print(model)
 
         return self._models[model_name]

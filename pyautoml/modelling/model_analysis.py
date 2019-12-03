@@ -747,7 +747,6 @@ class ClassificationModel(ModelBase):
         self.target_mapping = model_object.target_mapping
         self.multiclass = len(np.unique(list(self.y_train) + list(self.y_test))) > 2
 
-
         self.y_pred = (
             model_object.x_train_results[predictions_col]
             if self.x_test is None
@@ -826,10 +825,12 @@ class ClassificationModel(ModelBase):
             ROC AUC Score
         """
 
-        multi_class = kwargs.pop('multi_class', 'ovr')
+        multi_class = kwargs.pop("multi_class", "ovr")
 
         if self.multiclass:
-            roc_auc = sklearn.metrics.roc_auc_score(self.y_test, self.probabilities, multi_class=multi_class, **kwargs)
+            roc_auc = sklearn.metrics.roc_auc_score(
+                self.y_test, self.probabilities, multi_class=multi_class, **kwargs
+            )
         else:
             roc_auc = sklearn.metrics.roc_auc_score(self.y_test, self.y_pred, **kwargs)
 
@@ -863,10 +864,12 @@ class ClassificationModel(ModelBase):
             Recall
         """
 
-        avg = kwargs.pop('average', 'macro')
+        avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.recall_score(self.y_test, self.y_pred, average=avg, **kwargs)
+            return sklearn.metrics.recall_score(
+                self.y_test, self.y_pred, average=avg, **kwargs
+            )
         else:
             return sklearn.metrics.recall_score(self.y_test, self.y_pred, **kwargs)
 
@@ -884,10 +887,12 @@ class ClassificationModel(ModelBase):
             Precision
         """
 
-        avg = kwargs.pop('average', 'macro')
+        avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.precision_score(self.y_test, self.y_pred, average=avg, **kwargs)
+            return sklearn.metrics.precision_score(
+                self.y_test, self.y_pred, average=avg, **kwargs
+            )
         else:
             return sklearn.metrics.precision_score(self.y_test, self.y_pred, **kwargs)
 
@@ -937,10 +942,12 @@ class ClassificationModel(ModelBase):
             Jaccard Score
         """
 
-        avg = kwargs.pop('average', 'macro')
+        avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.jaccard_score(self.y_test, self.y_pred, average=avg, **kwargs)
+            return sklearn.metrics.jaccard_score(
+                self.y_test, self.y_pred, average=avg, **kwargs
+            )
         else:
             return sklearn.metrics.jaccard_score(self.y_test, self.y_pred, **kwargs)
 
@@ -990,10 +997,12 @@ class ClassificationModel(ModelBase):
             Fbeta score
         """
 
-        avg = kwargs.pop('average', 'macro')
+        avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.fbeta_score(self.y_test, self.y_pred, beta, average=avg, **kwargs)
+            return sklearn.metrics.fbeta_score(
+                self.y_test, self.y_pred, beta, average=avg, **kwargs
+            )
         else:
             return sklearn.metrics.fbeta_score(self.y_test, self.y_pred, beta, **kwargs)
 
@@ -1010,10 +1019,12 @@ class ClassificationModel(ModelBase):
         float
             F1 Score
         """
-        avg = kwargs.pop('average', 'macro')
+        avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.f1_score(self.y_test, self.y_pred, average=avg, **kwargs)
+            return sklearn.metrics.f1_score(
+                self.y_test, self.y_pred, average=avg, **kwargs
+            )
         else:
             return sklearn.metrics.f1_score(self.y_test, self.y_pred, **kwargs)
 
@@ -1050,7 +1061,7 @@ class ClassificationModel(ModelBase):
         """
 
         if self.multiclass:
-            warnings.warn('Brier Loss can only be used for binary classification.')
+            warnings.warn("Brier Loss can only be used for binary classification.")
             return -999
 
         return sklearn.metrics.brier_score_loss(self.y_test, self.y_pred, **kwargs)
@@ -1287,19 +1298,23 @@ class ClassificationModel(ModelBase):
         """
 
         if self.multiclass:
-            raise NotImplementedError('ROC Curve not implemented for multiclassification problems yet.')
+            raise NotImplementedError(
+                "ROC Curve not implemented for multiclassification problems yet."
+            )
         else:
             roc_auc = self.roc_auc()
-            
-            roc_plot = sklearn.metrics.plot_roc_curve(self.model, self.x_test, self.y_test)
-            roc_plot.ax_.set_xlabel('False Positive Rate or (1 - Specifity)')
-            roc_plot.ax_.set_ylabel('True Positive Rate or (Sensitivity)')
+
+            roc_plot = sklearn.metrics.plot_roc_curve(
+                self.model, self.x_test, self.y_test
+            )
+            roc_plot.ax_.set_xlabel("False Positive Rate or (1 - Specifity)")
+            roc_plot.ax_.set_ylabel("True Positive Rate or (Sensitivity)")
             if title:
-                roc_plot.figure_.suptitle('ROC Curve (area = {:.2f})'.format(roc_auc))
+                roc_plot.figure_.suptitle("ROC Curve (area = {:.2f})".format(roc_auc))
 
         if output_file:  # pragma: no cover
             image_dir = _make_image_dir()
-            roc_plot.figure_.savefig(os.path.join(image_dir, output_file))            
+            roc_plot.figure_.savefig(os.path.join(image_dir, output_file))
 
             if self.report:
                 self.report.write_image(os.path.join(image_dir, output_file))
