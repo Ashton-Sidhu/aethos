@@ -62,6 +62,9 @@ clean:
     constant: >
       Replaced missing values in column(s) column_name_placeholder with a constant.
 
+    corr: >
+      Dropped feature(s) column_name_plaeholder because they highly correlated with other features.
+
   text:
 
 preprocess:

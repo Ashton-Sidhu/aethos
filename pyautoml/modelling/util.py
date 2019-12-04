@@ -123,7 +123,7 @@ def run_crossvalidation(model, x_train, y_train, cv=5, scoring="accuracy", repor
 
     if report: # pragma: no cover
         imgdir = _make_image_dir()
-        fig.savefig(os.path.join(imgdir, model_name))
+        fig.savefig(os.path.join(imgdir, model_name + '.svg'))
 
 
 def _run_models_parallel(model_obj):

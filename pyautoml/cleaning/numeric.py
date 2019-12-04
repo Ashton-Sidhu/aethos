@@ -9,6 +9,7 @@ import pandas as pd
 from pyautoml.cleaning.categorical import replace_missing_new_category
 from pyautoml.util import _get_columns, _numeric_input_conditions, drop_replace_columns
 from sklearn.impute import SimpleImputer
+import numpy as np
 
 
 def replace_missing_mean_median_mode(
@@ -95,7 +96,6 @@ def replace_missing_constant(x_train, x_test=None, col_to_constant=None, constan
     Examples
     ------
     >>> replace_missing_constant({'a': 1, 'b': 2, 'c': 3})
-
     >>> replace_missing_constant(1, ['a', 'b', 'c'])
     """
 
@@ -114,5 +114,41 @@ def replace_missing_constant(x_train, x_test=None, col_to_constant=None, constan
         x_train, x_test = replace_missing_new_category(
             constant=constant, x_train=x_train, x_test=x_test
         )
+
+    return x_train, x_test
+
+def drop_correlated_features(x_train, x_test=None, threshold=0.95):
+    """
+    Drops highly correlated features.
+
+    Derived from: https://chrisalbon.com/machine_learning/feature_selection/drop_highly_correlated_features/
+    
+    Parameters
+    ----------
+    x_train: Dataframe or array like - 2d
+        Training dataset, by default None.
+        
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
+    threshold : float, optional
+        Correlation coefficient value threshold to drop the feature
+
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
+
+    Returns 2 Dataframes if x_test is provided.  
+    """
+
+    corr = x_train.corr().abs()
+    upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
+    drop_cols = [col for col in upper.columns if any(upper[col] > 0.95)]
+
+    x_train.drop(drop_cols, axis=1, inplace=True)
+    
+    if x_test is not None:
+        x_test.drop(drop_cols, axis=1, inplace=True)
 
     return x_train, x_test
