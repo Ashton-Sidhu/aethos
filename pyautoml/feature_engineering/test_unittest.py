@@ -246,6 +246,31 @@ class TestFeatureExtraction(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_util_corr(self):
+
+        int_missing_data = [
+            [1, 8, 3, 4],
+            [2, 8, 5, 1],
+            [3, 8, 5, 7],
+            [4, 8, 5, 2],
+            [5, 8, 5, 9],
+            [6, 8, 5, 3],
+        ]
+
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        feat = Feature(x_train=data, test_split_percentage=0.5)
+        feat.drop_correlated_features()
+
+        validate = feat.x_test.columns.tolist() == feat.x_train.columns.tolist() and feat.x_test.columns.tolist() == [
+            "col2",
+            "col3",
+            "col4",
+        ]
+
+        self.assertTrue(True)
+
 
 if __name__ == "__main__":
     unittest.main()

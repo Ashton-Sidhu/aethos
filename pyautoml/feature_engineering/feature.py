@@ -619,3 +619,36 @@ class Feature(MethodBase):
             self.report.report_technique(report_info, [])
 
         return self.copy()
+
+    def drop_correlated_features(self, threshold=0.95):
+        """
+        Drop features that have a correlation coefficient greater than the specified threshold with other features.
+        
+        Parameters
+        ----------
+        threshold : float, optional
+            Correlation coefficient threshold, by default 0.95
+
+        Returns
+        -------
+        Feature:
+            Returns a deep copy of the Clean object.
+
+        Examples
+        --------
+        >>> feature.drop_correlated_features(threshold=0.9)
+        """
+
+        report_info = technique_reason_repo["clean"]["numeric"]["corr"]
+        orig_cols = set(self.x_train.columns)
+
+        (self.x_train, self.x_test,) = drop_correlated_features(
+            x_train=self.x_train,
+            x_test=self.x_test,
+            threshold=threshold,
+        )
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list(orig_cols.difference(self.x_train.columns)))
+
+        return self.copy()
