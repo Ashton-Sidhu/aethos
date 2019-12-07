@@ -8,10 +8,6 @@ from pyautoml.util import _input_columns, label_encoder
 
 
 class Feature(object):
-    def __init__(self):
-
-        if self.report is not None:
-            self.report.write_header("Feature Engineering")
 
     def onehot_encode(
         self, *list_args, list_of_cols=[], keep_col=True, **onehot_kwargs

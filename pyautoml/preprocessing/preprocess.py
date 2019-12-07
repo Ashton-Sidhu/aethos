@@ -8,10 +8,6 @@ from pyautoml.util import _input_columns, _numeric_input_conditions, label_encod
 
 
 class Preprocess(object):
-    def __init__(self):
-
-        if self.report is not None:
-            self.report.write_header("Preprocessing")
 
     def normalize_numeric(
         self, *list_args, list_of_cols=[], keep_col=True, **normalize_params

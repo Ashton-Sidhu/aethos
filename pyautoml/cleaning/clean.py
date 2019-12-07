@@ -8,10 +8,6 @@ from pyautoml.util import _input_columns, _numeric_input_conditions
 
 
 class Clean(object):
-    def __init__(self):
-
-        if self.report is not None:
-            self.report.write_header("Cleaning")
 
     def drop_column_missing_threshold(self, threshold: float):
         """

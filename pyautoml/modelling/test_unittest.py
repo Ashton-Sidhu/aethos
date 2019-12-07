@@ -114,7 +114,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, split=False)
         model.extract_keywords_gensim("data", ratio=0.5, model_name="model1", run=True)
-        validate = model.model1 is not None and model["model1"] is not None
+        validate = model.model1 is not None
 
         self.assertTrue(validate)
 

@@ -17,7 +17,8 @@ from pyautoml.modelling.util import (
     run_gridsearch,
     to_pickle,
 )
-from pyautoml.util import _input_columns, _set_item, _validate_model_name
+from pyautoml.reporting.report import Report
+from pyautoml.util import _input_columns, _set_item, _validate_model_name, split_data
 from pyautoml.visualizations.visualizations import Visualizations
 
 warnings.simplefilter('ignore', FutureWarning)
@@ -28,36 +29,43 @@ class Model(Visualizations):
         self,
         x_train=None,
         x_test=None,
-        test_split_percentage=0.2,
         split=True,
+        test_split_percentage=0.2,
         target_field="",
         report_name=None,
     ):
         step = x_train
 
         if isinstance(x_train, pd.DataFrame):
-            super().__init__(
-                x_train=x_train,
-                x_test=x_test,
-                split=split,
-                target_field=target_field,
-                target_mapping=None,
-                report_name=report_name,
-                test_split_percentage=test_split_percentage,
-            )
+            self.x_train = x_train
+            self.x_test = x_test
+            self.split= split
+            self.target_field=target_field
+            self.target_mapping=None
+            self.report_name=report_name
+            self.test_split_percentage=test_split_percentage
         else:
-            super().__init__(
-                x_train=step.x_train,
-                x_test=step.x_test,
-                test_split_percentage=step.test_split_percentage,
-                split=step.split,
-                target_field=step.target_field,
-                target_mapping=step.target_mapping,
-                report_name=step.report_name,
-            )
+            self.x_train=step.x_train
+            self.x_test=step.x_test
+            self.test_split_percentage=step.test_split_percentage
+            self.split=step.split
+            self.target_field=step.target_field
+            self.target_mapping=step.target_mapping
+            self.report_name=step.report_name
 
-        if self.report is not None:
-            self.report.write_header("Modelling")
+        if split and x_test is None:
+            # Generate train set and test set.
+            self.x_train, self.x_test = split_data(self.x_train, test_split_percentage)
+            self.x_train.reset_index(drop=True, inplace=True)
+            self.x_test.reset_index(drop=True, inplace=True)
+            
+
+        if report_name is not None:
+            self.report = Report(report_name)
+            self.report_name = self.report.filename
+        else:
+            self.report = None
+            self.report_name = None
 
         # Create a master dataset that houses training data + results
         self._train_result_data = self.x_train.copy()
@@ -85,14 +93,15 @@ class Model(Visualizations):
             self._models = {}
             self._queued_models = {}
 
-        Visualizations.__init__(self._train_result_data)
+        Visualizations.__init__(self, self._train_result_data)
 
     def __getitem__(self, key):
 
-        if key in self._models:
-            return self._models[key]
+        try:
+            return self._train_result_data[key]
 
-        return super().__getitem__(key)
+        except Exception as e:
+            raise AttributeError(e)
 
     def __getattr__(self, key):
 
@@ -114,7 +123,8 @@ class Model(Visualizations):
 
     def __setattr__(self, key, value):
 
-        if key not in self.__dict__:  # any normal attributes are handled normally
+        if key not in self.__dict__ or hasattr(self, key):
+            # any normal attributes are handled normally
             dict.__setattr__(self, key, value)
         else:
             self.__setitem__(key, value)
@@ -261,6 +271,14 @@ class Model(Visualizations):
         """
 
         self._test_result_data = value
+
+    @property
+    def columns(self):
+        """
+        Property to return columns in the dataset.
+        """
+
+        return self.x_train.columns.tolist()
 
     def run_models(self, method="parallel"):
         """
