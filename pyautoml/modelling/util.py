@@ -9,7 +9,7 @@ from pathlib import Path
 from pathos.multiprocessing import ProcessingPool
 from pyautoml.config import cfg, DEFAULT_MODEL_DIR
 from pyautoml.util import _make_dir
-from pyautoml.visualizations.visualize import _make_image_dir
+from pyautoml.visualizations.util import _make_image_dir
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
 import matplotlib.pyplot as plt

@@ -18,11 +18,12 @@ from pyautoml.modelling.util import (
     to_pickle,
 )
 from pyautoml.util import _input_columns, _set_item, _validate_model_name
+from pyautoml.visualizations.visualizations import Visualizations
 
 warnings.simplefilter('ignore', FutureWarning)
 
 
-class Model(Data):
+class Model(Visualizations):
     def __init__(
         self,
         x_train=None,
@@ -83,6 +84,8 @@ class Model(Data):
         else:
             self._models = {}
             self._queued_models = {}
+
+        Visualizations.__init__(self._train_result_data)
 
     def __getitem__(self, key):
 

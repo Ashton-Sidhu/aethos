@@ -21,7 +21,7 @@ from .modelling import Model
 
 pd.options.mode.chained_assignment = None
 
-__all__ = ["MethodBase", "Model"]
+__all__ = ["Data", "Model"]
 
 shell = get_ipython().__class__.__name__
 

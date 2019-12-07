@@ -8,6 +8,7 @@ import seaborn as sns
 from scipy import stats
 from pyautoml.config import cfg, DEFAULT_IMAGE_DIR
 from pyautoml.util import _make_dir
+from pyautoml.visualizations.util import _make_image_dir
 import os
 from pathlib import Path
 from bokeh.io import export_png
@@ -394,15 +395,3 @@ def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
     if output_file:  # pragma: no cover
         img_dir = _make_image_dir()
         g.figure.savefig(os.path.join(img_dir, output_file))
-
-
-def _make_image_dir():  # pragma: no cover
-
-    if not cfg["images"]["dir"]:
-        image_dir = DEFAULT_IMAGE_DIR
-    else:
-        image_dir = cfg["images"]["dir"]
-
-    _make_dir(image_dir)
-
-    return image_dir

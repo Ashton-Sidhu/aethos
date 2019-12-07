@@ -23,7 +23,7 @@ from pyautoml.modelling.constants import (
 from pyautoml.modelling.model_explanation import MSFTInterpret, Shap
 from pyautoml.modelling.util import to_pickle
 from pyautoml.visualizations.visualize import *
-from pyautoml.visualizations.visualize import _make_image_dir
+from pyautoml.visualizations.util import _make_image_dir
 
 
 class ModelBase(object):

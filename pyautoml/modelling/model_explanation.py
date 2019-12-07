@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import shap
 import matplotlib.pyplot as pl
-from pyautoml.visualizations.visualize import _make_image_dir
+from pyautoml.visualizations.util import _make_image_dir
 
 from pyautoml.modelling.constants import INTERPRET_EXPLAINERS
 import os
