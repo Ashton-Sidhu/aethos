@@ -5,7 +5,7 @@ from pathlib import Path
 
 from IPython import display
 from pathos.multiprocessing import Pool
-from pyautoml.base import MethodBase
+from pyautoml.core import Data
 from pyautoml.config import technique_reason_repo, shell
 from pyautoml.modelling.model_analysis import *
 from pyautoml.modelling.text import *
@@ -22,7 +22,7 @@ from pyautoml.util import _input_columns, _set_item, _validate_model_name
 warnings.simplefilter('ignore', FutureWarning)
 
 
-class Model(MethodBase):
+class Model(Data):
     def __init__(
         self,
         x_train=None,

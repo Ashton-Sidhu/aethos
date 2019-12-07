@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from pyautoml import Clean, Feature, Preprocess
+from pyautoml import Data
 from pyautoml.reporting.report import Report
 
 
@@ -30,7 +30,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(
+        clean = Data(
             x_train=data, test_split_percentage=0.5, split=False, report_name="test"
         )
         clean.drop_column_missing_threshold(0.5)
@@ -50,7 +50,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Clean(
+        clean = Data(
             x_train=data, test_split_percentage=0.5, split=False, report_name="test"
         )
         clean_data = clean.replace_missing_new_category()
@@ -70,7 +70,7 @@ class TestReport(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(
+        preprocess = Data(
             x_train=data, test_split_percentage=0.5, split=False, report_name="test"
         )
         preprocess.normalize_numeric()
@@ -90,7 +90,7 @@ class TestReport(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(
+        feature = Data(
             x_train=data, test_split_percentage=0.5, split=False, report_name="test"
         )
         feature.bag_of_words()

@@ -5,8 +5,7 @@ import unittest
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from pyautoml import Clean
-from pyautoml.base import MethodBase
+from pyautoml import Data
 
 
 class Test_TestBase(unittest.TestCase):
@@ -16,12 +15,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name=None,
             test_split_percentage=0.25,
         )
@@ -40,12 +39,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name=None,
             test_split_percentage=0.5,
         )
@@ -64,12 +63,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name=None,
             test_split_percentage=0.25,
         )
@@ -86,12 +85,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name=None,
             test_split_percentage=0.75,
         )
@@ -107,12 +106,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name=None,
             test_split_percentage=0.5,
         )
@@ -130,12 +129,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name=None,
             test_split_percentage=0.25,
         )
@@ -153,13 +152,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(x_train=data, report_name="test", test_split_percentage=0.5)
+        clean = Data(x_train=data, report_name="test", test_split_percentage=0.5)
         clean_inst = clean.drop("col1", "col3", reason="Columns were unimportant.")
 
         validate = (
             clean_inst.x_train.columns == ["col2"]
             and clean_inst.x_test.columns == ["col2"]
-            and isinstance(clean_inst, Clean)
+            and isinstance(clean_inst, Data)
         )
 
         self.assertTrue(validate)
@@ -170,13 +169,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(x_train=data, report_name="test", test_split_percentage=0.5)
+        clean = Data(x_train=data, report_name="test", test_split_percentage=0.5)
         clean_inst = clean.drop(keep=["col2"], reason="Columns were unimportant.")
 
         validate = (
             clean_inst.x_train.columns == ["col2"]
             and clean_inst.x_test.columns == ["col2"]
-            and isinstance(clean_inst, Clean)
+            and isinstance(clean_inst, Data)
         )
 
         self.assertTrue(validate)
@@ -187,7 +186,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3", "py"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=True,
@@ -211,7 +210,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["agent.hi", "agent.user_name", "agent.hello", "message"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=False,
@@ -231,7 +230,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3", "py"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=True,
@@ -248,12 +247,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name="test",
             test_split_percentage=0.5,
         )
@@ -266,12 +265,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name="test",
             test_split_percentage=0.5,
         )
@@ -286,12 +285,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name="test",
             test_split_percentage=0.5,
         )
@@ -305,12 +304,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name="test",
             test_split_percentage=0.25,
         )
@@ -324,12 +323,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name="test",
             test_split_percentage=0.75,
         )
@@ -343,12 +342,12 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
-            target_mapping=None,
+            
             report_name="test",
             test_split_percentage=0.75,
         )
@@ -363,13 +362,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name="test",
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
         base.target_field = "col3"
@@ -382,12 +381,12 @@ class Test_TestBase(unittest.TestCase):
 
         int_missing_data_rep = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=False,
             target_field="",
-            target_mapping=None,
+            
             report_name="test",
             test_split_percentage=0.5,
         )
@@ -403,13 +402,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=False,
             target_field="",
             report_name="test",
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -429,12 +428,12 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=False,
             target_field="",
-            target_mapping=None,
+            
             report_name="test",
             test_split_percentage=0.5,
         )
@@ -454,7 +453,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=False,
@@ -478,7 +477,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=False,
@@ -501,7 +500,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=False,
@@ -524,7 +523,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=False,
@@ -546,7 +545,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=False,
@@ -569,7 +568,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Clean(
+        clean = Data(
             x_train=data,
             x_test=None,
             split=False,
@@ -592,7 +591,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Clean(x_train=df, split=False)
+        clean = Data(x_train=df, split=False)
         clean.lineplot(x="date", y=["Google", "Apple"], show_figure=False)
 
         self.assertTrue(True)
@@ -608,7 +607,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Clean(x_train=df, split=False)
+        clean = Data(x_train=df, split=False)
         clean.to_csv("test_write_data")
         os.remove("test_write_data_train.csv")
 
@@ -620,13 +619,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name="test",
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -647,13 +646,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name="",
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -667,13 +666,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name="",
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -687,13 +686,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name="",
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -707,13 +706,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name="",
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -727,13 +726,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name="test",
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -747,13 +746,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="col3",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -767,13 +766,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=False,
             target_field="col3",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -787,13 +786,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -811,13 +810,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="col3",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -831,13 +830,13 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -854,13 +853,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = pd.DataFrame(np.random.rand(100, 10))
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="col3",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -872,13 +871,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = pd.DataFrame(np.random.rand(100, 10))
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="col3",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -890,13 +889,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="species",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -908,13 +907,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="species",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -926,13 +925,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="species",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -944,13 +943,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="species",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -967,13 +966,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=False,
             target_field="species",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -986,13 +985,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="species",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -1009,7 +1008,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = pd.DataFrame(data, columns=columns)
 
-        base = Clean(
+        base = Data(
             x_train=data,
             x_test=data,
             split=True,
@@ -1030,13 +1029,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="species",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -1048,13 +1047,13 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = MethodBase(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,
             target_field="species",
             report_name=None,
-            target_mapping=None,
+            
             test_split_percentage=0.5,
         )
 
@@ -1074,7 +1073,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        base = Clean(
+        base = Data(
             x_train=data,
             x_test=None,
             split=False,
@@ -1099,7 +1098,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        base = Clean(
+        base = Data(
             x_train=data,
             x_test=None,
             split=True,

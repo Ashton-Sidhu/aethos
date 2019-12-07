@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from pyautoml import Feature
+from pyautoml import Data
 
 
 class TestFeatureExtraction(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5, split=False)
+        feature = Data(x_train=data, test_split_percentage=0.5, split=False)
         feature.bag_of_words(keep_col=False)
         validate = feature.x_train.values.tolist()
 
@@ -27,7 +27,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5, split=False)
+        feature = Data(x_train=data, test_split_percentage=0.5, split=False)
         feature.bag_of_words(keep_col=True)
         validate = feature.x_train.values.tolist()
 
@@ -42,7 +42,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5, split=False)
+        feature = Data(x_train=data, test_split_percentage=0.5, split=False)
         feature.tfidf(keep_col=False, lowercase=False, stop_words="english")
         validate = feature.x_train.shape[1]
 
@@ -54,7 +54,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature = Data(x_train=data, test_split_percentage=0.5)
         feature.tfidf("text", keep_col=False, lowercase=False, stop_words="english")
         validate = feature.x_train.shape[1]
 
@@ -66,7 +66,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5, split=False)
+        feature = Data(x_train=data, test_split_percentage=0.5, split=False)
         feature.tfidf(keep_col=True, lowercase=False, stop_words="english")
         validate = feature.x_train.shape[1]
 
@@ -83,7 +83,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5, split=False)
+        feature = Data(x_train=data, test_split_percentage=0.5, split=False)
         feature.onehot_encode(list_of_cols=["col1", "col3"], keep_col=False)
         validate = feature.x_train.values.tolist()
 
@@ -102,7 +102,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature = Data(x_train=data, test_split_percentage=0.5)
         feature.postag_nltk()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -115,7 +115,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        feature = Feature(x_train=data, split=False)
+        feature = Data(x_train=data, split=False)
         feature.apply(lambda x: x["col1"] > 0, "new_col")
         validate = "new_col" in feature.x_train.columns
 
@@ -128,7 +128,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.33)
+        feature = Data(x_train=data, test_split_percentage=0.33)
         feature.apply(lambda x: x["col1"], "new_col")
         validate = (
             "new_col" in feature.x_train.columns and "new_col" in feature.x_test.columns
@@ -142,7 +142,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        feature = Feature(x_train=data, test_split_percentage=0.33, report_name="test")
+        feature = Data(x_train=data, test_split_percentage=0.33, report_name="test")
         feature.encode_labels("col1", "col2")
 
         self.assertTrue(True)
@@ -153,7 +153,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        feature = Feature(x_train=data, test_split_percentage=0.33)
+        feature = Data(x_train=data, test_split_percentage=0.33)
         feature.polynomial_features()
 
         validate = feature.x_train.shape[1] == 6 and feature.x_test.shape[1] == 6
@@ -170,7 +170,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature = Data(x_train=data, test_split_percentage=0.5)
         feature.postag_spacy()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -186,7 +186,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature = Data(x_train=data, test_split_percentage=0.5)
         feature.nounphrases_spacy()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -202,7 +202,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature = Data(x_train=data, test_split_percentage=0.5)
         feature.nounphrases_nltk()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -215,7 +215,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Feature(x_train=data, test_split_percentage=0.5)
+        feature = Data(x_train=data, test_split_percentage=0.5)
         feature.text_hash(keep_col=True, n_features=5)
 
         self.assertTrue(True)
@@ -226,7 +226,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        feature = Feature(x_train=data, test_split_percentage=0.33)
+        feature = Data(x_train=data, test_split_percentage=0.33)
         feature.pca(n_components=2)
 
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
@@ -239,7 +239,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        feature = Feature(x_train=data, test_split_percentage=0.33, target_field="col3")
+        feature = Data(x_train=data, test_split_percentage=0.33, target_field="col3")
         feature.pca(n_components=2)
 
         validate = feature.col3 is not None and feature.x_train.shape[1] == 3
@@ -260,7 +260,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        feat = Feature(x_train=data, test_split_percentage=0.5)
+        feat = Data(x_train=data, test_split_percentage=0.5)
         feat.drop_correlated_features()
 
         validate = feat.x_test.columns.tolist() == feat.x_train.columns.tolist() and feat.x_test.columns.tolist() == [

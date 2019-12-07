@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from pyautoml import Preprocess
+from pyautoml import Data
 
 
 class TestPreprocessing(unittest.TestCase):
@@ -13,7 +13,7 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(x_train=data, test_split_percentage=0.5)
+        preprocess = Data(x_train=data, test_split_percentage=0.5)
         preprocess.normalize_numeric(keep_col=False)
         validate = preprocess.x_train.values.tolist()
 
@@ -26,7 +26,7 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(x_train=data, test_split_percentage=0.5)
+        preprocess = Data(x_train=data, test_split_percentage=0.5)
         preprocess.normalize_quantile_range(keep_col=False)
         validate = preprocess.x_train.values.tolist()
 
@@ -39,7 +39,7 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Preprocess(x_train=data, test_split_percentage=0.5)
+        preprocess = Data(x_train=data, test_split_percentage=0.5)
         preprocess.normalize_log()
         preprocess.normalize_log(base=2)
         preprocess.normalize_log(base=10)
@@ -56,7 +56,7 @@ class TestPreprocessing(unittest.TestCase):
         x_train = pd.DataFrame(unnormal_x_train, columns=columns)
         x_test = pd.DataFrame(unnormal_x_test, columns=columns)
 
-        preprocess = Preprocess(
+        preprocess = Data(
             x_train=x_train, x_test=x_test, test_split_percentage=0.5
         )
         preprocess.normalize_numeric("col1", "col2", "col3")
@@ -73,7 +73,7 @@ class TestPreprocessing(unittest.TestCase):
         ]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.split_sentences("data")
         validate = prep.x_train["data_sentences"].values.tolist()
 
@@ -96,7 +96,7 @@ class TestPreprocessing(unittest.TestCase):
         ]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.stem_nltk("data")
         validate = prep.x_train.shape[1]
 
@@ -107,7 +107,7 @@ class TestPreprocessing(unittest.TestCase):
         text_data = ["Please.exe split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.split_words_nltk("data")
         validate = prep.x_train.data_tokenized.values.tolist()
 
@@ -118,7 +118,7 @@ class TestPreprocessing(unittest.TestCase):
         text_data = ["Please123 split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.split_words_nltk("data", regexp=r"\w+\d+")
         validate = prep.x_train.data_tokenized.values.tolist()
 
@@ -129,7 +129,7 @@ class TestPreprocessing(unittest.TestCase):
         text_data = ["Please split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.remove_punctuation("data")
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -140,7 +140,7 @@ class TestPreprocessing(unittest.TestCase):
         text_data = ["Please.exe, split me.", "hello it's me, testing.dll."]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.remove_punctuation("data", regexp=r"\w+\.\w+|\w+")
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -153,7 +153,7 @@ class TestPreprocessing(unittest.TestCase):
         text_data = ["Please,> split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.remove_punctuation("data", exceptions=[".", ">"])
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -164,7 +164,7 @@ class TestPreprocessing(unittest.TestCase):
         text_data = ["Please the split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.remove_stopwords_nltk("data", custom_stopwords=["please"])
         validate = prep.x_train.data_rem_stop.values.tolist()
 
@@ -176,7 +176,7 @@ class TestPreprocessing(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        prep = Preprocess(x_train=data, split=False)
+        prep = Data(x_train=data, split=False)
         prep.encode_labels("col1", "col2")
         validate = prep.x_train.values.tolist()
 

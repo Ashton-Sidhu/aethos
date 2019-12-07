@@ -1,5 +1,4 @@
 import pandas as pd
-from pyautoml.base import MethodBase
 from pyautoml.config import technique_reason_repo
 from pyautoml.cleaning import util
 from pyautoml.cleaning.categorical import *
@@ -8,38 +7,8 @@ from pyautoml.cleaning.util import replace_missing_fill
 from pyautoml.util import _input_columns, _numeric_input_conditions
 
 
-class Clean(MethodBase):
-    def __init__(
-        self,
-        x_train,
-        x_test=None,
-        test_split_percentage=0.2,
-        split=True,
-        target_field="",
-        report_name=None,
-    ):
-
-        if isinstance(x_train, pd.DataFrame):
-            super().__init__(
-                x_train=x_train,
-                x_test=x_test,
-                split=split,
-                target_field=target_field,
-                target_mapping=None,
-                report_name=report_name,
-                test_split_percentage=test_split_percentage,
-            )
-        else:
-            step = x_train
-            super().__init__(
-                x_train=step.x_train,
-                x_test=step.x_test,
-                test_split_percentage=step.test_split_percentage,
-                split=step.split,
-                target_field=step.target_field,
-                target_mapping=step.target_mapping,
-                report_name=step.report_name,
-            )
+class Clean(object):
+    def __init__(self):
 
         if self.report is not None:
             self.report.write_header("Cleaning")

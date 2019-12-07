@@ -14,6 +14,9 @@ from pandas_summary import DataFrameSummary
 
 import pyautoml
 from pyautoml.config import shell
+from pyautoml.cleaning.clean import Clean
+from pyautoml.feature_engineering.feature import Feature
+from pyautoml.preprocessing.preprocess import Preprocess
 from pyautoml.reporting.report import Report
 from pyautoml.util import (
     CLEANING_CHECKLIST,
@@ -30,25 +33,24 @@ from pyautoml.util import (
 from pyautoml.visualizations.visualize import *
 
 
-class MethodBase(object):
+class Data(Clean, Preprocess, Feature):
     def __init__(
         self,
         x_train,
-        x_test,
-        split,
-        target_field,
-        target_mapping,
-        report_name,
-        test_split_percentage,
+        x_test=None,
+        split=True,
+        test_split_percentage=0.2,
+        target_field='',
+        report_name=None,
     ):
 
         self.x_train = x_train
         self.x_test = x_test
         self.split = split
         self.target_field = target_field
-        self.target_mapping = target_mapping
         self.report_name = report_name
         self.test_split_percentage = test_split_percentage
+        self.target_mapping = None
 
         if split and x_test is None:
             # Generate train set and test set.
@@ -61,6 +63,7 @@ class MethodBase(object):
             self.report_name = self.report.filename
         else:
             self.report = None
+            self.report_name = None
 
     def __repr__(self):
 
@@ -138,7 +141,7 @@ class MethodBase(object):
             if hasattr(self.x_train, key):
                 return getattr(self.x_train, key)
             else:
-                raise AttributeError()
+                raise AttributeError(f'Name does not have attribute {key}.')
 
     def __setattr__(self, item, value):
 
@@ -151,7 +154,14 @@ class MethodBase(object):
 
     def __deepcopy__(self, memo):
 
-        new_inst = type(self)(self)
+        new_inst = type(self)(
+            x_train=self.x_train,
+            x_test=self.x_test,
+            split=self.split,
+            test_split_percentage=self.test_split_percentage,
+            target_field=self.target_field,
+            report_name=self.report_name,
+        )
 
         return new_inst
 

@@ -1,4 +1,6 @@
-import interpret
+import warnings
+warnings.simplefilter('ignore', FutureWarning)
+
 import pandas as pd
 
 # let init-time option registration happen
@@ -14,14 +16,12 @@ from pyautoml.config.config import (
     set_option,
 )
 
-from .cleaning import Clean
-from .feature_engineering import Feature
+from .core import Data
 from .modelling import Model
-from .preprocessing import Preprocess
 
 pd.options.mode.chained_assignment = None
 
-__all__ = ["Clean", "Feature", "Model", "Preprocess"]
+__all__ = ["MethodBase", "Model"]
 
 shell = get_ipython().__class__.__name__
 
