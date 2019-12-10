@@ -123,4 +123,3 @@ datasets/
 aethos_reports/
 
 aethos_web/*/sources/*
-__init__.py
