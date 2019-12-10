@@ -1,15 +1,15 @@
 
 *"A collection of tools for Data Scientists and ML Engineers for them to focus less on how to do the analysis and instead worry about what are the best analytic tools that will help gain the most insights from their data."*
 
-Welcome to PyAutoML's documentation!
+Welcome to aethos's documentation!
 ====================================
-Py-automl is a library/platform that automates your data science and analytical tasks at any stage in the pipeline. Py-automl is, at its core, a wrapper that helps automate analytical techniques from various libaries such as pandas, sci-kit learn, gensim, etc. and tries to the bridge the gap 
+Aethos is a library/platform that automates your data science and analytical tasks at any stage in the pipeline. Aethos is, at its core, a wrapper that helps automate analytical techniques from various libaries such as pandas, sci-kit learn, gensim, etc. and tries to the bridge the gap 
 
-Py-automl makes it easy to PoC, experiment and compare different techniques and models from various libraries. From cleaning your data, visualizing it and even applying feature engineering techniques from your favourite libraries - all done with a single, human readable, line of code!
+Aethos makes it easy to PoC, experiment and compare different techniques and models from various libraries. From cleaning your data, visualizing it and even applying feature engineering techniques from your favourite libraries - all done with a single, human readable, line of code!
 
-For more info such as features, development plan, status and vision checkout the `Py-automl github page <https://github.com/Ashton-Sidhu/py-automl/>`_.
+For more info such as features, development plan, status and vision checkout the `Aethos github page <https://github.com/Ashton-Sidhu/aethos/>`_.
 
-For full api documentation you can view it `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#/>`_.
+For full api documentation you can view it `here <https://aethos.readthedocs.io/en/latest/source/aethos.html#/>`_.
 
 .. toctree::
    :maxdepth: 2
@@ -20,20 +20,20 @@ Usage
 
 To start, we need to import the data science workflow stages as well as pandas.
 
-Before that, we can create a full data science folder structure by running `pyautoml create` from the command line and follow the command prompts.
+Before that, we can create a full data science folder structure by running `aethos create` from the command line and follow the command prompts.
 
 General Usage
 =============
 To enable extensions, such as QGrid interactive filtering:
 
 .. code:: python
-    import pyautoml as py
+    import aethos as py
     py.set_option('interactive_df', True)
     py.options.interactive_df = True
 
 .. code:: python
 
-    import pyautoml as py
+    import aethos as py
     import pandas as pd
 
     x_train = pd.read_csv('data/train.csv') # load data into pandas
@@ -62,7 +62,7 @@ To enable extensions, such as QGrid interactive filtering:
 
     clean.describe_column('Fare') # Get indepth statistics about the 'Fare' column
 
-    clean.mean() # Run pandas functions on the pyautoml objects
+    clean.mean() # Run pandas functions on the aethos objects
 
     clean.missing_data # View your missing data at anytime
 
@@ -72,7 +72,7 @@ To enable extensions, such as QGrid interactive filtering:
 
     clean.checklist() # Will provide an iteractive checklist to keep track of your cleaning tasks
 
-**NOTE:** One of the benefits of using ``pyautoml`` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
+**NOTE:** One of the benefits of using ``aethos`` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
 
 **NOTE:** If you are providing a list or a Series and your data is split into train and test, the new column is created in the dataset that matches the length of the data provided. If the length of the data provided matches both train and test data it is added to both. To individually add new columns you can do the following:
 
@@ -110,7 +110,7 @@ Preprocessing and Feature Engineering
 
     feature.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode these columns and then drop the original columns
 
-**NOTE:** In pandas you'll often see ``df = df.method(...)`` or ``df.method(..., inplace=True)`` when transforming your data. Then depending on how you developed your analysis, when a mistake is made you either have to restart the kernel or reload your data entirely. In ``pyautoml`` most methods will change the data inplace (methods that have the keyword argument ``new_col_name`` will create a new column) without having to go ``df = df.method(...)``. To create a "checkpoint" that creates a copy of your current state just assign the method to a variable.
+**NOTE:** In pandas you'll often see ``df = df.method(...)`` or ``df.method(..., inplace=True)`` when transforming your data. Then depending on how you developed your analysis, when a mistake is made you either have to restart the kernel or reload your data entirely. In ``aethos`` most methods will change the data inplace (methods that have the keyword argument ``new_col_name`` will create a new column) without having to go ``df = df.method(...)``. To create a "checkpoint" that creates a copy of your current state just assign the method to a variable.
 
 Modelling
 =========
@@ -148,49 +148,49 @@ Installation
 
 For package use:
 
-``pip install py-automl``
+``pip install aethos``
 
 Currently working on condas implementation.
 
 Full API & Documentation
 ========================
 
-For full api documentation you can view it `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#/>`_.
+For full api documentation you can view it `here <https://aethos.readthedocs.io/en/latest/source/aethos.html#/>`_.
 
 General Methods and Visualizations
 ==================================
 
-For general methods and visualization docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#module-pyautoml.base/>`_.
+For general methods and visualization docmentation click `here <https://aethos.readthedocs.io/en/latest/source/aethos.html#module-aethos.base/>`_.
 
 Cleaning API
 ============
 
-For cleaning docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.cleaning.html#module-contents/>`_.
+For cleaning docmentation click `here <https://aethos.readthedocs.io/en/latest/source/aethos.cleaning.html#module-contents/>`_.
 
 Preprocessing API
 =================
 
-For preprocessing docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.preprocessing.html#module-pyautoml.preprocessing/>`_.
+For preprocessing docmentation click `here <https://aethos.readthedocs.io/en/latest/source/aethos.preprocessing.html#module-aethos.preprocessing/>`_.
 
 Feature Engineering API
 =======================
 
-For feature engineering docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.feature_engineering.html#module-pyautoml.feature_engineering/>`_.
+For feature engineering docmentation click `here <https://aethos.readthedocs.io/en/latest/source/aethos.feature_engineering.html#module-aethos.feature_engineering/>`_.
 
 Modelling API
 =============
 
-For modelling docmentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.modelling.html#module-pyautoml.modelling/>`_.
+For modelling docmentation click `here <https://aethos.readthedocs.io/en/latest/source/aethos.modelling.html#module-aethos.modelling/>`_.
 
 Model Analysis API
 ==================
 
-For modelling analysis documentation click `here <https://py-automl.readthedocs.io/en/latest/source/pyautoml.model_analysis.html#module-pyautoml.modelling.model_analysis/>`_.
+For modelling analysis documentation click `here <https://aethos.readthedocs.io/en/latest/source/aethos.model_analysis.html#module-aethos.modelling.model_analysis/>`_.
 
 Examples
 ========
 
-Examples can be viewed `here <https://github.com/Ashton-Sidhu/py-automl/tree/develop/examples/>`_.
+Examples can be viewed `here <https://github.com/Ashton-Sidhu/aethos/tree/develop/examples/>`_.
 
 Indices and tables
 ==================

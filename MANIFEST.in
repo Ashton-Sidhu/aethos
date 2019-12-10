@@ -1,2 +1,2 @@
 include README.md
-include pyautoml/config/technique_reasons.yml 
+include aethos/config/technique_reasons.yml 

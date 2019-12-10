@@ -1,11 +1,10 @@
-[![PyPI version](https://badge.fury.io/py/py-automl.svg)](https://badge.fury.io/py/py-automl) [![CircleCI](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop.svg?style=svg)](https://circleci.com/gh/Ashton-Sidhu/py-automl/tree/develop) [![Documentation Status](https://readthedocs.org/projects/py-automl/badge/?version=latest)](https://py-automl.readthedocs.io/en/latest/?badge=latest) [![codecov](https://codecov.io/gh/Ashton-Sidhu/py-automl/branch/develop/graph/badge.svg)](https://codecov.io/gh/Ashton-Sidhu/py-automl)
+[![PyPI version](https://badge.fury.io/py/aethos.svg)](https://badge.fury.io/py/aethos) [![CircleCI](https://circleci.com/gh/Ashton-Sidhu/aethos/tree/develop.svg?style=svg)](https://circleci.com/gh/Ashton-Sidhu/aethos/tree/develop) [![Documentation Status](https://readthedocs.org/projects/aethos/badge/?version=latest)](https://aethos.readthedocs.io/en/latest/?badge=latest) [![codecov](https://codecov.io/gh/Ashton-Sidhu/aethos/branch/develop/graph/badge.svg)](https://codecov.io/gh/Ashton-Sidhu/aethos)
 
 
 
+# Aethos
 
-# py-automl
-
-<i>"A collection of tools for Data Scientists and ML Engineers for them to focus less on how to do the analysis and instead worry about what are the best analytic tools that will help gain the most insights from their data."</i>
+<i>"A collection of tools for Data Scientists and ML Engineers to automate their workflow of performing analysis to deploying models and pipelines."</i>
 
 To track development of the project, you can view the [Trello board](https://trello.com/b/EZVs9Hxz/automated-ds-ml).
 
@@ -14,7 +13,6 @@ To track development of the project, you can view the [Trello board](https://tre
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Motivation](#motivation)
 - [Usage](#usage)
 - [Installation](#installation)
 - [Features](#features)
@@ -29,128 +27,136 @@ To track development of the project, you can view the [Trello board](https://tre
 
 ## Introduction
 
-Py-automl is a library/platform that automates your data science and analytical tasks at any stage in the pipeline. Py-automl is, at its core, a wrapper that helps automate analytical techniques from various libaries such as pandas, sci-kit learn, gensim, etc. and tries to the bridge the gap 
+Aethos is a library/platform that automates your data science and analytical tasks at any stage in the pipeline. Aethos is, at its core, a wrapper that helps automate analytical techniques from various libaries such as pandas, sci-kit learn, gensim, etc. and tries to the bridge the gap 
 
-Py-automl makes it easy to PoC, experiment and compare different techniques and models from various libraries. From cleaning your data, visualizing it and even applying feature engineering techniques from your favourite libraries - all done with a single, human readable, line of code!
+Aethos makes it easy to PoC, experiment and compare different techniques and models from various libraries. From cleaning your data, visualizing it and even applying feature engineering techniques from your favourite libraries - all done with a single, human readable, line of code!
 
-Py-automl utilizes other open source libraries to help enhance your analysis from enhanced stastical information, interactive visual plots or statistical tests and models - all your tools in one place, all accessible with one line of code or a click! See below in the [Acknowledgments](#acknowledgments) for the open source libraries being used in this project.
-
-## Motivation
-
-I created this library to help automate the data science/machine learning pipeline and have all the tools required for analysis in one place. I grew tired having to go back and look at code to find implementation for a certain type of analysis, googling for the implementation and converting PoCs to production level code or a microservice. I wanted to be able to focus more time on thinking about the analysis and the techniques to apply instead of worrying about developing them and finding implementations.
-
-Secondly there were alot of people that wanted to try data science that were in a different technical stream but and were blocked due to knowledge and technical barriers. My goal was to remove the technical barriers, so that as long as they understand the techniques at a high level, they can work with data scientists and help contribute to performing some analysis with just one line of code or a click of a button - allowing the data scientist or ML engineer to focus on interpreting/applying the results.
-
-For more info see my [vision statememt](https://github.com/Ashton-Sidhu/py-automl/blob/develop/VISION.md).
+Aethos utilizes other open source libraries to help enhance your analysis from enhanced stastical information, interactive visual plots or statistical tests and models - all your tools in one place, all accessible with one line of code or a click! See below in the [Acknowledgments](#acknowledgments) for the open source libraries being used in this project.
 
 ## Usage
-For full documentation on all the techniques and models, click [here](https://py-automl.readthedocs.io/en/latest/?badge=latest) or [here](https://py-automl.readthedocs.io/en/latest/source/pyautoml.html#)
+For full documentation on all the techniques and models, click [here](https://aethos.readthedocs.io/en/latest/?badge=latest) or [here](https://aethos.readthedocs.io/en/latest/source/aethos.html#)
 
-Examples can be viewed [here](https://github.com/Ashton-Sidhu/py-automl/tree/develop/examples)
+Examples can be viewed [here](https://github.com/Ashton-Sidhu/aethos/tree/develop/examples)
 
-To start, we need to import the data science workflow stages as well as pandas.
+To start, we need to import the ethos dependencies as well as pandas.
 
-Before that, we can create a full data science folder structure by running `pyautoml create` from the command line and follow the command prompts.
+Before that, we can create a full data science folder structure by running `aethos create` from the command line and follow the command prompts.
 
-#### General Use
-To enable extensions, such as QGrid interactive filtering:
+### General Use
+
+#### Options
+
+To enable extensions, such as QGrid interactive filtering, enable them as you would in pandas:
 
 ```python
-import pyautoml as py
-py.set_option('interactive_df', True)
-py.options.interactive_df = True
+import aethos as at
+
+at.options.interactive_df = True
 ```
 
+Currently the following options are:
+
+  - `interactive_df`: Interactive grid with QGrid
+  - `interactive_table`: Interactive grid with Itable - comes with built in client side searching
+  - `project_metrics`: Setting project metrics
+    - Project metrics is a metric or set of metrics to evaluate models.
+  - `word_doc`: Writes report to a word document as well as the .txt file
+
+#### Analysis
+
 ```python
-import pyautoml as py
+import aethos as at
 import pandas as pd
 
 x_train = pd.read_csv('data/train.csv') # load data into pandas
 
-# Initialize cleaning object with training data
+# Initialize Data object with training data
 # By default, if no test data (x_test) is provided, then the data is split with 20% going to the test set
 # Specify predictor field as 'Survived'
 # Specify report name
-clean = py.Clean(x_train=x_train, target_field='Survived', report_name='Titanic')
+df = at.Data(x_train, target_field='Survived', report_name='Titanic')
 
-clean.x_train # View your training data
-clean.x_test # View your testing data
+df.x_train # View your training data
+df.x_test # View your testing data
 
-clean # Glance at your training data
+df # Glance at your training data
 
-clean[clean.Age > 25] # Filter the data
+df[df.Age > 25] # Filter the data
 
-clean['new_col'] = [1, 2]  # Add a new column to the data, based off the length of the data provided, it will add it to the train or test set.
+df['new_col'] = [1, 2]  # Add a new column to the data, based off the length of the data provided, it will add it to the train or test set.
 
-clean.x_train['new_col'] = [1,2] # This is the exact same as the either of code above
-clean.x_test['new_col'] = [1,2]
+df.x_train['new_col'] = [1,2] # This is the exact same as the either of code above
+df.x_test['new_col'] = [1,2]
 
-clean.data_report(title='Titanic Summary', output_file='titanic_summary.html') # Automate EDA with pandas profiling with an autogenerated report
+df.data_report(title='Titanic Summary', output_file='titanic_summary.html') # Automate EDA with pandas profiling with an autogenerated report
 
-clean.describe() # Display a high level view of your data using an extended version of pandas describe
+df.describe() # Display a high level view of your data using an extended version of pandas describe
 
-clean.describe_column('Fare') # Get indepth statistics about the 'Fare' column
+df.describe_column('Fare') # Get indepth statistics about the 'Fare' column
 
-clean.mean() # Run pandas functions on the pyautoml objects
+df.mean() # Run pandas functions on the aethos objects
 
-clean.missing_data # View your missing data at anytime
+df.missing_data # View your missing data at anytime
 
-clean.correlation_matrix() # Generate a correlation matrix for your training data
+df.correlation_matrix() # Generate a correlation matrix for your training data
 
-clean.pairplot() # Generate pairplots for your training data features at any time
+df.pairplot() # Generate pairplots for your training data features at any time
 
-clean.checklist() # Will provide an iteractive checklist to keep track of your cleaning tasks
+df.checklist() # Will provide an iteractive checklist to keep track of your cleaning tasks
 ```
 
-**NOTE:** One of the benefits of using `pyautoml` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
-
-**NOTE:** If you are providing a list or a Series and your data is split into train and test, the new column is created in the dataset that matches the length of the data provided. If the length of the data provided matches both train and test data it is added to both. 
-
-#### Cleaning 
+**NOTE:** One of the benefits of using `aethos` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
 
 ```python
-clean.replace_missing_mostcommon('Fare', 'Embarked') # Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
+df.replace_missing_mostcommon('Fare', 'Embarked') # Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
 
-rep_mcommon = clean.replace_missing_mostcommon('Fare', 'Embarked') # To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
+rep_mcommon = df.replace_missing_mostcommon('Fare', 'Embarked') # To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
 
-# Now I can keep going with my analysis using the clean object and if something goes wrong when exploring this analysis path, I can pick right up from this point by using the `rep_mcommon` variable, without having to restart any kernels or reload any data.
+# Now I can keep going with my analysis using the df object and if something goes wrong when exploring this analysis path, I can pick right up from this point by using the `rep_mcommon` variable, without having to restart any kernels or reload any data.
 
-clean.replace_missing_random_discrete('Age') # Replace missing values in the 'Age' column with a random value that follows the probability distribution of the 'Age' column in the training set. 
+df.replace_missing_random_discrete('Age') # Replace missing values in the 'Age' column with a random value that follows the probability distribution of the 'Age' column in the training set. 
 
-clean.drop('Cabin') # Drop the cabin column
+df.drop('Cabin') # Drop the cabin column
 
 # Columns can also be dropped by defining the columns you want to keep (drop all columns except the ones you want to keep) or by passing in a regex expressions and all columns that match the regex expression will be dropped.
 
-# As you've started to notice, alot of tasks to clean the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation).
-```
+# As you've started to notice, alot of tasks to df the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation).
 
-#### Preprocessing and Feature Engineering
+df.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
 
-```python
-clean.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
-
-prep = py.Preprocess(clean) # To move onto preprocessing
-
-feature = py.Feature(clean) # to move onto feature engineering
-
-feature.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode these columns and then drop the original columns
+df.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode the `Person` and `Embarked` columns and then drop the original columns
 ```
 
 #### Modelling
 
+Initialize the modelling object
+
 ```python
-model = py.Model(feature) # To move onto modelling
+model = at.Model(df)
+```
 
-# Models can be run in various ways
+##### Running a single model
 
-model.logistic_regression(random_state=42, run=True) # Train a logistic regression model
-model.logistic_regression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42, run=True) # Running gridsearch with the best params
+Models can be trained one at a time or multiple at a time. They can also be trained by passing in the params for the sklearn, xgboost, etc constructor, by passing in a gridsearch dictionary & params, cross validating with gridsearch & params.
 
-model.logistic_regression(cv=5) # Crossvalidates a logistic regression model and displays the scores and the learning curve
+After a model has been ran, it comes with use cases such as plotting RoC curves, calculating performance metrics, confusion matrices, SHAP plots, decision tree plots and other local and global model interpretability use cases.
 
-model.logistic_regression(random_state=42, model_name='log_reg') # Adds a logistic regression model to the queue
-model.random_forest() # Adds a random forest model to the queue
-model.xgboost_classification() # Adds an xgboost classification model to the queue
+```python
+lr_model = model.LogisticRegression(random_state=42) # Train a logistic regression model
+lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42) # Trains a logistic regression model with gridsearch
+lr_model = model.LogisticRegression(cv=5) # Crossvalidates a logistic regression model, displays the scores and the learning curve and builds the model
+
+lr_model.metrics() # Views all metrics for the model
+lr_model.confusion_matrix()
+lr_model.roc_curve()
+```
+
+##### Running multiple models in parallel
+
+```python
+model.LogisticRegression(random_state=42, model_name='log_reg', run=False) # Adds a logistic regression model to the queue
+model.RandomForestClassification(run=False) # Adds a random forest model to the queue
+model.XGBoostClassification(run=False) # Adds an xgboost classification model to the queue
 
 model.run_models() # This will run all queued models in parallel
 model.run_models(method='series') # Run each model one after the other
@@ -161,29 +167,41 @@ model.compare_models() # This will display each model evaluated against every me
 # Default model names can be seen in the function header of each model.
 
 model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
-
 model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
 ```
 
-**NOTE:** In pandas you'll often see `df = df.method(...)` or `df.method(..., inplace=True)` when transforming your data. Then depending on how you developed your analysis, when a mistake is made you either have to restart the kernel or reload your data entirely. In `pyautoml` most methods will change the data inplace (methods that have the keyword argument `new_col_name` will create a new column) without having to go `df = df.method(...)`. To create a "checkpoint" that creates a copy of your current state just assign the method to a variable, for example:
+##### Model Interpretability
+
+As mentioned in the Model section, whenever a model is trained you have access to use cases for model interpretability as well. There are prebuild SHAP usecases and an interactive dashboard that is equipped with LIME and SHAP for local model interpretability and Morris Sensitivity for global model interpretability.
+
+```python
+lr_model = model.LogisticRegression(random_state=42)
+
+lr_model.summary_plot() # SHAP summary plot
+lr_model.force_plot() # SHAP force plot
+lr_model.decision_plot() # SHAP decision plot
+lr_model.dependence_plot() # SHAP depencence plot
+
+lr_model.interpret_model() # Creates an interactive dashboard to view LIME, SHAP, Morris Sensitivity and more for your model
+```
 
 ## Installation
 
-`pip install py-automl`
+`pip install aethos`
 
 To install associating corpora for nltk analysis:
 
-`pyautoml -ic` or `pyautoml --install-corpora`
+`aethos -ic` or `aethos --install-corpora`
 
 To install and use the extensions such as `qgrid` for interactive filtering and analysis with DataFrames:
 
-`pyautoml -ie` or `pyautoml --install-extensions`
+`aethos -ie` or `aethos --install-extensions`
 
 Currently working on condas implementation.
 
 To create a Data Science project run:
 
-`pyautoml -c` or `pyautomal --create`
+`aethos -c` or `aethos --create`
 
 This will create a full folder strucuture for you to manage data, unit tests, experiments and source code.
 
@@ -246,6 +264,10 @@ N/A
 
 ## Acknowledgments
 
+Credits go to the backbone of open source DataScience and ML: Pandas, Numpy, Scipy, Scikit Learn, Matplotlib, Plotly, Gensim and Jupyter.
+
+Community credits go to:
+
 [@mouradmourafiq](https://github.com/mouradmourafiq) for his [pandas-summary](https://github.com/mouradmourafiq/pandas-summary) library.
 
 [@PatrikHlobil](https://github.com/PatrikHlobil) for his [Pandas-Bokeh](https://github.com/PatrikHlobil/Pandas-Bokeh) library.
@@ -260,10 +282,12 @@ N/A
 
 [@Quantopian](https://github.com/quantopian?type=source) for their interactive DataFrame library [qgrid](https://github.com/quantopian/qgrid).
 
+[@mwouts](https://github.com/mwouts) for their interactive Dataframe library [itable](https://github.com/mwouts/itables)
+
 ## For Developers
 
 For python snippets to make deving new techniques either, message me and I can send them.
 
 To install packages `pip3 install -r requirements.txt`
 
-To run tests `python3 -m unittest discover pyautoml/`
+To run tests `python3 -m unittest discover aethos/`

@@ -24,7 +24,7 @@ workflows:
               ignore: /.*/
 jobs:
   build:
-    working_directory: ~/py-automl
+    working_directory: ~/aethos
     docker:
       - image: circleci/python:3.6.4-stretch
     steps:
@@ -36,8 +36,8 @@ jobs:
             . venv/bin/activate
             pip3 install -U pip setuptools codecov coverage
             pip3 install -r requirements.txt
-            mkdir -p ~/.pyautoml/
-            cp pyautoml/config/config.yml ~/.pyautoml/
+            mkdir -p ~/.aethos/
+            cp aethos/config/config.yml ~/.aethos/
             python3 -m textblob.download_corpora
             python3 -c 'import nltk; nltk.download("stopwords")'
             python3 -m spacy download en
@@ -67,8 +67,8 @@ jobs:
               . venv/bin/activate
               pip3 install -U pip setuptools
               pip3 install -r requirements.txt
-              mkdir -p ~/.pyautoml/
-              cp pyautoml/config/config.yml ~/.pyautoml/
+              mkdir -p ~/.aethos/
+              cp aethos/config/config.yml ~/.aethos/
               python3 -m textblob.download_corpora
               python3 -c 'import nltk; nltk.download("stopwords")'
               python3 -m spacy download en
@@ -85,7 +85,7 @@ jobs:
             name: Smoke Test Install 
             command: |
               python --version
-              sudo pip3 install py-automl
+              sudo pip3 install aethos
   deploy:
     docker:
       - image: circleci/python:3.6
@@ -100,8 +100,8 @@ jobs:
               . venv/bin/activate
               pip3 install -U pip setuptools
               pip3 install -r requirements.txt
-              mkdir -p ~/.pyautoml/
-              cp pyautoml/config/config.yml ~/.pyautoml/
+              mkdir -p ~/.aethos/
+              cp aethos/config/config.yml ~/.aethos/
               pip3 install twine
               python3 -m textblob.download_corpora
               python3 -c 'import nltk; nltk.download("stopwords")'

@@ -5,7 +5,7 @@ from subprocess import check_call
 from setuptools import find_packages, setup
 from setuptools.command.install import install
 
-VERSION = "0.7.0"
+VERSION = "1.0.0"
 
 pkgs = [
     "numpy",
@@ -55,8 +55,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="py-automl",
-    url="https://github.com/Ashton-Sidhu/py-automl",
+    name="aethos",
+    url="https://github.com/Ashton-Sidhu/aethos",
     packages=find_packages(),
     author="Ashton Sidhu",
     author_email="ashton.sidhu1994@gmail.com",
@@ -70,8 +70,8 @@ setup(
     keywords="datascience, machinelearning, automation, analysis",
     data_files=[
         (
-            str(os.path.join(os.path.expanduser("~"), ".pyautoml")),
-            ["pyautoml/config/config.yml"],
+            str(os.path.join(os.path.expanduser("~"), ".aethos")),
+            ["aethos/config/config.yml"],
         )
     ],
     python_requires=">= 3.6",
@@ -81,5 +81,5 @@ setup(
         "Development Status :: 4 - Beta",
     ],
     cmdclass={"verify": VerifyVersionCommand},
-    entry_points={"console_scripts": ["pyautoml=pyautoml.__main__:main"]},
+    entry_points={"console_scripts": ["aethos=aethos.__main__:main"]},
 )
