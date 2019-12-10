@@ -24,7 +24,7 @@ workflows:
               ignore: /.*/
 jobs:
   build:
-    working_directory: ~/py-automl
+    working_directory: ~/aethos
     docker:
       - image: circleci/python:3.6.4-stretch
     steps:
@@ -48,7 +48,6 @@ jobs:
       - run:
           name: run tests
           command: |
-            . venv/bin/activate
             coverage run -m unittest discover
             codecov -F --required || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required)
   test-python-install:
