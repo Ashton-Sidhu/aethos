@@ -24,7 +24,7 @@ workflows:
               ignore: /.*/
 jobs:
   build:
-    working_directory: ~/aethos
+    working_directory: ~/py-automl
     docker:
       - image: circleci/python:3.6.4-stretch
     steps:
