@@ -81,11 +81,6 @@ jobs:
             command: |
               . venv/bin/activate
               python3 -m unittest discover
-        - run:
-            name: Smoke Test Install 
-            command: |
-              python --version
-              sudo pip3 install aethos
   deploy:
     docker:
       - image: circleci/python:3.6
