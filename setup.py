@@ -56,7 +56,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="aethos",
-    url="https://github.com/Ashton-Sidhu/aethos",
+    url="https://github.com/Ashton-Sidhu/py-automl",
     packages=find_packages(),
     author="Ashton Sidhu",
     author_email="ashton.sidhu1994@gmail.com",
