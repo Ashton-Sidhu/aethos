@@ -421,38 +421,3 @@ class Preprocess(object):
             self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
-
-    def encode_labels(self, *list_args, list_of_cols=[]):
-        """
-        Encode labels with value between 0 and n_classes-1.
-
-        Running this function will automatically set the corresponding mapping for the target variable mapping number to the original value.
-
-        Note that this will not work if your test data will have labels that your train data does not.
-
-        Parameters
-        ----------
-        list_args : str(s), optional
-            Specific columns to apply this technique to.
-
-        list_of_cols : list, optional
-            A list of specific columns to apply this technique to., by default []
-        
-        Returns
-        -------
-        Preprocess
-            Copy of preprocess object
-        """
-
-        report_info = technique_reason_repo["preprocess"]["categorical"]["label_encode"]
-
-        list_of_cols = _input_columns(list_args, list_of_cols)
-
-        self.x_train, self.x_test, _ = label_encoder(
-            x_train=self.x_train, x_test=self.x_test, list_of_cols=list_of_cols,
-        )
-
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
-
-        return self.copy()
