@@ -15,7 +15,6 @@ To track development of the project, you can view the [Trello board](https://tre
 - [Introduction](#introduction)
 - [Usage](#usage)
 - [Installation](#installation)
-- [Features](#features)
 - [Development Phases](#development-phases)
 - [Feedback](#feedback)
 - [Contributors](#contributors)
@@ -27,9 +26,32 @@ To track development of the project, you can view the [Trello board](https://tre
 
 ## Introduction
 
-Aethos is a library/platform that automates your data science and analytical tasks at any stage in the pipeline. Aethos is, at its core, a wrapper that helps automate analytical techniques from various libaries such as pandas, sci-kit learn, gensim, etc. and tries to the bridge the gap 
+Aethos is a library/platform that automates your data science and analytical tasks at any stage in the pipeline. Aethos is, at its core, a uniform API that helps automate analytical techniques from various libaries such as pandas, sci-kit learn, gensim, etc. 
 
-Aethos makes it easy to PoC, experiment and compare different techniques and models from various libraries. From cleaning your data, visualizing it and even applying feature engineering techniques from your favourite libraries - all done with a single, human readable, line of code!
+Aethos provides:
+
+  - Automated data science cleaning, preprocessing, feature engineering and modelling techniques through one line of code
+  - Automated reporting - as you perform your analysis, a report is created along side with it
+  - Automated visualizations through one line of code
+  - Reusable code - no more copying code from notebook to notebook
+  - Automated dependency and corpus management
+  - Datascience project templates
+  - Integrated 3rd party jupyter plugins to make analyzing data more friendly
+  - Model analysis use cases - Confusion Matrix, ROC Curve, all metrics, decision tree plots, etc.
+  - Model interpretability - Local through SHAP and LIME, global through Morris Sensitivity
+  - Interactive checklists and tips to either remind or help you through your analysis.
+
+Plus more coming soon such as:
+
+  - Testing for model drift
+  - Comparing train and test data distribution
+  - Recommendation models
+  - Statistical tests - Anova, T-test, etc.
+  - Pre-trained models - BERT, GPT2, etc.
+  - Parralelization through Dask and/or Spark
+  - Uniform API for deep learning models and automated code and file generation jupyter notebook development, python file of your data    pipeline and Docker/Kubernetes file of your model as a microservice.
+
+Aethos makes it easy to PoC, experiment and compare different techniques and models from various libraries. From imputations, visualizations, scaling, dimensionality reduction, feature engineering to modelling, model results and model deployment - all done with a single, human readable, line of code!
 
 Aethos utilizes other open source libraries to help enhance your analysis from enhanced stastical information, interactive visual plots or statistical tests and models - all your tools in one place, all accessible with one line of code or a click! See below in the [Acknowledgments](#acknowledgments) for the open source libraries being used in this project.
 
@@ -43,6 +65,8 @@ To start, we need to import the ethos dependencies as well as pandas.
 Before that, we can create a full data science folder structure by running `aethos create` from the command line and follow the command prompts.
 
 ### General Use
+
+For a full list of methods please see the full docs or [TECHNIQUES.md]()
 
 #### Options
 
@@ -191,32 +215,19 @@ lr_model.interpret_model() # Creates an interactive dashboard to view LIME, SHAP
 
 To install associating corpora for nltk analysis:
 
-`aethos -ic` or `aethos --install-corpora`
+`aethos install-corpora`
 
 To install and use the extensions such as `qgrid` for interactive filtering and analysis with DataFrames:
 
-`aethos -ie` or `aethos --install-extensions`
+`aethos enable-extensions`
 
 Currently working on condas implementation.
 
 To create a Data Science project run:
 
-`aethos -c` or `aethos --create`
+`aethos create`
 
 This will create a full folder strucuture for you to manage data, unit tests, experiments and source code.
-
-## Features
-
-- Python package that simplifies and automates cleaning, visualizing, preprocessing, feature engineering, and modelling techniques.
-- Report generation detailing exact steps how you transformed your dataset
-- If you are doing a PoC or experimenting the code will output in a `.ipynb` and a `.py` format. *
-- If the plan is to create a full pipeline the code will out a `.py` containing the full pipeline. *
-- Model Evaluation
-- Model Deployment *
-- Spark Integration *
-- Data visualizations
-- On prem deployment *
-- 3rd Party application integration (Azure, AWS, GC) *
 
 ## Development Phases
 
@@ -234,19 +245,19 @@ This will create a full folder strucuture for you to manage data, unit tests, ex
 
 #### Phase 3
   - [x] Quality of life/addons
-  - [ ] Parallelization
+  - [ ] Code Generation
+  - [ ] Pre trained models
 
 #### Phase 4
+  - [ ]	Deep learning integration
+  - [ ] Parallelization
   - [ ]	Spark
-  - [ ]	Community centric optimization (making it easier to share techniques and models with other engineers).
     
 #### Phase 5
   - [ ]	Cloud computing
-  - [ ]	Deep learning integration
 
 #### Phase 6
   - [ ] Web App
-  - [ ] Code Generation
   
 These are subject to change.
 
