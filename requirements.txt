@@ -34,3 +34,4 @@ selenium
 python-docx
 graphviz
 pyldavis
+swifter

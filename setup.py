@@ -35,6 +35,7 @@ pkgs = [
     "python-docx",
     "graphviz",
     "pyldavis"
+    "swifter"
 ]
 
 
