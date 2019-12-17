@@ -32,7 +32,8 @@ pkgs = [
     "python-dateutil<2.8.1",
     "itables",
     "selenium",
-    "python-docx"
+    "python-docx",
+    "graphviz"
 ]
 
 
