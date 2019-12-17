@@ -5,23 +5,20 @@ from pathlib import Path
 
 from IPython import display
 from pathos.multiprocessing import Pool
+
+from aethos.config import shell, technique_reason_repo
 from aethos.core import Data
-from aethos.config import technique_reason_repo, shell
 from aethos.modelling.model_analysis import *
 from aethos.modelling.text import *
-from aethos.modelling.util import (
-    _get_cv_type,
-    _run_models_parallel,
-    add_to_queue,
-    run_crossvalidation,
-    run_gridsearch,
-    to_pickle,
-)
+from aethos.modelling.util import (_get_cv_type, _run_models_parallel,
+                                   add_to_queue, run_crossvalidation,
+                                   run_gridsearch, to_pickle)
 from aethos.reporting.report import Report
-from aethos.util import _input_columns, _set_item, _validate_model_name, split_data
+from aethos.util import (_input_columns, _set_item, _validate_model_name,
+                         split_data)
 from aethos.visualizations.visualizations import Visualizations
 
-warnings.simplefilter('ignore', FutureWarning)
+warnings.simplefilter("ignore", FutureWarning)
 
 
 class Model(Visualizations):
@@ -39,26 +36,25 @@ class Model(Visualizations):
         if isinstance(x_train, pd.DataFrame):
             self.x_train = x_train
             self.x_test = x_test
-            self.split= split
-            self.target_field=target_field
-            self.target_mapping=None
-            self.report_name=report_name
-            self.test_split_percentage=test_split_percentage
+            self.split = split
+            self.target_field = target_field
+            self.target_mapping = None
+            self.report_name = report_name
+            self.test_split_percentage = test_split_percentage
         else:
-            self.x_train=step.x_train
-            self.x_test=step.x_test
-            self.test_split_percentage=step.test_split_percentage
-            self.split=step.split
-            self.target_field=step.target_field
-            self.target_mapping=step.target_mapping
-            self.report_name=step.report_name
+            self.x_train = step.x_train
+            self.x_test = step.x_test
+            self.test_split_percentage = step.test_split_percentage
+            self.split = step.split
+            self.target_field = step.target_field
+            self.target_mapping = step.target_mapping
+            self.report_name = step.report_name
 
         if split and x_test is None:
             # Generate train set and test set.
             self.x_train, self.x_test = split_data(self.x_train, test_split_percentage)
             self.x_train.reset_index(drop=True, inplace=True)
             self.x_test.reset_index(drop=True, inplace=True)
-            
 
         if report_name is not None:
             self.report = Report(report_name)
@@ -791,6 +787,33 @@ class Model(Visualizations):
             self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self, d2v_model, model_name)
+
+        return self._models[model_name]
+
+    @add_to_queue
+    def LDA(self, col_name, prep=False, model_name="lda", run=True, **kwargs):
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
+        report_info = technique_reason_repo["model"]["text"]["lda"]
+
+        (
+            self._train_result_data,
+            self._test_result_data,
+            lda_model,
+            corpus,
+            id2word,
+        ) = gensim_lda(
+            x_train=self.x_train, x_test=self.x_test, col_name=col_name, **kwargs
+        )
+
+        if self.report is not None:
+            self.report.report_technique(report_info)
+
+        self._models[model_name] = TextModel(
+            self, lda_model, model_name, corpus=corpus, id2word=id2word
+        )
 
         return self._models[model_name]
 
@@ -5539,7 +5562,13 @@ class Model(Visualizations):
 
         if cv:
             cv_scores = run_crossvalidation(
-                model, self.x_train, self.y_train, cv=cv, scoring=score, report=self.report, model_name=model_name,
+                model,
+                self.x_train,
+                self.y_train,
+                cv=cv,
+                scoring=score,
+                report=self.report,
+                model_name=model_name,
             )
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
@@ -5597,7 +5626,13 @@ class Model(Visualizations):
 
         if cv:
             cv_scores = run_crossvalidation(
-                model, self.x_train, self.y_train, cv=cv, scoring=score, report=self.report, model_name=model_name,
+                model,
+                self.x_train,
+                self.y_train,
+                cv=cv,
+                scoring=score,
+                report=self.report,
+                model_name=model_name,
             )
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.

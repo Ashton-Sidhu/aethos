@@ -2,7 +2,6 @@ from aethos.visualizations.visualize import *
 
 
 class Visualizations(object):
-
     def __init__(self, data):
         self.data = data
 
@@ -27,7 +26,6 @@ class Visualizations(object):
         from IPython.display import IFrame
 
         IFrame("https://seaborn.pydata.org/tutorial/color_palettes.html")
-
 
     def raincloud(self, x=None, y=None, output_file="", **params):
         """
@@ -492,9 +490,7 @@ class Visualizations(object):
         >>> clean.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        jointplot(
-            x=x, y=y, df=self.data, kind=kind, output_file=output_file, **kwargs
-        )
+        jointplot(x=x, y=y, df=self.data, kind=kind, output_file=output_file, **kwargs)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)

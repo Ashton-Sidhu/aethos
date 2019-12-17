@@ -8,7 +8,6 @@ from aethos.util import _input_columns, label_encoder
 
 
 class Feature(object):
-
     def onehot_encode(
         self, *list_args, list_of_cols=[], keep_col=True, **onehot_kwargs
     ):
@@ -608,12 +607,12 @@ class Feature(object):
         orig_cols = set(self.x_train.columns)
 
         (self.x_train, self.x_test,) = drop_correlated_features(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            threshold=threshold,
+            x_train=self.x_train, x_test=self.x_test, threshold=threshold,
         )
 
         if self.report is not None:
-            self.report.report_technique(report_info, list(orig_cols.difference(self.x_train.columns)))
+            self.report.report_technique(
+                report_info, list(orig_cols.difference(self.x_train.columns))
+            )
 
         return self.copy()

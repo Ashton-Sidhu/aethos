@@ -33,3 +33,4 @@ itables
 selenium
 python-docx
 graphviz
+pyldavis

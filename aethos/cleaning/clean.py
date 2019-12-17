@@ -8,7 +8,6 @@ from aethos.util import _input_columns, _numeric_input_conditions
 
 
 class Clean(object):
-
     def drop_column_missing_threshold(self, threshold: float):
         """
         Remove columns from the dataframe that have greater than or equal to the threshold value of missing values.

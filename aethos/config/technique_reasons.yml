@@ -160,6 +160,9 @@ model:
     word2vec: >
       Trained a word2vec model.
 
+    lda: >
+      Trained a Latent Dirichlet Allocation to model topics.
+
   unsupervised:
     kmeans: >
       Ran KMeans clustering.

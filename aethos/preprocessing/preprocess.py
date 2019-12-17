@@ -8,7 +8,6 @@ from aethos.util import _input_columns, _numeric_input_conditions, label_encoder
 
 
 class Preprocess(object):
-
     def normalize_numeric(
         self, *list_args, list_of_cols=[], keep_col=True, **normalize_params
     ):

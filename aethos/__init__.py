@@ -1,5 +1,6 @@
 import warnings
-warnings.simplefilter('ignore', FutureWarning)
+
+warnings.simplefilter("ignore", FutureWarning)
 
 import pandas as pd
 

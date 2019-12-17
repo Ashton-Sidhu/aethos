@@ -9,11 +9,12 @@ import interpret
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import seaborn as sns
 import sklearn
 import xgboost as xgb
 from graphviz import Source
-from IPython.display import SVG, display
+from IPython.display import HTML, SVG, display
 
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import pca
@@ -631,42 +632,48 @@ class ModelBase(object):
             Name of the file including extension, by default None
         """
 
-        if hasattr(self, 'classes'):
+        if hasattr(self, "classes"):
             classes = self.classes
         else:
             classes = None
 
-        if isinstance(self.model, sklearn.tree.BaseDecisionTree):        
-            graph = Source(sklearn.tree.export_graphviz(
-                self.model,
-                out_file=None,
-                feature_names=self.features,
-                class_names=classes,
-                rounded=True,
-                precision=True,
-                filled=True
-            ))
+        if isinstance(self.model, sklearn.tree.BaseDecisionTree):
+            graph = Source(
+                sklearn.tree.export_graphviz(
+                    self.model,
+                    out_file=None,
+                    feature_names=self.features,
+                    class_names=classes,
+                    rounded=True,
+                    precision=True,
+                    filled=True,
+                )
+            )
 
-            display(SVG(graph.pipe(format='svg')))
+            display(SVG(graph.pipe(format="svg")))
         elif isinstance(self.model, xgb.XGBModel):
             xgb.plot_tree(self.model)
-        
+
         elif isinstance(self.model, sklearn.ensemble.BaseEnsemble):
             estimator = self.model.estimators_[tree_num]
 
-            graph = Source(sklearn.tree.export_graphviz(
-                estimator,
-                out_file=None,
-                feature_names=self.features,
-                class_names=classes,
-                rounded=True,
-                precision=True,
-                filled=True
-            ))
+            graph = Source(
+                sklearn.tree.export_graphviz(
+                    estimator,
+                    out_file=None,
+                    feature_names=self.features,
+                    class_names=classes,
+                    rounded=True,
+                    precision=True,
+                    filled=True,
+                )
+            )
 
-            display(SVG(graph.pipe(format='svg')))
+            display(SVG(graph.pipe(format="svg")))
         else:
-            raise NotImplementedError(f'Model {str(self.model)} cannot be viewed as a tree')
+            raise NotImplementedError(
+                f"Model {str(self.model)} cannot be viewed as a tree"
+            )
 
     def to_pickle(self):
         """
@@ -675,10 +682,157 @@ class ModelBase(object):
 
         to_pickle(self.model, self.model_name)
 
+
 class TextModel(ModelBase):
-    def __init__(self, model_object, model, model_name):
+    def __init__(self, model_object, model, model_name, **kwargs):
 
         super().__init__(model_object, model, model_name)
+
+        self.result_data = model_object.x_train_results
+
+        # LDA dependant variables
+        self.corpus = kwargs.pop("corpus", None)
+        self.id2word = kwargs.pop("id2word", None)
+
+    def view(self, original_text, model_output):
+        """
+        View the original text and the model output in a more user friendly format
+        
+        Parameters
+        ----------
+        original_text : str
+            Column name of the original text
+
+        model_output : str
+            Column name of the model text
+        """
+
+        results = self.result_data[[original_text, model_output]]
+
+        display(HTML(results.to_html()))
+
+    def view_topics(self, num_topics=10, **kwargs):
+        """
+        View topics from topic modelling model.
+        
+        Parameters
+        ----------
+        num_topics : int, optional
+            Number of topics to view, by default 10
+
+        Returns
+        --------
+        str
+            String representation of topics and probabilities
+        """
+
+        return self.model.show_topics(num_topics=num_topics, **kwargs)
+
+    def view_topic(self, topic_num: int, **kwargs):
+        """
+        View a specific topic from topic modelling model.
+        
+        Parameters
+        ----------
+        topic_num : int
+
+        Returns
+        --------
+        str
+            String representation of topic and probabilities    
+        """
+
+        return self.model.show_topic(topicid=topic_num, **kwargs)
+
+    def visualize_topics(self, **kwargs): # pragma: no cover
+        """
+        Visualize topics using pyLDAvis.
+
+        Parameters
+        ----------
+        R : int
+            The number of terms to display in the barcharts of the visualization. Default is 30. Recommended to be roughly between 10 and 50.
+
+        lambda_step : float, between 0 and 1
+            Determines the interstep distance in the grid of lambda values over which to iterate when computing relevance. Default is 0.01. Recommended to be between 0.01 and 0.1.
+
+        mds : function or {'tsne', 'mmds}
+            A function that takes topic_term_dists as an input and outputs a n_topics by 2 distance matrix.
+            The output approximates the distance between topics. See js_PCoA() for details on the default function.
+            A string representation currently accepts pcoa (or upper case variant), mmds (or upper case variant) and tsne (or upper case variant), if sklearn package is installed for the latter two.
+
+        n_jobs : int
+            The number of cores to be used to do the computations. The regular joblib conventions are followed so -1, which is the default, will use all cores.
+
+        plot_opts : dict, with keys ‘xlab’ and ylab
+            Dictionary of plotting options, right now only used for the axis labels.
+
+        sort_topics : bool
+            Sort topics by topic proportion (percentage of tokens covered).
+            Set to false to keep original topic order.
+        """
+
+        import pyLDAvis
+        import pyLDAvis.gensim
+
+        pyLDAvis.enable_notebook()
+
+        return pyLDAvis.gensim.prepare(self.model, self.corpus, self.id2word, **kwargs)
+        
+
+    def coherence_score(self, col_name):
+        """
+        Displays the coherence score of the topic model.
+
+        For more info on topic coherence: https://rare-technologies.com/what-is-topic-coherence/ 
+        
+        Parameters
+        ----------
+        col_name : str
+            Column name that was used as input for the LDA model
+        """
+
+        import gensim
+
+        texts = self.result_data[col_name].tolist()
+
+        coherence_model_lda = gensim.models.CoherenceModel(
+            model=self.model, texts=texts, dictionary=self.id2word, coherence="c_v"
+        )
+        coherence_lda = coherence_model_lda.get_coherence()
+
+        fig = go.Figure(
+            go.Indicator(
+                domain={"x": [0, 1], "y": [0, 1]},
+                value=coherence_lda,
+                mode="number",
+                title={"text": "Coherence Score"},
+            )
+        )
+
+        fig.show()
+
+    def model_perplexity(self):
+        """
+        Displays the model perplexity of the topic model.
+
+        Perplexity is a measurement of how well a probability distribution or probability model predicts a sample. It may be used to compare probability models.
+        
+        A low perplexity indicates the probability distribution is good at predicting the sample.
+        """
+
+        fig = go.Figure(
+            go.Indicator(
+                domain={"x": [0, 1], "y": [0, 1]},
+                value=self.model.log_perplexity(self.corpus),
+                mode="number",
+                title={"text": "Model Perplexity"},
+            )
+        )
+
+        fig.show()
+
+        print("Note: The lower the better.")
 
 
 class UnsupervisedModel(ModelBase):

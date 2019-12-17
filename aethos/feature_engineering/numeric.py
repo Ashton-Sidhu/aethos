@@ -49,6 +49,7 @@ def polynomial_features(x_train, x_test=None, list_of_cols=[], **poly_kwargs):
 
     return x_train, x_test
 
+
 def drop_correlated_features(x_train, x_test=None, threshold=0.95):
     """
     Drops highly correlated features.
@@ -79,7 +80,7 @@ def drop_correlated_features(x_train, x_test=None, threshold=0.95):
     drop_cols = [col for col in upper.columns if any(upper[col] > 0.95)]
 
     x_train.drop(drop_cols, axis=1, inplace=True)
-    
+
     if x_test is not None:
         x_test.drop(drop_cols, axis=1, inplace=True)
 

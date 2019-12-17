@@ -56,9 +56,7 @@ class TestPreprocessing(unittest.TestCase):
         x_train = pd.DataFrame(unnormal_x_train, columns=columns)
         x_test = pd.DataFrame(unnormal_x_test, columns=columns)
 
-        preprocess = Data(
-            x_train=x_train, x_test=x_test, test_split_percentage=0.5
-        )
+        preprocess = Data(x_train=x_train, x_test=x_test, test_split_percentage=0.5)
         preprocess.normalize_numeric("col1", "col2", "col3")
         validate_train = preprocess.x_train.values.tolist()
         validate_test = preprocess.x_test.values.tolist()
@@ -169,6 +167,7 @@ class TestPreprocessing(unittest.TestCase):
         validate = prep.x_train.data_rem_stop.values.tolist()
 
         self.assertListEqual(validate, ["split ."])
+
 
 if __name__ == "__main__":
     unittest.main()

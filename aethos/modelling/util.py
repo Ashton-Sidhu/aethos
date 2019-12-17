@@ -86,7 +86,9 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
     return model
 
 
-def run_crossvalidation(model, x_train, y_train, cv=5, scoring="accuracy", report=None, model_name=None):
+def run_crossvalidation(
+    model, x_train, y_train, cv=5, scoring="accuracy", report=None, model_name=None
+):
     """
     Runs cross validation on a certain model.
     
@@ -108,22 +110,21 @@ def run_crossvalidation(model, x_train, y_train, cv=5, scoring="accuracy", repor
         Scoring method, by default 'accuracy'
     """
 
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,5))
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15, 5))
     visualizer_scores = CVScores(model, cv=cv, scoring=scoring, ax=axes[0])
     visualizer_scores.fit(x_train, y_train)
     visualizer_scores.finalize()
 
-
     visualizer_lcurve = LearningCurve(model, cv=cv, scoring=scoring, ax=axes[1])
     visualizer_lcurve.fit(x_train, y_train)
     visualizer_lcurve.finalize()
-    
+
     visualizer_scores.show()
     visualizer_lcurve.show()
 
-    if report: # pragma: no cover
+    if report:  # pragma: no cover
         imgdir = _make_image_dir()
-        fig.savefig(os.path.join(imgdir, model_name + '.svg'))
+        fig.savefig(os.path.join(imgdir, model_name + ".svg"))
 
 
 def _run_models_parallel(model_obj):

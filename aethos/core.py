@@ -40,7 +40,7 @@ class Data(Clean, Preprocess, Feature, Visualizations):
         x_test=None,
         split=True,
         test_split_percentage=0.2,
-        target_field='',
+        target_field="",
         report_name=None,
     ):
 
@@ -143,7 +143,7 @@ class Data(Clean, Preprocess, Feature, Visualizations):
             if hasattr(self.x_train, key):
                 return getattr(self.x_train, key)
             else:
-                raise AttributeError(f'Name does not have attribute {key}.')
+                raise AttributeError(f"Name does not have attribute {key}.")
 
     def __setattr__(self, item, value):
 

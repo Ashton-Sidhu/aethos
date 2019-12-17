@@ -26,6 +26,21 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_text_view_gensim_summarize(self):
+
+        text_data = [
+            "Hi my name is aethos. Please split me.",
+            "This function is going to split by sentence. Automation is great.",
+        ]
+
+        data = pd.DataFrame(data=text_data, columns=["data"])
+
+        model = Model(x_train=data, split=False)
+        m = model.summarize_gensim("data", ratio=0.5, run=True)
+        m.view("data", "data_summarized")
+
+        self.assertTrue(True)
+
     def test_text_gensim_keywords(self):
 
         text_data = [
@@ -55,6 +70,88 @@ class TestModelling(unittest.TestCase):
         validate = model.w2v is not None
 
         self.assertTrue(validate)
+
+    def test_text_gensim_lda(self):
+
+        text_data = [
+            "Hi my name is aethos. Please split me.",
+            "This function is going to split by sentence. Automation is great.",
+        ]
+
+        data = pd.DataFrame(data=text_data, columns=["data"])
+        data["prep"] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, test_split_percentage=0.5)
+        model.LDA("prep")
+        validate = model.lda is not None
+
+        self.assertTrue(validate)
+
+    def test_text_view_topics(self):
+
+        text_data = [
+            "Hi my name is aethos. Please split me.",
+            "This function is going to split by sentence. Automation is great.",
+        ]
+
+        data = pd.DataFrame(data=text_data, columns=["data"])
+        data["prep"] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, test_split_percentage=0.5)
+        l = model.LDA("prep")
+        l.view_topics()
+        l.view_topic(1)
+
+        self.assertTrue(True)
+
+    def test_text_model_perplexity(self):
+
+        text_data = [
+            "Hi my name is aethos. Please split me.",
+            "This function is going to split by sentence. Automation is great.",
+        ]
+
+        data = pd.DataFrame(data=text_data, columns=["data"])
+        data["prep"] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, test_split_percentage=0.5)
+        l = model.LDA("prep")
+        l.model_perplexity()
+
+        self.assertTrue(True)
+
+    def test_text_coherence_score(self):
+
+        text_data = [
+            "Hi my name is aethos. Please split me.",
+            "This function is going to split by sentence. Automation is great.",
+        ]
+
+        data = pd.DataFrame(data=text_data, columns=["data"])
+        data["prep"] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, test_split_percentage=0.5)
+        l = model.LDA("prep")
+        l.coherence_score('prep')
+
+        self.assertTrue(True)
+
+    def test_text_view_topics(self):
+
+        text_data = [
+            "Hi my name is aethos. Please split me.",
+            "This function is going to split by sentence. Automation is great.",
+        ]
+
+        data = pd.DataFrame(data=text_data, columns=["data"])
+        data["prep"] = pd.Series([text.split() for text in text_data])
+
+        model = Model(x_train=data, test_split_percentage=0.5)
+        l = model.LDA("prep")
+        l.view_topics()
+        l.view_topic(1)
+
+        self.assertTrue(True)
 
     def test_text_w2vprep(self):
 

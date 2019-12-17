@@ -1,3 +1,4 @@
+import gensim
 from gensim.models import Word2Vec
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from gensim.summarization import keywords
@@ -179,3 +180,87 @@ def gensim_doc2vec(x_train, x_test=None, prep=False, col_name=None, **algo_kwarg
     d2v.delete_temporary_training_data(keep_doctags_vectors=True, keep_inference=True)
 
     return d2v
+
+
+def gensim_lda(x_train, x_test=None, col_name=None, **algo_kwargs):
+    """
+    Runs Gensim LDA model and assigns topics to documents.
+    
+    Parameters
+    ----------
+    x_train : DataFrame
+        Dataset
+
+    x_test : DataFrame
+        Testing dataset, by default None
+
+    prep : bool, optional
+        True to prep the text
+        False if text is already prepped.
+        By default, False
+
+    col_name : str, optional
+        Column name of text data that you want to summarize
+    
+    Returns
+    -------
+    Dataframe, *Dataframe, LDAModel
+        Transformed dataframe with the new column.
+
+    Returns 2 Dataframes if x_test is provided. 
+    """
+
+    texts = x_train[col_name].tolist()
+
+    id2word = gensim.corpora.Dictionary(texts)
+    corpus = [id2word.doc2bow(text) for text in texts]
+
+    lda_model = gensim.models.LdaModel(corpus=corpus, id2word=id2word, **algo_kwargs)
+
+    x_train["topics"] = _assign_topic_doc(lda_model, texts, corpus)
+
+    if x_test is not None:
+        texts = x_test[col_name].tolist()
+        test_corpus = [id2word.doc2bow(text) for text in texts]
+
+        x_test["topics"] = _assign_topic_doc(lda_model, texts, test_corpus)
+
+    return x_train, x_test, lda_model, corpus, id2word
+
+
+def _assign_topic_doc(lda_model, texts, corpus):
+    """
+    Helper function to assign the relevant topics to each document
+    
+    Parameters
+    ----------
+    lda_model : LDAModel
+        LDA Model
+
+    texts : [str]
+        List of text documents
+
+    corpus : list
+        Corpus list
+    
+    Returns
+    -------
+    list
+        List of topics assigned to each document
+    """
+
+    keywords = []
+
+    for i, row in enumerate(lda_model[corpus]):
+
+        row = sorted(row, key=lambda x: (x[1]), reverse=True)
+
+        for j, (topic_num, prop_topic) in enumerate(row):
+            if j == 0:
+                wp = lda_model.show_topic(topic_num)
+                topic_keywords = ", ".join([word for word, prop in wp])
+                keywords.append(topic_keywords)
+
+                break
+
+    return keywords

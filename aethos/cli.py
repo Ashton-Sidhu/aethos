@@ -7,12 +7,14 @@ import click
 def main():
     pass
 
+
 @main.command()
 def create():
     """
     Creates a Data Science folder structure and files.
     """
     os.system("cookiecutter https://github.com/drivendata/cookiecutter-data-science")
+
 
 @main.command()
 def enable_extensions():
@@ -21,6 +23,7 @@ def enable_extensions():
     """
     os.system("jupyter nbextension enable --py --sys-prefix widgetsnbextension")
     os.system("jupyter nbextension enable --py --sys-prefix qgrid")
+
 
 @main.command()
 def install_corpora():

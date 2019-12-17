@@ -33,7 +33,8 @@ pkgs = [
     "itables",
     "selenium",
     "python-docx",
-    "graphviz"
+    "graphviz",
+    "pyldavis"
 ]
 
 
