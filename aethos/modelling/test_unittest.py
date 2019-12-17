@@ -1,10 +1,10 @@
+import os
+import shutil
 import unittest
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import os
-from pathlib import Path
-import shutil
 from sklearn.datasets import make_blobs
 
 from aethos import Model
@@ -762,6 +762,18 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_view_rfclassifier(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.RandomForestClassification(random_state=2, run=True)
+        validate = model.rf_cls.view_tree()
+
+        self.assertTrue(validate)
+
     def test_model_bernoulli(self):
 
         data = np.random.randint(0, 2, size=(1000, 3))
@@ -967,6 +979,18 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_view_dtregression(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.DecisionTreeRegression(random_state=2, run=True)
+        validate = model.dt_reg.view_tree()
+
+        self.assertTrue(True)
+
     def test_model_linearsvr(self):
 
         data = np.random.randint(0, 2, size=(1000, 3))
@@ -978,6 +1002,17 @@ class TestModelling(unittest.TestCase):
         validate = model.linsvr is not None
 
         self.assertTrue(validate)
+
+    def test_model_view_linearsvr(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.LinearSVR(random_state=2, run=True)
+
+        self.assertRaises(NotImplementedError, model.linsvr.view_tree)
 
     def test_model_svr(self):
 
@@ -1002,6 +1037,18 @@ class TestModelling(unittest.TestCase):
         validate = model.xgb_cls is not None
 
         self.assertTrue(validate)
+
+    def test_model_view_xgbc(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.XGBoostRegression(run=True)
+        validate = model.xgb_reg.view_tree()
+
+        self.assertTrue(True)
 
     def test_model_xgbr(self):
 

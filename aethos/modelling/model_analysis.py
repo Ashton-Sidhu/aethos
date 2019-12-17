@@ -1,5 +1,6 @@
 import itertools
 import math
+import os
 import warnings
 from collections import OrderedDict
 from itertools import compress
@@ -10,21 +11,19 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import sklearn
+import xgboost as xgb
+from graphviz import Source
+from IPython.display import SVG, display
 
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import pca
-from aethos.modelling.constants import (
-    CLASS_METRICS_DESC,
-    INTERPRET_EXPLAINERS,
-    PROBLEM_TYPE,
-    REG_METRICS_DESC,
-    SHAP_LEARNERS,
-)
+from aethos.modelling.constants import (CLASS_METRICS_DESC,
+                                        INTERPRET_EXPLAINERS, PROBLEM_TYPE,
+                                        REG_METRICS_DESC, SHAP_LEARNERS)
 from aethos.modelling.model_explanation import MSFTInterpret, Shap
 from aethos.modelling.util import to_pickle
-from aethos.visualizations.visualize import *
 from aethos.visualizations.util import _make_image_dir
-import os
+from aethos.visualizations.visualize import *
 
 
 class ModelBase(object):
@@ -619,13 +618,62 @@ class ModelBase(object):
                 method=method, predictions=predictions, show=show, **interpret_kwargs
             )
 
+    def view_tree(self, tree_num=0, output_file=None):
+        """
+        Plot decision trees.
+        
+        Parameters
+        ----------
+        tree_num: int, optional
+            For ensemble, boosting, and stacking methods - the tree number to plot, by default 0
+
+        output_file : str, optional
+            Name of the file including extension, by default None
+        """
+
+        if hasattr(self, 'classes'):
+            classes = self.classes
+        else:
+            classes = None
+
+        if isinstance(self.model, sklearn.tree.BaseDecisionTree):        
+            graph = Source(sklearn.tree.export_graphviz(
+                self.model,
+                out_file=None,
+                feature_names=self.features,
+                class_names=classes,
+                rounded=True,
+                precision=True,
+                filled=True
+            ))
+
+            display(SVG(graph.pipe(format='svg')))
+        elif isinstance(self.model, xgb.XGBModel):
+            xgb.plot_tree(self.model)
+        
+        elif isinstance(self.model, sklearn.ensemble.BaseEnsemble):
+            estimator = self.model.estimators_[tree_num]
+
+            graph = Source(sklearn.tree.export_graphviz(
+                estimator,
+                out_file=None,
+                feature_names=self.features,
+                class_names=classes,
+                rounded=True,
+                precision=True,
+                filled=True
+            ))
+
+            display(SVG(graph.pipe(format='svg')))
+        else:
+            raise NotImplementedError(f'Model {str(self.model)} cannot be viewed as a tree')
+
     def to_pickle(self):
         """
         Writes model to a pickle file.
         """
 
         to_pickle(self.model, self.model_name)
-
 
 class TextModel(ModelBase):
     def __init__(self, model_object, model, model_name):
