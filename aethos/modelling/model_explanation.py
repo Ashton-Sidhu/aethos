@@ -43,7 +43,7 @@ class Shap(object):
             float
         )
 
-        if isinstance(self.model, lgb.sklearn.LGBMModel) and isinstance(self.expected_value, np.float):
+        if isinstance(self.model, lgb.sklearn.LGBMClassifier) and isinstance(self.expected_value, np.float):
             self.shap_values = self.shap_values[1]
 
         # Calculate misclassified values
