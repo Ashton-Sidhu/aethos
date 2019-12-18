@@ -34,7 +34,7 @@ pkgs = [
     "selenium",
     "python-docx",
     "graphviz",
-    "pyldavis"
+    "pyldavis",
     "swifter"
 ]
 
