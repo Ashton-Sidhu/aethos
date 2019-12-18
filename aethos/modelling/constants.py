@@ -1,11 +1,8 @@
+import lightgbm as lgb
 import sklearn
 import xgboost as xgb
-from interpret.blackbox import (
-    LimeTabular,
-    MorrisSensitivity,
-    PartialDependence,
-    ShapKernel,
-)
+from interpret.blackbox import (LimeTabular, MorrisSensitivity,
+                                PartialDependence, ShapKernel)
 from interpret.perf import PR, ROC, RegressionPerf
 from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 
@@ -38,6 +35,8 @@ SHAP_LEARNERS = {
     sklearn.svm.SVR: "kernel",
     xgb.XGBClassifier: "tree",
     xgb.XGBRegressor: "tree",
+    lgb.sklearn.LGBMClassifier: "tree",
+    lgb.sklearn.LGBMRegressor: "tree",
 }
 
 PROBLEM_TYPE = {
@@ -69,6 +68,8 @@ PROBLEM_TYPE = {
     sklearn.svm.SVR: "regression",
     xgb.XGBClassifier: "classification",
     xgb.XGBRegressor: "regression",
+    lgb.sklearn.LGBMClassifier: "classification",
+    lgb.sklearn.LGBMRegressor: "regression",
 }
 
 INTERPRET_EXPLAINERS = {

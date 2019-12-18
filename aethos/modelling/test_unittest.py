@@ -1159,6 +1159,42 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_lgbc(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.LightGBMClassifcation(run=True)
+        validate = model.lgbm_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_lgbr(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.LightGBMRegression(run=True)
+        validate = model.lgbm_reg is not None
+
+        self.assertTrue(True)
+
+    def test_model_view_lgbr(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.LightGBMRegression(run=True)
+        model.lgbm_reg.view_tree()
+
+        self.assertTrue(True)
+
     def test_model_agglom(self):
 
         data = [[1, 2], [2, 2], [2, 3], [8, 7], [8, 8], [25, 80]]

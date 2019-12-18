@@ -1,12 +1,14 @@
+import os
+
 import interpret
+import lightgbm as lgb
+import matplotlib.pyplot as pl
 import numpy as np
 import pandas as pd
 import shap
-import matplotlib.pyplot as pl
-from aethos.visualizations.util import _make_image_dir
 
 from aethos.modelling.constants import INTERPRET_EXPLAINERS
-import os
+from aethos.visualizations.util import _make_image_dir
 
 
 class Shap(object):
@@ -40,6 +42,9 @@ class Shap(object):
         self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(
             float
         )
+
+        if isinstance(self.model, lgb.sklearn.LGBMModel) and isinstance(self.expected_value, np.float):
+            self.shap_values = self.shap_values[1]
 
         # Calculate misclassified values
         self.misclassified_values = self._calculate_misclassified()

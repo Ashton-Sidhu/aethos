@@ -6,6 +6,7 @@ from collections import OrderedDict
 from itertools import compress
 
 import interpret
+import lightgbm as lgb
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -619,7 +620,7 @@ class ModelBase(object):
                 method=method, predictions=predictions, show=show, **interpret_kwargs
             )
 
-    def view_tree(self, tree_num=0, output_file=None):
+    def view_tree(self, tree_num=0, output_file=None, **kwargs):
         """
         Plot decision trees.
         
@@ -651,8 +652,12 @@ class ModelBase(object):
             )
 
             display(SVG(graph.pipe(format="svg")))
+
         elif isinstance(self.model, xgb.XGBModel):
-            xgb.plot_tree(self.model)
+            return xgb.plot_tree(self.model)
+
+        elif isinstance(self.model, lgb.sklearn.LGBMModel):
+            return lgb.plot_tree(self.model)
 
         elif isinstance(self.model, sklearn.ensemble.BaseEnsemble):
             estimator = self.model.estimators_[tree_num]

@@ -227,6 +227,9 @@ model:
 
     xgb_cls: >
       Trained a XGBoost Classification Model.
+
+    lgbm_cls: >
+      Trained a LightGBM Classification Model.
      
   regression:
     linreg: >
@@ -269,4 +272,7 @@ model:
       Trained a Support Vector Regressor
 
     xgb_reg: >
-      Trained a XGBoost Regressor model.  
+      Trained a XGBoost Regressor model.
+
+    lgbm_reg: >
+      Trained a LightGBM Regressor model.

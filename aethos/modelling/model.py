@@ -3651,6 +3651,174 @@ class Model(Visualizations):
 
         return model
 
+    @add_to_queue
+    def LightGBMClassifcation(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        model_name="lgbm_cls",
+        new_col_name="lgbm_cls_predictions",
+        run=True,
+        verbose=2,
+        **kwargs,
+    ):
+        """
+        Trains an LightGBM Classification Model.
+
+        LightGBM is a gradient boosting framework that uses a tree based learning algorithm.
+
+        Light GBM grows tree vertically while other algorithm grows trees horizontally meaning that Light GBM grows tree leaf-wise while other algorithm grows level-wise.
+        It will choose the leaf with max delta loss to grow.
+        When growing the same leaf, Leaf-wise algorithm can reduce more loss than a level-wise algorithm.
+
+        For more LightGBM info, you can view it here: https://github.com/microsoft/LightGBM and
+        https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMClassifier.html#lightgbm.LGBMClassifier
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "lgbm_cls"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "lgbm_cls_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        boosting_type (string, optional (default='gbdt'))
+            ‘gbdt’, traditional Gradient Boosting Decision Tree. ‘dart’, Dropouts meet Multiple Additive Regression Trees. ‘goss’, Gradient-based One-Side Sampling. ‘rf’, Random Forest.
+
+        num_leaves (int, optional (default=31))
+            Maximum tree leaves for base learners.
+
+        max_depth (int, optional (default=-1))
+            Maximum tree depth for base learners, <=0 means no limit.
+
+        learning_rate (float, optional (default=0.1))
+            Boosting learning rate. You can use callbacks parameter of fit method to shrink/adapt learning rate in training using reset_parameter callback. Note, that this will ignore the learning_rate argument in training.
+
+        n_estimators (int, optional (default=100))
+            Number of boosted trees to fit.
+
+        subsample_for_bin (int, optional (default=200000))
+            Number of samples for constructing bins.
+
+        objective (string, callable or None, optional (default=None))
+            Specify the learning task and the corresponding learning objective or a custom objective function to be used (see note below). Default: ‘regression’ for LGBMRegressor, ‘binary’ or ‘multiclass’ for LGBMClassifier, ‘lambdarank’ for LGBMRanker.
+
+        class_weight (dict, 'balanced' or None, optional (default=None))
+            Weights associated with classes in the form {class_label: weight}. Use this parameter only for multi-class classification task; for binary classification task you may use is_unbalance or scale_pos_weight parameters. Note, that the usage of all these parameters will result in poor estimates of the individual class probabilities. You may want to consider performing probability calibration (https://scikit-learn.org/stable/modules/calibration.html) of your model. The ‘balanced’ mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y)). If None, all classes are supposed to have weight one. Note, that these weights will be multiplied with sample_weight (passed through the fit method) if sample_weight is specified.
+
+        min_split_gain (float, optional (default=0.))
+            Minimum loss reduction required to make a further partition on a leaf node of the tree.
+
+        min_child_weight (float, optional (default=1e-3))
+            Minimum sum of instance weight (hessian) needed in a child (leaf).
+
+        min_child_samples (int, optional (default=20))
+            Minimum number of data needed in a child (leaf).
+
+        subsample (float, optional (default=1.))
+            Subsample ratio of the training instance.
+
+        subsample_freq (int, optional (default=0))
+            Frequence of subsample, <=0 means no enable.
+
+        colsample_bytree (float, optional (default=1.))
+            Subsample ratio of columns when constructing each tree.
+
+        reg_alpha (float, optional (default=0.))
+            L1 regularization term on weights.
+
+        reg_lambda (float, optional (default=0.))
+            L2 regularization term on weights.
+
+        random_state (int or None, optional (default=None))
+            Random number seed. If None, default seeds in C++ code will be used.
+
+        n_jobs (int, optional (default=-1))
+            Number of parallel threads.
+
+        silent (bool, optional (default=True))
+            Whether to print messages while running boosting.
+
+        importance_type (string, optional (default='split'))
+            The type of feature importance to be filled into feature_importances_. If ‘split’, result contains numbers of times the feature is used in a model. If ‘gain’, result contains total gains of splits which use the feature.
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+
+        import lightgbm as lgb
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
+        random_state = kwargs.pop("random_state", 42)
+        objective = kwargs.pop(
+            "objective",
+            "binary" if len(self.y_train.unique()) == 2 else "multiclass",
+        )
+        report_info = technique_reason_repo["model"]["classification"]["lgbm_cls"]
+
+        model = lgb.LGBMClassifier(
+            objective=objective, random_state=random_state, **kwargs
+        )
+
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            run=run,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs,
+        )
+
+        return model
+
     ################### REGRESSION MODELS ########################
 
     @add_to_queue
@@ -5519,6 +5687,161 @@ class Model(Visualizations):
         report_info = technique_reason_repo["model"]["regression"]["xgb_reg"]
 
         model = xgb.XGBRegressor(random_state=random_state, **kwargs)
+
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            run=run,
+            verbose=verbose,
+            random_state=random_state,
+            **kwargs,
+        )
+
+        return model
+
+    @add_to_queue
+    def LightGBMRegression(
+        self,
+        cv=None,
+        gridsearch=None,
+        score="neg_mean_squared_error",
+        model_name="lgbm_reg",
+        new_col_name="lgbm_reg_predictions",
+        run=True,
+        verbose=2,
+        **kwargs,
+    ):
+        """
+        Trains an LightGBM Regression Model.
+
+        LightGBM is a gradient boosting framework that uses a tree based learning algorithm.
+
+        Light GBM grows tree vertically while other algorithm grows trees horizontally meaning that Light GBM grows tree leaf-wise while other algorithm grows level-wise.
+        It will choose the leaf with max delta loss to grow.
+        When growing the same leaf, Leaf-wise algorithm can reduce more loss than a level-wise algorithm.
+
+        For more LightGBM info, you can view it here: https://github.com/microsoft/LightGBM and
+        https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMRegressor.html#lightgbm.LGBMRegressor
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE 
+            - ‘neg_mean_squared_error’ --> MSE
+            - ‘neg_mean_squared_log_error’ --> MSLE 
+            - ‘neg_median_absolute_error’ --> MeAE 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'neg_mean_squared_error'
+
+        model_name : str, optional
+            Name for this model, by default "lgbm_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "lgbm_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        boosting_type (string, optional (default='gbdt'))
+            ‘gbdt’, traditional Gradient Boosting Decision Tree. ‘dart’, Dropouts meet Multiple Additive Regression Trees. ‘goss’, Gradient-based One-Side Sampling. ‘rf’, Random Forest.
+
+        num_leaves (int, optional (default=31))
+            Maximum tree leaves for base learners.
+
+        max_depth (int, optional (default=-1))
+            Maximum tree depth for base learners, <=0 means no limit.
+
+        learning_rate (float, optional (default=0.1))
+            Boosting learning rate. You can use callbacks parameter of fit method to shrink/adapt learning rate in training using reset_parameter callback. Note, that this will ignore the learning_rate argument in training.
+
+        n_estimators (int, optional (default=100))
+            Number of boosted trees to fit.
+
+        subsample_for_bin (int, optional (default=200000))
+            Number of samples for constructing bins.
+
+        objective (string, callable or None, optional (default=None))
+            Specify the learning task and the corresponding learning objective or a custom objective function to be used (see note below). Default: ‘regression’ for LGBMRegressor, ‘binary’ or ‘multiclass’ for LGBMClassifier, ‘lambdarank’ for LGBMRanker.
+
+        class_weight (dict, 'balanced' or None, optional (default=None))
+            Weights associated with classes in the form {class_label: weight}. Use this parameter only for multi-class classification task; for binary classification task you may use is_unbalance or scale_pos_weight parameters. Note, that the usage of all these parameters will result in poor estimates of the individual class probabilities. You may want to consider performing probability calibration (https://scikit-learn.org/stable/modules/calibration.html) of your model. The ‘balanced’ mode uses the values of y to automatically adjust weights inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y)). If None, all classes are supposed to have weight one. Note, that these weights will be multiplied with sample_weight (passed through the fit method) if sample_weight is specified.
+
+        min_split_gain (float, optional (default=0.))
+            Minimum loss reduction required to make a further partition on a leaf node of the tree.
+
+        min_child_weight (float, optional (default=1e-3))
+            Minimum sum of instance weight (hessian) needed in a child (leaf).
+
+        min_child_samples (int, optional (default=20))
+            Minimum number of data needed in a child (leaf).
+
+        subsample (float, optional (default=1.))
+            Subsample ratio of the training instance.
+
+        subsample_freq (int, optional (default=0))
+            Frequence of subsample, <=0 means no enable.
+
+        colsample_bytree (float, optional (default=1.))
+            Subsample ratio of columns when constructing each tree.
+
+        reg_alpha (float, optional (default=0.))
+            L1 regularization term on weights.
+
+        reg_lambda (float, optional (default=0.))
+            L2 regularization term on weights.
+
+        random_state (int or None, optional (default=None))
+            Random number seed. If None, default seeds in C++ code will be used.
+
+        n_jobs (int, optional (default=-1))
+            Number of parallel threads.
+
+        silent (bool, optional (default=True))
+            Whether to print messages while running boosting.
+
+        importance_type (string, optional (default='split'))
+            The type of feature importance to be filled into feature_importances_. If ‘split’, result contains numbers of times the feature is used in a model. If ‘gain’, result contains total gains of splits which use the feature.
+            
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+
+        import lightgbm as lgb
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["lgbm_reg"]
+
+        model = lgb.LGBMRegressor(random_state=random_state, **kwargs)
 
         model = self._run_supervised_model(
             model,
