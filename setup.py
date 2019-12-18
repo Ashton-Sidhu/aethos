@@ -36,7 +36,8 @@ pkgs = [
     "graphviz",
     "pyldavis",
     "swifter",
-    "lightgbm"
+    "lightgbm",
+    "catboost"
 ]
 
 

@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+
 from aethos import Data
 
 
@@ -144,6 +145,19 @@ class TestPreprocessing(unittest.TestCase):
 
         self.assertListEqual(
             validate, ["Please.exe split me", "hello it s me testing.dll"]
+        )
+
+    def test_preprocess_cleantext(self):
+
+        text_data = ["Please.exe, split me.", "hello it's me, testing.dll."]
+        data = pd.DataFrame(data=text_data, columns=["data"])
+
+        prep = Data(x_train=data, split=False)
+        prep.clean_text('data')
+        validate = prep.x_train['data_clean'].tolist()
+
+        self.assertListEqual(
+            validate, ["please.ex split", "hello 's testing.dl"]
         )
 
     def test_preprocess_nltkremove_punctuation_exception(self):

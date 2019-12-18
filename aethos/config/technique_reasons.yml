@@ -103,6 +103,9 @@ preprocess:
     remove_punctuation: >
       Removed punctuation from all the text.
 
+    clean_text: >
+      Cleaned the text in column(s) column_name_placeholder .
+
 feature:
   general:
     pca: >
@@ -230,6 +233,9 @@ model:
 
     lgbm_cls: >
       Trained a LightGBM Classification Model.
+
+    cb_cls: >
+      Trained a CatBoost Classification Model.
      
   regression:
     linreg: >
@@ -276,3 +282,6 @@ model:
 
     lgbm_reg: >
       Trained a LightGBM Regressor model.
+
+    cb_reg: >
+      Trained a CatBoost Regressor model.

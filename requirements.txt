@@ -36,3 +36,4 @@ graphviz
 pyldavis
 swifter
 lightgbm
+catboost

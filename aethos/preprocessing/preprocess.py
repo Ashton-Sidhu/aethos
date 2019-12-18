@@ -1,10 +1,12 @@
 import pandas as pd
+
 from aethos import *
 from aethos.config import technique_reason_repo
 from aethos.preprocessing.categorical import *
 from aethos.preprocessing.numeric import *
 from aethos.preprocessing.text import *
-from aethos.util import _input_columns, _numeric_input_conditions, label_encoder
+from aethos.util import (_input_columns, _numeric_input_conditions,
+                         label_encoder)
 
 
 class Preprocess(object):
@@ -415,6 +417,68 @@ class Preprocess(object):
             exceptions=exceptions,
             new_col_name=new_col_name,
         )
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
+    def clean_text(
+        self,
+        *list_args,
+        list_of_cols=[],
+        lower=True,
+        punctuation=True,
+        stopwords=True,
+        stemmer=True,
+        new_col_name="_clean"
+    ):
+        """
+        Function that takes text and does the following:
+
+        - Casts it to lowercase
+        - Removes punctuation
+        - Removes stopwords
+        - Stems the text
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+        
+        lower : bool, optional
+            True to cast all text to lowercase, by default True
+        
+        punctuation : bool, optional
+            True to remove punctuation, by default True
+        
+        stopwords : bool, optional
+            True to remove stop words, by default True
+        
+        stemmer : bool, optional
+            True to stem the data, by default True
+
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_clean`            
+        
+        Returns
+        -------
+        Preprocess
+            Copy of preprocess object
+        """
+
+        report_info = technique_reason_repo["preprocess"]["text"]["clean_text"]
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        for col in list_of_cols:
+            self.x_train[col + new_col_name] = [process_text(text) for text in self.x_train[col]]
+
+            if self.x_test is not None:
+                self.x_test[col + new_col_name] = [process_text(text) for text in self.x_test[col]]
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
