@@ -3,6 +3,7 @@ import os
 import warnings
 from pathlib import Path
 
+import catboost as cb
 from IPython import display
 from pathos.multiprocessing import Pool
 
@@ -805,7 +806,7 @@ class Model(Visualizations):
             corpus,
             id2word,
         ) = gensim_lda(
-            x_train=self.x_train, x_test=self.x_test, col_name=col_name, **kwargs
+            x_train=self.x_train, x_test=self.x_test, prep=prep, col_name=col_name, **kwargs
         )
 
         if self.report is not None:
@@ -3819,6 +3820,130 @@ class Model(Visualizations):
 
         return model
 
+    @add_to_queue
+    def CatBoostClassifcation(
+        self,
+        cat_features=None,
+        cv=None,
+        gridsearch=None,
+        score="accuracy",
+        model_name="cb_cls",
+        new_col_name="cb_cls_predictions",
+        run=True,
+        verbose=2,
+        **kwargs,
+    ):
+        """
+        Trains an CatBoost Classification Model.
+
+        CatBoost is an algorithm for gradient boosting on decision trees. 
+
+        For more CatBoost info, you can view it here: https://catboost.ai/docs/concepts/about.html and
+        https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’
+        
+        Parameters
+        ----------
+        cat_features: list
+            A one-dimensional array of categorical columns indices, by default None (all features are considered numerical)
+
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'accuracy'
+
+        model_name : str, optional
+            Name for this model, by default "cb_cls"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "cb_cls_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False
+
+        Important Params
+        ----------------
+
+        - cat_features
+        - one_hot_max_size
+        - learning_rate        
+        - n_estimators
+        - max_depth
+        - subsample
+        - colsample_bylevel
+        - colsample_bytree
+        - colsample_bynode
+        - l2_leaf_reg
+        - random_strength
+
+        For more parameter information (as there is a lot) please view https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
+
+        Returns
+        -------
+        ClassificationModel
+            ClassificationModel object to view results and analyze results
+        """
+        
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
+        random_state = kwargs.pop("random_state", 42)
+        objective = kwargs.pop(
+            "objective",
+            "Logloss" if len(self.y_train.unique()) == 2 else "MultiClass",
+        )
+        report_info = technique_reason_repo["model"]["classification"]["cb_cls"]
+
+        model = cb.CatBoostClassifier(
+            objective=objective, random_state=random_state, **kwargs
+        )
+
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            ClassificationModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            run=run,
+            verbose=verbose,
+            random_state=random_state,
+            cat_features=cat_features,
+            **kwargs,
+        )
+
+        return model
+
     ################### REGRESSION MODELS ########################
 
     @add_to_queue
@@ -5860,6 +5985,115 @@ class Model(Visualizations):
 
         return model
 
+    @add_to_queue
+    def CatBoostRegression(
+        self,
+        cat_features=None,
+        cv=None,
+        gridsearch=None,
+        score="neg_mean_squared_error",
+        model_name="cb_reg",
+        new_col_name="cb_predictions",
+        run=True,
+        verbose=2,
+        **kwargs,
+    ):
+        """
+        Trains an CatBoost Regression Model.
+
+        CatBoost is an algorithm for gradient boosting on decision trees. 
+        
+        For more CatBoost info, you can view it here: https://catboost.ai/docs/concepts/about.html and
+        https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
+
+        If running cross-validation, the implemented cross validators are:
+            - 'kfold' for KFold
+            - 'strat-kfold' for StratifiedKfold
+
+        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
+
+        Possible scoring metrics: 
+            - ‘explained_variance’ 	 
+            - ‘max_error’ 	 
+            - ‘neg_mean_absolute_error’ --> MAE 
+            - ‘neg_mean_squared_error’ --> MSE
+            - ‘neg_mean_squared_log_error’ --> MSLE 
+            - ‘neg_median_absolute_error’ --> MeAE 
+            - ‘r2’
+        
+        Parameters
+        ----------
+        cv : bool, optional
+            If True run crossvalidation on the model, by default None.
+
+        gridsearch : int, Crossvalidation Generator, optional
+            Cross validation method, by default None
+
+        score : str, optional
+            Scoring metric to evaluate models, by default 'neg_mean_squared_error'
+
+        model_name : str, optional
+            Name for this model, by default "cb_reg"
+
+        new_col_name : str, optional
+            Name of column for labels that are generated, by default "cb_reg_predictions"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        verbose : bool, optional
+            True if you want to print out detailed info about the model training, by default False    	
+
+        
+        Important Params
+        ----------------
+
+        - cat_features
+        - one_hot_max_size
+        - learning_rate        
+        - n_estimators
+        - max_depth
+        - subsample
+        - colsample_bylevel
+        - colsample_bytree
+        - colsample_bynode
+        - l2_leaf_reg
+        - random_strength
+
+        For more parameter information (as there is a lot) please view https://catboost.ai/docs/concepts/python-reference_parameters-list.html#python-reference_parameters-list
+            
+        Returns
+        -------
+        RegressionModel
+            RegressionModel object to view results and analyze results
+        """
+
+        if not _validate_model_name(self, model_name):
+            raise AttributeError("Invalid model name. Please choose another one.")
+
+        random_state = kwargs.pop("random_state", 42)
+        report_info = technique_reason_repo["model"]["regression"]["cb_reg"]
+
+        model = cb.CatBoostRegressor(random_state=random_state, **kwargs)
+
+        model = self._run_supervised_model(
+            model,
+            model_name,
+            RegressionModel,
+            new_col_name,
+            report_info,
+            cv=cv,
+            gridsearch=gridsearch,
+            score=score,
+            run=run,
+            verbose=verbose,
+            random_state=random_state,
+            cat_features=cat_features,
+            **kwargs,
+        )
+
+        return model
+
     ################### HELPER FUNCTIONS ########################
 
     def _run_supervised_model(
@@ -5881,18 +6115,42 @@ class Model(Visualizations):
         """
 
         random_state = kwargs.pop("random_state", 42)
+        cat_features = kwargs.pop('cat_features', None)
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
 
         if cv:
-            cv_scores = run_crossvalidation(
-                model,
-                self.x_train,
-                self.y_train,
-                cv=cv,
-                scoring=score,
-                report=self.report,
-                model_name=model_name,
-            )
+            if isinstance(model, cb.CatBoost):
+                if isinstance(cv, int):
+                    folds = None
+                    fold_count = cv
+                else:
+                    folds = cv
+                    fold_count = None
+
+                cv_dataset = cb.Pool(
+                    self.x_train,
+                    self.y_train,
+                    cat_features=cat_features,
+                )
+
+                cv_scores = cb.cv(
+                    cv_dataset,
+                    kwargs,
+                    folds=folds,
+                    fold_count=fold_count,
+                    plot="True",
+                )
+
+            else:                
+                cv_scores = run_crossvalidation(
+                    model,
+                    self.x_train,
+                    self.y_train,
+                    cv=cv,
+                    scoring=score,
+                    report=self.report,
+                    model_name=model_name,
+                )
 
             # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
             if not run:
@@ -5900,11 +6158,26 @@ class Model(Visualizations):
 
         if gridsearch:
             cv = cv if cv else 5
-            model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
+
+            if isinstance(model, cb.CatBoost):
+                model.grid_search(
+                    gridsearch,
+                    self.x_train,
+                    self.y_train,
+                    cv=cv,
+                    plot=True
+                )
+
+            else:
+                model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
         # Train a model and predict on the test test.
-        model.fit(self.x_train, self.y_train)
-
+        if isinstance(model, cb.CatBoost):
+            if not gridsearch:
+                model.fit(self.x_train, self.y_train, plot=True)
+        else:
+            model.fit(self.x_train, self.y_train)
+            
         self._train_result_data[new_col_name] = model.predict(self.x_train)
 
         if self.x_test is not None:
@@ -5917,10 +6190,16 @@ class Model(Visualizations):
 
             self.report.report_technique(report_info)
 
-        if gridsearch:
+        if gridsearch and not isinstance(model, cb.CatBoost):
             model = model.best_estimator_
 
-        self._models[model_name] = model_type(self, model_name, model, new_col_name)
+        if isinstance(model, cb.CatBoost):
+            data = self.x_train if self.x_test is None else self.x_test
+            label = self.y_train if self.x_test is None else self.y_test
+
+            shap_values = model.get_feature_importance(cb.Pool(data, label=label, cat_features=cat_features), type="ShapValues")
+
+        self._models[model_name] = model_type(self, model_name, model, new_col_name, shap_values=shap_values)
 
         print(model)
 
@@ -5963,7 +6242,6 @@ class Model(Visualizations):
                 return
 
         if gridsearch:
-
             if not self.target_field:
                 raise ValueError(
                     "Target field (.target_field) must be set to evaluate best model against a scoring metric."

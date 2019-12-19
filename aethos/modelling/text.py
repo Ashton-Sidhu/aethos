@@ -5,6 +5,8 @@ from gensim.summarization import keywords
 from gensim.summarization.summarizer import summarize
 from nltk.tokenize import word_tokenize
 
+from aethos.preprocessing.text import process_text
+
 
 def gensim_textrank_summarizer(
     x_train, x_test=None, list_of_cols=[], new_col_name="_summarized", **algo_kwargs
@@ -124,10 +126,9 @@ def gensim_word2vec(x_train, x_test=None, prep=False, col_name=None, **algo_kwar
         Word2Vec model
     """
 
-    # TODO: Add better default behaviour and transformation of passing in raw text
     if prep:
         w2v = Word2Vec(
-            sentences=[word_tokenize(text.lower()) for text in x_train[col_name]],
+            sentences=[word_tokenize(process_text(text)) for text in x_train[col_name]],
             **algo_kwargs
         )
     else:
@@ -140,7 +141,7 @@ def gensim_doc2vec(x_train, x_test=None, prep=False, col_name=None, **algo_kwarg
     """
     Uses Gensim Text Rank summarize to extract keywords.
 
-    Note this uses a variant of Text Rank.
+    Note: this uses a variant of Text Rank.
     
     Parameters
     ----------
@@ -164,10 +165,9 @@ def gensim_doc2vec(x_train, x_test=None, prep=False, col_name=None, **algo_kwarg
         Doc2Vec Model
     """
 
-    # TODO: Add better default behaviour and transformation of passing in raw text
     if prep:
         tagged_data = [
-            TaggedDocument(words=word_tokenize(text.lower()), tags=[str(i)])
+            TaggedDocument(words=word_tokenize(process_text(text)), tags=[str(i)])
             for i, text in enumerate(x_train[col_name])
         ]
     else:
@@ -182,7 +182,7 @@ def gensim_doc2vec(x_train, x_test=None, prep=False, col_name=None, **algo_kwarg
     return d2v
 
 
-def gensim_lda(x_train, x_test=None, col_name=None, **algo_kwargs):
+def gensim_lda(x_train, x_test=None, prep=False, col_name=None, **algo_kwargs):
     """
     Runs Gensim LDA model and assigns topics to documents.
     
@@ -204,13 +204,16 @@ def gensim_lda(x_train, x_test=None, col_name=None, **algo_kwargs):
     
     Returns
     -------
-    Dataframe, *Dataframe, LDAModel
+    Dataframe, *Dataframe, LDAModel, corpus, list
         Transformed dataframe with the new column.
 
     Returns 2 Dataframes if x_test is provided. 
     """
 
     texts = x_train[col_name].tolist()
+
+    if prep:
+        texts = [word_tokenize(process_text(text)) for text in texts]
 
     id2word = gensim.corpora.Dictionary(texts)
     corpus = [id2word.doc2bow(text) for text in texts]
@@ -221,6 +224,10 @@ def gensim_lda(x_train, x_test=None, col_name=None, **algo_kwargs):
 
     if x_test is not None:
         texts = x_test[col_name].tolist()
+
+        if prep:
+            texts = [word_tokenize(process_text(text)) for text in texts]
+            
         test_corpus = [id2word.doc2bow(text) for text in texts]
 
         x_test["topics"] = _assign_topic_doc(lda_model, texts, test_corpus)

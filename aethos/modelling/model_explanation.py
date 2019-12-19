@@ -1,5 +1,6 @@
 import os
 
+import catboost as cb
 import interpret
 import lightgbm as lgb
 import matplotlib.pyplot as pl
@@ -12,7 +13,7 @@ from aethos.visualizations.util import _make_image_dir
 
 
 class Shap(object):
-    def __init__(self, model, x_train, x_test, y_test, learner: str):
+    def __init__(self, model, x_train, x_test, y_test, learner: str, shap_values):
 
         self.model = model
         self.x_train = x_train
@@ -25,9 +26,6 @@ class Shap(object):
             )
         elif learner == "tree":
             self.explainer = shap.TreeExplainer(self.model)
-            self.shap_interaction_values = self.explainer.shap_interaction_values(
-                self.x_test
-            )
         elif learner == "kernel":
             if hasattr(self.model, "predict_proba"):
                 func = self.model.predict_proba
@@ -38,11 +36,15 @@ class Shap(object):
         else:
             raise ValueError(f"Learner: {learner} is not supported yet.")
 
-        self.expected_value = self.explainer.expected_value
-        self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(
-            float
-        )
-
+        if shap_values is None:
+            self.expected_value = self.explainer.expected_value
+            self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(
+                float
+            )
+        else:
+            self.expected_value = shap_values[0, -1]
+            self.shap_values = shap_values[:, :-1]
+            
         if isinstance(self.model, lgb.sklearn.LGBMClassifier) and isinstance(self.expected_value, np.float):
             self.shap_values = self.shap_values[1]
 

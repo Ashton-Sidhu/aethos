@@ -87,6 +87,21 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_text_gensim_prep_lda(self):
+
+        text_data = [
+            "Hi my name is aethos. Please split me.",
+            "This function is going to split by sentence. Automation is great.",
+        ]
+
+        data = pd.DataFrame(data=text_data, columns=["data"])
+
+        model = Model(x_train=data, test_split_percentage=0.5)
+        model.LDA("data", prep=True)
+        validate = model.lda is not None
+
+        self.assertTrue(validate)
+
     def test_text_view_topics(self):
 
         text_data = [
@@ -1192,6 +1207,67 @@ class TestModelling(unittest.TestCase):
         model = Model(x_train=data, target_field="col3")
         model.LightGBMRegression(run=True)
         model.lgbm_reg.view_tree()
+
+        self.assertTrue(True)
+
+
+    def test_model_cbc(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.CatBoostClassifcation(run=True)
+        validate = model.cb_cls is not None
+
+        self.assertTrue(validate)
+
+    def test_model_cbr(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.CatBoostRegression(run=True)
+        validate = model.cb_reg is not None
+
+        self.assertTrue(True)
+
+    def test_model_cbr_gridsearch(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.CatBoostRegression(cv='kfold', gridsearch={'learning_rate': [0.03, 0.1]})
+        validate = model.cb_reg is not None
+
+        self.assertTrue(True)
+
+    def test_model_cbr_cv(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.CatBoostRegression(cv='kfold')
+        validate = model.cb_reg is not None
+
+        self.assertTrue(True)
+
+    def test_model_view_cbr(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.CatBoostClassifcation(run=True)
+        model.cb_reg.view_tree()
 
         self.assertTrue(True)
 

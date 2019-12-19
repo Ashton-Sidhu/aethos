@@ -1,3 +1,4 @@
+import catboost as cb
 import lightgbm as lgb
 import sklearn
 import xgboost as xgb
@@ -37,6 +38,8 @@ SHAP_LEARNERS = {
     xgb.XGBRegressor: "tree",
     lgb.sklearn.LGBMClassifier: "tree",
     lgb.sklearn.LGBMRegressor: "tree",
+    cb.CatBoostRegressor: "tree",
+    cb.CatBoostClassifier: "tree",
 }
 
 PROBLEM_TYPE = {
@@ -70,6 +73,8 @@ PROBLEM_TYPE = {
     xgb.XGBRegressor: "regression",
     lgb.sklearn.LGBMClassifier: "classification",
     lgb.sklearn.LGBMRegressor: "regression",
+    cb.CatBoostRegressor: "regression",
+    cb.CatBoostClassifier: "classification",
 }
 
 INTERPRET_EXPLAINERS = {

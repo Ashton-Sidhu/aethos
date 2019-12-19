@@ -1,18 +1,19 @@
 import inspect
 import multiprocessing as mp
-import warnings
 import os
 import pickle
+import warnings
 from functools import partial, wraps
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 from pathos.multiprocessing import ProcessingPool
-from aethos.config import cfg, DEFAULT_MODEL_DIR
-from aethos.util import _make_dir
-from aethos.visualizations.util import _make_image_dir
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
-import matplotlib.pyplot as plt
+
+from aethos.config import DEFAULT_MODEL_DIR, cfg
+from aethos.util import _make_dir
+from aethos.visualizations.util import _make_image_dir
 
 
 def add_to_queue(model_function):
@@ -58,8 +59,8 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
     model : Model
         Model to run gridsearch on
 
-    gridsearch : bool or dict
-        True, False or custom grid to test
+    gridsearch : dict
+        Dict of params to test
 
     cv : int, Crossvalidation Generator, optional
         Cross validation method, by default 12

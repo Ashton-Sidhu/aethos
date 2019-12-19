@@ -5,6 +5,7 @@ import warnings
 from collections import OrderedDict
 from itertools import compress
 
+import catboost as cb
 import interpret
 import lightgbm as lgb
 import matplotlib.pyplot as plt
@@ -32,13 +33,15 @@ class ModelBase(object):
 
     # TODO: Add more SHAP use cases
 
-    def __init__(self, model_object, model, model_name):
+    def __init__(self, model_object, model, model_name, **kwargs):
 
         self.model = model
         self.model_name = model_name
         self.x_train = model_object.x_train
         self.x_test = model_object.x_test
         self.report = model_object.report
+        
+        shap_values = kwargs.pop('shap_values', None)
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
             self.shap = Shap(
@@ -47,6 +50,7 @@ class ModelBase(object):
                 self.x_test,
                 self.y_test,
                 SHAP_LEARNERS[type(self.model)],
+                shap_values
             )
             self.interpret = MSFTInterpret(
                 self.model,
@@ -659,6 +663,9 @@ class ModelBase(object):
         elif isinstance(self.model, lgb.sklearn.LGBMModel):
             return lgb.plot_tree(self.model)
 
+        elif isinstance(self.model, cb.CatBoost):
+            return self.model.plot_tree(tree_idx=tree_num)
+
         elif isinstance(self.model, sklearn.ensemble.BaseEnsemble):
             estimator = self.model.estimators_[tree_num]
 
@@ -940,7 +947,7 @@ class UnsupervisedModel(ModelBase):
 
 
 class ClassificationModel(ModelBase):
-    def __init__(self, model_object, model_name, model, predictions_col):
+    def __init__(self, model_object, model_name, model, predictions_col, shap_values=None):
 
         self.y_train = model_object.y_train
         self.y_test = (
@@ -949,7 +956,7 @@ class ClassificationModel(ModelBase):
             else model_object.y_train
         )
 
-        super().__init__(model_object, model, model_name)
+        super().__init__(model_object, model, model_name, shap_values=shap_values)
 
         self.probabilities = None
         self.target_mapping = model_object.target_mapping
@@ -1557,7 +1564,7 @@ class ClassificationModel(ModelBase):
 
 
 class RegressionModel(ModelBase):
-    def __init__(self, model_object, model_name, model, predictions_col):
+    def __init__(self, model_object, model_name, model, predictions_col, shap_values=None):
 
         self.y_train = model_object.y_train
         self.y_test = (
@@ -1566,7 +1573,7 @@ class RegressionModel(ModelBase):
             else model_object.y_train
         )
 
-        super().__init__(model_object, model, model_name)
+        super().__init__(model_object, model, model_name, shap_values=shap_values)
 
         self.y_pred = (
             model_object.x_train_results[predictions_col]
