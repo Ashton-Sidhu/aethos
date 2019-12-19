@@ -1267,7 +1267,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field="col3")
         model.CatBoostClassifcation(run=True)
-        model.cb_reg.view_tree()
+        model.cb_cls.view_tree()
 
         self.assertTrue(True)
 
