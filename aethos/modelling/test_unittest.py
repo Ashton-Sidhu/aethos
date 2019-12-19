@@ -1259,17 +1259,17 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(True)
 
-    def test_model_view_cbr(self):
+    # def test_model_view_cbr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+    #     data = np.random.randint(0, 2, size=(1000, 3))
 
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+    #     data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
-        model.CatBoostClassifcation(run=True)
-        model.cb_cls.view_tree()
+    #     model = Model(x_train=data, target_field="col3")
+    #     model.CatBoostClassifcation(run=True)
+    #     model.cb_cls.view_tree()
 
-        self.assertTrue(True)
+    #     self.assertTrue(True)
 
     def test_model_agglom(self):
 
