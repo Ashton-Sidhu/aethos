@@ -6117,6 +6117,7 @@ class Model(Visualizations):
         random_state = kwargs.pop("random_state", 42)
         cat_features = kwargs.pop('cat_features', None)
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
+        shap_values = None
 
         if cv:
             if isinstance(model, cb.CatBoost):
