@@ -285,3 +285,11 @@ model:
 
     cb_reg: >
       Trained a CatBoost Regressor model.
+
+stats:
+  dist_compare:
+    predict: >
+      Compared the distribution of the training set and the test set by trying to predict how easily a classifier can distinguish samples from the training set and test set.
+
+    ks: >
+      Compared the distribution of the training set and the test set using the Kolomogirov-Smirnov test.

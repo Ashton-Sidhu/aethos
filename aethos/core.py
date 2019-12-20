@@ -7,33 +7,26 @@ import numpy as np
 import pandas as pd
 import pandas_profiling
 from IPython import get_ipython
-from IPython.display import display, HTML
+from IPython.display import HTML, display
 from ipywidgets import Layout
 from pandas.io.json import json_normalize
 from pandas_summary import DataFrameSummary
 
 import aethos
-from aethos.config import shell
 from aethos.cleaning.clean import Clean
+from aethos.config import shell
 from aethos.feature_engineering.feature import Feature
 from aethos.preprocessing.preprocess import Preprocess
 from aethos.reporting.report import Report
-from aethos.util import (
-    CLEANING_CHECKLIST,
-    DATA_CHECKLIST,
-    ISSUES_CHECKLIST,
-    MULTI_ANALYSIS_CHECKLIST,
-    PREPARATION_CHECKLIST,
-    UNI_ANALYSIS_CHECKLIST,
-    _get_columns,
-    _set_item,
-    label_encoder,
-    split_data,
-)
+from aethos.stats.stats import Stats
+from aethos.util import (CLEANING_CHECKLIST, DATA_CHECKLIST, ISSUES_CHECKLIST,
+                         MULTI_ANALYSIS_CHECKLIST, PREPARATION_CHECKLIST,
+                         UNI_ANALYSIS_CHECKLIST, _get_columns, _set_item,
+                         label_encoder, split_data)
 from aethos.visualizations.visualizations import Visualizations
 
 
-class Data(Clean, Preprocess, Feature, Visualizations):
+class Data(Clean, Preprocess, Feature, Visualizations, Stats):
     def __init__(
         self,
         x_train,
@@ -93,7 +86,7 @@ class Data(Clean, Preprocess, Feature, Visualizations):
             x_train_length = self.x_train.shape[0]
             x_test_length = self.x_test.shape[0]
 
-            if isinstance(value, list):
+            if isinstance(value, (list, np.ndarray)):
                 ## If the number of entries in the list does not match the number of rows in the training or testing
                 ## set raise a value error
                 if len(value) != x_train_length and len(value) != x_test_length:
