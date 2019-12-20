@@ -25,6 +25,7 @@ from aethos.modelling.constants import (CLASS_METRICS_DESC,
                                         REG_METRICS_DESC, SHAP_LEARNERS)
 from aethos.modelling.model_explanation import MSFTInterpret, Shap
 from aethos.modelling.util import to_pickle
+from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.visualizations.util import _make_image_dir
 from aethos.visualizations.visualize import *
 
@@ -690,10 +691,35 @@ class ModelBase(object):
     def to_pickle(self):
         """
         Writes model to a pickle file.
+
+        Examples
+        --------
+        >>> m = Model(df)
+        >>> m_results = m.LogisticRegression()
+        >>> m_results.to_pickle()
         """
 
         to_pickle(self.model, self.model_name)
 
+    def to_service(self, project_name: str):
+        """
+        Creates an app.py, requirements.txt and Dockerfile in `~/.aethos/projects` and the necessary folder structure
+        to run the model as a microservice.
+        
+        Parameters
+        ----------
+        project_name : str
+            Name of the project that you want to create.
+
+        Examples
+        --------
+        >>> m = Model(df)
+        >>> m_results = m.LogisticRegression()
+        >>> m_results.to_service('your_proj_name')
+        """
+
+        to_pickle(self.model, self.model_name, project=True, project_name=project_name)
+        tg.generate_service(project_name, f'{self.model_name}.pkl')
 
 class TextModel(ModelBase):
     def __init__(self, model_object, model, model_name, **kwargs):

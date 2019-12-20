@@ -1,0 +1,23 @@
+import pickle
+import logging
+
+# Server
+import uvicorn
+from fastapi import FastAPI
+
+app = FastAPI()
+
+my_logger = logging.getLogger()
+logging.basicConfig(level=logging.INFO, file='model-service.log')
+
+# Initialize files
+clf = pickle.load(open('{{ filename }}', 'rb'))
+
+@app.post("/predict")
+def predict(data: dict):
+
+    X = list(data.values())
+
+    prediction = clf.predict(X)
+
+    return prediction

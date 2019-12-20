@@ -1477,6 +1477,31 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_model_create_service(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        model.LogisticRegression(random_state=2, run=True)
+
+        model.to_service('log_reg', 'test')
+
+        self.assertTrue(True)
+
+    def test_model_analysis_create_service(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(x_train=data, target_field="col3")
+        m = model.LogisticRegression(random_state=2, run=True)
+
+        m.to_service('test1')
+
+        self.assertTrue(True)
 
 if __name__ == "__main__":
     unittest.main()

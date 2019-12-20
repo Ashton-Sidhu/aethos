@@ -1,0 +1,4 @@
+{% if service %}
+fastapi
+uvicorn
+{% endif %}

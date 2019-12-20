@@ -202,7 +202,7 @@ def _get_cv_type(cv_type, random_state, **kwargs):
     return cv_type, kwargs
 
 
-def to_pickle(model, name):
+def to_pickle(model, name, project=False, project_name=None):
     """
     Writes model to a pickle file.
     
@@ -213,12 +213,18 @@ def to_pickle(model, name):
 
     name : str
         Name of the model
+        
+    project : bool
+        Whether to write to the project folder, by default False
     """
 
-    if not cfg["models"]["dir"]:  # pragma: no cover
-        path = DEFAULT_MODEL_DIR
+    if not project:
+        if not cfg["models"]["dir"]:  # pragma: no cover
+            path = DEFAULT_MODEL_DIR
+        else:
+            path = cfg["models"]["dir"]
     else:
-        path = cfg["models"]["dir"]
+        path = os.path.join(os.path.expanduser('~'), '.aethos', 'projects', project_name, 'app')
 
     if not os.path.exists(path):
         os.makedirs(path)

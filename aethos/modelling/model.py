@@ -15,6 +15,7 @@ from aethos.modelling.util import (_get_cv_type, _run_models_parallel,
                                    add_to_queue, run_crossvalidation,
                                    run_gridsearch, to_pickle)
 from aethos.reporting.report import Report
+from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import (_input_columns, _set_item, _validate_model_name,
                          split_data)
 from aethos.visualizations.visualizations import Visualizations
@@ -376,11 +377,43 @@ class Model(Visualizations):
         ----------
         name : str
             Name of the model
+
+        Examples
+        --------
+        >>> m = Model(df)
+        >>> m.LogisticRegression()
+        >>> m.to_pickle('log_reg')
         """
 
         model_obj = self._models[name]
 
         to_pickle(model_obj.model, model_obj.model_name)
+
+    def to_service(self, model_name: str, project_name: str):
+        """
+        Creates an app.py, requirements.txt and Dockerfile in `~/.aethos/projects` and the necessary folder structure
+        to run the model as a microservice.
+        
+        Parameters
+        ----------
+        model_name : str
+            Name of the model to create a microservice of.
+
+        project_name : str
+            Name of the project that you want to create.
+
+        Examples
+        --------
+        >>> m = Model(df)
+        >>> m.LogisticRegression()
+        >>> m.to_service('log_reg', 'your_proj_name')
+        """
+
+        model_obj = self._models[model_name]
+
+        to_pickle(model_obj.model, model_obj.model_name, project=True, project_name=project_name)
+        tg.generate_service(project_name, f'{model_obj.model_name}.pkl')
+
 
     ################### TEXT MODELS ########################
 
