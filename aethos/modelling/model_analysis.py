@@ -15,9 +15,6 @@ import plotly.graph_objects as go
 import seaborn as sns
 import sklearn
 import xgboost as xgb
-from graphviz import Source
-from IPython.display import HTML, SVG, display
-
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import pca
 from aethos.modelling.constants import (CLASS_METRICS_DESC,
@@ -28,6 +25,8 @@ from aethos.modelling.util import to_pickle
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.visualizations.util import _make_image_dir
 from aethos.visualizations.visualize import *
+from graphviz import Source
+from IPython.display import HTML, SVG, display
 
 
 class ModelBase(object):

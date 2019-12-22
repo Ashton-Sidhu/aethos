@@ -4,9 +4,6 @@ import warnings
 from pathlib import Path
 
 import catboost as cb
-from IPython import display
-from pathos.multiprocessing import Pool
-
 from aethos.config import shell, technique_reason_repo
 from aethos.core import Data
 from aethos.modelling.model_analysis import *
@@ -16,17 +13,43 @@ from aethos.modelling.util import (_get_cv_type, _run_models_parallel,
                                    run_gridsearch, to_pickle)
 from aethos.reporting.report import Report
 from aethos.templates.template_generator import TemplateGenerator as tg
-from aethos.util import (_input_columns, _set_item, _validate_model_name,
-                         split_data)
+from aethos.util import _input_columns, _set_item, split_data
 from aethos.visualizations.visualizations import Visualizations
+from IPython import display
+from pathos.multiprocessing import Pool
 
 warnings.simplefilter("ignore", FutureWarning)
 
 
 class Model(Visualizations):
+    """
+    Modelling class that runs models, performs cross validation and gridsearch.
+
+    Parameters
+    -----------
+        x_train: aethos.Data or pd.DataFrame
+            Training data or aethos data object
+
+        x_test: pd.DataFrame
+            Test data, by default None
+
+        split: bool
+            True to split your training data into a train set and a test set
+
+        test_split_percentage: float
+            Percentage of data to split train data into a train and test set.
+            Only used if `split=True`
+
+        target_field: str
+            For supervised learning problems, the name of the column you're trying to predict.
+
+        report_name: str
+            Name of the report to generate, by default None
+    """
+
     def __init__(
         self,
-        x_train=None,
+        x_train,
         x_test=None,
         split=True,
         test_split_percentage=0.2,
@@ -72,24 +95,13 @@ class Model(Visualizations):
         # For supervised learning approaches, drop the target column
         if self.target_field:
             if split:
-                if isinstance(step, Model):
-                    self.x_train = step.x_train
-                    self.x_test = step.x_test
-                else:
-                    self.x_train = self.x_train.drop([self.target_field], axis=1)
-                    self.x_test = self.x_test.drop([self.target_field], axis=1)
+                self.x_train = self.x_train.drop([self.target_field], axis=1)
+                self.x_test = self.x_test.drop([self.target_field], axis=1)
             else:
-                if isinstance(step, Model):
-                    self.x_train = step.x_train
-                else:
-                    self.x_train = self.x_train.drop([self.target_field], axis=1)
+                self.x_train = self.x_train.drop([self.target_field], axis=1)
 
-        if isinstance(x_train, Model):
-            self._models = step._models
-            self._queued_models = step._queued_models
-        else:
-            self._models = {}
-            self._queued_models = {}
+        self._models = {}
+        self._queued_models = {}
 
         Visualizations.__init__(self, self._train_result_data)
 
@@ -137,10 +149,10 @@ class Model(Visualizations):
 
                 return self._train_result_data.head()
             else:
-                x_train_length = self.x_train.shape[0]
-                x_test_length = self.x_test.shape[0]
+                x_train_length = self._train_result_data.shape[0]
+                x_test_length = self._test_result_data.shape[0]
 
-                if isinstance(value, list):
+                if isinstance(value, (list, np.ndarray)):
                     ## If the number of entries in the list does not match the number of rows in the training or testing
                     ## set raise a value error
                     if len(value) != x_train_length and len(value) != x_test_length:
@@ -183,7 +195,7 @@ class Model(Visualizations):
 
         return self._train_result_data.to_string()
 
-    def _repr_html_(self):
+    def _repr_html_(self):  # pragma: no cover
 
         return self._train_result_data.head().to_html(
             show_dimensions=True, notebook=True
@@ -411,9 +423,13 @@ class Model(Visualizations):
 
         model_obj = self._models[model_name]
 
-        to_pickle(model_obj.model, model_obj.model_name, project=True, project_name=project_name)
-        tg.generate_service(project_name, f'{model_obj.model_name}.pkl')
-
+        to_pickle(
+            model_obj.model,
+            model_obj.model_name,
+            project=True,
+            project_name=project_name,
+        )
+        tg.generate_service(project_name, f"{model_obj.model_name}.pkl")
 
     ################### TEXT MODELS ########################
 
@@ -461,9 +477,6 @@ class Model(Visualizations):
         TextModel
             Resulting model
         """
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["text"]["textrank_summarizer"]
 
@@ -539,9 +552,6 @@ class Model(Visualizations):
         TextModel
             Resulting model
         """
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["text"]["textrank_keywords"]
         list_of_cols = _input_columns(list_args, list_of_cols)
@@ -675,9 +685,6 @@ class Model(Visualizations):
             Resulting model
         """
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         report_info = technique_reason_repo["model"]["text"]["word2vec"]
 
         w2v_model = gensim_word2vec(
@@ -804,9 +811,6 @@ class Model(Visualizations):
             Resulting model
         """
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         report_info = technique_reason_repo["model"]["text"]["doc2vec"]
 
         d2v_model = gensim_doc2vec(
@@ -826,9 +830,91 @@ class Model(Visualizations):
 
     @add_to_queue
     def LDA(self, col_name, prep=False, model_name="lda", run=True, **kwargs):
+        """
+        Extracts topics from your data using Latent Dirichlet Allocation.
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
+        For more information on LDA, you can view it here https://radimrehurek.com/gensim/models/ldamodel.html.
+        
+        Parameters
+        ----------
+        col_name : str, optional
+            Column name of text data that you want to summarize
+
+        prep : bool, optional
+            True to prep the data. Use when passing in raw text data.
+            False if passing in text that is already prepped.
+            By default False
+
+        model_name : str, optional
+            Name for this model, default to `lda`
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        distributed: (bool, optional)
+            Whether distributed computing should be used to accelerate training.
+
+        chunksize: (int, optional)
+            Number of documents to be used in each training chunk.
+
+        passes: (int, optional)
+            Number of passes through the corpus during training.
+
+        update_every: (int, optional)
+            Number of documents to be iterated through for each update. Set to 0 for batch learning, > 1 for online iterative learning.
+
+        alpha: ({numpy.ndarray, str}, optional)
+
+            Can be set to an 1D array of length equal to the number of expected topics that expresses our a-priori belief for the each topics’ probability. Alternatively default prior selecting strategies can be employed by supplying a string:
+
+                    ’asymmetric’: Uses a fixed normalized asymmetric prior of 1.0 / topicno.
+
+                    ’auto’: Learns an asymmetric prior from the corpus (not available if distributed==True).
+
+        eta: ({float, np.array, str}, optional)
+
+            A-priori belief on word probability, this can be:
+
+                    scalar for a symmetric prior over topic/word probability,
+
+                    vector of length num_words to denote an asymmetric user defined probability for each word,
+
+                    matrix of shape (num_topics, num_words) to assign a probability for each word-topic combination,
+
+                    the string ‘auto’ to learn the asymmetric prior from the data.
+
+        decay: (float, optional)
+            A number between (0.5, 1] to weight what percentage of the previous lambda value is forgotten when each new document is examined. Corresponds to Kappa from Matthew D. Hoffman, David M. Blei, Francis Bach: “Online Learning for Latent Dirichlet Allocation NIPS’10”.
+
+        offset: (float, optional)
+            Hyper-parameter that controls how much we will slow down the first steps the first few iterations. Corresponds to Tau_0 from Matthew D. Hoffman, David M. Blei, Francis Bach: “Online Learning for Latent Dirichlet Allocation NIPS’10”.
+
+        eval_every: (int, optional)
+            Log perplexity is estimated every that many updates. Setting this to one slows down training by ~2x.
+
+        iterations: (int, optional)
+            Maximum number of iterations through the corpus when inferring the topic distribution of a corpus.
+
+        gamma_threshold: (float, optional)
+            Minimum change in the value of the gamma parameters to continue iterating.
+
+        minimum_probability: (float, optional)
+            Topics with a probability lower than this threshold will be filtered out.
+
+        random_state: ({np.random.RandomState, int}, optional)
+            Either a randomState object or a seed to generate one. Useful for reproducibility.
+
+        ns_conf: (dict of (str, object), optional)
+            Key word parameters propagated to gensim.utils.getNS() to get a Pyro4 Nameserved. Only used if distributed is set to True.
+
+        minimum_phi_value: (float, optional)
+            if per_word_topics is True, this represents a lower bound on the term probabilities.per_word_topics (bool) – If True, the model also computes a list of topics, sorted in descending order of most likely topics for each word, along with their phi values multiplied by the feature length (i.e. word count).
+        
+        Returns
+        -------
+        TextModel
+            Resulting model
+        """
 
         report_info = technique_reason_repo["model"]["text"]["lda"]
 
@@ -839,7 +925,11 @@ class Model(Visualizations):
             corpus,
             id2word,
         ) = gensim_lda(
-            x_train=self.x_train, x_test=self.x_test, prep=prep, col_name=col_name, **kwargs
+            x_train=self.x_train,
+            x_test=self.x_test,
+            prep=prep,
+            col_name=col_name,
+            **kwargs,
         )
 
         if self.report is not None:
@@ -948,9 +1038,6 @@ class Model(Visualizations):
         """
 
         from sklearn.cluster import KMeans
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         def find_optk():
 
@@ -1080,9 +1167,6 @@ class Model(Visualizations):
 
         from sklearn.cluster import DBSCAN
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         report_info = technique_reason_repo["model"]["unsupervised"]["dbscan"]
 
         model = DBSCAN(**kwargs)
@@ -1196,9 +1280,6 @@ class Model(Visualizations):
         """
 
         from sklearn.ensemble import IsolationForest
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["unsupervised"]["iso_forest"]
@@ -1318,9 +1399,6 @@ class Model(Visualizations):
         """
 
         from sklearn.svm import OneClassSVM
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["unsupervised"]["oneclass_cls"]
 
@@ -1446,9 +1524,6 @@ class Model(Visualizations):
 
         from sklearn.cluster import AgglomerativeClustering
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         report_info = technique_reason_repo["model"]["unsupervised"]["agglom"]
 
         model = AgglomerativeClustering(**kwargs)
@@ -1559,9 +1634,6 @@ class Model(Visualizations):
         """
 
         from sklearn.cluster import MeanShift
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["unsupervised"]["ms"]
 
@@ -1713,9 +1785,6 @@ class Model(Visualizations):
 
         from sklearn.mixture import GaussianMixture
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         report_info = technique_reason_repo["model"]["unsupervised"]["em_gmm"]
         random_state = kwargs.pop("random_state", 42)
 
@@ -1823,9 +1892,6 @@ class Model(Visualizations):
         """
 
         from sklearn.linear_model import LogisticRegression
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         solver = kwargs.pop("solver", "lbfgs")
@@ -1941,9 +2007,6 @@ class Model(Visualizations):
         """
 
         from sklearn.linear_model import RidgeClassifier
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["ridge_cls"]
@@ -2117,9 +2180,6 @@ class Model(Visualizations):
 
         from sklearn.linear_model import SGDClassifier
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["sgd_cls"]
 
@@ -2227,9 +2287,6 @@ class Model(Visualizations):
         """
 
         from sklearn.ensemble import AdaBoostClassifier
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["ada_cls"]
@@ -2353,9 +2410,6 @@ class Model(Visualizations):
         """
 
         from sklearn.ensemble import BaggingClassifier
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["bag_cls"]
@@ -2527,9 +2581,6 @@ class Model(Visualizations):
 
         from sklearn.ensemble import GradientBoostingClassifier
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["grad_cls"]
 
@@ -2699,9 +2750,6 @@ class Model(Visualizations):
 
         from sklearn.ensemble import RandomForestClassifier
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["rf_cls"]
 
@@ -2810,9 +2858,6 @@ class Model(Visualizations):
 
         from sklearn.naive_bayes import BernoulliNB
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         report_info = technique_reason_repo["model"]["classification"]["bern"]
 
         model = BernoulliNB(**kwargs)
@@ -2908,9 +2953,6 @@ class Model(Visualizations):
         """
 
         from sklearn.naive_bayes import GaussianNB
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["classification"]["gauss"]
 
@@ -3014,9 +3056,6 @@ class Model(Visualizations):
         """
 
         from sklearn.naive_bayes import MultinomialNB
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["classification"]["multi"]
 
@@ -3190,9 +3229,6 @@ class Model(Visualizations):
 
         from sklearn.tree import DecisionTreeClassifier
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["dt_cls"]
 
@@ -3331,9 +3367,6 @@ class Model(Visualizations):
         """
 
         from sklearn.svm import LinearSVC
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["linsvc"]
@@ -3478,9 +3511,6 @@ class Model(Visualizations):
 
         from sklearn.svm import SVC
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["svc"]
 
@@ -3583,7 +3613,7 @@ class Model(Visualizations):
         objective : string or callable
             Specify the learning task and the corresponding learning objective or
             a custom objective function to be used (see note below).
-            By default binary:logistic for binary classification or multi:softprob for multiclass classifcation
+            By default binary:logistic for binary classification or multi:softprob for multiclass classification
 
         booster: string
             Specify which booster to use: gbtree, gblinear or dart. By default 'gbtree'
@@ -3654,9 +3684,6 @@ class Model(Visualizations):
 
         import xgboost as xgb
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         objective = kwargs.pop(
             "objective",
@@ -3686,7 +3713,7 @@ class Model(Visualizations):
         return model
 
     @add_to_queue
-    def LightGBMClassifcation(
+    def LightGBMClassification(
         self,
         cv=None,
         gridsearch=None,
@@ -3822,13 +3849,9 @@ class Model(Visualizations):
 
         import lightgbm as lgb
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         objective = kwargs.pop(
-            "objective",
-            "binary" if len(self.y_train.unique()) == 2 else "multiclass",
+            "objective", "binary" if len(self.y_train.unique()) == 2 else "multiclass",
         )
         report_info = technique_reason_repo["model"]["classification"]["lgbm_cls"]
 
@@ -3854,7 +3877,7 @@ class Model(Visualizations):
         return model
 
     @add_to_queue
-    def CatBoostClassifcation(
+    def CatBoostClassification(
         self,
         cat_features=None,
         cv=None,
@@ -3944,14 +3967,10 @@ class Model(Visualizations):
         ClassificationModel
             ClassificationModel object to view results and analyze results
         """
-        
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         objective = kwargs.pop(
-            "objective",
-            "Logloss" if len(self.y_train.unique()) == 2 else "MultiClass",
+            "objective", "Logloss" if len(self.y_train.unique()) == 2 else "MultiClass",
         )
         report_info = technique_reason_repo["model"]["classification"]["cb_cls"]
 
@@ -4049,9 +4068,6 @@ class Model(Visualizations):
         """
 
         from sklearn.linear_model import LinearRegression
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["linreg"]
@@ -4165,9 +4181,6 @@ class Model(Visualizations):
         """
 
         from sklearn.linear_model import BayesianRidge
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["bay_reg"]
@@ -4294,9 +4307,6 @@ class Model(Visualizations):
 
         from sklearn.linear_model import ElasticNet
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["el_net"]
 
@@ -4417,9 +4427,6 @@ class Model(Visualizations):
 
         from sklearn.linear_model import Lasso
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["lasso"]
 
@@ -4526,9 +4533,6 @@ class Model(Visualizations):
         """
 
         from sklearn.linear_model import Ridge
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["ridge_reg"]
@@ -4709,9 +4713,6 @@ class Model(Visualizations):
 
         from sklearn.linear_model import SGDRegressor
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["sgd_reg"]
 
@@ -4815,9 +4816,6 @@ class Model(Visualizations):
         """
 
         from sklearn.ensemble import AdaBoostRegressor
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["ada_reg"]
@@ -4934,9 +4932,6 @@ class Model(Visualizations):
         """
 
         from sklearn.ensemble import BaggingRegressor
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["bag_reg"]
@@ -5108,9 +5103,6 @@ class Model(Visualizations):
 
         from sklearn.ensemble import GradientBoostingRegressor
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["grad_reg"]
 
@@ -5261,9 +5253,6 @@ class Model(Visualizations):
         """
 
         from sklearn.ensemble import RandomForestRegressor
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["rf_reg"]
@@ -5421,9 +5410,6 @@ class Model(Visualizations):
 
         from sklearn.tree import DecisionTreeRegressor
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["dt_reg"]
 
@@ -5542,9 +5528,6 @@ class Model(Visualizations):
         """
 
         from sklearn.svm import LinearSVR
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["linsvr"]
@@ -5670,9 +5653,6 @@ class Model(Visualizations):
         """
 
         from sklearn.svm import SVR
-
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
 
         report_info = technique_reason_repo["model"]["regression"]["svr"]
 
@@ -5838,9 +5818,6 @@ class Model(Visualizations):
 
         import xgboost as xgb
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["xgb_reg"]
 
@@ -5993,9 +5970,6 @@ class Model(Visualizations):
 
         import lightgbm as lgb
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["lgbm_reg"]
 
@@ -6101,9 +6075,6 @@ class Model(Visualizations):
             RegressionModel object to view results and analyze results
         """
 
-        if not _validate_model_name(self, model_name):
-            raise AttributeError("Invalid model name. Please choose another one.")
-
         random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["cb_reg"]
 
@@ -6148,7 +6119,7 @@ class Model(Visualizations):
         """
 
         random_state = kwargs.pop("random_state", 42)
-        cat_features = kwargs.pop('cat_features', None)
+        cat_features = kwargs.pop("cat_features", None)
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
         shap_values = None
 
@@ -6162,20 +6133,14 @@ class Model(Visualizations):
                     fold_count = None
 
                 cv_dataset = cb.Pool(
-                    self.x_train,
-                    self.y_train,
-                    cat_features=cat_features,
+                    self.x_train, self.y_train, cat_features=cat_features,
                 )
 
                 cv_scores = cb.cv(
-                    cv_dataset,
-                    kwargs,
-                    folds=folds,
-                    fold_count=fold_count,
-                    plot="True",
+                    cv_dataset, kwargs, folds=folds, fold_count=fold_count, plot="True",
                 )
 
-            else:                
+            else:
                 cv_scores = run_crossvalidation(
                     model,
                     self.x_train,
@@ -6195,11 +6160,7 @@ class Model(Visualizations):
 
             if isinstance(model, cb.CatBoost):
                 model.grid_search(
-                    gridsearch,
-                    self.x_train,
-                    self.y_train,
-                    cv=cv,
-                    plot=True
+                    gridsearch, self.x_train, self.y_train, cv=cv, plot=True
                 )
 
             else:
@@ -6211,7 +6172,7 @@ class Model(Visualizations):
                 model.fit(self.x_train, self.y_train, plot=True)
         else:
             model.fit(self.x_train, self.y_train)
-            
+
         self._train_result_data[new_col_name] = model.predict(self.x_train)
 
         if self.x_test is not None:
@@ -6231,9 +6192,13 @@ class Model(Visualizations):
             data = self.x_train if self.x_test is None else self.x_test
             label = self.y_train if self.x_test is None else self.y_test
 
-            shap_values = model.get_feature_importance(cb.Pool(data, label=label, cat_features=cat_features), type="ShapValues")
+            shap_values = model.get_feature_importance(
+                cb.Pool(data, label=label, cat_features=cat_features), type="ShapValues"
+            )
 
-        self._models[model_name] = model_type(self, model_name, model, new_col_name, shap_values=shap_values)
+        self._models[model_name] = model_type(
+            self, model_name, model, new_col_name, shap_values=shap_values
+        )
 
         print(model)
 

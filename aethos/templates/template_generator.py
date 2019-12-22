@@ -2,9 +2,8 @@ import os
 import subprocess
 from pathlib import Path
 
-from jinja2 import Environment, PackageLoader
-
 from aethos.templates.util import _create_project_dir
+from jinja2 import Environment, PackageLoader
 
 
 class TemplateGenerator(object):
@@ -21,6 +20,19 @@ class TemplateGenerator(object):
 
     @classmethod
     def generate_service(cls, name: str, filename: str):
+        """
+        Generates the necessary files to run your model as a service.
+
+        Generates the app.py, Dockerfile and requirements.txt file.
+        
+        Parameters
+        ----------
+        name : str
+            Project name
+
+        filename : str
+            Model file name
+        """
 
         _create_project_dir(cls.project_dir, name=name)
 

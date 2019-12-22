@@ -2,17 +2,11 @@ import copy
 import os
 import re
 
+import aethos
 import ipywidgets as widgets
 import numpy as np
 import pandas as pd
 import pandas_profiling
-from IPython import get_ipython
-from IPython.display import HTML, display
-from ipywidgets import Layout
-from pandas.io.json import json_normalize
-from pandas_summary import DataFrameSummary
-
-import aethos
 from aethos.cleaning.clean import Clean
 from aethos.config import shell
 from aethos.feature_engineering.feature import Feature
@@ -24,9 +18,38 @@ from aethos.util import (CLEANING_CHECKLIST, DATA_CHECKLIST, ISSUES_CHECKLIST,
                          UNI_ANALYSIS_CHECKLIST, _get_columns, _set_item,
                          label_encoder, split_data)
 from aethos.visualizations.visualizations import Visualizations
+from IPython import get_ipython
+from IPython.display import HTML, display
+from ipywidgets import Layout
+from pandas.io.json import json_normalize
+from pandas_summary import DataFrameSummary
 
 
 class Data(Clean, Preprocess, Feature, Visualizations, Stats):
+    """
+    Data class thats run analytical techniques.
+
+    Parameters
+    -----------
+    x_train: pd.DataFrame
+        Training data or aethos data object
+
+    x_test: pd.DataFrame
+        Test data, by default None
+
+    split: bool
+        True to split your training data into a train set and a test set
+
+    test_split_percentage: float
+        Percentage of data to split train data into a train and test set.
+        Only used if `split=True`
+
+    target_field: str
+        For supervised learning problems, the name of the column you're trying to predict.
+
+    report_name: str
+        Name of the report to generate, by default None
+    """
     def __init__(
         self,
         x_train,
@@ -64,7 +87,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
 
         return self.x_train.to_string()
 
-    def _repr_html_(self):
+    def _repr_html_(self): # pragma: no cover
 
         return self.x_train.head().to_html(show_dimensions=True, notebook=True)
 

@@ -5,3 +5,4 @@ ignore:
   - "aethos/__main__.py"
   - "aethos/cli.py"
   - "aethos/test_unittest.py"
+  - "aethos/templates/files/.*"

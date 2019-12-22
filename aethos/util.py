@@ -1,6 +1,6 @@
 import collections
-from collections import OrderedDict
 import os
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
@@ -264,32 +264,6 @@ def _input_columns(list_args: list, list_of_cols: list):
         column_list = list(list_args)
 
     return column_list
-
-
-def _validate_model_name(model_obj, model_name: str) -> bool:
-    """
-    Validates the inputted model name. If the object already has an
-    attribute with that model name, it is invalid
-    
-    Parameters
-    ----------
-    model_name : str
-        Proposed name of the model
-        
-    model_obj : Model
-        Model object
-    
-    Returns
-    -------
-    bool
-        True if model name is valid, false otherwise
-    """
-
-    if hasattr(model_obj, model_name) and model_name not in model_obj._models:
-        return False
-
-    return True
-
 
 def _set_item(
     x_train, x_test, column: str, value: list, train_length: int, test_length: int

@@ -7,7 +7,6 @@ import matplotlib.pyplot as pl
 import numpy as np
 import pandas as pd
 import shap
-
 from aethos.modelling.constants import INTERPRET_EXPLAINERS
 from aethos.visualizations.util import _make_image_dir
 
@@ -272,7 +271,7 @@ class MSFTInterpret(object):
 
     def blackbox_local_explanation(
         self,
-        num_samples=0.25,
+        num_samples=0.5,
         sample_no=None,
         method="lime",
         predictions="default",

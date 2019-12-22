@@ -7,13 +7,12 @@ from functools import partial, wraps
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-from pathos.multiprocessing import ProcessingPool
-from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
-from yellowbrick.model_selection import CVScores, LearningCurve
-
 from aethos.config import DEFAULT_MODEL_DIR, cfg
 from aethos.util import _make_dir
 from aethos.visualizations.util import _make_image_dir
+from pathos.multiprocessing import ProcessingPool
+from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
+from yellowbrick.model_selection import CVScores, LearningCurve
 
 
 def add_to_queue(model_function):
@@ -24,6 +23,9 @@ def add_to_queue(model_function):
         kwargs["run"] = kwargs.get("run", default_kwargs["run"])
         kwargs["model_name"] = kwargs.get("model_name", default_kwargs["model_name"])
         cv = kwargs.get("cv", False)
+
+        if not _validate_model_name(self, kwargs["model_name"]):
+            raise AttributeError("Invalid model name. Please choose another one.")
 
         if kwargs["run"] or cv:
             return model_function(self, *args, **kwargs)
@@ -230,3 +232,27 @@ def to_pickle(model, name, project=False, project_name=None):
         os.makedirs(path)
 
     pickle.dump(model, open(os.path.join(path, name + ".pkl"), "wb"))
+
+def _validate_model_name(model_obj, model_name: str) -> bool:
+    """
+    Validates the inputted model name. If the object already has an
+    attribute with that model name, it is invalid
+    
+    Parameters
+    ----------
+    model_name : str
+        Proposed name of the model
+        
+    model_obj : Model
+        Model object
+    
+    Returns
+    -------
+    bool
+        True if model name is valid, false otherwise
+    """
+
+    if hasattr(model_obj, model_name) and model_name not in model_obj._models:
+        return False
+
+    return True

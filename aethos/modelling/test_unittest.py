@@ -5,9 +5,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.datasets import make_blobs
-
 from aethos import Model
+from sklearn.datasets import make_blobs
 
 
 class TestModelling(unittest.TestCase):
@@ -1181,7 +1180,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.LightGBMClassifcation(run=True)
+        model.LightGBMClassification(run=True)
         validate = model.lgbm_cls is not None
 
         self.assertTrue(validate)
@@ -1218,7 +1217,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostClassifcation(run=True)
+        model.CatBoostClassification(run=True)
         validate = model.cb_cls is not None
 
         self.assertTrue(validate)
@@ -1266,7 +1265,7 @@ class TestModelling(unittest.TestCase):
     #     data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
     #     model = Model(x_train=data, target_field="col3")
-    #     model.CatBoostClassifcation(run=True)
+    #     model.CatBoostClassification(run=True)
     #     model.cb_cls.view_tree()
 
     #     self.assertTrue(True)
@@ -1502,6 +1501,156 @@ class TestModelling(unittest.TestCase):
         m.to_service('test1')
 
         self.assertTrue(True)
+
+    def test_setattr_new(self):
+
+        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+        base["col5"] = 4
+
+        self.assertListEqual(base.col5.tolist(), [4, 4])
+
+    def test_setattr_testset(self):
+
+        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="test",
+            test_split_percentage=0.25,
+        )
+        base["col5"] = [4]
+
+        self.assertListEqual(base.x_test_results["col5"].tolist(), [4])
+
+    def test_setattr_trainset(self):
+
+        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="test",
+            test_split_percentage=0.75,
+        )
+        base["col5"] = [4]
+
+        self.assertListEqual(base["col5"].tolist(), [4])
+
+    def test_setattr_bothset(self):
+
+        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="test",
+            test_split_percentage=0.75,
+        )
+        base["col5"] = ([4], [4, 4, 4])
+
+        self.assertListEqual(base["col5"].tolist(), [4])
+        self.assertListEqual(base.x_test_results["col5"].tolist(), [4, 4, 4])
+
+    def test_setattr_old(self):
+
+        int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        base = Model(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="",
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+        base.target_field = "col3"
+
+        self.assertEqual("col3", base.target_field)
+
+    def test_list_models_empty(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(
+            x_train=data,
+            target_field="col3",
+            test_split_percentage=0.5,
+            report_name="modelweights",
+        )
+
+        model.list_models()
+
+        self.assertTrue(True)
+
+    def test_list_models(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(
+            x_train=data,
+            target_field="col3",
+            test_split_percentage=0.5,
+            report_name="modelweights",
+        )
+        model.LogisticRegression(
+            random_state=2, penalty="l2", model_name="l1", run=False
+        )
+        model.LogisticRegression(
+            random_state=2, penalty="l2", model_name="l2", run=True
+        )
+
+        model.list_models()
+
+        self.assertTrue(True)
+
+    def test_incorrect_model_name(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(
+            x_train=data,
+            target_field="col3",
+            test_split_percentage=0.5,
+        )
+
+        self.assertRaises(AttributeError, model.LogisticRegression,
+            random_state=2, penalty="l2", model_name="x_train", run=False
+        )
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
