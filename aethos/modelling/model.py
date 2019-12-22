@@ -6122,6 +6122,7 @@ class Model(Visualizations):
         cat_features = kwargs.pop("cat_features", None)
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
         shap_values = None
+        pool = None
 
         if cv:
             if isinstance(model, cb.CatBoost):
@@ -6191,13 +6192,14 @@ class Model(Visualizations):
         if isinstance(model, cb.CatBoost):
             data = self.x_train if self.x_test is None else self.x_test
             label = self.y_train if self.x_test is None else self.y_test
+            pool = cb.Pool(data, label=label, cat_features=cat_features, feature_names=list(self.x_train.columns))
 
             shap_values = model.get_feature_importance(
-                cb.Pool(data, label=label, cat_features=cat_features), type="ShapValues"
+                pool, type="ShapValues"
             )
 
         self._models[model_name] = model_type(
-            self, model_name, model, new_col_name, shap_values=shap_values
+            self, model_name, model, new_col_name, shap_values=shap_values, pool=pool,
         )
 
         print(model)

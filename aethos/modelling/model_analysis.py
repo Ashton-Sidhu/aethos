@@ -664,7 +664,7 @@ class ModelBase(object):
             return lgb.plot_tree(self.model)
 
         elif isinstance(self.model, cb.CatBoost):
-            return self.model.plot_tree(tree_idx=tree_num)
+            return self.model.plot_tree(tree_idx=tree_num, pool=self.pool)
 
         elif isinstance(self.model, sklearn.ensemble.BaseEnsemble):
             estimator = self.model.estimators_[tree_num]
@@ -972,7 +972,7 @@ class UnsupervisedModel(ModelBase):
 
 
 class ClassificationModel(ModelBase):
-    def __init__(self, model_object, model_name, model, predictions_col, shap_values=None):
+    def __init__(self, model_object, model_name, model, predictions_col, shap_values=None, pool=None):
 
         self.y_train = model_object.y_train
         self.y_test = (
@@ -1004,6 +1004,7 @@ class ClassificationModel(ModelBase):
             self.classes = [str(item) for item in self.target_mapping.values()]
 
         self.features = self.x_test.columns
+        self.pool = pool
 
         if hasattr(model, "predict_proba"):
             self.probabilities = model.predict_proba(model_object.x_test)
@@ -1589,7 +1590,7 @@ class ClassificationModel(ModelBase):
 
 
 class RegressionModel(ModelBase):
-    def __init__(self, model_object, model_name, model, predictions_col, shap_values=None):
+    def __init__(self, model_object, model_name, model, predictions_col, shap_values=None, pool=None):
 
         self.y_train = model_object.y_train
         self.y_test = (
@@ -1610,6 +1611,7 @@ class RegressionModel(ModelBase):
             self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
 
         self.features = self.x_test.columns
+        self.pool = pool
 
     def explained_variance(self, multioutput="uniform_average", **kwargs):
         """
