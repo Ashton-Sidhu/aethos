@@ -463,6 +463,9 @@ class ModelBase(object):
 
         warnings.simplefilter("ignore")
 
+        if isinstance(self.model, xgb.XGBModel):
+            return "Using MSFT interpret is currently unsupported with for XGBoost."
+
         if show:
             self.interpret.create_dashboard()
 
@@ -495,6 +498,9 @@ class ModelBase(object):
         """
 
         warnings.simplefilter("ignore")
+
+        if isinstance(self.model, xgb.XGBModel): # pragma: no cover
+            return "Using MSFT interpret is currently unsupported with for XGBoost."
 
         dashboard = []
 
@@ -553,6 +559,9 @@ class ModelBase(object):
 
         warnings.simplefilter("ignore")
 
+        if isinstance(self.model, xgb.XGBModel): # pragma: no cover
+            return "Using MSFT interpret is currently unsupported with for XGBoost."
+
         dashboard = []
 
         if method == "all":
@@ -603,6 +612,9 @@ class ModelBase(object):
         """
 
         warnings.simplefilter("ignore")
+
+        if isinstance(self.model, xgb.XGBModel): # pragma: no cover
+            return "Using MSFT interpret is currently unsupported with for XGBoost."
 
         dashboard = []
 
