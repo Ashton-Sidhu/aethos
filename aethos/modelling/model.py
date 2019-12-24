@@ -486,6 +486,9 @@ class Model(Visualizations):
         )
         tg.generate_service(project_name, f"{model_obj.model_name}.pkl")
 
+        print("docker build -t `image_name` ./")
+        print("docker run -d --name `container_name` -p `port_num`:80 `image_name`")
+
     ################### TEXT MODELS ########################
 
     @add_to_queue

@@ -771,6 +771,9 @@ class ModelBase(object):
         to_pickle(self.model, self.model_name, project=True, project_name=project_name)
         tg.generate_service(project_name, f'{self.model_name}.pkl')
 
+        print("docker build -t `image_name` ./")
+        print("docker run -d --name `container_name` -p `port_num`:80 `image_name`")
+
 class TextModel(ModelBase):
     def __init__(self, model_object, model, model_name, **kwargs):
 
