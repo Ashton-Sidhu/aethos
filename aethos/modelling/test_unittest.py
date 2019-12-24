@@ -621,7 +621,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field="col3", test_split_percentage=0.6)
         model.LogisticRegression(random_state=2, run=True)
-        model.log_reg.interpret_predictions(show=False)
+        model.log_reg.interpret_model_predictions(show=False)
 
         self.assertTrue(True)
 
@@ -633,7 +633,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, target_field="col3", test_split_percentage=0.6)
         model.LogisticRegression(random_state=2, run=True)
-        model.log_reg.interpret_predictions(method="lime", show=False)
+        model.log_reg.interpret_model_predictions(method="lime", show=False)
 
         self.assertTrue(True)
 
@@ -725,9 +725,9 @@ class TestModelling(unittest.TestCase):
             test_split_percentage=0.5,
             report_name="modelweights",
         )
-        model.LinearRegression(random_state=2, model_name="l1", run=True)
-        model.LinearRegression(random_state=2, model_name="l2", run=True)
-        model.LinearRegression(random_state=2, model_name="l3", run=True)
+        model.LinearRegression(model_name="l1", run=True)
+        model.LinearRegression(model_name="l2", run=True)
+        model.LinearRegression(model_name="l3", run=True)
 
         model.run_models(method="series")
         model.compare_models()
@@ -761,7 +761,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
         model = Model(x_train=data, target_field="col3", test_split_percentage=0.2)
         cv_values = model.LogisticRegression(
-            cv="strat-kfold", random_state=2, run=False
+            cv="strat-kfold", n_splits=10, run=True
         )
 
         self.assertTrue(True)
@@ -965,7 +965,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.BayesianRidgeRegression(random_state=2, run=True)
+        model.BayesianRidgeRegression(run=True)
         validate = model.bayridge_reg is not None
 
         self.assertTrue(validate)
@@ -1001,7 +1001,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.LinearRegression(random_state=2, run=True)
+        model.LinearRegression()
         validate = model.lin_reg is not None
 
         self.assertTrue(validate)
@@ -1496,7 +1496,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        m = model.LogisticRegression(random_state=2, run=True)
+        m = model.LogisticRegression(random_state=2)
 
         m.to_service('test1')
 
@@ -1648,6 +1648,23 @@ class TestModelling(unittest.TestCase):
         self.assertRaises(AttributeError, model.LogisticRegression,
             random_state=2, penalty="l2", model_name="x_train", run=False
         )
+
+    def test_model_debug(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        model = Model(
+            x_train=data,
+            target_field="col3",
+            test_split_percentage=0.5,
+            report_name="modelweights",
+        )
+        
+        model.help_debug()
+
+        self.assertTrue(True)
 
 
 

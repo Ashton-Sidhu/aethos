@@ -15,7 +15,7 @@ class Test_TestBase(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         df = Data(data, target_field='col3')
-        df.predict_data()
+        df.predict_data_sample()
 
         self.assertTrue(True)
 

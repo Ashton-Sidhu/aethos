@@ -1,10 +1,10 @@
-Reporting package
-==================
+Stats package
+==============
 
 Module contents
 ---------------
 
-.. automodule:: aethos.reporting.report
+.. automodule:: aethos.stats.stats
    :members:
    :undoc-members:
    :show-inheritance:

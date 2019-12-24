@@ -1,5 +1,4 @@
 import pandas as pd
-
 from aethos import *
 from aethos.config import technique_reason_repo
 from aethos.preprocessing.categorical import *
@@ -40,8 +39,13 @@ class Preprocess(object):
         
         Returns
         -------
-        Preprocess:
-            Returns a deep copy of the Preprocess object.
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.normalize_numeric('col1')
+        >>> data.normalize_numeric(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["preprocess"]["numeric"]["standardize"]
@@ -112,8 +116,13 @@ class Preprocess(object):
         
         Returns
         -------
-        Preprocess:
-            Returns a deep copy of the Preprocess object.
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.normalize_quantile_range('col1')
+        >>> data.normalize_quantile_range(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["preprocess"]["numeric"]["robust"]
@@ -157,8 +166,13 @@ class Preprocess(object):
         
         Returns
         -------
-        Preprocess:
-            Returns a deep copy of the Preprocess object.
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.normalize_log('col1')
+        >>> data.normalize_log(['col1', 'col2'], base=10)
         """
 
         report_info = technique_reason_repo["preprocess"]["numeric"]["log"]
@@ -200,8 +214,13 @@ class Preprocess(object):
 
         Returns
         -------
-        Preprocess:
-            Returns a deep copy of the Preprocess object.
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.split_sentences('col1')
+        >>> data.split_sentences(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["preprocess"]["text"]["split_sentence"]
@@ -242,7 +261,8 @@ class Preprocess(object):
             Type of NLTK stemmer to use, by default porter
 
             Current stemming implementations:
-                - Porter
+                - porter
+                - snowball
 
             For more information please refer to the NLTK stemming api https://www.nltk.org/api/nltk.stem.html
 
@@ -251,8 +271,13 @@ class Preprocess(object):
         
         Returns
         -------
-        Preprocess
-            Copy of preprocess object
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.stem_nltk('col1')
+        >>> data.stem_nltk(['col1', 'col2'], stemmer='snowball')
         """
 
         report_info = technique_reason_repo["preprocess"]["text"]["stem"]
@@ -296,8 +321,13 @@ class Preprocess(object):
         
         Returns
         -------
-        Preprocess
-            Copy of preprocess object
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.split_words_nltk('col1')
+        >>> data.split_words_nltk(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["preprocess"]["text"]["split_words"]
@@ -343,8 +373,13 @@ class Preprocess(object):
         
         Returns
         -------
-        Preprocess
-            Copy of preprocess object
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.remove_stopwords_nltk('col1')
+        >>> data.remove_stopwords_nltk(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["preprocess"]["text"]["remove_stopwords"]
@@ -401,8 +436,14 @@ class Preprocess(object):
         
         Returns
         -------
-        Preprocess
-            Copy of preprocess object
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.remove_punctuation('col1')
+        >>> data.remove_punctuation(['col1', 'col2'])
+        >>> data.remove_punctuation('col1', regexp=r'(\w+\.)|(\w+)') # Include all words and words with periods after.
         """
 
         report_info = technique_reason_repo["preprocess"]["text"]["remove_punctuation"]
@@ -466,8 +507,14 @@ class Preprocess(object):
         
         Returns
         -------
-        Preprocess
-            Copy of preprocess object
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.clean_text('col1')
+        >>> data.clean_text(['col1', 'col2'], lower=False)
+        >>> data.clean_text(lower=False, stopwords=False, stemmer=False)
         """
 
         report_info = technique_reason_repo["preprocess"]["text"]["clean_text"]

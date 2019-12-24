@@ -5,38 +5,36 @@ aethos package
     :maxdepth: 4
 
     aethos.base
+    aethos.visualizations
     aethos.cleaning
     aethos.preprocessing
     aethos.feature_engineering
     aethos.modelling
+    aethos.stats
     aethos.model_analysis
 
-aethos Module
-----------------
+Data Module
+------------
 
 .. automodule:: aethos.base
    :members:
    :undoc-members:
    :show-inheritance:
 
-Cleaning Module
-----------------
+.. automodule:: aethos.visualizations.visualizations
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 .. automodule:: aethos.cleaning
    :members:
    :undoc-members:
    :show-inheritance:
 
-Preprocessing Module
---------------------
-
 .. automodule:: aethos.preprocessing
    :members:
    :undoc-members:
    :show-inheritance:
-
-Feature Module
----------------
 
 .. automodule:: aethos.feature_engineering
    :members:
@@ -51,8 +49,10 @@ Modelling Module
    :undoc-members:
    :show-inheritance:
 
-Model Analysis Module
----------------------
+.. automodule:: aethos.stats.stats
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 .. automodule:: aethos.modelling.model_analysis
    :members:

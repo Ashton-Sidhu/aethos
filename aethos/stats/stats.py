@@ -3,18 +3,17 @@ import numpy as np
 import pandas as pd
 import scipy as sc
 import swifter
+from aethos.config import technique_reason_repo
 from scipy.stats.stats import ks_2samp
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from tqdm import tqdm
 
-from aethos.config import technique_reason_repo
-
 
 class Stats(object):
 
-    def predict_data(self):
+    def predict_data_sample(self):
         """
         Identifies how similar the train and test set distribution are by trying to predict whether each sample belongs
         to the train or test set using Random Forest, 10 Fold Stratified Cross Validation.
@@ -22,6 +21,15 @@ class Stats(object):
         The lower the F1 score, the more similar the distributions are as it's harder to predict which sample belongs to which distribution.
 
         Credit: https://www.kaggle.com/nanomathias/distribution-of-test-vs-training-data#1.-t-SNE-Distribution-Overview
+
+        Returns
+        -------
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.predict_data_sample()
         """
 
         if self.x_test is None or not self.target_field:
@@ -56,6 +64,8 @@ class Stats(object):
 
         print(classification_report(data['label'].tolist(), predictions))
 
+        return self.copy()
+
     def ks_feature_distribution(self, threshold=0.1, show_plots=True):
         """
         Uses the Kolomogorov-Smirnov test see if the distribution in the training and test sets are similar.
@@ -74,6 +84,11 @@ class Stats(object):
         -------
         DataFrame
             Columns that are significantly different in the train and test set.
+
+        Examples
+        --------
+        >>> data.ks_feature_distribution()
+        >>> data.ks_feature_distribution(threshold=0.2)
         """
 
         if self.x_test is None:

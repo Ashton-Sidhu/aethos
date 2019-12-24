@@ -40,16 +40,17 @@ Aethos provides:
   - Model analysis use cases - Confusion Matrix, ROC Curve, all metrics, decision tree plots, etc.
   - Model interpretability - Local through SHAP and LIME, global through Morris Sensitivity
   - Interactive checklists and tips to either remind or help you through your analysis.
+  - Comparing train and test data distribution
+  - Exporting trained models as a service (Generates the necessary code, files and folder structure)
 
 Plus more coming soon such as:
 
   - Testing for model drift
-  - Comparing train and test data distribution
   - Recommendation models
   - Statistical tests - Anova, T-test, etc.
   - Pre-trained models - BERT, GPT2, etc.
   - Parralelization through Dask and/or Spark
-  - Uniform API for deep learning models and automated code and file generation jupyter notebook development, python file of your data    pipeline and Docker/Kubernetes file of your model as a microservice.
+  - Uniform API for deep learning models and automated code and file generation jupyter notebook development, python file of your data    pipeline.
 
 Aethos makes it easy to PoC, experiment and compare different techniques and models from various libraries. From imputations, visualizations, scaling, dimensionality reduction, feature engineering to modelling, model results and model deployment - all done with a single, human readable, line of code!
 
@@ -64,11 +65,9 @@ To start, we need to import the ethos dependencies as well as pandas.
 
 Before that, we can create a full data science folder structure by running `aethos create` from the command line and follow the command prompts.
 
-### General Use
-
 For a full list of methods please see the full docs or [TECHNIQUES.md]()
 
-#### Options
+### Options
 
 To enable extensions, such as QGrid interactive filtering, enable them as you would in pandas:
 
@@ -86,7 +85,11 @@ Currently the following options are:
     - Project metrics is a metric or set of metrics to evaluate models.
   - `word_doc`: Writes report to a word document as well as the .txt file
 
-#### Analysis
+User options such as changing the directory where images, reports, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
+
+This location is also the default location of where any images, reports and projects are stored.
+
+### Analysis
 
 ```python
 import aethos as at
@@ -134,32 +137,29 @@ df.checklist() # Will provide an iteractive checklist to keep track of your clea
 ```python
 df.replace_missing_mostcommon('Fare', 'Embarked') # Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
 
-rep_mcommon = df.replace_missing_mostcommon('Fare', 'Embarked') # To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
-
-# Now I can keep going with my analysis using the df object and if something goes wrong when exploring this analysis path, I can pick right up from this point by using the `rep_mcommon` variable, without having to restart any kernels or reload any data.
+df.replace_missing_mostcommon('Fare', 'Embarked') # To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
 
 df.replace_missing_random_discrete('Age') # Replace missing values in the 'Age' column with a random value that follows the probability distribution of the 'Age' column in the training set. 
 
 df.drop('Cabin') # Drop the cabin column
+```
 
-# Columns can also be dropped by defining the columns you want to keep (drop all columns except the ones you want to keep) or by passing in a regex expressions and all columns that match the regex expression will be dropped.
+As you've started to notice, alot of tasks to df the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation).
 
-# As you've started to notice, alot of tasks to df the data and to explore the data have been reduced down to one command, and are also customizable by providing the respective keyword arguments (see documentation).
 
+```python
 df.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
 
 df.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode the `Person` and `Embarked` columns and then drop the original columns
 ```
 
-#### Modelling
-
-Initialize the modelling object
+### Modelling
 
 ```python
 model = at.Model(df)
 ```
 
-##### Running a single model
+#### Running a Single Model
 
 Models can be trained one at a time or multiple at a time. They can also be trained by passing in the params for the sklearn, xgboost, etc constructor, by passing in a gridsearch dictionary & params, cross validating with gridsearch & params.
 
@@ -168,14 +168,15 @@ After a model has been ran, it comes with use cases such as plotting RoC curves,
 ```python
 lr_model = model.LogisticRegression(random_state=42) # Train a logistic regression model
 lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42) # Trains a logistic regression model with gridsearch
-lr_model = model.LogisticRegression(cv=5) # Crossvalidates a logistic regression model, displays the scores and the learning curve and builds the model
+lr_model = model.LogisticRegression(cv=5, n_splits=10) # Crossvalidates a logistic regression model, displays the scores and the learning curve and builds the model
+lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv='strat-kfold', n_splits=10) # Builds a Logistic Regression model with Gridsearch and then cross validates the best model using stratified K-Fold cross validation.
 
 lr_model.metrics() # Views all metrics for the model
 lr_model.confusion_matrix()
 lr_model.roc_curve()
 ```
 
-##### Running multiple models in parallel
+#### Running multiple models in parallel
 
 ```python
 model.LogisticRegression(random_state=42, model_name='log_reg', run=False) # Adds a logistic regression model to the queue
@@ -194,7 +195,7 @@ model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic 
 model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
 ```
 
-##### Model Interpretability
+### Model Interpretability
 
 As mentioned in the Model section, whenever a model is trained you have access to use cases for model interpretability as well. There are prebuild SHAP usecases and an interactive dashboard that is equipped with LIME and SHAP for local model interpretability and Morris Sensitivity for global model interpretability.
 
@@ -208,6 +209,17 @@ lr_model.dependence_plot() # SHAP depencence plot
 
 lr_model.interpret_model() # Creates an interactive dashboard to view LIME, SHAP, Morris Sensitivity and more for your model
 ```
+
+### Code Generation
+
+Currently you are only able to export your model to be ran a service, and will be able to automatically generate the required files. The automatic creation of a data pipeline is still in progress.
+
+```python
+
+lr_model.to_service('titanic')
+```
+
+Now navigate to 'your_home_folder'('~' on linux and Users/'your_user_name' on windows)/.aethos/projects/titanic/ and you will see the files needed to run the model as a service using FastAPI and uvicorn. 
 
 ## Installation
 
@@ -231,7 +243,6 @@ This will create a full folder strucuture for you to manage data, unit tests, ex
 
 ## Development Phases
 
-### Library
 #### Phase 1
   - [x]	Data Processing techniques
     - [x] Data Cleaning V1
@@ -245,16 +256,19 @@ This will create a full folder strucuture for you to manage data, unit tests, ex
 
 #### Phase 3
   - [x] Quality of life/addons
-  - [ ] Code Generation
+  - [x] Code Generation V1
   - [ ] Pre trained models
 
 #### Phase 4
   - [ ]	Deep learning integration
-  - [ ] Parallelization
-  - [ ]	Spark
+  - [ ] Statistical Models
+  - [ ] Recommendation Models
+  - [ ] Code Generation V2
     
 #### Phase 5
+  - [ ] Parallelization (Spark, Dask, etc.)
   - [ ]	Cloud computing
+  - [ ] Graph based learning and representation
 
 #### Phase 6
   - [ ] Web App
@@ -312,7 +326,8 @@ For python snippets to make deving new techniques either, message me and I can s
   2. The import statements happen within the function.
   3. Call the approriate `_run_` function (supervised or unsupervised)
       - Text models go in text.py and call them from model.py
-  4. Write the unittest in `test_unittest.py`
+  4. Add the model type to the dictionaries `SHAP_LEARNER` AND `PROBLEM_TYPE` dict in `model/constants.py`
+  5. Write the unittest in `test_unittest.py`
 
 ### Contributing model analysis use cases
 

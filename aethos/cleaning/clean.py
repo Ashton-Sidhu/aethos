@@ -1,9 +1,9 @@
 import pandas as pd
-from aethos.config import technique_reason_repo
 from aethos.cleaning import util
 from aethos.cleaning.categorical import *
 from aethos.cleaning.numeric import *
 from aethos.cleaning.util import replace_missing_fill
+from aethos.config import technique_reason_repo
 from aethos.util import _input_columns, _numeric_input_conditions
 
 
@@ -22,12 +22,12 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.drop_column_missing_threshold(0.5)
+        >>> data.drop_column_missing_threshold(0.5)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_columns"]
@@ -52,12 +52,12 @@ class Clean(object):
                 
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.drop_constant_columns()
+        >>> data.drop_constant_columns()
         """
 
         report_info = technique_reason_repo["clean"]["general"][
@@ -84,12 +84,12 @@ class Clean(object):
                 
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.drop_unique_columns()
+        >>> data.drop_unique_columns()
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_unique_columns"]
@@ -120,12 +120,12 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.drop_rows_missing_threshold(0.5)    
+        >>> data.drop_rows_missing_threshold(0.5)    
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_rows"]
@@ -162,13 +162,13 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_mean('col1', 'col2')
-        >>> clean.replace_missing_mean(['col1', 'col2'])
+        >>> data.replace_missing_mean('col1', 'col2')
+        >>> data.replace_missing_mean(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["numeric"]["mean"]
@@ -214,13 +214,13 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_median('col1', 'col2')
-        >>> clean.replace_missing_median(['col1', 'col2'])
+        >>> data.replace_missing_median('col1', 'col2')
+        >>> data.replace_missing_median(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["numeric"]["median"]
@@ -264,13 +264,13 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_mostcommon('col1', 'col2')
-        >>> clean.replace_missing_mostcommon(['col1', 'col2'])
+        >>> data.replace_missing_mostcommon('col1', 'col2')
+        >>> data.replace_missing_mostcommon(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["numeric"]["mode"]
@@ -321,14 +321,14 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_constant(col_mapping={'a': 1, 'b': 2, 'c': 3})
-        >>> clean.replace_missing_constant('col1', 'col2', constant=2)
-        >>> clean.replace_missing_constant(['col1', 'col2'], constant=3)
+        >>> data.replace_missing_constant(col_mapping={'a': 1, 'b': 2, 'c': 3})
+        >>> data.replace_missing_constant('col1', 'col2', constant=2)
+        >>> data.replace_missing_constant(['col1', 'col2'], constant=3)
         """
 
         report_info = technique_reason_repo["clean"]["numeric"]["constant"]
@@ -384,14 +384,14 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> replace_missing_new_category(col_mapping={'col1': "Green", 'col2': "Canada", 'col3': "December"})
-        >>> replace_missing_new_category('col1', 'col2', 'col3', new_category='Blue')
-        >>> replace_missing_new_category(['col1', 'col2', 'col3'], new_category='Blue')
+        >>> data.replace_missing_new_category(col_mapping={'col1': "Green", 'col2': "Canada", 'col3': "December"})
+        >>> data.replace_missing_new_category('col1', 'col2', 'col3', new_category='Blue')
+        >>> data.replace_missing_new_category(['col1', 'col2', 'col3'], new_category='Blue')
         """
 
         report_info = technique_reason_repo["clean"]["categorical"]["new_category"]
@@ -436,13 +436,13 @@ class Clean(object):
 
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_remove_row('col1', 'col2')
-        >>> clean.replace_missing_remove_row(['col1', 'col2'])
+        >>> data.replace_missing_remove_row('col1', 'col2')
+        >>> data.replace_missing_remove_row(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["categorical"]["remove_rows"]
@@ -479,14 +479,14 @@ class Clean(object):
        
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.drop_duplicate_rows('col1', 'col2') # Only look at columns 1 and 2
-        >>> clean.drop_duplicate_rows(['col1', 'col2'])
-        >>> clean.drop_duplicate_rows()
+        >>> data.drop_duplicate_rows('col1', 'col2') # Only look at columns 1 and 2
+        >>> data.drop_duplicate_rows(['col1', 'col2'])
+        >>> data.drop_duplicate_rows()
         """
 
         report_info = technique_reason_repo["clean"]["general"]["remove_duplicate_rows"]
@@ -509,12 +509,12 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.drop_duplicate_columns()
+        >>> data.drop_duplicate_columns()
         """
 
         report_info = technique_reason_repo["clean"]["general"][
@@ -550,13 +550,13 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_random_discrete('col1', 'col2')
-        >>> clean.replace_missing_random_discrete(['col1', 'col2'])
+        >>> data.replace_missing_random_discrete('col1', 'col2')
+        >>> data.replace_missing_random_discrete(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["general"]["random_discrete"]
@@ -611,12 +611,12 @@ class Clean(object):
 
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        clean.replace_missing_knn(k=8)
+        >>> data.replace_missing_knn(k=8)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["knn"]
@@ -672,14 +672,14 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_interpolate('col1', 'col2')
-        >>> clean.replace_missing_interpolate(['col1', 'col2'])
-        >>> clean.replace_missing_interpolate('col1', 'col2', method='pad', limit=3)
+        >>> data.replace_missing_interpolate('col1', 'col2')
+        >>> data.replace_missing_interpolate(['col1', 'col2'])
+        >>> data.replace_missing_interpolate('col1', 'col2', method='pad', limit=3)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["interpolate"]
@@ -716,13 +716,13 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_backfill('col1', 'col2')
-        >>> clean.replace_missing_backfill(['col1', 'col2'])
+        >>> data.replace_missing_backfill('col1', 'col2')
+        >>> data.replace_missing_backfill(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["general"]["bfill"]
@@ -759,13 +759,13 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_forwardfill('col1', 'col2')
-        >>> clean.replace_missing_forwardfill(['col1', 'col2'])
+        >>> data.replace_missing_forwardfill('col1', 'col2')
+        >>> data.replace_missing_forwardfill(['col1', 'col2'])
         """
 
         report_info = technique_reason_repo["clean"]["general"]["ffill"]
@@ -816,14 +816,14 @@ class Clean(object):
         
         Returns
         -------
-        Clean:
-            Returns a deep copy of the Clean object.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.replace_missing_indicator('col1', 'col2')
-        >>> clean.replace_missing_indicator(['col1', 'col2'])
-        >>> clean.replace_missing_indicator(['col1', 'col2'], missing_indicator='missing', valid_indicator='not missing', keep_col=False)
+        >>> data.replace_missing_indicator('col1', 'col2')
+        >>> data.replace_missing_indicator(['col1', 'col2'])
+        >>> data.replace_missing_indicator(['col1', 'col2'], missing_indicator='missing', valid_indicator='not missing', keep_col=False)
         """
 
         report_info = technique_reason_repo["clean"]["general"]["indicator"]

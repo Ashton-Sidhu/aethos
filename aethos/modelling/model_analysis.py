@@ -84,6 +84,11 @@ class ModelBase(object):
         ------
         AttributeError
             If model does not have coefficients to display
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.model_weights()
         """
 
         report_strings = []
@@ -158,7 +163,8 @@ class ModelBase(object):
 
         Examples
         --------
-        >>> model.model_name.summary_plot()
+        >>> m = model.LogisticRegression()
+        >>> m.summary_plot()
         """
 
         if self.shap is None:
@@ -296,8 +302,9 @@ class ModelBase(object):
         Examples
         --------
         >>> # Plot two decision plots using the same feature order and x-axis.
-        >>> r = model.model_name.decision_plot()
-        >>> model.model_name.decision_plot(no_sample=42, feature_order=r.feature_idx, xlim=r.xlim)
+        >>> m = model.LogisticRegression()
+        >>> r = m.decision_plot()
+        >>> m.decision_plot(no_sample=42, feature_order=r.feature_idx, xlim=r.xlim)
         """
 
         if self.shap is None:
@@ -347,10 +354,9 @@ class ModelBase(object):
         
         Examples
         --------
-        Plot two decision plots using the same feature order and x-axis.
-
-        >>> model.model_name.force_plot() # The entire test dataset
-        >>> model.model_name.forceplot(no_sample=1, misclassified=True) # Analyze the first misclassified result
+        >>> m = model.LogisticRegression()
+        >>> m.force_plot() # The entire test dataset
+        >>> m.forceplot(no_sample=1, misclassified=True) # Analyze the first misclassified result
         """
 
         if self.shap is None:
@@ -423,7 +429,8 @@ class ModelBase(object):
 
         Examples
         --------
-        model.model_name.dependence_plot('col1')
+        >>> m = model.LogisticRegression()
+        >>> m.dependence_plot()
         """
 
         if self.shap is None:
@@ -443,6 +450,11 @@ class ModelBase(object):
     def shap_get_misclassified_index(self):
         """
         Prints the sample numbers of misclassified samples.
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.shap_get_misclassified_index()
         """
 
         sample_list = list(
@@ -459,12 +471,17 @@ class ModelBase(object):
         Displays a dashboard interpreting your model's performance, behaviour and individual predictions.
 
         If you have run any other `interpret` functions, they will be included in the dashboard, otherwise all the other intrepretable methods will be included in the dashboard.
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.interpret_model()
         """
 
         warnings.simplefilter("ignore")
 
         if isinstance(self.model, xgb.XGBModel):
-            return "Using MSFT interpret is currently unsupported with for XGBoost."
+            return "Using MSFT interpret is currently unsupported with XGBoost."
 
         if show:
             self.interpret.create_dashboard()
@@ -495,12 +512,17 @@ class ModelBase(object):
 
         show : bool, optional 
             False to not display the plot, by default True
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.interpret_model_performance()
         """
 
         warnings.simplefilter("ignore")
 
         if isinstance(self.model, xgb.XGBModel): # pragma: no cover
-            return "Using MSFT interpret is currently unsupported with for XGBoost."
+            return "Using MSFT interpret is currently unsupported with XGBoost."
 
         dashboard = []
 
@@ -522,7 +544,7 @@ class ModelBase(object):
                 method=method, predictions=predictions, show=show, **interpret_kwargs
             )
 
-    def interpret_predictions(
+    def interpret_model_predictions(
         self,
         num_samples=0.25,
         sample_no=None,
@@ -555,12 +577,17 @@ class ModelBase(object):
 
         show : bool, optional 
             False to not display the plot, by default True
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.interpret_model_predictions()
         """
 
         warnings.simplefilter("ignore")
 
         if isinstance(self.model, xgb.XGBModel): # pragma: no cover
-            return "Using MSFT interpret is currently unsupported with for XGBoost."
+            return "Using MSFT interpret is currently unsupported with XGBoost."
 
         dashboard = []
 
@@ -609,12 +636,17 @@ class ModelBase(object):
 
         show : bool, optional 
             False to not display the plot, by default True
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.interpret_model_behavior()
         """
 
         warnings.simplefilter("ignore")
 
         if isinstance(self.model, xgb.XGBModel): # pragma: no cover
-            return "Using MSFT interpret is currently unsupported with for XGBoost."
+            return "Using MSFT interpret is currently unsupported with XGBoost."
 
         dashboard = []
 
@@ -647,6 +679,13 @@ class ModelBase(object):
 
         output_file : str, optional
             Name of the file including extension, by default None
+
+        Examples
+        --------
+        >>> m = model.DecisionTreeClassifier()
+        >>> m.view_tree()
+        >>> m = model.XGBoostClassifier()
+        >>> m.view_tree(2)
         """
 
         if hasattr(self, "classes"):
@@ -754,6 +793,11 @@ class TextModel(ModelBase):
 
         model_output : str
             Column name of the model text
+
+        Examples
+        --------
+        >>> m = model.LDA()
+        >>> m.view('original_text_col_name', 'model_output_col_name')
         """
 
         results = self.result_data[[original_text, model_output]]
@@ -773,6 +817,11 @@ class TextModel(ModelBase):
         --------
         str
             String representation of topics and probabilities
+
+        Examples
+        --------
+        >>> m = model.LDA()
+        >>> m.view_topics()
         """
 
         return self.model.show_topics(num_topics=num_topics, **kwargs)
@@ -788,7 +837,12 @@ class TextModel(ModelBase):
         Returns
         --------
         str
-            String representation of topic and probabilities    
+            String representation of topic and probabilities
+
+        Examples
+        --------
+        >>> m = model.LDA()
+        >>> m.view_topic(1)
         """
 
         return self.model.show_topic(topicid=topic_num, **kwargs)
@@ -819,6 +873,11 @@ class TextModel(ModelBase):
         sort_topics : bool
             Sort topics by topic proportion (percentage of tokens covered).
             Set to false to keep original topic order.
+
+        Examples
+        --------
+        >>> m = model.LDA()
+        >>> m.visualize_topics()
         """
 
         import pyLDAvis
@@ -839,6 +898,11 @@ class TextModel(ModelBase):
         ----------
         col_name : str
             Column name that was used as input for the LDA model
+
+        Examples
+        --------
+        >>> m = model.LDA()
+        >>> m.coherence_score()
         """
 
         import gensim
@@ -868,6 +932,11 @@ class TextModel(ModelBase):
         Perplexity is a measurement of how well a probability distribution or probability model predicts a sample. It may be used to compare probability models.
         
         A low perplexity indicates the probability distribution is good at predicting the sample.
+
+        Examples
+        --------
+        >>> m = model.LDA()
+        >>> m.model_perplexity()
         """
 
         fig = go.Figure(
@@ -911,6 +980,11 @@ class UnsupervisedModel(ModelBase):
         -------
         Dataframe
             Filtered data or test dataframe
+
+        Examples
+        --------
+        >>> m = model.KMeans()
+        >>> m.filter_cluster(1)
         """
 
         if self.x_test is None:
@@ -943,6 +1017,12 @@ class UnsupervisedModel(ModelBase):
 
         output_file: str
             Output file name including extension (.png, .jpg, etc.) to save image as.
+
+        Examples
+        --------
+        >>> m = model.KMeans()
+        >>> m.plot_clusters()
+        >>> m.plot_clusters(dim=3)
         """
 
         if dim != 2 and dim != 3:
@@ -1029,6 +1109,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Accuracy
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.accuracy()
         """
 
         return sklearn.metrics.accuracy_score(self.y_test, self.y_pred, **kwargs)
@@ -1043,6 +1128,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Balanced accuracy
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.balanced_accuracy()
         """
 
         return sklearn.metrics.balanced_accuracy_score(
@@ -1058,6 +1148,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Average Precision Score
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.average_precision()
         """
 
         if hasattr(self.model, "decision_function"):
@@ -1076,6 +1171,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             ROC AUC Score
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.roc_auc()
         """
 
         multi_class = kwargs.pop("multi_class", "ovr")
@@ -1099,6 +1199,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Zero one loss
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.zero_one_loss()
         """
 
         return sklearn.metrics.zero_one_loss(self.y_test, self.y_test, **kwargs)
@@ -1115,6 +1220,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Recall
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.recall()
         """
 
         avg = kwargs.pop("average", "macro")
@@ -1138,6 +1248,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Precision
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.precision()
         """
 
         avg = kwargs.pop("average", "macro")
@@ -1161,6 +1276,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Matthews Correlation Coefficient
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.mathews_corr_coef()
         """
 
         return sklearn.metrics.matthews_corrcoef(self.y_test, self.y_pred, **kwargs)
@@ -1176,6 +1296,11 @@ class ClassificationModel(ModelBase):
         -------
         Float
             Log loss
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.log_loss()
         """
 
         if self.probabilities is not None:
@@ -1193,6 +1318,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Jaccard Score
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.jaccard()
         """
 
         avg = kwargs.pop("average", "macro")
@@ -1212,6 +1342,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Hinge loss
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.hinge_loss()
         """
 
         if hasattr(self.model, "decision_function"):
@@ -1229,6 +1364,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Hamming loss
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.hamming_loss()
         """
 
         return sklearn.metrics.hamming_loss(self.y_test, self.y_pred, **kwargs)
@@ -1248,6 +1388,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Fbeta score
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.fbeta()
         """
 
         avg = kwargs.pop("average", "macro")
@@ -1271,6 +1416,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             F1 Score
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.f1()
         """
         avg = kwargs.pop("average", "macro")
 
@@ -1294,6 +1444,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Cohen Kappa score.
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.cohen_kappa()
         """
 
         return sklearn.metrics.cohen_kappa_score(self.y_test, self.y_pred, **kwargs)
@@ -1311,6 +1466,11 @@ class ClassificationModel(ModelBase):
         -------
         float
             Brier loss
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.brier_loss()
         """
 
         if self.multiclass:
@@ -1367,6 +1527,12 @@ class ClassificationModel(ModelBase):
         ----------
         metrics : str(s), optional
             Specific type of metrics to view
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.metrics()
+        >>> m.metrics('F1', 'F-Beta')
         """
 
         metric_list = {
@@ -1460,7 +1626,13 @@ class ClassificationModel(ModelBase):
             Size of the text of the rest of the plot, by default 'medium' 
 
         output_file: str
-            Output file name including extension (.png, .jpg, etc.) to save image as.       
+            Output file name including extension (.png, .jpg, etc.) to save image as.
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.confusion_matrix()      
+        >>> m.confusion_matrix(normalize=True)      
         """
 
         y_true = self.y_test
@@ -1548,6 +1720,11 @@ class ClassificationModel(ModelBase):
 
         output_file : str, optional
             If a name is provided save the plot to an html file, by default ''
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.roc_curve()
         """
 
         if self.multiclass:
@@ -1589,6 +1766,11 @@ class ClassificationModel(ModelBase):
             micro avg       1.00      0.67      0.80         3
             macro avg       0.33      0.22      0.27         3
          weighted avg       1.00      0.67      0.80         3
+
+        Examples
+        --------
+        >>> m = model.LogisticRegression()
+        >>> m.classification_report()
         """
 
         classification_report = sklearn.metrics.classification_report(
@@ -1651,6 +1833,11 @@ class RegressionModel(ModelBase):
         -------
         float
             Explained Variance
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.explained_variance()
         """
 
         return sklearn.metrics.explained_variance_score(
@@ -1665,6 +1852,11 @@ class RegressionModel(ModelBase):
         -------
         float
             Max error
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.max_error()
         """
 
         return sklearn.metrics.max_error(self.y_test, self.y_pred)
@@ -1677,6 +1869,11 @@ class RegressionModel(ModelBase):
         -------
         float
             Mean absolute error.
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.mean_abs_error()
         """
 
         return sklearn.metrics.mean_absolute_error(self.y_test, self.y_pred)
@@ -1689,6 +1886,11 @@ class RegressionModel(ModelBase):
         -------
         float
             Mean squared error.
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.mean_sq_error()
         """
 
         return sklearn.metrics.mean_squared_error(self.y_test, self.y_pred)
@@ -1701,6 +1903,11 @@ class RegressionModel(ModelBase):
         -------
         float
             Mean squared log error.
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.mean_sq_log_error()
         """
 
         try:
@@ -1719,6 +1926,11 @@ class RegressionModel(ModelBase):
         -------
         float
             Median absolute error.
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.median_abs_error()
         """
 
         return sklearn.metrics.median_absolute_error(self.y_test, self.y_pred)
@@ -1737,6 +1949,11 @@ class RegressionModel(ModelBase):
         -------
         float
             R2 coefficient.
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.r2()
         """
 
         return sklearn.metrics.r2_score(self.y_test, self.y_pred)
@@ -1751,6 +1968,11 @@ class RegressionModel(ModelBase):
         -------
         float
             SMAPE
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.smape()
         """
 
         return (
@@ -1773,6 +1995,11 @@ class RegressionModel(ModelBase):
         -------
         float
             Root mean squared error.
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.root_mean_sq_error()
         """
 
         return math.sqrt(self.mean_sq_error())
@@ -1808,6 +2035,12 @@ class RegressionModel(ModelBase):
         ----------
         metrics : str(s), optional
             Specific type of metrics to view
+
+        Examples
+        --------
+        >>> m = model.LinearRegression()
+        >>> m.metrics()
+        >>> m.metrics('SMAPE', 'Root Mean Squared Error')
         """
 
         metric_list = {

@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 import warnings
 from pathlib import Path
@@ -6,6 +5,7 @@ from pathlib import Path
 import catboost as cb
 from aethos.config import shell, technique_reason_repo
 from aethos.core import Data
+from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 from aethos.modelling.model_analysis import *
 from aethos.modelling.text import *
 from aethos.modelling.util import (_get_cv_type, _run_models_parallel,
@@ -15,8 +15,9 @@ from aethos.reporting.report import Report
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import _input_columns, _set_item, split_data
 from aethos.visualizations.visualizations import Visualizations
-from IPython import display
-from pathos.multiprocessing import Pool
+from IPython.display import display
+from ipywidgets import widgets
+from ipywidgets.widgets.widget_layout import Layout
 
 warnings.simplefilter("ignore", FutureWarning)
 
@@ -290,6 +291,41 @@ class Model(Visualizations):
 
         return self.x_train.columns.tolist()
 
+    def help_debug(self):
+        """
+        Displays a tips for helping debugging model outputs and how to deal with over and underfitting.
+
+        Credit: Andrew Ng's and his book Machine Learning Yearning
+
+        Examples
+        --------
+        >>> model.help_debug()
+        """
+
+        overfit_labels = []
+        underfit_labels = []
+
+        for item in DEBUG_OVERFIT:
+            overfit_labels.append(
+                widgets.Label(description=item, layout=Layout(width="100%"))
+            )
+        overfit_box = widgets.VBox(overfit_labels)
+
+        for item in DEBUG_UNDERFIT:
+            underfit_labels.append(
+                widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            )
+        underfit_box = widgets.VBox(underfit_labels)
+
+        tab_list = [overfit_box, underfit_box]
+
+        tab = widgets.Tab()
+        tab.children = tab_list
+        tab.set_title(0, "Overfit")
+        tab.set_title(1, "Underfit")
+
+        display(tab)
+
     def run_models(self, method="parallel"):
         """
         Runs all queued models.
@@ -300,6 +336,11 @@ class Model(Visualizations):
         ----------
         method : str, optional
             How to run models, can either be in 'series' or in 'parallel', by default 'parallel'
+
+        Examples
+        --------
+        >>> model.run_models()
+        >>> model.run_models(method='series')
         """
 
         num_ran_models = len(self._models)
@@ -320,6 +361,10 @@ class Model(Visualizations):
     def list_models(self):
         """
         Prints out all queued and ran models.
+
+        Examples
+        --------
+        >>> model.list_models()
         """
 
         print("######## QUEUED MODELS ########")
@@ -348,6 +393,10 @@ class Model(Visualizations):
         ----------
         name : str
             Name of the model
+
+        Examples
+        --------
+        >>> model.delete_model('model1')
         """
 
         if name in self._queued_models:
@@ -367,8 +416,14 @@ class Model(Visualizations):
         -------
         Dataframe
             Dataframe of every model and metrics associated for that model
+        
+        Examples
+        --------
+        >>> model.compare_models()
         """
+
         results = []
+
         for model in self._models:
             results.append(self._models[model].metrics())
 
@@ -443,6 +498,7 @@ class Model(Visualizations):
         run=True,
         **summarizer_kwargs,
     ):
+        # region
         """
         Summarize bodies of text using Gensim's Text Rank algorithm. Note that it uses a Text Rank variant as stated here:
         https://radimrehurek.com/gensim/summarization/summariser.html
@@ -476,7 +532,13 @@ class Model(Visualizations):
         -------
         TextModel
             Resulting model
+
+        Examples
+        --------
+        >>> model.summarize_gensim('col1')
+        >>> model.summarize_gensim('col1', run=False) # Add model to the queue
         """
+        # endregion
 
         report_info = technique_reason_repo["model"]["text"]["textrank_summarizer"]
 
@@ -507,6 +569,7 @@ class Model(Visualizations):
         run=True,
         **keyword_kwargs,
     ):
+        # region
         """
         Extracts keywords using Gensim's implementation of the Text Rank algorithm. 
 
@@ -551,7 +614,13 @@ class Model(Visualizations):
         -------
         TextModel
             Resulting model
+        
+        Examples
+        --------
+        >>> model.extract_keywords_gensim('col1')
+        >>> model.extract_keywords_gensim('col1', run=False) # Add model to the queue
         """
+        # endregion
 
         report_info = technique_reason_repo["model"]["text"]["textrank_keywords"]
         list_of_cols = _input_columns(list_args, list_of_cols)
@@ -573,6 +642,7 @@ class Model(Visualizations):
 
     @add_to_queue
     def Word2Vec(self, col_name, prep=False, model_name="w2v", run=True, **kwargs):
+        # region
         """
         The underlying assumption of Word2Vec is that two words sharing similar contexts also share a similar meaning and consequently a similar vector representation from the model.
         For instance: "dog", "puppy" and "pup" are often used in similar situations, with similar surrounding words like "good", "fluffy" or "cute", and according to Word2Vec they will therefore share a similar vector representation.
@@ -683,7 +753,13 @@ class Model(Visualizations):
         -------
         TextModel
             Resulting model
+
+        Examples
+        --------
+        >>> model.Word2Vec('col1', prep=True)
+        >>> model.Word2Vec('col1', run=False) # Add model to the queue
         """
+        # endregion
 
         report_info = technique_reason_repo["model"]["text"]["word2vec"]
 
@@ -704,6 +780,7 @@ class Model(Visualizations):
 
     @add_to_queue
     def Doc2Vec(self, col_name, prep=False, model_name="d2v", run=True, **kwargs):
+        # region
         """
         The underlying assumption of Word2Vec is that two words sharing similar contexts also share a similar meaning and consequently a similar vector representation from the model.
         For instance: "dog", "puppy" and "pup" are often used in similar situations, with similar surrounding words like "good", "fluffy" or "cute", and according to Word2Vec they will therefore share a similar vector representation.
@@ -809,7 +886,13 @@ class Model(Visualizations):
         -------
         TextModel
             Resulting model
+        
+        Examples
+        --------
+        >>> model.Doc2Vec('col1', prep=True)
+        >>> model.Doc2Vec('col1', run=False) # Add model to the queue
         """
+        # endregion
 
         report_info = technique_reason_repo["model"]["text"]["doc2vec"]
 
@@ -830,6 +913,7 @@ class Model(Visualizations):
 
     @add_to_queue
     def LDA(self, col_name, prep=False, model_name="lda", run=True, **kwargs):
+        # region
         """
         Extracts topics from your data using Latent Dirichlet Allocation.
 
@@ -914,7 +998,13 @@ class Model(Visualizations):
         -------
         TextModel
             Resulting model
+
+        Examples
+        --------
+        >>> model.LDA('col1', prep=True)
+        >>> model.LDA('col1', run=False) # Add model to the queue
         """
+        # endregion
 
         report_info = technique_reason_repo["model"]["text"]["lda"]
 
@@ -955,6 +1045,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         NOTE: If 'n_clusters' is not provided, k will automatically be determined using an elbow plot using distortion as the mteric to find the optimal number of clusters.
 
@@ -1035,7 +1126,14 @@ class Model(Visualizations):
         -------
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
+
+        Examples
+        --------
+        >>> model.KMeans()
+        >>> model.KMeans(model_name='kmean_1, n_cluster=5)
+        >>> model.KMeans(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.cluster import KMeans
 
@@ -1055,12 +1153,11 @@ class Model(Visualizations):
 
         report_info = technique_reason_repo["model"]["unsupervised"]["kmeans"]
         n_clusters = kwargs.pop("n_clusters", None)
-        random_state = kwargs.pop("random_state", 42)
 
         if not n_clusters:
             n_clusters = find_optk()
 
-        model = KMeans(random_state=random_state, n_clusters=n_clusters, **kwargs)
+        model = KMeans
 
         model = self._run_unsupervised_model(
             model,
@@ -1072,6 +1169,7 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
+            n_clusters=n_clusters,
             **kwargs,
         )
 
@@ -1089,6 +1187,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Based on a set of points (let’s think in a bidimensional space as exemplified in the figure), 
         DBSCAN groups together points that are close to each other based on a distance measurement (usually Euclidean distance) and a minimum number of points.
@@ -1163,13 +1262,20 @@ class Model(Visualizations):
         -------
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
+
+        Examples
+        --------
+        >>> model.DBScan()
+        >>> model.DBScan(model_name='dbs_1, min_samples=5)
+        >>> model.DBScan(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.cluster import DBSCAN
 
         report_info = technique_reason_repo["model"]["unsupervised"]["dbscan"]
 
-        model = DBSCAN(**kwargs)
+        model = DBSCAN
 
         model = self._run_unsupervised_model(
             model,
@@ -1198,6 +1304,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Isolation Forest Algorithm
 
@@ -1277,14 +1384,20 @@ class Model(Visualizations):
         -------
         UnsupervisedModel
             UnsupervisedModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.IsolationForest()
+        >>> model.IsolationForest(model_name='iso_1, max_features=5)
+        >>> model.IsolationForest(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import IsolationForest
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["unsupervised"]["iso_forest"]
 
-        model = IsolationForest(random_state=random_state, **kwargs)
+        model = IsolationForest
 
         model = self._run_unsupervised_model(
             model,
@@ -1296,7 +1409,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -1314,6 +1426,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a One Class SVM model.
 
@@ -1396,13 +1509,20 @@ class Model(Visualizations):
         -------
         UnsupervisedModel
             UnsupervisedModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.OneClassSVM()
+        >>> model.OneClassSVM(model_name='ocs_1, max_iter=100)
+        >>> model.OneClassSVM(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.svm import OneClassSVM
 
         report_info = technique_reason_repo["model"]["unsupervised"]["oneclass_cls"]
 
-        model = OneClassSVM(**kwargs)
+        model = OneClassSVM
 
         model = self._run_unsupervised_model(
             model,
@@ -1431,6 +1551,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Agglomerative Clustering Model
 
@@ -1520,13 +1641,20 @@ class Model(Visualizations):
         -------
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
+
+        Examples
+        --------
+        >>> model.AgglomerativeClustering()
+        >>> model.AgglomerativeClustering(model_name='ag_1, n_clusters=5)
+        >>> model.AgglomerativeClustering(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.cluster import AgglomerativeClustering
 
         report_info = technique_reason_repo["model"]["unsupervised"]["agglom"]
 
-        model = AgglomerativeClustering(**kwargs)
+        model = AgglomerativeClustering
 
         model = self._run_unsupervised_model(
             model,
@@ -1555,6 +1683,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Mean Shift clustering algorithm.
 
@@ -1631,13 +1760,20 @@ class Model(Visualizations):
         -------
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
+
+        Examples
+        --------
+        >>> model.MeanShift()
+        >>> model.MeanShift(model_name='ms_1', cluster_all=False)
+        >>> model.MeanShift(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.cluster import MeanShift
 
         report_info = technique_reason_repo["model"]["unsupervised"]["ms"]
 
-        model = MeanShift(**kwargs)
+        model = MeanShift
 
         model = self._run_unsupervised_model(
             model,
@@ -1666,6 +1802,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a GaussianMixture algorithm that implements the expectation-maximization algorithm for fitting mixture
         of Gaussian models.
@@ -1781,14 +1918,20 @@ class Model(Visualizations):
         -------
         UnsupervisedModel
             UnsupervisedModel object to view results and further analysis
+
+        Examples
+        --------
+        >>> model.GuassianMixtureClustering()
+        >>> model.GuassianMixtureClustering(model_name='gm_1, max_iter=1000)
+        >>> model.GuassianMixtureClustering(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.mixture import GaussianMixture
 
         report_info = technique_reason_repo["model"]["unsupervised"]["em_gmm"]
-        random_state = kwargs.pop("random_state", 42)
 
-        model = GaussianMixture(random_state=random_state, **kwargs)
+        model = GaussianMixture
 
         model = self._run_unsupervised_model(
             model,
@@ -1820,6 +1963,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a logistic regression model.
 
@@ -1889,15 +2033,23 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.LogisticRegression()
+        >>> model.LogisticRegression(model_name='lg_1, C=0.001)
+        >>> model.LogisticRegression(cv=10)
+        >>> model.LogisticRegression(gridsearch={'C':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LogisticRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import LogisticRegression
 
-        random_state = kwargs.pop("random_state", 42)
         solver = kwargs.pop("solver", "lbfgs")
         report_info = technique_reason_repo["model"]["classification"]["logreg"]
 
-        model = LogisticRegression(solver=solver, random_state=random_state, **kwargs)
+        model = LogisticRegression
 
         model = self._run_supervised_model(
             model,
@@ -1910,7 +2062,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -1928,6 +2079,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Ridge Classification model.
 
@@ -2004,14 +2156,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.RidgeClassification()
+        >>> model.RidgeClassification(model_name='rc_1, tol=0.001)
+        >>> model.RidgeClassification(cv=10)
+        >>> model.RidgeClassification(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.RidgeClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import RidgeClassifier
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["ridge_cls"]
 
-        model = RidgeClassifier(random_state=random_state, **kwargs)
+        model = RidgeClassifier
 
         model = self._run_supervised_model(
             model,
@@ -2024,7 +2184,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -2042,6 +2201,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Linear classifier (SVM, logistic regression, a.o.) with SGD training.
 
@@ -2176,14 +2336,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+        
+        Examples
+        --------
+        >>> model.SGDClassification()
+        >>> model.SGDClassification(model_name='rc_1, tol=0.001)
+        >>> model.SGDClassification(cv=10)
+        >>> model.SGDClassification(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.SGDClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import SGDClassifier
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["sgd_cls"]
 
-        model = SGDClassifier(random_state=random_state, **kwargs)
+        model = SGDClassifier
 
         model = self._run_supervised_model(
             model,
@@ -2196,7 +2364,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -2214,6 +2381,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains an AdaBoost classification model.
 
@@ -2284,14 +2452,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.AdaBoostClassification()
+        >>> model.AdaBoostClassification(model_name='rc_1, learning_rate=0.001)
+        >>> model.AdaBoostClassification(cv=10)
+        >>> model.AdaBoostClassification(gridsearch={'n_estimators': [50, 100]}, cv='strat-kfold')
+        >>> model.AdaBoostClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import AdaBoostClassifier
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["ada_cls"]
 
-        model = AdaBoostClassifier(random_state=random_state, **kwargs)
+        model = AdaBoostClassifier
 
         model = self._run_supervised_model(
             model,
@@ -2304,7 +2480,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -2322,6 +2497,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Bagging classification model.
 
@@ -2407,14 +2583,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.BaggingClassification()
+        >>> model.BaggingClassification(model_name='m1', n_estimators=100)
+        >>> model.BaggingClassification(cv=10)
+        >>> model.BaggingClassification(gridsearch={'n_estimators':[100, 200]}, cv='strat-kfold')
+        >>> model.BaggingClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import BaggingClassifier
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["bag_cls"]
 
-        model = BaggingClassifier(random_state=random_state, **kwargs)
+        model = BaggingClassifier
 
         model = self._run_supervised_model(
             model,
@@ -2427,7 +2611,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -2445,6 +2628,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Gradient Boosting classification model.
 
@@ -2577,14 +2761,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.GradientBoostingClassification()
+        >>> model.GradientBoostingClassification(model_name='m1', n_estimators=100)
+        >>> model.GradientBoostingClassification(cv=10)
+        >>> model.GradientBoostingClassification(gridsearch={'n_estimators':[100, 200]}, cv='strat-kfold')
+        >>> model.GradientBoostingClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import GradientBoostingClassifier
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["grad_cls"]
 
-        model = GradientBoostingClassifier(random_state=random_state, **kwargs)
+        model = GradientBoostingClassifier
 
         model = self._run_supervised_model(
             model,
@@ -2597,7 +2789,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -2615,6 +2806,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Random Forest classification model.
 
@@ -2746,14 +2938,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.RandomForestClassification()
+        >>> model.RandomForestClassification(model_name='m1', n_estimators=100)
+        >>> model.RandomForestClassification(cv=10)
+        >>> model.RandomForestClassification(gridsearch={'n_estimators':[100, 200]}, cv='strat-kfold')
+        >>> model.RandomForestClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import RandomForestClassifier
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["rf_cls"]
 
-        model = RandomForestClassifier(random_state=random_state, **kwargs)
+        model = RandomForestClassifier
 
         model = self._run_supervised_model(
             model,
@@ -2766,7 +2966,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -2784,6 +2983,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Bernoulli Naive Bayes classification model.
 
@@ -2854,13 +3054,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.BernoulliClassification()
+        >>> model.BernoulliClassification(model_name='m1', binarize=0.5)
+        >>> model.BernoulliClassification(cv=10)
+        >>> model.BernoulliClassification(gridsearch={'fit_prior':[True, False]}, cv='strat-kfold')
+        >>> model.BernoulliClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.naive_bayes import BernoulliNB
 
         report_info = technique_reason_repo["model"]["classification"]["bern"]
 
-        model = BernoulliNB(**kwargs)
+        model = BernoulliNB
 
         model = self._run_supervised_model(
             model,
@@ -2890,6 +3099,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Gaussian Naive Bayes classification model.
 
@@ -2950,13 +3160,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.GaussianClassification()
+        >>> model.GaussianClassification(model_name='m1', var_smooting=0.0003)
+        >>> model.GaussianClassification(cv=10)
+        >>> model.GaussianClassification(gridsearch={'var_smoothing':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.GaussianClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.naive_bayes import GaussianNB
 
         report_info = technique_reason_repo["model"]["classification"]["gauss"]
 
-        model = GaussianNB(**kwargs)
+        model = GaussianNB
 
         model = self._run_supervised_model(
             model,
@@ -2986,6 +3205,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Multinomial Naive Bayes classification model.
 
@@ -3053,13 +3273,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.MultinomialClassification()
+        >>> model.MultinomialClassification(model_name='m1', alpha=0.0003)
+        >>> model.MultinomialClassification(cv=10)
+        >>> model.MultinomialClassification(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.MultinomialClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.naive_bayes import MultinomialNB
 
         report_info = technique_reason_repo["model"]["classification"]["multi"]
 
-        model = MultinomialNB(**kwargs)
+        model = MultinomialNB
 
         model = self._run_supervised_model(
             model,
@@ -3089,6 +3318,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Decision Tree classification model.
 
@@ -3225,14 +3455,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.DecisionTreeClassification()
+        >>> model.DecisionTreeClassification(model_name='m1', min_impurity_split=0.0003)
+        >>> model.DecisionTreeClassification(cv=10)
+        >>> model.DecisionTreeClassification(gridsearch={'min_impurity_split':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.DecisionTreeClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.tree import DecisionTreeClassifier
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["dt_cls"]
 
-        model = DecisionTreeClassifier(random_state=random_state, **kwargs)
+        model = DecisionTreeClassifier
 
         model = self._run_supervised_model(
             model,
@@ -3245,7 +3483,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -3263,6 +3500,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Linear Support Vector classification model.
 
@@ -3364,14 +3602,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.LinearSVC()
+        >>> model.LinearSVC(model_name='m1', C=0.0003)
+        >>> model.LinearSVC(cv=10)
+        >>> model.LinearSVC(gridsearch={'C':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LinearSVC(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.svm import LinearSVC
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["linsvc"]
 
-        model = LinearSVC(random_state=random_state, **kwargs)
+        model = LinearSVC
 
         model = self._run_supervised_model(
             model,
@@ -3384,7 +3630,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -3402,6 +3647,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a C-Support Vector classification model.
 
@@ -3507,14 +3753,22 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.SVC()
+        >>> model.SVC(model_name='m1', C=0.0003)
+        >>> model.SVC(cv=10)
+        >>> model.SVC(gridsearch={'C':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.SVC(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.svm import SVC
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["classification"]["svc"]
 
-        model = SVC(random_state=random_state, **kwargs)
+        model = SVC
 
         model = self._run_supervised_model(
             model,
@@ -3527,7 +3781,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -3545,6 +3798,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains an XGBoost Classification Model.
 
@@ -3680,20 +3934,26 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.XGBoostClassification()
+        >>> model.XGBoostClassification(model_name='m1', reg_alpha=0.0003)
+        >>> model.XGBoostClassification(cv=10)
+        >>> model.XGBoostClassification(gridsearch={'reg_alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.XGBoostClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         import xgboost as xgb
 
-        random_state = kwargs.pop("random_state", 42)
         objective = kwargs.pop(
             "objective",
             "binary:logistic" if len(self.y_train.unique()) == 2 else "multi:softprob",
         )
         report_info = technique_reason_repo["model"]["classification"]["xgb_cls"]
 
-        model = xgb.XGBClassifier(
-            objective=objective, random_state=random_state, **kwargs
-        )
+        model = xgb.XGBClassifier
 
         model = self._run_supervised_model(
             model,
@@ -3706,7 +3966,7 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
+            objective=objective,
             **kwargs,
         )
 
@@ -3724,6 +3984,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains an LightGBM Classification Model.
 
@@ -3845,19 +4106,25 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.LightGBMClassification()
+        >>> model.LightGBMClassification(model_name='m1', reg_alpha=0.0003)
+        >>> model.LightGBMClassification(cv=10)
+        >>> model.LightGBMClassification(gridsearch={'reg_alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LightGBMClassification(run=False) # Add model to the queue
         """
+        # endregion
 
         import lightgbm as lgb
 
-        random_state = kwargs.pop("random_state", 42)
         objective = kwargs.pop(
             "objective", "binary" if len(self.y_train.unique()) == 2 else "multiclass",
         )
         report_info = technique_reason_repo["model"]["classification"]["lgbm_cls"]
 
-        model = lgb.LGBMClassifier(
-            objective=objective, random_state=random_state, **kwargs
-        )
+        model = lgb.LGBMClassifier
 
         model = self._run_supervised_model(
             model,
@@ -3870,7 +4137,7 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
+            objective=objective,
             **kwargs,
         )
 
@@ -3889,6 +4156,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains an CatBoost Classification Model.
 
@@ -3966,17 +4234,23 @@ class Model(Visualizations):
         -------
         ClassificationModel
             ClassificationModel object to view results and analyze results
-        """
 
-        random_state = kwargs.pop("random_state", 42)
+        Examples
+        --------
+        >>> model.CatBoostClassification()
+        >>> model.CatBoostClassification(model_name='m1', learning_rate=0.0003)
+        >>> model.CatBoostClassification(cv=10)
+        >>> model.CatBoostClassification(gridsearch={'learning_rate':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.CatBoostClassification(run=False) # Add model to the queue
+        """
+        # endregion
+
         objective = kwargs.pop(
             "objective", "Logloss" if len(self.y_train.unique()) == 2 else "MultiClass",
         )
         report_info = technique_reason_repo["model"]["classification"]["cb_cls"]
 
-        model = cb.CatBoostClassifier(
-            objective=objective, random_state=random_state, **kwargs
-        )
+        model = cb.CatBoostClassifier
 
         model = self._run_supervised_model(
             model,
@@ -3989,7 +4263,7 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
+            objective=objective,
             cat_features=cat_features,
             **kwargs,
         )
@@ -4010,6 +4284,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Linear Regression.
 
@@ -4065,14 +4340,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.LinearRegression()
+        >>> model.LinearRegression(model_name='m1', normalize=True)
+        >>> model.LinearRegression(cv=10)
+        >>> model.LinearRegression(gridsearch={'normalize':[True, False]}, cv='strat-kfold')
+        >>> model.LinearRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import LinearRegression
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["linreg"]
 
-        model = LinearRegression(**kwargs)
+        model = LinearRegression
 
         model = self._run_supervised_model(
             model,
@@ -4085,7 +4368,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -4103,6 +4385,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Bayesian Ridge Regression model.
 
@@ -4178,14 +4461,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.BayesianRidgeRegression()
+        >>> model.BayesianRidgeRegression(model_name='alpha_1', C=0.0003)
+        >>> model.BayesianRidgeRegression(cv=10)
+        >>> model.BayesianRidgeRegression(gridsearch={'alpha_2':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.BayesianRidgeRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import BayesianRidge
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["bay_reg"]
 
-        model = BayesianRidge(**kwargs)
+        model = BayesianRidge
 
         model = self._run_supervised_model(
             model,
@@ -4198,7 +4489,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -4216,6 +4506,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Elastic Net regression with combined L1 and L2 priors as regularizer.
         
@@ -4303,14 +4594,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.ElasticNetRegression()
+        >>> model.ElasticNetRegression(model_name='m1', alpha=0.0003)
+        >>> model.ElasticNetRegression(cv=10)
+        >>> model.ElasticNetRegression(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.ElasticNetRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import ElasticNet
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["el_net"]
 
-        model = ElasticNet(**kwargs)
+        model = ElasticNet
 
         model = self._run_supervised_model(
             model,
@@ -4323,7 +4622,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -4341,6 +4639,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Lasso Regression Model trained with L1 prior as regularizer (aka the Lasso)
 
@@ -4423,14 +4722,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.LassoRegression()
+        >>> model.LassoRegression(model_name='m1', alpha=0.0003)
+        >>> model.LassoRegression(cv=10)
+        >>> model.LassoRegression(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LassoRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import Lasso
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["lasso"]
 
-        model = Lasso(**kwargs)
+        model = Lasso
 
         model = self._run_supervised_model(
             model,
@@ -4443,7 +4750,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -4461,6 +4767,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Ridge Regression model. 
 
@@ -4516,7 +4823,6 @@ class Model(Visualizations):
             If set to false, no intercept will be used in calculations (e.g. data is expected to be already centered).
 
         normalize : boolean, optional, default False
-
             This parameter is ignored when fit_intercept is set to False.
             If True, the regressors X will be normalized before regression by subtracting the mean and dividing by the l2-norm.
         
@@ -4530,14 +4836,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.RidgeRegression()
+        >>> model.RidgeRegression(model_name='m1', alpha=0.0003)
+        >>> model.RidgeRegression(cv=10)
+        >>> model.RidgeRegression(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.RidgeRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import Ridge
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["ridge_reg"]
 
-        model = Ridge(**kwargs)
+        model = Ridge
 
         model = self._run_supervised_model(
             model,
@@ -4550,7 +4864,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -4568,6 +4881,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a SGD Regression model. 
 
@@ -4709,14 +5023,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.SGDRegression()
+        >>> model.SGDRegression(model_name='m1', alpha=0.0003)
+        >>> model.SGDRegression(cv=10)
+        >>> model.SGDRegression(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.SGDRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.linear_model import SGDRegressor
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["sgd_reg"]
 
-        model = SGDRegressor(**kwargs)
+        model = SGDRegressor
 
         model = self._run_supervised_model(
             model,
@@ -4729,7 +5051,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -4747,6 +5068,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains an AdaBoost Regression model.
 
@@ -4813,14 +5135,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.AdaBoostRegression()
+        >>> model.AdaBoostRegression(model_name='m1', learning_rate=0.0003)
+        >>> model.AdaBoostRegression(cv=10)
+        >>> model.AdaBoostRegression(gridsearch={'learning_rate':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.AdaBoostRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import AdaBoostRegressor
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["ada_reg"]
 
-        model = AdaBoostRegressor(random_state=random_state, **kwargs)
+        model = AdaBoostRegressor
 
         model = self._run_supervised_model(
             model,
@@ -4833,7 +5163,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -4851,6 +5180,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Bagging Regressor model.
 
@@ -4929,14 +5259,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.BaggingRegression()
+        >>> model.BaggingRegression(model_name='m1', n_estimators=100)
+        >>> model.BaggingRegression(cv=10)
+        >>> model.BaggingRegression(gridsearch={'n_estimators':[100, 200]}, cv='strat-kfold')
+        >>> model.BaggingRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import BaggingRegressor
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["bag_reg"]
 
-        model = BaggingRegressor(random_state=random_state, **kwargs)
+        model = BaggingRegressor
 
         model = self._run_supervised_model(
             model,
@@ -4949,7 +5287,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -4967,6 +5304,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Gradient Boosting regression model.
 
@@ -5099,14 +5437,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.GradientBoostingRegression()
+        >>> model.GradientBoostingRegression(model_name='m1', alpha=0.0003)
+        >>> model.GradientBoostingRegression(cv=10)
+        >>> model.GradientBoostingRegression(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.GradientBoostingRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import GradientBoostingRegressor
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["grad_reg"]
 
-        model = GradientBoostingRegressor(random_state=random_state, **kwargs)
+        model = GradientBoostingRegressor
 
         model = self._run_supervised_model(
             model,
@@ -5119,7 +5465,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -5137,6 +5482,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Random Forest Regression model.
 
@@ -5250,14 +5596,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+        
+        Examples
+        --------
+        >>> model.RandomForestRegression()
+        >>> model.RandomForestRegression(model_name='m1', n_estimators=100)
+        >>> model.RandomForestRegression(cv=10)
+        >>> model.RandomForestRegression(gridsearch={'n_estimators':[100, 200]}, cv='strat-kfold')
+        >>> model.RandomForestRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.ensemble import RandomForestRegressor
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["rf_reg"]
 
-        model = RandomForestRegressor(random_state=random_state, **kwargs)
+        model = RandomForestRegressor
 
         model = self._run_supervised_model(
             model,
@@ -5270,7 +5624,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -5288,6 +5641,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Decision Tree Regression model.
 
@@ -5406,14 +5760,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.DecisionTreeRegression()
+        >>> model.DecisionTreeRegression(model_name='m1', min_impurity_split=0.0003)
+        >>> model.DecisionTreeRegression(cv=10)
+        >>> model.DecisionTreeRegression(gridsearch={'min_impurity_split':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.DecisionTreeRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.tree import DecisionTreeRegressor
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["dt_reg"]
 
-        model = DecisionTreeRegressor(random_state=random_state, **kwargs)
+        model = DecisionTreeRegressor
 
         model = self._run_supervised_model(
             model,
@@ -5426,7 +5788,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -5444,6 +5805,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains a Linear Support Vector Regression model.
 
@@ -5525,14 +5887,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.LinearSVR()
+        >>> model.LinearSVR(model_name='m1', C=0.0003)
+        >>> model.LinearSVR(cv=10)
+        >>> model.LinearSVR(gridsearch={'C':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LinearSVR(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.svm import LinearSVR
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["linsvr"]
 
-        model = LinearSVR(random_state=random_state, **kwargs)
+        model = LinearSVR
 
         model = self._run_supervised_model(
             model,
@@ -5545,7 +5915,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -5563,6 +5932,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Epsilon-Support Vector Regression.
 
@@ -5650,13 +6020,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.SVR()
+        >>> model.SVR(model_name='m1', C=0.0003)
+        >>> model.SVR(cv=10)
+        >>> model.SVR(gridsearch={'C':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.SVR(run=False) # Add model to the queue
         """
+        # endregion
 
         from sklearn.svm import SVR
 
         report_info = technique_reason_repo["model"]["regression"]["svr"]
 
-        model = SVR(**kwargs)
+        model = SVR
 
         model = self._run_supervised_model(
             model,
@@ -5686,6 +6065,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains an XGBoost Regression Model.
 
@@ -5814,14 +6194,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.XGBoostRegression()
+        >>> model.XGBoostRegression(model_name='m1', reg_alpha=0.0003)
+        >>> model.XGBoostRegression(cv=10)
+        >>> model.XGBoostRegression(gridsearch={'reg_alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.XGBoostRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         import xgboost as xgb
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["xgb_reg"]
 
-        model = xgb.XGBRegressor(random_state=random_state, **kwargs)
+        model = xgb.XGBRegressor
 
         model = self._run_supervised_model(
             model,
@@ -5834,7 +6222,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -5852,6 +6239,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains an LightGBM Regression Model.
 
@@ -5966,14 +6354,22 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
+
+        Examples
+        --------
+        >>> model.LightGBMRegression()
+        >>> model.LightGBMRegression(model_name='m1', reg_lambda=0.0003)
+        >>> model.LightGBMRegression(cv=10)
+        >>> model.LightGBMRegression(gridsearch={'reg_lambda':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LightGBMRegression(run=False) # Add model to the queue
         """
+        # endregion
 
         import lightgbm as lgb
 
-        random_state = kwargs.pop("random_state", 42)
         report_info = technique_reason_repo["model"]["regression"]["lgbm_reg"]
 
-        model = lgb.LGBMRegressor(random_state=random_state, **kwargs)
+        model = lgb.LGBMRegressor
 
         model = self._run_supervised_model(
             model,
@@ -5986,7 +6382,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             **kwargs,
         )
 
@@ -6005,6 +6400,7 @@ class Model(Visualizations):
         verbose=2,
         **kwargs,
     ):
+        # region
         """
         Trains an CatBoost Regression Model.
 
@@ -6073,12 +6469,20 @@ class Model(Visualizations):
         -------
         RegressionModel
             RegressionModel object to view results and analyze results
-        """
 
-        random_state = kwargs.pop("random_state", 42)
+        Examples
+        --------
+        >>> model.CatBoostRegression()
+        >>> model.CatBoostRegression(model_name='m1', learning_rate=0.0003)
+        >>> model.CatBoostRegression(cv=10)
+        >>> model.CatBoostRegression(gridsearch={'learning_rate':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.CatBoostRegression(run=False) # Add model to the queue
+        """
+        # endregion
+
         report_info = technique_reason_repo["model"]["regression"]["cb_reg"]
 
-        model = cb.CatBoostRegressor(random_state=random_state, **kwargs)
+        model = cb.CatBoostRegressor
 
         model = self._run_supervised_model(
             model,
@@ -6091,7 +6495,6 @@ class Model(Visualizations):
             score=score,
             run=run,
             verbose=verbose,
-            random_state=random_state,
             cat_features=cat_features,
             **kwargs,
         )
@@ -6118,11 +6521,35 @@ class Model(Visualizations):
         Helper function that generalizes model orchestration.
         """
 
-        random_state = kwargs.pop("random_state", 42)
+        # Hard coding SVR due to its parent having random_state and the child not allowing it.
+        random_state = kwargs.pop("random_state", None)
+        if (
+            not random_state
+            and hasattr(model(), "random_state")
+            and not isinstance(model(), sklearn.svm.SVR)
+        ):
+            random_state = 42
+
         cat_features = kwargs.pop("cat_features", None)
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
         shap_values = None
         pool = None
+
+        if random_state:
+            model = model(random_state=random_state, **kwargs)
+        else:
+            model = model(**kwargs)
+
+        if gridsearch:
+            cv = cv if cv else 5
+
+            if isinstance(model, cb.CatBoost):
+                model.grid_search(
+                    gridsearch, self.x_train, self.y_train, cv=cv, plot=True
+                )
+
+            else:
+                model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
         if cv:
             if isinstance(model, cb.CatBoost):
@@ -6156,17 +6583,6 @@ class Model(Visualizations):
             if not run:
                 return
 
-        if gridsearch:
-            cv = cv if cv else 5
-
-            if isinstance(model, cb.CatBoost):
-                model.grid_search(
-                    gridsearch, self.x_train, self.y_train, cv=cv, plot=True
-                )
-
-            else:
-                model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
-
         # Train a model and predict on the test test.
         if isinstance(model, cb.CatBoost):
             if not gridsearch:
@@ -6192,11 +6608,14 @@ class Model(Visualizations):
         if isinstance(model, cb.CatBoost):
             data = self.x_train if self.x_test is None else self.x_test
             label = self.y_train if self.x_test is None else self.y_test
-            pool = cb.Pool(data, label=label, cat_features=cat_features, feature_names=list(self.x_train.columns))
-
-            shap_values = model.get_feature_importance(
-                pool, type="ShapValues"
+            pool = cb.Pool(
+                data,
+                label=label,
+                cat_features=cat_features,
+                feature_names=list(self.x_train.columns),
             )
+
+            shap_values = model.get_feature_importance(pool, type="ShapValues")
 
         self._models[model_name] = model_type(
             self, model_name, model, new_col_name, shap_values=shap_values, pool=pool,
@@ -6224,8 +6643,21 @@ class Model(Visualizations):
         Helper function that generalizes model orchestration.
         """
 
-        random_state = kwargs.pop("random_state", 42)
+        # Hard coding OneClassSVM due to its parent having random_state and the child not allowing it.
+        random_state = kwargs.pop("random_state", None)
+        if (
+            not random_state
+            and "random_state" in dir(model())
+            and not isinstance(model(), sklearn.svm.OneClassSVM)
+        ):
+            random_state = 42
+
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
+
+        if random_state:
+            model = model(random_state=random_state, **kwargs)
+        else:
+            model = model(**kwargs)
 
         if cv:
             cv_scores = run_crossvalidation(

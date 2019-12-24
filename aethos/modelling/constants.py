@@ -116,3 +116,18 @@ REG_METRICS_DESC = {
     "R2": "R-squared (R2) is a statistical measure that represents the proportion of the variance for a dependent variable that is explained by an independent variable or variables in a regression model.",
     "SMAPE": "Symmetric mean absolute percentage error. It is an accuracy measure based on percentage (or relative) errors.",
 }
+
+DEBUG_OVERFIT = [
+    "Add data to your training set.",
+    "Add or increase regularization. (L2 regularization, L1 regularization, dropout)",
+    "Add early stopping.",
+    "Feature selection to decrease number/type of input features.",
+    "Modify input features based on insights from error analysis​ - add more features.",
+    "Modify model architecture",
+]
+
+DEBUG_UNDERFIT = [
+    "Increase the size of your model (for example, increase thesize of your neural network by adding layers/neurons)",
+    "Modify input features based on insights from error analysis​ - add more features",
+    "Reduce or eliminate regularization​.",        
+]

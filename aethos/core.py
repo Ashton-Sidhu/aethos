@@ -331,6 +331,15 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
     def standardize_column_names(self):
         """
         Utility function that standardizes all column names to lowercase and underscores for spaces.
+
+        Returns
+        -------
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.standardize_column_names()
         """
 
         new_column_names = {}
@@ -356,6 +365,15 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         ----------
         cols: str
             Column in the data that has the nested data.
+
+        Returns
+        -------
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.expand_json_column('col1')
         """
 
         df = json_normalize(self.x_train[col], sep="_")
@@ -383,12 +401,21 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
 
         replace : bool, optional
             Whether to permanently transform your data, by default False
+
+        Returns
+        -------
+        Data or DataFrame:
+            Returns a deep copy of the Data object or a DataFrame if replace is False.
+
+        Examples
+        --------
+        >>> data.search('aethos')
         """
 
         # TODO: Refactor this to take in boolean expressions
 
         if not values:
-            return ValueError("Please provided columns to groupby.")
+            return ValueError("Please provide value to search.")
 
         if replace:
             if not_equal:
@@ -439,9 +466,9 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
 
         Examples
         --------
-        >>> clean.where('col1', col2=3, col3=4, col4=[1,2,3])
-        This translates to your data where col2 is equal to 3 and col 3 is equal to 4 and column 4 is equal to 1, 2 or 3.
-        The col1 specifies that this this is the only column you want to see at the output.
+        '''This translates to your data where col2 is equal to 3 and col 3 is equal to 4 and column 4 is equal to 1, 2 or 3.
+        The col1 specifies that this this is the only column you want to see at the output.'''
+        >>> data.where('col1', col2=3, col3=4, col4=[1,2,3])
         """
 
         filtered_data = self.x_train.copy()
@@ -471,8 +498,12 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         
         Returns
         -------
-        Dataframe, Clean, Preprocess or Feature
-            Dataframe or copy of object
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.groupby('col1', 'col2')
         """
 
         if not groupby:
@@ -492,6 +523,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
 
     def groupby_analysis(self, groupby: list, *cols, data_filter=None):
         """
+        TODO: Refactor this to a class method.
+
         Groups your data and then provides descriptive statistics for the other columns on the grouped data.
 
         For numeric data, the descriptive statistics are:
@@ -529,6 +562,11 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         -------
         Dataframe
             Dataframe of grouped columns and statistics for each column.
+
+        Examples
+        --------
+        >>> data.groupby_analysis()
+        >>> data.groupby_analysis('col1', 'col2')
         """
 
         analysis = {}
@@ -600,9 +638,14 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         Returns
         -------
         HTML display of Exploratory Data Analysis report
+
+        Examples
+        --------
+        >>> data.data_report()
+        >>> data.data_report(title='Titanic EDA', output_file='titanic.html')
         """
 
-        if shell == "ZMQInteractiveShell":
+        if shell == "ZMQInteractiveShell": # pragma : no cover
             report = self.x_train.profile_report(
                 title=title, style={"full_width": True}
             )
@@ -634,6 +677,10 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         -------
         DataFrame
             Dataframe describing your dataset with basic descriptive info
+
+        Examples
+        ---------
+        >>> data.describe()
         """
 
         if dataset == "train":
@@ -671,6 +718,10 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         -------
         DataFrame
             Dataframe describing your columns with basic descriptive info
+
+        Examples
+        ---------
+        >>> data.column_info()
         """
 
         if dataset == "train":
@@ -735,6 +786,10 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         -------
         dict
             Dictionary mapping a statistic and its value for a specific column
+            
+        Examples
+        --------
+        >>> data.describe_column('col1')
         """
 
         if dataset == "train":
@@ -765,15 +820,15 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         
         Returns
         -------
-        self : Object
-            Return deep copy of itself.
+        Data:
+            Returns a deep copy of the Data object.
 
         Examples
         --------
-        >>> clean.drop('A', 'B', reason="Columns were unimportant")
-        >>> clean.drop('col1', keep=['col2'], regexp=r"col*") # Drop all columns that start with "col" except column 2
-        >>> preprocess.drop(keep=['A']) # Drop all columns except column 'A'
-        >>> preprocess.drop(regexp=r'col*') # Drop all columns that start with 'col'       
+        >>> data.drop('A', 'B', reason="Columns were unimportant")
+        >>> data.drop('col1', keep=['col2'], regexp=r"col*") # Drop all columns that start with "col" except column 2
+        >>> data.drop(keep=['A']) # Drop all columns except column 'A'
+        >>> data.drop(regexp=r'col*') # Drop all columns that start with 'col'       
         """
 
         if not isinstance(keep, list):
@@ -817,8 +872,12 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
 
         Returns
         -------
-        Clean, Preprocess, Feature or Model
-            Copy of object
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.encode_target()
         """
 
         if not self.target_field:
@@ -854,8 +913,13 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         ----------
         name : str
             File path
+
         index : bool, optional
             True to write 'index' column, by default False
+
+        Examples
+        --------
+        >>> data.to_csv('titanic')
         """
 
         index = kwargs.pop("index", index)
@@ -873,6 +937,10 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
     def checklist(self):
         """
         Displays a checklist dashboard with reminders for a Data Science project.
+
+        Examples
+        --------
+        >>> data.checklist()
         """
 
         data_checkboxes = []
@@ -945,7 +1013,11 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         Dataframe, *Dataframe
             Transformed dataframe with rows with a missing values in a specific column are missing
 
-        Returns 2 Dataframes test if x_test is provided.  
+            Returns 2 Dataframes test if x_test is provided.
+
+        Examples
+        --------
+        >>> data.to_df()
         """
 
         if self.x_test is None:

@@ -124,9 +124,9 @@ class Visualizations(object):
         
         Examples
         --------
-        >>> clean.raincloud('col1') # Will plot col1 values on the x axis and your target variable values on the y axis
-        >>> clean.raincloud('col1', 'col2') # Will plot col1 on the x and col2 on the y axis
-        >>> clean.raincloud('col1', 'col2', output_file='raincloud.png')
+        >>> data.raincloud('col1') # Will plot col1 values on the x axis and your target variable values on the y axis
+        >>> data.raincloud('col1', 'col2') # Will plot col1 on the x and col2 on the y axis
+        >>> data.raincloud('col1', 'col2', output_file='raincloud.png')
         """
 
         if y is None:
@@ -189,7 +189,8 @@ class Visualizations(object):
 
         Examples
         --------
-
+        >>> data.barplot(x='x', y=['y', 'z'], method='mean')
+        >>> data.barplot(x='x', y=['y', 'z'], method='max', orient='h')
         """
 
         barplot(
@@ -259,9 +260,9 @@ class Visualizations(object):
 
         Examples
         --------
-        >>> clean.scatterplot(x='x', y='y') #2d
-        >>> clean.scatterplot(x='x', y='y', z='z') #3d
-        >>> clean.scatterplot(x='x', y='y', z='z', output_file='scatt')
+        >>> data.scatterplot(x='x', y='y') #2d
+        >>> data.scatterplot(x='x', y='y', z='z') #3d
+        >>> data.scatterplot(x='x', y='y', z='z', output_file='scatt')
         """
 
         scatterplot(
@@ -339,8 +340,8 @@ class Visualizations(object):
 
         Examples
         --------
-        >>> clean.line_plot(x='x', y='y')
-        >>> clean.line_plot(x='x', y='y', output_file='line')
+        >>> data.line_plot(x='x', y='y')
+        >>> data.line_plot(x='x', y='y', output_file='line')
         """
 
         lineplot(
@@ -371,8 +372,8 @@ class Visualizations(object):
 
         Examples
         --------
-        >>> clean.correlation_matrix(data_labels=True)
-        >>> clean.correlation_matrix(data_labels=True, output_file='corr.png')
+        >>> data.correlation_matrix(data_labels=True)
+        >>> data.correlation_matrix(data_labels=True, output_file='corr.png')
         """
 
         correlation_matrix(
@@ -421,8 +422,8 @@ class Visualizations(object):
 
         Examples
         --------
-        >>> clean.pairplot(kind='kde')
-        >>> clean.pairplot(kind='kde', output_file='pair.png')
+        >>> data.pairplot(kind='kde')
+        >>> data.pairplot(kind='kde', output_file='pair.png')
         """
 
         if self.target_field and not hue:
@@ -486,8 +487,8 @@ class Visualizations(object):
 
         Examples
         --------
-        >>> clean.jointplot(x='x', y='y', kind='kde', color='crimson')
-        >>> clean.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
+        >>> data.jointplot(x='x', y='y', kind='kde', color='crimson')
+        >>> data.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
         jointplot(x=x, y=y, df=self.data, kind=kind, output_file=output_file, **kwargs)
@@ -526,12 +527,12 @@ class Visualizations(object):
 
         Examples
         --------
-        >>> clean.histogram('col1')
-        >>> clean.histogram('col1', 'col2')
-        >>> clean.histogram('col1', kde=False)
-        >>> clean.histogram('col1', 'col2', hist=False)
-        >>> clean.histogram('col1', kde=False, fit=stat.normal)
-        >>> clean.histogram('col1', kde=False, output_file='hist.png')
+        >>> data.histogram('col1')
+        >>> data.histogram('col1', 'col2')
+        >>> data.histogram('col1', kde=False)
+        >>> data.histogram('col1', 'col2', hist=False)
+        >>> data.histogram('col1', kde=False, fit=stat.normal)
+        >>> data.histogram('col1', kde=False, output_file='hist.png')
         """
 
         histogram(list(x), data=self.data, output_file=output_file, **kwargs)

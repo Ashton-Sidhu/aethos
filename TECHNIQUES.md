@@ -57,6 +57,7 @@ Note this does not include quality of life functions.
   - Extract Keywords with TextRank
   - Word2Vec
   - Doc2Vec
+  - LDA
   - KMeans
   - DBScan
   - Isolation Forest
@@ -94,6 +95,7 @@ Note this does not include quality of life functions.
   - SHAP Dependence Plot
   - Interpret Model with SHAP, LIME, Morris Sensitivity, etc.
   - Pickle Model
+  - Generate code files to run model as a service
   - Filter data based on cluster
   - Plot clusters in 2d and 3d
   - View all classification and regression metrics, including sMAPE
@@ -110,3 +112,7 @@ Note this does not include quality of life functions.
   - Histograms
   - Jointplots
   - Correlation Matrix
+
+## Statistical Methods
+  - Predict whether sample is from train or test set to compare train and test set distributions
+  - Kolomogirov Smirnov test for comparing feature distribution between train and test set
