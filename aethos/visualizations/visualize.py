@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -5,13 +8,11 @@ import pandas_bokeh
 import plotly.express as px
 import ptitprince as pt
 import seaborn as sns
-from scipy import stats
-from aethos.config import cfg, DEFAULT_IMAGE_DIR
+from aethos.config import DEFAULT_IMAGE_DIR, cfg
 from aethos.util import _make_dir
 from aethos.visualizations.util import _make_image_dir
-import os
-from pathlib import Path
 from bokeh.io import export_png
+from scipy import stats
 
 
 def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **params):
