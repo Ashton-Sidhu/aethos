@@ -5,7 +5,7 @@ pandas_profiling
 gensim
 nltk
 matplotlib<3.1.1
-numpy==1.17.4
+numpy
 pandas>=0.25.1
 bokeh
 pathos
@@ -37,3 +37,7 @@ pyldavis
 swifter
 lightgbm
 catboost
+black
+sphinx
+doc8
+sphinx_rtd_theme

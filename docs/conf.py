@@ -18,7 +18,7 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = "PyAutoMl"
+project = "aethos"
 copyright = "2019, Ashton Sidhu"
 author = "Ashton Sidhu"
 

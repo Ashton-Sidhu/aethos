@@ -1,0 +1,13 @@
+report:
+  # Directory where reports are saved, default is $HOME/.aethos/reports/
+  dir: ''
+
+models:
+  # Directory where any pickled models would be stored
+  dir: ''
+  # Directory where any deployment packages are stored
+  deployment_dir: ''
+
+images:
+  # Directory where images are stored
+  dir: ''

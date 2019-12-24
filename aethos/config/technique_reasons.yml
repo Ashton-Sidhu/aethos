@@ -1,0 +1,295 @@
+clean:
+  general:
+    remove_rows: >
+      Removed rows because it had too many missing values and those records don't
+      contain enough information.
+
+    remove_columns: >
+      Removed column(s) column_name_placeholder because it had too many missing values and didn't
+      contain enough information.
+
+    remove_constant_columns: >
+      Removed column(s) column_name_placeholder because there was only 1 unique value and would not add value.
+
+    remove_unique_columns: >
+      Removed column(s) column_name_placeholder because all the values were unique.
+
+    remove_duplicate_rows: >
+      Removed rows that are exact duplicates of each other and keep only 1 to increase computational performance.
+    
+    remove_duplicate_columns: >
+      Removed columns of which whos values are exact duplicates of each other to reduce redundancy.
+
+    random_discrete: >
+      Replaced missing values in column(s) column_name_placeholder with random values that follow the datas distribution,
+      as observed in nature, to better simulate the missing data points
+    
+    knn: >
+      Replaced missing values using K Nearest Neighbours, with values from other rows that are similar to the rows
+      containing the missing data.
+
+    interpolate: >
+      Replaced missing values in column(s) column_name_placeholder using interpolation.
+
+    bfill: >
+      Replaced missing values in column(s) column_name_placeholder with future known values.
+
+    ffill: >
+      Replaced missing values in column(s) column_name_placeholder with past known values.
+
+    indicator: >
+      Added a new column representing missing values in column(s) column_name_placeholder, due to the missing data being important.
+
+  categorical:
+    new_category: >
+      Replaced missing values in column(s) column_name_placeholder with its own category name because
+      the missing values have meaning that should be captured.
+
+    remove_rows: >
+      Removed rows that have missing values in column_name_placeholder because column_name_placeholder
+      is an important feature and data points with missing data in this column are inconsequential to this problem.
+
+  numeric:
+    mean: >
+      Replaced missing values in column(s) column_name_placeholder with the average of the values in the column.
+
+    median: >
+      Replaced missing values in column(s) column_name_placeholder with the middlemost value in the column.
+
+    mode: >
+      Replaced missing values in column(s) column_name_placeholder with the most frequent value in the column.
+
+    constant: >
+      Replaced missing values in column(s) column_name_placeholder with a constant.
+
+    corr: >
+      Dropped feature(s) column_name_plaeholder because they highly correlated with other features.
+
+  text:
+
+preprocess:
+  general:
+  
+  categorical:
+    label_encode: >
+      Encoded the label(s) in column(s) column_name_placeholder.
+
+  numeric:
+    standardize: >
+      Standardized the values in column(s) column_name_placeholder between 0 and 1 so all values in every column are in the same
+      domain and range does not effect model weights.
+
+    robust: >
+      Standardized the values in column(s) column_name_placeholder between quantile ranges. This method removes the median and scales
+       the data according to the quantile range.
+
+    log: >
+      Standardized the values in column(s) column_name_placeholder logarithmically.
+
+  text:
+    split_sentence: >
+      Text data was split into sentences to be used for futher analysis.
+
+    stem: >
+      Stemmed all the words down to their root words for more efficient processing and analysis. For example, words that belong to 
+      different tenses are now reduced to the same word, i.e. 'ask' and 'asked'.
+
+    split_words: >
+      Split text into it's individual words.
+
+    remove_stopwords: >
+      Removed most common words from all the text.
+
+    remove_punctuation: >
+      Removed punctuation from all the text.
+
+    clean_text: >
+      Cleaned the text in column(s) column_name_placeholder .
+
+feature:
+  general:
+    pca: >
+      Reduced the dimension of the data using Principal Component Analysis to speed up computation and reduce model complexity.
+
+  categorical:
+    onehotencode: >
+      Converted the categories in column(S) column_name_placeholder into its own feature where the value is 1 if the category exists
+      in the record, 0 otherwise.
+
+  numeric:
+    poly: >
+      Derived polynomial features from column(s) column_name_placeholder.
+
+  text:
+    tfidf: >
+      Converted text to a numeric representation where each number represents how important a word(s) is to a corpus. The higher the number,
+      the more important words is to the corpus.
+
+    bow: >
+      Converted text to a numeric representation where each number represents how many times a word occurs in a sample.
+
+    nltk_postag: >
+      Tagged each word with its Part of Speech tag where the tag represents whether a word is a Noun, Verb, Adjective, etc using the NLTK NLP engine.
+
+    spacy_postag: >
+      Tagged each word with its Part of Speech tag where the tag represents whether a word is a Noun, Verb, Adjective, etc using the Spacy NLP engine.
+
+    nltk_np : >
+      Extracted noun phrases using the NLTK NLP engine.
+
+    spacy_np : >
+      Extracted noun phrases using the Spacy NLP engine.
+
+    hash: >
+      Transformed text data using a hash.
+
+    w2v: >
+      Embedded the text data to capture the semantic relationships each word has with each other.
+
+    d2v: >
+      Embedded the text data to capture the semantic relationships each document has with each other.
+      
+model:
+  text:
+    textrank_keywords: >
+      Extracted keywords using the Text Rank algorithm.
+      
+    textrank_summarizer: >
+      Created an extractive summary using the Text Rank algorithm.
+
+    doc2vec: >
+      Trained a doc2vec model.
+
+    word2vec: >
+      Trained a word2vec model.
+
+    lda: >
+      Trained a Latent Dirichlet Allocation to model topics.
+
+  unsupervised:
+    kmeans: >
+      Ran KMeans clustering.
+
+    dbscan: >
+      Ran DBSCAN clustering.
+
+    oneclass_cls: >
+      Trained a One Class Support Vector Machine.
+
+    iso_forest: >
+      Trained an Isolation Forest model.
+
+    agglom: >
+      Trained an Agglomerative Hierarchical Clustering model.
+
+    em_gmm: >
+      Trained an Expectation-Maxmimization (EM) Clustering model using Gaussian Mixture Models (GMM).
+
+    ms : >
+      Trained a Mean-Shift Clustering model.
+    
+  classification:
+    logreg: >
+      Trained a Logistic Regression model.
+      
+    ridge_cls: >
+      Trained a Ridge Classification model.
+      
+    sgd_cls: >
+      Trained a classifier using SGD as the optimizer.
+      
+    ada_cls: >
+      Trained a ADABoosting Classifier.
+      
+    bag_cls: >
+      Trained a Bagging Classifier.
+      
+    grad_cls: >
+      Trained a Gradient Boosting Classifier.
+      
+    rf_cls: >
+      Trained a Random Forest classifier.
+      
+    bern: >
+      Trained a Naive Bayes Bernoulli classififier.
+      
+    gauss: >
+      Trained a Naive Bayes Gaussian classifier.
+      
+    multi: >
+      Trained a Naive Bayes Multinomial classifier.
+      
+    dt_cls: >
+      Trained a Decision Tree Classifier.
+      
+    linsvc: >
+      Trained a linear Support Vector Classifier.
+      
+    svc: >
+      Trained a Support Vector Classifier.
+
+    xgb_cls: >
+      Trained a XGBoost Classification Model.
+
+    lgbm_cls: >
+      Trained a LightGBM Classification Model.
+
+    cb_cls: >
+      Trained a CatBoost Classification Model.
+     
+  regression:
+    linreg: >
+      Trained a Linear Regression model.
+      
+    bay_reg: >
+      Trained a Bayesian Ridge Regression model.
+      
+    el_net: >
+      Trained an Elastic Net Regression model.
+      
+    lasso: >
+      Trained a Lasso Regression model.
+      
+    ridge_reg: >
+      Trained a Ridge Regression model.
+      
+    sgd_reg: >
+      Trained a regressor using SGD as the optimizer.
+      
+    ada_reg: >
+      Trained a ADABoosting Regressor.
+      
+    bag_reg: >
+      Trained a Bagging Regressor.
+      
+    grad_reg: >
+      Trained a Gradient Boosting Regressor.
+      
+    rf_reg: >
+      Trained a Random Forest Regressor.
+      
+    dt_reg: >
+      Trained a Decision Tree Regressor.
+      
+    linsvr: >
+      Trained a linear Support Vector Regressor.
+      
+    svr: >
+      Trained a Support Vector Regressor
+
+    xgb_reg: >
+      Trained a XGBoost Regressor model.
+
+    lgbm_reg: >
+      Trained a LightGBM Regressor model.
+
+    cb_reg: >
+      Trained a CatBoost Regressor model.
+
+stats:
+  dist_compare:
+    predict: >
+      Compared the distribution of the training set and the test set by trying to predict how easily a classifier can distinguish samples from the training set and test set.
+
+    ks: >
+      Compared the distribution of the training set and the test set using the Kolomogirov-Smirnov test.

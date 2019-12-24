@@ -1,7 +1,7 @@
-pyautoml
+aethos
 ========
 
 .. toctree::
    :maxdepth: 4
 
-   pyautoml
+   aethos
