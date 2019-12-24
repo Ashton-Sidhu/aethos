@@ -227,7 +227,7 @@ def gensim_lda(x_train, x_test=None, prep=False, col_name=None, **algo_kwargs):
 
         if prep:
             texts = [word_tokenize(process_text(text)) for text in texts]
-            
+
         test_corpus = [id2word.doc2bow(text) for text in texts]
 
         x_test["topics"] = _assign_topic_doc(lda_model, texts, test_corpus)

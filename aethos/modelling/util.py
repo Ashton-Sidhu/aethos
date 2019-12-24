@@ -226,12 +226,15 @@ def to_pickle(model, name, project=False, project_name=None):
         else:
             path = cfg["models"]["dir"]
     else:
-        path = os.path.join(os.path.expanduser('~'), '.aethos', 'projects', project_name, 'app')
+        path = os.path.join(
+            os.path.expanduser("~"), ".aethos", "projects", project_name, "app"
+        )
 
     if not os.path.exists(path):
         os.makedirs(path)
 
     pickle.dump(model, open(os.path.join(path, name + ".pkl"), "wb"))
+
 
 def _validate_model_name(model_obj, model_name: str) -> bool:
     """

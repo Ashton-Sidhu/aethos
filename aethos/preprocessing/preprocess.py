@@ -4,8 +4,7 @@ from aethos.config import technique_reason_repo
 from aethos.preprocessing.categorical import *
 from aethos.preprocessing.numeric import *
 from aethos.preprocessing.text import *
-from aethos.util import (_input_columns, _numeric_input_conditions,
-                         label_encoder)
+from aethos.util import _input_columns, _numeric_input_conditions, label_encoder
 
 
 class Preprocess(object):
@@ -472,7 +471,7 @@ class Preprocess(object):
         punctuation=True,
         stopwords=True,
         stemmer=True,
-        new_col_name="_clean"
+        new_col_name="_clean",
     ):
         """
         Function that takes text and does the following:
@@ -522,10 +521,14 @@ class Preprocess(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
-            self.x_train[col + new_col_name] = [process_text(text) for text in self.x_train[col]]
+            self.x_train[col + new_col_name] = [
+                process_text(text) for text in self.x_train[col]
+            ]
 
             if self.x_test is not None:
-                self.x_test[col + new_col_name] = [process_text(text) for text in self.x_test[col]]
+                self.x_test[col + new_col_name] = [
+                    process_text(text) for text in self.x_test[col]
+                ]
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)

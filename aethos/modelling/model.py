@@ -8,9 +8,14 @@ from aethos.core import Data
 from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 from aethos.modelling.model_analysis import *
 from aethos.modelling.text import *
-from aethos.modelling.util import (_get_cv_type, _run_models_parallel,
-                                   add_to_queue, run_crossvalidation,
-                                   run_gridsearch, to_pickle)
+from aethos.modelling.util import (
+    _get_cv_type,
+    _run_models_parallel,
+    add_to_queue,
+    run_crossvalidation,
+    run_gridsearch,
+    to_pickle,
+)
 from aethos.reporting.report import Report
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import _input_columns, _set_item, split_data

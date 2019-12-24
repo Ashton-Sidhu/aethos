@@ -1,6 +1,8 @@
 import ast
 import os
 import unittest
+import shutil
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -10,6 +12,10 @@ from aethos import Data
 
 
 class Test_TestBase(unittest.TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
+
     def test_setitem_constant(self):
 
         int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
@@ -21,7 +27,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.25,
         )
 
@@ -44,7 +50,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -67,7 +73,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.25,
         )
 
@@ -88,7 +94,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.75,
         )
 
@@ -108,7 +114,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
         base["col4"] = ([5, 5], [2, 2])
@@ -130,7 +136,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.25,
         )
         base["col4"] = ([5, 5, 5], [2])
@@ -714,7 +720,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="col3",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -733,7 +739,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=False,
             target_field="col3",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -752,7 +758,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -775,7 +781,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="col3",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -794,7 +800,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -816,7 +822,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="col3",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -833,7 +839,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=False,
             target_field="species",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -851,7 +857,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="species",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -873,7 +879,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=data,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -902,7 +908,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=False,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -927,7 +933,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 

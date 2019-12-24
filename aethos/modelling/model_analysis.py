@@ -17,9 +17,13 @@ import sklearn
 import xgboost as xgb
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import pca
-from aethos.modelling.constants import (CLASS_METRICS_DESC,
-                                        INTERPRET_EXPLAINERS, PROBLEM_TYPE,
-                                        REG_METRICS_DESC, SHAP_LEARNERS)
+from aethos.modelling.constants import (
+    CLASS_METRICS_DESC,
+    INTERPRET_EXPLAINERS,
+    PROBLEM_TYPE,
+    REG_METRICS_DESC,
+    SHAP_LEARNERS,
+)
 from aethos.modelling.model_explanation import MSFTInterpret, Shap
 from aethos.modelling.util import to_pickle
 from aethos.templates.template_generator import TemplateGenerator as tg
@@ -40,8 +44,8 @@ class ModelBase(object):
         self.x_train = model_object.x_train
         self.x_test = model_object.x_test
         self.report = model_object.report
-        
-        shap_values = kwargs.pop('shap_values', None)
+
+        shap_values = kwargs.pop("shap_values", None)
 
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
             self.shap = Shap(
@@ -50,7 +54,7 @@ class ModelBase(object):
                 self.x_test,
                 self.y_test,
                 SHAP_LEARNERS[type(self.model)],
-                shap_values
+                shap_values,
             )
             self.interpret = MSFTInterpret(
                 self.model,
@@ -521,7 +525,7 @@ class ModelBase(object):
 
         warnings.simplefilter("ignore")
 
-        if isinstance(self.model, xgb.XGBModel): # pragma: no cover
+        if isinstance(self.model, xgb.XGBModel):  # pragma: no cover
             return "Using MSFT interpret is currently unsupported with XGBoost."
 
         dashboard = []
@@ -586,7 +590,7 @@ class ModelBase(object):
 
         warnings.simplefilter("ignore")
 
-        if isinstance(self.model, xgb.XGBModel): # pragma: no cover
+        if isinstance(self.model, xgb.XGBModel):  # pragma: no cover
             return "Using MSFT interpret is currently unsupported with XGBoost."
 
         dashboard = []
@@ -645,7 +649,7 @@ class ModelBase(object):
 
         warnings.simplefilter("ignore")
 
-        if isinstance(self.model, xgb.XGBModel): # pragma: no cover
+        if isinstance(self.model, xgb.XGBModel):  # pragma: no cover
             return "Using MSFT interpret is currently unsupported with XGBoost."
 
         dashboard = []
@@ -769,10 +773,11 @@ class ModelBase(object):
         """
 
         to_pickle(self.model, self.model_name, project=True, project_name=project_name)
-        tg.generate_service(project_name, f'{self.model_name}.pkl')
+        tg.generate_service(project_name, f"{self.model_name}.pkl")
 
         print("docker build -t `image_name` ./")
         print("docker run -d --name `container_name` -p `port_num`:80 `image_name`")
+
 
 class TextModel(ModelBase):
     def __init__(self, model_object, model, model_name, **kwargs):
@@ -850,7 +855,7 @@ class TextModel(ModelBase):
 
         return self.model.show_topic(topicid=topic_num, **kwargs)
 
-    def visualize_topics(self, **kwargs): # pragma: no cover
+    def visualize_topics(self, **kwargs):  # pragma: no cover
         """
         Visualize topics using pyLDAvis.
 
@@ -889,7 +894,6 @@ class TextModel(ModelBase):
         pyLDAvis.enable_notebook()
 
         return pyLDAvis.gensim.prepare(self.model, self.corpus, self.id2word, **kwargs)
-        
 
     def coherence_score(self, col_name):
         """
@@ -1067,7 +1071,15 @@ class UnsupervisedModel(ModelBase):
 
 
 class ClassificationModel(ModelBase):
-    def __init__(self, model_object, model_name, model, predictions_col, shap_values=None, pool=None):
+    def __init__(
+        self,
+        model_object,
+        model_name,
+        model,
+        predictions_col,
+        shap_values=None,
+        pool=None,
+    ):
 
         self.y_train = model_object.y_train
         self.y_test = (
@@ -1787,7 +1799,15 @@ class ClassificationModel(ModelBase):
 
 
 class RegressionModel(ModelBase):
-    def __init__(self, model_object, model_name, model, predictions_col, shap_values=None, pool=None):
+    def __init__(
+        self,
+        model_object,
+        model_name,
+        model,
+        predictions_col,
+        shap_values=None,
+        pool=None,
+    ):
 
         self.y_train = model_object.y_train
         self.y_test = (

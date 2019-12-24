@@ -12,7 +12,6 @@ from tqdm import tqdm
 
 
 class Stats(object):
-
     def predict_data_sample(self):
         """
         Identifies how similar the train and test set distribution are by trying to predict whether each sample belongs
@@ -33,36 +32,32 @@ class Stats(object):
         """
 
         if self.x_test is None or not self.target_field:
-            raise ValueError('Test data or target field must be set. They can be set by assigning values to the `target_field` or the `x_test` variable.')
+            raise ValueError(
+                "Test data or target field must be set. They can be set by assigning values to the `target_field` or the `x_test` variable."
+            )
 
-        report_info = technique_reason_repo["stats"]["dist_compare"][
-            "predict"
-        ]
+        report_info = technique_reason_repo["stats"]["dist_compare"]["predict"]
 
         x_train = self.x_train.drop(self.target_field, axis=1)
         x_test = self.x_test.drop(self.target_field, axis=1)
 
-        x_train['label'] = 1
-        x_test['label'] = 0
+        x_train["label"] = 1
+        x_test["label"] = 0
 
         data = pd.concat([x_train, x_test], axis=0)
-        label = data['label'].tolist()
+        label = data["label"].tolist()
 
         predictions = cross_val_predict(
             ExtraTreesClassifier(n_estimators=100),
-            data.drop(columns=['label']),
+            data.drop(columns=["label"]),
             label,
-            cv=StratifiedKFold(
-                n_splits=10,
-                shuffle=True,
-                random_state=42
-            )
+            cv=StratifiedKFold(n_splits=10, shuffle=True, random_state=42),
         )
-        
+
         if self.report is not None:
             self.report.report_technique(report_info, [])
 
-        print(classification_report(data['label'].tolist(), predictions))
+        print(classification_report(data["label"].tolist(), predictions))
 
         return self.copy()
 
@@ -92,59 +87,67 @@ class Stats(object):
         """
 
         if self.x_test is None:
-            raise ValueError('Data must be split into train and test set. Please set the `x_test` variable.')
+            raise ValueError(
+                "Data must be split into train and test set. Please set the `x_test` variable."
+            )
 
-        report_info = technique_reason_repo["stats"]["dist_compare"][
-            "ks"
-        ]
+        report_info = technique_reason_repo["stats"]["dist_compare"]["ks"]
 
         diff_data = []
         diff_df = None
 
         for col in tqdm(self.x_train.columns):
             statistic, pvalue = ks_2samp(
-                self.x_train[col].values,
-                self.x_test[col].values
+                self.x_train[col].values, self.x_test[col].values
             )
 
             if pvalue <= 0.05 and np.abs(statistic) > threshold:
-                diff_data.append({
-                    'feature': col,
-                    'p': np.round(pvalue, 5),
-                    'statistic': np.round(np.abs(statistic), 2)
-                })
+                diff_data.append(
+                    {
+                        "feature": col,
+                        "p": np.round(pvalue, 5),
+                        "statistic": np.round(np.abs(statistic), 2),
+                    }
+                )
 
         if diff_data:
-            diff_df = pd.DataFrame(diff_data).sort_values(by=['statistic'], ascending=False)
+            diff_df = pd.DataFrame(diff_data).sort_values(
+                by=["statistic"], ascending=False
+            )
 
             if show_plots:
                 n_cols = 4
                 n_rows = int(len(diff_df) / n_cols) + 1
 
-                _, ax = plt.subplots(n_rows, n_cols, figsize=(40, 6*n_rows))
+                _, ax = plt.subplots(n_rows, n_cols, figsize=(40, 6 * n_rows))
 
                 for i, (_, row) in enumerate(diff_df.iterrows()):
                     if i >= len(ax):
                         break
-                    extreme = np.max(np.abs(self.x_train[row.feature].tolist() + self.x_test[row.feature].tolist()))
+                    extreme = np.max(
+                        np.abs(
+                            self.x_train[row.feature].tolist()
+                            + self.x_test[row.feature].tolist()
+                        )
+                    )
                     self.x_train.loc[:, row.feature].swifter.apply(np.log1p).hist(
                         ax=ax[i],
                         alpha=0.6,
-                        label='Train',
+                        label="Train",
                         density=True,
-                        bins=np.arange(-extreme, extreme, 0.25)
+                        bins=np.arange(-extreme, extreme, 0.25),
                     )
-                    
+
                     self.x_test.loc[:, row.feature].swifter.apply(np.log1p).hist(
                         ax=ax[i],
                         alpha=0.6,
-                        label='Train',
+                        label="Train",
                         density=True,
-                        bins=np.arange(-extreme, extreme, 0.25)
+                        bins=np.arange(-extreme, extreme, 0.25),
                     )
 
-                    ax[i].set_title(f'Statistic = {row.statistic}, p = {row.p}')
-                    ax[i].set_xlabel(f'Log({row.feature})')
+                    ax[i].set_title(f"Statistic = {row.statistic}, p = {row.p}")
+                    ax[i].set_xlabel(f"Log({row.feature})")
                     ax[i].legend()
 
                 plt.tight_layout()

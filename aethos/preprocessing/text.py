@@ -8,10 +8,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import PorterStemmer, SnowballStemmer
 from nltk.tokenize import RegexpTokenizer, word_tokenize
 
-NLTK_STEMMERS = {
-    "porter": PorterStemmer(),
-    "snowball": SnowballStemmer('english')
-    }
+NLTK_STEMMERS = {"porter": PorterStemmer(), "snowball": SnowballStemmer("english")}
 
 NLTK_LEMMATIZERS = {"wordnet": WordNetLemmatizer()}
 
@@ -321,6 +318,7 @@ def _apply_text_method(text_data, transformer=None):
 
     return transformed_text_data.strip()
 
+
 def process_text(corpus, lower=True, punctuation=True, stopwords=True, stemmer=True):
     """
     Function that takes text and does the following:
@@ -372,7 +370,7 @@ def process_text(corpus, lower=True, punctuation=True, stopwords=True, stemmer=T
                 continue
 
         if stemmer:
-            stem = SnowballStemmer('english')
+            stem = SnowballStemmer("english")
             token = stem.stem(token)
 
         transformed_corpus += token + " "

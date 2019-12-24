@@ -13,10 +13,18 @@ from aethos.feature_engineering.feature import Feature
 from aethos.preprocessing.preprocess import Preprocess
 from aethos.reporting.report import Report
 from aethos.stats.stats import Stats
-from aethos.util import (CLEANING_CHECKLIST, DATA_CHECKLIST, ISSUES_CHECKLIST,
-                         MULTI_ANALYSIS_CHECKLIST, PREPARATION_CHECKLIST,
-                         UNI_ANALYSIS_CHECKLIST, _get_columns, _set_item,
-                         label_encoder, split_data)
+from aethos.util import (
+    CLEANING_CHECKLIST,
+    DATA_CHECKLIST,
+    ISSUES_CHECKLIST,
+    MULTI_ANALYSIS_CHECKLIST,
+    PREPARATION_CHECKLIST,
+    UNI_ANALYSIS_CHECKLIST,
+    _get_columns,
+    _set_item,
+    label_encoder,
+    split_data,
+)
 from aethos.visualizations.visualizations import Visualizations
 from IPython import get_ipython
 from IPython.display import HTML, display
@@ -50,6 +58,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
     report_name: str
         Name of the report to generate, by default None
     """
+
     def __init__(
         self,
         x_train,
@@ -87,7 +96,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
 
         return self.x_train.to_string()
 
-    def _repr_html_(self): # pragma: no cover
+    def _repr_html_(self):  # pragma: no cover
 
         return self.x_train.head().to_html(show_dimensions=True, notebook=True)
 
@@ -645,7 +654,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         >>> data.data_report(title='Titanic EDA', output_file='titanic.html')
         """
 
-        if shell == "ZMQInteractiveShell": # pragma : no cover
+        if shell == "ZMQInteractiveShell":  # pragma : no cover
             report = self.x_train.profile_report(
                 title=title, style={"full_width": True}
             )

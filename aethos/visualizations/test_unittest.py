@@ -3,11 +3,16 @@ import unittest
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from pathlib import Path
+import shutil
 
 from aethos.core import Data
 
 
 class Test_TestBase(unittest.TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
 
     def test_histogram_1(self):
 
@@ -18,7 +23,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="species",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -35,7 +40,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="species",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -52,7 +57,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="species",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -69,7 +74,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="species",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -86,7 +91,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="species",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -103,7 +108,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="species",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 
@@ -125,7 +130,7 @@ class Test_TestBase(unittest.TestCase):
             x_test=None,
             split=True,
             target_field="col3",
-            report_name=None,
+            report_name="test",
             test_split_percentage=0.5,
         )
 

@@ -10,6 +10,12 @@ from sklearn.datasets import make_blobs
 
 
 class TestModelling(unittest.TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
+        shutil.rmtree(str(Path.home()) + "/.aethos/models/")
+        shutil.rmtree(str(Path.home()) + "/.aethos/projects/")
+
     def test_text_gensim_summarize(self):
 
         text_data = [
@@ -146,7 +152,7 @@ class TestModelling(unittest.TestCase):
 
         model = Model(x_train=data, test_split_percentage=0.5)
         l = model.LDA("prep")
-        l.coherence_score('prep')
+        l.coherence_score("prep")
 
         self.assertTrue(True)
 
@@ -760,9 +766,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
         model = Model(x_train=data, target_field="col3", test_split_percentage=0.2)
-        cv_values = model.LogisticRegression(
-            cv="strat-kfold", n_splits=10, run=True
-        )
+        cv_values = model.LogisticRegression(cv="strat-kfold", n_splits=10, run=True)
 
         self.assertTrue(True)
 
@@ -1209,7 +1213,6 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(True)
 
-
     def test_model_cbc(self):
 
         data = np.random.randint(0, 2, size=(1000, 3))
@@ -1241,7 +1244,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostRegression(cv='kfold', gridsearch={'learning_rate': [0.03, 0.1]})
+        model.CatBoostRegression(cv="kfold", gridsearch={"learning_rate": [0.03, 0.1]})
         validate = model.cb_reg is not None
 
         self.assertTrue(True)
@@ -1253,7 +1256,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostRegression(cv='kfold')
+        model.CatBoostRegression(cv="kfold")
         validate = model.cb_reg is not None
 
         self.assertTrue(True)
@@ -1455,8 +1458,6 @@ class TestModelling(unittest.TestCase):
 
         validate = os.path.exists(str(Path.home()) + "/.aethos/models/ada_reg.pkl")
 
-        shutil.rmtree(str(Path.home()) + "/.aethos/models/")
-
         self.assertTrue(validate)
 
     def test_pickle_model_analysis(self):
@@ -1472,8 +1473,6 @@ class TestModelling(unittest.TestCase):
 
         validate = os.path.exists(str(Path.home()) + "/.aethos/models/ada_reg.pkl")
 
-        shutil.rmtree(str(Path.home()) + "/.aethos/models/")
-
         self.assertTrue(validate)
 
     def test_model_create_service(self):
@@ -1485,7 +1484,7 @@ class TestModelling(unittest.TestCase):
         model = Model(x_train=data, target_field="col3")
         model.LogisticRegression(random_state=2, run=True)
 
-        model.to_service('log_reg', 'test')
+        model.to_service("log_reg", "test")
 
         self.assertTrue(True)
 
@@ -1498,7 +1497,7 @@ class TestModelling(unittest.TestCase):
         model = Model(x_train=data, target_field="col3")
         m = model.LogisticRegression(random_state=2)
 
-        m.to_service('test1')
+        m.to_service("test1")
 
         self.assertTrue(True)
 
@@ -1639,14 +1638,15 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-        )
+        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5,)
 
-        self.assertRaises(AttributeError, model.LogisticRegression,
-            random_state=2, penalty="l2", model_name="x_train", run=False
+        self.assertRaises(
+            AttributeError,
+            model.LogisticRegression,
+            random_state=2,
+            penalty="l2",
+            model_name="x_train",
+            run=False,
         )
 
     def test_model_debug(self):
@@ -1661,12 +1661,10 @@ class TestModelling(unittest.TestCase):
             test_split_percentage=0.5,
             report_name="modelweights",
         )
-        
+
         model.help_debug()
 
         self.assertTrue(True)
-
-
 
 
 if __name__ == "__main__":
