@@ -51,3 +51,5 @@ class TemplateGenerator(object):
             else:
                 with open(os.path.join(cls.project_dir, name, file), 'w', encoding='utf8') as f:
                     f.write(script)
+
+        print(f"Deployment files can be found at {cls.project_dir}/{name}.")
