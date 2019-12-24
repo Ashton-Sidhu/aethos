@@ -1,5 +1,5 @@
-import pickle
 import logging
+import pickle
 
 # Server
 import uvicorn
@@ -8,7 +8,11 @@ from fastapi import FastAPI
 app = FastAPI()
 
 my_logger = logging.getLogger()
-logging.basicConfig(level=logging.INFO, file='model-service.log')
+logging.basicConfig(
+    level=logging.INFO,
+    filename='model-service.log',
+    filemode='a',
+    )
 
 # Initialize files
 clf = pickle.load(open('{{ filename }}', 'rb'))
@@ -16,8 +20,8 @@ clf = pickle.load(open('{{ filename }}', 'rb'))
 @app.post("/predict")
 def predict(data: dict):
 
-    X = list(data.values())
+    X = [list(data.values())]
 
     prediction = clf.predict(X)
 
-    return prediction
+    return {"prediction": float(prediction[0])}

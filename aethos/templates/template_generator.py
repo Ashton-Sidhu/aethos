@@ -36,7 +36,7 @@ class TemplateGenerator(object):
 
         _create_project_dir(cls.project_dir, name=name)
 
-        files = ['app.py', 'Dockerfile', 'requirements.txt']
+        files = ['main.py', 'Dockerfile', 'requirements.txt']
 
         for file in files:
             script = cls.env.get_template('files/' + file.replace('.py', '')).render(
@@ -45,7 +45,7 @@ class TemplateGenerator(object):
                 service=True,
             )
 
-            if file.endswith('.py'):
+            if file.endswith('.py') or file.endswith('.txt'):
                 with open(os.path.join(cls.project_dir, name, 'app', file), 'w', encoding='utf8') as f:
                     f.write(script)
             else:

@@ -1,4 +1,5 @@
 {% if service %}
 fastapi
 uvicorn
+sklearn
 {% endif %}
