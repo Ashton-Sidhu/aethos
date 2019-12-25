@@ -17,13 +17,9 @@ import sklearn
 import xgboost as xgb
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import pca
-from aethos.modelling.constants import (
-    CLASS_METRICS_DESC,
-    INTERPRET_EXPLAINERS,
-    PROBLEM_TYPE,
-    REG_METRICS_DESC,
-    SHAP_LEARNERS,
-)
+from aethos.modelling.constants import (CLASS_METRICS_DESC,
+                                        INTERPRET_EXPLAINERS, PROBLEM_TYPE,
+                                        REG_METRICS_DESC, SHAP_LEARNERS)
 from aethos.modelling.model_explanation import MSFTInterpret, Shap
 from aethos.modelling.util import to_pickle
 from aethos.templates.template_generator import TemplateGenerator as tg
@@ -773,10 +769,11 @@ class ModelBase(object):
         """
 
         to_pickle(self.model, self.model_name, project=True, project_name=project_name)
-        tg.generate_service(project_name, f"{self.model_name}.pkl")
+        tg.generate_service(project_name, f"{self.model_name}.pkl", self.model)
 
-        print("docker build -t `image_name` ./")
-        print("docker run -d --name `container_name` -p `port_num`:80 `image_name`")
+        print("To run:")
+        print("\tdocker build -t `image_name` ./")
+        print("\tdocker run -d --name `container_name` -p `port_num`:80 `image_name`")
 
 
 class TextModel(ModelBase):

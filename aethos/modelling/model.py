@@ -8,14 +8,9 @@ from aethos.core import Data
 from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 from aethos.modelling.model_analysis import *
 from aethos.modelling.text import *
-from aethos.modelling.util import (
-    _get_cv_type,
-    _run_models_parallel,
-    add_to_queue,
-    run_crossvalidation,
-    run_gridsearch,
-    to_pickle,
-)
+from aethos.modelling.util import (_get_cv_type, _run_models_parallel,
+                                   add_to_queue, run_crossvalidation,
+                                   run_gridsearch, to_pickle)
 from aethos.reporting.report import Report
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import _input_columns, _set_item, split_data
@@ -489,10 +484,11 @@ class Model(Visualizations):
             project=True,
             project_name=project_name,
         )
-        tg.generate_service(project_name, f"{model_obj.model_name}.pkl")
+        tg.generate_service(project_name, f"{model_obj.model_name}.pkl", model_obj.model)
 
-        print("docker build -t `image_name` ./")
-        print("docker run -d --name `container_name` -p `port_num`:80 `image_name`")
+        print("To run:")
+        print("\tdocker build -t `image_name` ./")
+        print("\tdocker run -d --name `container_name` -p `port_num`:80 `image_name`")
 
     ################### TEXT MODELS ########################
 
