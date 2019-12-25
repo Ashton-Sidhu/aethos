@@ -42,6 +42,8 @@ Aethos provides:
   - Interactive checklists and tips to either remind or help you through your analysis.
   - Comparing train and test data distribution
   - Exporting trained models as a service (Generates the necessary code, files and folder structure)
+  
+You can view a full list of implemented techniques in the documentation or here: [TECHNIQUES.md](https://github.com/Ashton-Sidhu/aethos/blob/develop/TECHNIQUES.md)
 
 Plus more coming soon such as:
 
@@ -50,7 +52,8 @@ Plus more coming soon such as:
   - Statistical tests - Anova, T-test, etc.
   - Pre-trained models - BERT, GPT2, etc.
   - Parralelization through Dask and/or Spark
-  - Uniform API for deep learning models and automated code and file generation jupyter notebook development, python file of your data    pipeline.
+  - Uniform API for deep learning models
+  - Automated code and file generation for jupyter notebook development and a python file of your data pipeline.
 
 Aethos makes it easy to PoC, experiment and compare different techniques and models from various libraries. From imputations, visualizations, scaling, dimensionality reduction, feature engineering to modelling, model results and model deployment - all done with a single, human readable, line of code!
 
@@ -64,8 +67,6 @@ Examples can be viewed [here](https://github.com/Ashton-Sidhu/aethos/tree/develo
 To start, we need to import the ethos dependencies as well as pandas.
 
 Before that, we can create a full data science folder structure by running `aethos create` from the command line and follow the command prompts.
-
-For a full list of methods please see the full docs or [TECHNIQUES.md]()
 
 ### Options
 
