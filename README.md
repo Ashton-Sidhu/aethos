@@ -224,9 +224,7 @@ Now navigate to 'your_home_folder'('~' on linux and Users/'your_user_name' on wi
 
 ## Installation
 
-**Minimum Python Requirement**: 3.6
-
-**Python 3.8 Users**: You may run into issues when downloading some dependencies for some of the packages, however if you google the errors most of them can be resolved with `easy_install package-name`
+**Python Requirements**: 3.6, 3.7
 
 `pip install aethos`
 
