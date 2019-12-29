@@ -9,7 +9,6 @@ VERSION = "1.0.0"
 
 pkgs = [
     "numpy==1.17.4",
-    "scipy==1.4.1",
     "pandas>=0.25",
     "scikit-learn>=0.22",
     "textblob==0.15.3",
