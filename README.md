@@ -1,4 +1,4 @@
-[![PyPI version](https://badge.fury.io/py/aethos.svg)](https://badge.fury.io/py/aethos) [![CircleCI](https://circleci.com/gh/Ashton-Sidhu/aethos/tree/develop.svg?style=svg)](https://circleci.com/gh/Ashton-Sidhu/aethos/tree/develop) [![Documentation Status](https://readthedocs.org/projects/aethos/badge/?version=latest)](https://aethos.readthedocs.io/en/latest/?badge=latest) [![codecov](https://codecov.io/gh/Ashton-Sidhu/aethos/branch/develop/graph/badge.svg)](https://codecov.io/gh/Ashton-Sidhu/aethos)
+[![PyPI version](https://badge.fury.io/py/aethos.svg)](https://badge.fury.io/py/aethos) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aethos) [![CircleCI](https://circleci.com/gh/Ashton-Sidhu/aethos/tree/develop.svg?style=svg)](https://circleci.com/gh/Ashton-Sidhu/aethos/tree/develop) [![Documentation Status](https://readthedocs.org/projects/aethos/badge/?version=latest)](https://aethos.readthedocs.io/en/latest/?badge=latest) [![codecov](https://codecov.io/gh/Ashton-Sidhu/aethos/branch/develop/graph/badge.svg)](https://codecov.io/gh/Ashton-Sidhu/aethos)
 
 
 
