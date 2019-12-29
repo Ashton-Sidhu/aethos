@@ -104,8 +104,6 @@ class Model(Visualizations):
         self._models = {}
         self._queued_models = {}
 
-        Visualizations.__init__(self, self._train_result_data)
-
     def __getitem__(self, key):
 
         try:

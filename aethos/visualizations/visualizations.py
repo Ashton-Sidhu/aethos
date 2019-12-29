@@ -2,8 +2,6 @@ from aethos.visualizations.visualize import *
 
 
 class Visualizations(object):
-    def __init__(self, data):
-        self.data = data
 
     @property
     def plot_colors(self):  # pragma: no cover
@@ -26,6 +24,13 @@ class Visualizations(object):
         from IPython.display import IFrame
 
         IFrame("https://seaborn.pydata.org/tutorial/color_palettes.html")
+
+    @property
+    def data(self): # pragma: no cover
+        if hasattr(self, '_train_result_data'):
+            return self._train_result_data
+        else:
+            return self.x_train
 
     def raincloud(self, x=None, y=None, output_file="", **params):
         """

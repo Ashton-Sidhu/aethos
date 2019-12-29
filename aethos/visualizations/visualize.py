@@ -385,10 +385,12 @@ def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
     sns.set_palette(sns.color_palette("pastel"))
 
     if len(x) == 1:
-        g = sns.distplot(data[x], rug=True, **kwargs)
+        data = data[~data[x[0]].isnull()]
+        g = sns.distplot(data[x], **kwargs)
 
     else:
         for col in x:
+            data = data[~data[col].isnull()]
             g = sns.distplot(data[col], label=col, **kwargs)
 
         plt.legend()

@@ -13,18 +13,10 @@ from aethos.feature_engineering.feature import Feature
 from aethos.preprocessing.preprocess import Preprocess
 from aethos.reporting.report import Report
 from aethos.stats.stats import Stats
-from aethos.util import (
-    CLEANING_CHECKLIST,
-    DATA_CHECKLIST,
-    ISSUES_CHECKLIST,
-    MULTI_ANALYSIS_CHECKLIST,
-    PREPARATION_CHECKLIST,
-    UNI_ANALYSIS_CHECKLIST,
-    _get_columns,
-    _set_item,
-    label_encoder,
-    split_data,
-)
+from aethos.util import (CLEANING_CHECKLIST, DATA_CHECKLIST, ISSUES_CHECKLIST,
+                         MULTI_ANALYSIS_CHECKLIST, PREPARATION_CHECKLIST,
+                         UNI_ANALYSIS_CHECKLIST, _get_columns, _set_item,
+                         label_encoder, split_data)
 from aethos.visualizations.visualizations import Visualizations
 from IPython import get_ipython
 from IPython.display import HTML, display
@@ -90,15 +82,13 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
             self.report = None
             self.report_name = None
 
-        Visualizations.__init__(self, x_train)
-
     def __repr__(self):
 
         return self.x_train.to_string()
 
     def _repr_html_(self):  # pragma: no cover
 
-        return self.x_train.head().to_html(show_dimensions=True, notebook=True)
+        return self.x_train._repr_html_()
 
     def __getitem__(self, column):
 

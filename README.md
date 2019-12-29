@@ -84,7 +84,7 @@ Currently the following options are:
   - `interactive_table`: Interactive grid with Itable - comes with built in client side searching
   - `project_metrics`: Setting project metrics
     - Project metrics is a metric or set of metrics to evaluate models.
-  - `word_doc`: Writes report to a word document as well as the .txt file
+  - `word_report`: Writes report to a word document as well as the .txt file
 
 User options such as changing the directory where images, reports, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
 
