@@ -158,7 +158,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
             if hasattr(self.x_train, key):
                 return getattr(self.x_train, key)
             else:
-                raise AttributeError(f"Name does not have attribute {key}.")
+                raise AttributeError(f"Data object does not have attribute {key}.")
 
     def __setattr__(self, item, value):
 

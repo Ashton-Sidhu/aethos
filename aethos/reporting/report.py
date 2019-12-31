@@ -20,6 +20,11 @@ class Report:
         else:
             report_dir = cfg["report"]["dir"]
 
+        if not cfg["images"]["dir"]: # pragma: no cover
+            self.image_dir = DEFAULT_IMAGE_DIR
+        else:
+            self.image_dir = cfg["images"]["dir"]
+
         _make_dir(report_dir)
 
         self.report_name = report_name
@@ -53,11 +58,6 @@ class Report:
             self.write_header(report_name.capitalize())
             self.report_environtment()
             self.write_header('Analysis', level=2)
-
-        if not cfg["images"]["dir"]:
-            self.image_dir = DEFAULT_IMAGE_DIR
-        else:
-            self.image_dir = cfg["images"]["dir"]
 
     def write_header(self, header: str, level=1):
         """
