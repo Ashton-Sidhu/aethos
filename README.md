@@ -64,7 +64,7 @@ For full documentation on all the techniques and models, click [here](https://ae
 
 Examples can be viewed [here](https://github.com/Ashton-Sidhu/aethos/tree/develop/examples)
 
-To start, we need to import the ethos dependencies as well as pandas.
+To start, we need to import Aethos dependencies as well as pandas.
 
 Before that, we can create a full data science folder structure by running `aethos create` from the command line and follow the command prompts.
 
