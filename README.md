@@ -280,7 +280,7 @@ These are subject to change.
 
 ## Feedback
 
-I appreciate any feedback so if you have any feature requests or issues make an issue with the appropriate tag or futhermore, send me an email at ashton.sidhu1994@gmail.com
+I appreciate any feedback so if you have any feature requests or issues make an issue with the appropriate tag or futhermore, send me an email at sidhuashton@gmail.com
 
 ## Contributors
 
