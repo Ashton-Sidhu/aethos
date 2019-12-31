@@ -2,13 +2,14 @@ import os
 import platform
 import subprocess
 from datetime import datetime
-from aethos.config import cfg, DEFAULT_REPORT_DIR, DEFAULT_IMAGE_DIR
+
+import pandas as pd
+from aethos.config import DEFAULT_IMAGE_DIR, DEFAULT_REPORT_DIR, cfg
 from aethos.config.config import _global_config
 from aethos.util import _make_dir
 from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
 from docx.shared import Inches, Pt
-import pandas as pd
 
 
 class Report:
@@ -49,7 +50,9 @@ class Report:
 
             self.filename += ".txt"
 
+            self.write_header(report_name.capitalize())
             self.report_environtment()
+            self.write_header('Analysis', level=2)
 
         if not cfg["images"]["dir"]:
             self.image_dir = DEFAULT_IMAGE_DIR
@@ -101,7 +104,7 @@ class Report:
 
         if write:
             if self.docx:  # pragma: no cover
-                self.doc.add_paragraph(content, style="Indent")
+                self.doc.add_paragraph(content.strip(), style="Indent")
                 self.doc.save(self.docx_filename)
 
             with open(self.filename, "a+") as f:
@@ -184,7 +187,7 @@ class Report:
 
         system = platform.system()
 
-        self.write_header("Environment")
+        self.write_header("Environment", level=2)
 
         self.write_contents("OS Version          : {}\n".format(platform.platform()))
         self.write_contents("System              : {}\n".format(system))

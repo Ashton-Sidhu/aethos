@@ -62,7 +62,7 @@ def scale(
     x_train = drop_replace_columns(x_train, list_of_cols, scaled_df, keep_col=keep_col)
 
     if x_test is not None:
-        scaled_x_test = scaler.transform(x_test)
+        scaled_x_test = scaler.transform(x_test[list_of_cols])
         scaled_test_df = pd.DataFrame(scaled_x_test, columns=list_of_cols)
         x_test = drop_replace_columns(
             x_test, list_of_cols, scaled_test_df, keep_col=keep_col

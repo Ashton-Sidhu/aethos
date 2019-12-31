@@ -891,6 +891,9 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
             target=True,
         )
 
+        for k,v in self.target_mapping.items():
+            print(f'{k}: {v}')
+
         if self.report is not None:
             self.report.log("Encoded the target variable as numeric values.")
 

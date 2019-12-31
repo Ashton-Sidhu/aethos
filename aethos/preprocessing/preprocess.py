@@ -4,12 +4,13 @@ from aethos.config import technique_reason_repo
 from aethos.preprocessing.categorical import *
 from aethos.preprocessing.numeric import *
 from aethos.preprocessing.text import *
-from aethos.util import _input_columns, _numeric_input_conditions, label_encoder
+from aethos.util import (_input_columns, _numeric_input_conditions,
+                         label_encoder)
 
 
 class Preprocess(object):
     def normalize_numeric(
-        self, *list_args, list_of_cols=[], keep_col=True, **normalize_params
+        self, *list_args, list_of_cols=[], **normalize_params
     ):
         """
         Function that normalizes all numeric values between 2 values to bring features into same domain.
@@ -56,7 +57,6 @@ class Preprocess(object):
             x_test=self.x_test,
             list_of_cols=list_of_cols,
             method="minmax",
-            keep_col=keep_col,
             **normalize_params,
         )
 
@@ -70,7 +70,7 @@ class Preprocess(object):
         return self.copy()
 
     def normalize_quantile_range(
-        self, *list_args, list_of_cols=[], keep_col=True, **robust_params
+        self, *list_args, list_of_cols=[], **robust_params
     ):
         """
         Scale features using statistics that are robust to outliers.
@@ -133,7 +133,6 @@ class Preprocess(object):
             x_test=self.x_test,
             list_of_cols=list_of_cols,
             method="robust",
-            keep_col=keep_col,
             **robust_params,
         )
 

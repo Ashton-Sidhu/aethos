@@ -113,7 +113,7 @@ feature:
 
   categorical:
     onehotencode: >
-      Converted the categories in column(S) column_name_placeholder into its own feature where the value is 1 if the category exists
+      Converted the categories in column(s) column_name_placeholder into its own feature where the value is 1 if the category exists
       in the record, 0 otherwise.
 
   numeric:

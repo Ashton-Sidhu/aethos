@@ -1,10 +1,9 @@
-import unittest
 import shutil
+import unittest
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 from aethos import Data
 
 
@@ -21,7 +20,7 @@ class TestPreprocessing(unittest.TestCase):
         data = pd.DataFrame(unnormal_data, columns=columns)
 
         preprocess = Data(x_train=data, test_split_percentage=0.5, report_name="test")
-        preprocess.normalize_numeric(keep_col=False)
+        preprocess.normalize_numeric()
         validate = preprocess.x_train.values.tolist()
 
         self.assertTrue(True)
@@ -34,7 +33,7 @@ class TestPreprocessing(unittest.TestCase):
         data = pd.DataFrame(unnormal_data, columns=columns)
 
         preprocess = Data(x_train=data, test_split_percentage=0.5, report_name="test")
-        preprocess.normalize_quantile_range(keep_col=False)
+        preprocess.normalize_quantile_range()
         validate = preprocess.x_train.values.tolist()
 
         self.assertTrue(True)
