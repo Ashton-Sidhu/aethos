@@ -260,6 +260,7 @@ This will create a full folder strucuture for you to manage data, unit tests, ex
 #### Phase 3
   - [x] Quality of life/addons
   - [x] Code Generation V1
+  - [ ] Experiment Tracking
   - [ ] Pre trained models
 
 #### Phase 4
