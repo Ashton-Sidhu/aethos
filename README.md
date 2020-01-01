@@ -136,11 +136,14 @@ df.checklist() # Will provide an iteractive checklist to keep track of your clea
 **NOTE:** One of the benefits of using `aethos` is that any method you apply on your train set, gets applied to your test dataset. For any method that requires fitting (replacing missing data with mean), the method is fit on the training data and then applied to the testing data to avoid data leakage.
 
 ```python
-df.replace_missing_mostcommon('Fare', 'Embarked') # Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
+# Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
+df.replace_missing_mostcommon('Fare', 'Embarked')
 
-df.replace_missing_mostcommon('Fare', 'Embarked') # To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
+# To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
+df.replace_missing_mostcommon('Fare', 'Embarked')
 
-df.replace_missing_random_discrete('Age') # Replace missing values in the 'Age' column with a random value that follows the probability distribution of the 'Age' column in the training set. 
+# Replace missing values in the 'Age' column with a random value that follows the probability distribution of the 'Age' column in the training set. 
+df.replace_missing_random_discrete('Age')
 
 df.drop('Cabin') # Drop the cabin column
 ```
@@ -149,9 +152,11 @@ As you've started to notice, alot of tasks to df the data and to explore the dat
 
 
 ```python
-df.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
+# Create a barplot of the mean surivial rate grouped by age.
+df.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') 
 
-df.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode the `Person` and `Embarked` columns and then drop the original columns
+# One hot encode the `Person` and `Embarked` columns and then drop the original columns
+df.onehot_encode('Person', 'Embarked', drop_col=True) 
 ```
 
 ### Modelling
@@ -168,9 +173,15 @@ After a model has been ran, it comes with use cases such as plotting RoC curves,
 
 ```python
 lr_model = model.LogisticRegression(random_state=42) # Train a logistic regression model
-lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42) # Trains a logistic regression model with gridsearch
-lr_model = model.LogisticRegression(cv=5, n_splits=10) # Crossvalidates a logistic regression model, displays the scores and the learning curve and builds the model
-lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv='strat-kfold', n_splits=10) # Builds a Logistic Regression model with Gridsearch and then cross validates the best model using stratified K-Fold cross validation.
+
+# Train a logistic regression model with gridsearch
+lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42)
+
+# Crossvalidatea a logistic regression model, displays the scores and the learning curve and builds the model
+lr_model = model.LogisticRegression(cv=5, n_splits=10)
+
+# Build a Logistic Regression model with Gridsearch and then cross validates the best model using stratified K-Fold cross validation.
+lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv='strat-kfold', n_splits=10) 
 
 lr_model.metrics() # Views all metrics for the model
 lr_model.confusion_matrix()
@@ -180,9 +191,10 @@ lr_model.roc_curve()
 #### Running multiple models in parallel
 
 ```python
-model.LogisticRegression(random_state=42, model_name='log_reg', run=False) # Adds a logistic regression model to the queue
-model.RandomForestClassification(run=False) # Adds a random forest model to the queue
-model.XGBoostClassification(run=False) # Adds an xgboost classification model to the queue
+# Add a Logistic Regression, Random Forest Classification and a XGBoost Classification model to the queue.
+model.LogisticRegression(random_state=42, model_name='log_reg', run=False)
+model.RandomForestClassification(run=False)
+model.XGBoostClassification(run=False)
 
 model.run_models() # This will run all queued models in parallel
 model.run_models(method='series') # Run each model one after the other
@@ -208,7 +220,8 @@ lr_model.force_plot() # SHAP force plot
 lr_model.decision_plot() # SHAP decision plot
 lr_model.dependence_plot() # SHAP depencence plot
 
-lr_model.interpret_model() # Creates an interactive dashboard to view LIME, SHAP, Morris Sensitivity and more for your model
+# Creates an interactive dashboard to interpret predictions of the model
+lr_model.interpret_model() 
 ```
 
 ### Code Generation
@@ -315,8 +328,6 @@ Community credits go to:
 
 ## For Developers
 
-For python snippets to make deving new techniques either, message me and I can send them.
-
 ### Contributing data analysis techniques
 
   1. The code for the transformation belongs in the `numeric`, `categorical`, etc. file for the stage it belongs.
@@ -338,6 +349,6 @@ For python snippets to make deving new techniques either, message me and I can s
   1. Generic model analysis goes in `model_analysis.py`
   2. Model interpretability goes in `model_explanation.py`
 
-To install packages `pip3 install -r requirements.txt`
+To install packages `pip3 install -r requirements-dev.txt`
 
 To run tests `python3 -m unittest discover aethos/`
