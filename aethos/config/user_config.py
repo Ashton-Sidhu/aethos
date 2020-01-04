@@ -1,4 +1,5 @@
 import os
+
 import yaml
 from IPython import get_ipython
 
@@ -17,3 +18,4 @@ shell = get_ipython().__class__.__name__
 DEFAULT_MODEL_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "models")
 DEFAULT_REPORT_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "reports")
 DEFAULT_IMAGE_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "images")
+DEFAULT_EXPERIMENTS_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "experiments", "mlruns")

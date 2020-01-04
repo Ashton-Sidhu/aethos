@@ -1076,6 +1076,7 @@ class ClassificationModel(ModelBase):
         predictions_col,
         shap_values=None,
         pool=None,
+        run_id=None,
     ):
 
         self.y_train = model_object.y_train
@@ -1107,11 +1108,12 @@ class ClassificationModel(ModelBase):
         else:
             self.classes = [str(item) for item in self.target_mapping.values()]
 
-        self.features = self.x_test.columns
-        self.pool = pool
-
         if hasattr(model, "predict_proba"):
             self.probabilities = model.predict_proba(model_object.x_test)
+
+        self.features = self.x_test.columns
+        self.pool = pool
+        self.run_id = run_id
 
     def accuracy(self, **kwargs):
         """
@@ -1804,6 +1806,7 @@ class RegressionModel(ModelBase):
         predictions_col,
         shap_values=None,
         pool=None,
+        run_id=None,
     ):
 
         self.y_train = model_object.y_train
@@ -1826,6 +1829,7 @@ class RegressionModel(ModelBase):
 
         self.features = self.x_test.columns
         self.pool = pool
+        self.run_id = run_id
 
     def explained_variance(self, multioutput="uniform_average", **kwargs):
         """

@@ -7,6 +7,8 @@ models:
   dir: ''
   # Directory where any deployment packages are stored
   deployment_dir: ''
+  # Directory where experiment files are stored.
+  experiments_dir: ''
 
 images:
   # Directory where images are stored

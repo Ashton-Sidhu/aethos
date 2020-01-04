@@ -4,13 +4,14 @@ from pathlib import Path
 
 import catboost as cb
 from aethos.config import shell, technique_reason_repo
+from aethos.config.config import _global_config
 from aethos.core import Data
 from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 from aethos.modelling.model_analysis import *
 from aethos.modelling.text import *
 from aethos.modelling.util import (_get_cv_type, _run_models_parallel,
                                    add_to_queue, run_crossvalidation,
-                                   run_gridsearch, to_pickle)
+                                   run_gridsearch, to_pickle, track_model)
 from aethos.reporting.report import Report
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import _input_columns, _set_item, split_data
@@ -56,6 +57,7 @@ class Model(Visualizations):
         test_split_percentage=0.2,
         target_field="",
         report_name=None,
+        exp_name=None,
     ):
         step = x_train
 
@@ -103,6 +105,7 @@ class Model(Visualizations):
 
         self._models = {}
         self._queued_models = {}
+        self.exp_name = exp_name if exp_name is not None else 'my-experiment'
 
     def __getitem__(self, key):
 
@@ -6619,6 +6622,9 @@ class Model(Visualizations):
 
             shap_values = model.get_feature_importance(pool, type="ShapValues")
 
+        if _global_config['track_experiments']:
+            track_model(model, model_name, kwargs)
+
         self._models[model_name] = model_type(
             self, model_name, model, new_col_name, shap_values=shap_values, pool=pool,
         )
@@ -6717,6 +6723,9 @@ class Model(Visualizations):
         self._models[model_name] = UnsupervisedModel(
             self, model_name, model, new_col_name
         )
+
+        if _global_config['track_experiments']:
+            track_model(self.exp_name, model, model_name, kwargs)
 
         print(model)
 
