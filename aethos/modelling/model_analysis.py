@@ -1060,6 +1060,7 @@ class UnsupervisedModel(ModelBase):
 
         reduced_df[self.cluster_col] = dataset[self.cluster_col]
         reduced_df.columns = list(map(str, reduced_df.columns))
+        output_file_path = os.path.join(self.model_name, output_file) if output_file else output_file
 
         if dim == 2:
             scatterplot(
@@ -1067,7 +1068,7 @@ class UnsupervisedModel(ModelBase):
                 "1",
                 data=reduced_df,
                 color=reduced_df[self.cluster_col].tolist(),
-                output_file=os.path.join(self.model_name, output_file),
+                output_file=output_file_path,
                 **kwargs,
             )
         else:
@@ -1077,7 +1078,7 @@ class UnsupervisedModel(ModelBase):
                 "2",
                 data=reduced_df,
                 color=self.cluster_col,
-                output_file=os.path.join(self.model_name, output_file),
+                output_file=output_file_path,
                 **kwargs,
             )
 
