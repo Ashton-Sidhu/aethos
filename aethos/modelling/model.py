@@ -3,22 +3,24 @@ import warnings
 from pathlib import Path
 
 import catboost as cb
+from IPython.display import display
+from ipywidgets import widgets
+from ipywidgets.widgets.widget_layout import Layout
+
 from aethos.config import shell, technique_reason_repo
 from aethos.config.config import _global_config
 from aethos.core import Data
 from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 from aethos.modelling.model_analysis import *
 from aethos.modelling.text import *
-from aethos.modelling.util import (_get_cv_type, _run_models_parallel,
-                                   add_to_queue, run_crossvalidation,
-                                   run_gridsearch, to_pickle, track_model)
+from aethos.modelling.util import (_get_cv_type, _make_img_project_dir,
+                                   _run_models_parallel, add_to_queue,
+                                   run_crossvalidation, run_gridsearch,
+                                   to_pickle, track_model)
 from aethos.reporting.report import Report
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import _input_columns, _set_item, split_data
 from aethos.visualizations.visualizations import Visualizations
-from IPython.display import display
-from ipywidgets import widgets
-from ipywidgets.widgets.widget_layout import Layout
 
 warnings.simplefilter("ignore", FutureWarning)
 
@@ -6526,6 +6528,10 @@ class Model(Visualizations):
         Helper function that generalizes model orchestration.
         """
 
+        #############################################################
+        ################## Initialize Variables #####################
+        #############################################################
+
         # Hard coding SVR due to its parent having random_state and the child not allowing it.
         random_state = kwargs.pop("random_state", None)
         if (
@@ -6539,11 +6545,22 @@ class Model(Visualizations):
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
         shap_values = None
         pool = None
+        run_id = None
+
+        _make_img_project_dir(model_name)
+
+        #############################################################
+        #################### Initialize Model #######################
+        #############################################################
 
         if random_state:
             model = model(random_state=random_state, **kwargs)
         else:
             model = model(**kwargs)
+
+        #############################################################
+        ####################### Gridsearch ##########################
+        #############################################################
 
         if gridsearch:
             cv = cv if cv else 5
@@ -6556,7 +6573,12 @@ class Model(Visualizations):
             else:
                 model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
+        #############################################################
+        #################### Cross Validation #######################
+        #############################################################
+
         if cv:
+            # Use native CatBoost cross validation
             if isinstance(model, cb.CatBoost):
                 if isinstance(cv, int):
                     folds = None
@@ -6588,6 +6610,10 @@ class Model(Visualizations):
             if not run:
                 return
 
+        #############################################################
+        ###################### Train Model ##########################
+        #############################################################
+
         # Train a model and predict on the test test.
         if isinstance(model, cb.CatBoost):
             if not gridsearch:
@@ -6600,12 +6626,20 @@ class Model(Visualizations):
         if self.x_test is not None:
             self._test_result_data[new_col_name] = model.predict(self.x_test)
 
+        ############################################################
+        ####################### Reporting ##########################
+        ############################################################
+
         # Report the results
         if self.report is not None:
             if gridsearch:
                 self.report.report_gridsearch(model, verbose)
 
             self.report.report_technique(report_info)
+
+        #############################################################
+        ############### Initialize Model Analysis ###################
+        #############################################################
 
         if gridsearch and not isinstance(model, cb.CatBoost):
             model = model.best_estimator_
@@ -6622,12 +6656,26 @@ class Model(Visualizations):
 
             shap_values = model.get_feature_importance(pool, type="ShapValues")
 
-        if _global_config['track_experiments']:
-            track_model(model, model_name, kwargs)
-
         self._models[model_name] = model_type(
-            self, model_name, model, new_col_name, shap_values=shap_values, pool=pool,
+            self, model_name, model, new_col_name, shap_values=shap_values, pool=pool, run_id=run_id
         )
+
+        #############################################################
+        ######################## Tracking ###########################
+        #############################################################
+
+        if _global_config['track_experiments']: # pragma: no cover
+            if random_state is not None:
+                kwargs['random_state'] = random_state
+
+            run_id = track_model(
+                self.exp_name, 
+                model, 
+                model_name, 
+                kwargs, 
+                self.compare_models()[model_name].to_dict()
+            )
+            self._models[model_name].run_id = run_id
 
         print(model)
 
@@ -6651,6 +6699,10 @@ class Model(Visualizations):
         Helper function that generalizes model orchestration.
         """
 
+        #############################################################
+        ################## Initialize Variables #####################
+        #############################################################
+        
         # Hard coding OneClassSVM due to its parent having random_state and the child not allowing it.
         random_state = kwargs.pop("random_state", None)
         if (
@@ -6662,25 +6714,20 @@ class Model(Visualizations):
 
         cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
 
+        _make_img_project_dir(model_name)
+
+        #############################################################
+        #################### Initialize Model #######################
+        #############################################################
+
         if random_state:
             model = model(random_state=random_state, **kwargs)
         else:
             model = model(**kwargs)
 
-        if cv:
-            cv_scores = run_crossvalidation(
-                model,
-                self.x_train,
-                self.y_train,
-                cv=cv,
-                scoring=score,
-                report=self.report,
-                model_name=model_name,
-            )
-
-            # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
-            if not run:
-                return
+        #############################################################
+        ################ Gridsearch + Train Model ###################
+        #############################################################
 
         if gridsearch:
             if not self.target_field:
@@ -6711,11 +6758,38 @@ class Model(Visualizations):
                     "Model does not have a predict function, unable to predict on the test data set. Consider combining your datasets into 1 and set `model.x_test = None`"
                 )
 
+        #############################################################
+        #################### Cross Validation #######################
+        #############################################################
+
+        if cv:
+            cv_scores = run_crossvalidation(
+                model,
+                self.x_train,
+                self.y_train,
+                cv=cv,
+                scoring=score,
+                report=self.report,
+                model_name=model_name,
+            )
+
+            # NOTE: Not satisified with this implementation.
+            if not run:
+                return
+
+        ############################################################
+        ####################### Reporting ##########################
+        ############################################################
+
         if self.report is not None:
             if gridsearch:
                 self.report.report_gridsearch(model, verbose)
 
             self.report.report_technique(report_info)
+
+        #############################################################
+        ############### Initialize Model Analysis ###################
+        #############################################################
 
         if gridsearch:
             model = model.best_estimator_
@@ -6724,7 +6798,14 @@ class Model(Visualizations):
             self, model_name, model, new_col_name
         )
 
-        if _global_config['track_experiments']:
+        #############################################################
+        ######################## Tracking ###########################
+        #############################################################
+
+        if _global_config['track_experiments']: # pragma: no cover
+            if random_state is not None:
+                kwargs['random_state'] = random_state
+
             track_model(self.exp_name, model, model_name, kwargs)
 
         print(model)

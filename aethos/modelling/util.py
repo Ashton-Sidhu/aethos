@@ -14,12 +14,14 @@ import mlflow.lightgbm
 import mlflow.sklearn
 import mlflow.xgboost
 import xgboost as xgb
-from aethos.config import DEFAULT_EXPERIMENTS_DIR, DEFAULT_MODEL_DIR, cfg
-from aethos.util import _make_dir
-from aethos.visualizations.util import _make_image_dir
 from pathos.multiprocessing import ProcessingPool
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
+
+from aethos.config import (DEFAULT_EXPERIMENTS_DIR, DEFAULT_MODEL_DIR,
+                           IMAGE_DIR, cfg)
+from aethos.config.config import _global_config
+from aethos.util import _make_dir
 
 
 def add_to_queue(model_function):
@@ -132,9 +134,8 @@ def run_crossvalidation(
     visualizer_scores.show()
     visualizer_lcurve.show()
 
-    if report:  # pragma: no cover
-        imgdir = _make_image_dir()
-        fig.savefig(os.path.join(imgdir, model_name + ".svg"))
+    if report or _global_config['track_experiments']:  # pragma: no cover
+        fig.savefig(os.path.join(IMAGE_DIR, model_name, "cv.png"))
 
 
 def _run_models_parallel(model_obj):
@@ -237,11 +238,21 @@ def to_pickle(model, name, project=False, project_name=None):
             os.path.expanduser("~"), ".aethos", "projects", project_name, "app"
         )
 
-    if not os.path.exists(path):
-        os.makedirs(path)
+    _make_dir(path)
 
     pickle.dump(model, open(os.path.join(path, name + ".pkl"), "wb"))
 
+def _make_img_project_dir(model_name: str):
+    """
+    Make a model dir in images directory.
+    
+    Parameters
+    ----------
+    model_name : str
+        Model name
+    """
+
+    _make_dir(os.path.join(IMAGE_DIR, model_name))
 
 def _validate_model_name(model_obj, model_name: str) -> bool:
     """
@@ -267,12 +278,15 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
 
     return True
 
-def track_model(exp_name: str, model, model_name: str, model_kwargs: dict):
+def track_model(exp_name: str, model, model_name: str, model_kwargs: dict, metrics=None): # pragma: no cover
     """
     Logs model information into MLFlow console.
     
     Parameters
     ----------
+    exp_name: str
+        Name of the experiment
+
     model : Sklearn, LGBM, XGB, or CB Model object
         Model
 
@@ -281,6 +295,9 @@ def track_model(exp_name: str, model, model_name: str, model_kwargs: dict):
 
     model_kwargs : dict
         Model parameters
+
+    metrics : dict
+        Metrics for the model
     """
 
     mlflow.set_tracking_uri(f'file:{DEFAULT_EXPERIMENTS_DIR}')
@@ -295,20 +312,32 @@ def track_model(exp_name: str, model, model_name: str, model_kwargs: dict):
             mlflow.xgboost.log_model(model, model_name)
         elif isinstance(model, lgb.sklearn.LGBMModel):
             mlflow.lightgbm.log_model(model, model_name)
-        elif isinstance(model, cb.CatBoost):
-            pass
         else:
             mlflow.sklearn.log_model(model, model_name)
+
+        mlflow.log_metrics(metrics)
+        mlflow.log_artifacts(os.path.join(IMAGE_DIR, model_name))
 
         run_id = run.info.run_uuid
 
         mlflow.end_run()
 
     return run_id
+
+def track_artifacts(run_id, model_name): # pragma: no cover
+    """
+    Track artificats for modelling.
     
-        
+    Parameters
+    ----------
+    run_id : str
+        MLFlow run id
 
+    model_name : str
+        Name of the model
+    """
 
-# def track_metrics(model_name, metric, value):
+    with mlflow.start_run(run_id=run_id) as run:
 
-# def track_artifacts(model_name, filename):
+        mlflow.log_artifacts(os.path.join(IMAGE_DIR, model_name))
+        mlflow.end_run()

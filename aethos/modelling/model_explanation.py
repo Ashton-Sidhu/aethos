@@ -7,14 +7,16 @@ import matplotlib.pyplot as pl
 import numpy as np
 import pandas as pd
 import shap
+
+from aethos.config import IMAGE_DIR
 from aethos.modelling.constants import INTERPRET_EXPLAINERS
-from aethos.visualizations.util import _make_image_dir
 
 
 class Shap(object):
-    def __init__(self, model, x_train, x_test, y_test, learner: str, shap_values):
+    def __init__(self, model, model_name, x_train, x_test, y_test, learner: str, shap_values):
 
         self.model = model
+        self.model_name = model_name
         self.x_train = x_train
         self.x_test = x_test
         self.y_test = y_test
@@ -74,8 +76,7 @@ class Shap(object):
         )
 
         if output_file:  # pragma: no cover
-            image_dir = _make_image_dir()
-            pl.savefig(os.path.join(image_dir, output_file))
+            pl.savefig(os.path.join(IMAGE_DIR, self.model_name, output_file))
 
     def decision_plot(
         self, num_samples=0.25, sample_no=None, output_file="", **decisionplot_kwargs
@@ -132,8 +133,7 @@ class Shap(object):
         )
 
         if output_file:  # pragma: no cover
-            image_dir = _make_image_dir()
-            pl.savefig(os.path.join(image_dir, output_file))
+            pl.savefig(os.path.join(IMAGE_DIR, self.model_name, output_file))
 
         return s
 
@@ -160,8 +160,7 @@ class Shap(object):
         )
 
         if output_file:  # pragma: no cover
-            image_dir = _make_image_dir()
-            pl.savefig(os.path.join(image_dir, output_file))
+            pl.savefig(os.path.join(IMAGE_DIR, self.model_name, output_file))
 
         return s
 
@@ -184,8 +183,7 @@ class Shap(object):
         )
 
         if output_file:  # pragma: no cover
-            image_dir = _make_image_dir()
-            pl.savefig(os.path.join(image_dir, output_file))
+            pl.savefig(os.path.join(IMAGE_DIR, self.model_name, output_file))
 
     def _calculate_misclassified(self) -> list:
         """

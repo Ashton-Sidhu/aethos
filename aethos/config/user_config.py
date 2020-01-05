@@ -3,6 +3,8 @@ import os
 import yaml
 from IPython import get_ipython
 
+from aethos.util import _make_dir
+
 pkg_directory = os.path.dirname(__file__)
 
 with open(
@@ -19,3 +21,16 @@ DEFAULT_MODEL_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "models")
 DEFAULT_REPORT_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "reports")
 DEFAULT_IMAGE_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "images")
 DEFAULT_EXPERIMENTS_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "experiments", "mlruns")
+
+def _make_image_dir():  # pragma: no cover
+
+    if not cfg["images"]["dir"]:
+        image_dir = DEFAULT_IMAGE_DIR
+    else:
+        image_dir = cfg["images"]["dir"]
+
+    _make_dir(image_dir)
+
+    return image_dir
+
+IMAGE_DIR = _make_image_dir()
