@@ -18,7 +18,7 @@ from pathos.multiprocessing import ProcessingPool
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
 
-from aethos.config import (DEFAULT_EXPERIMENTS_DIR, DEFAULT_MODEL_DIR,
+from aethos.config import (EXP_DIR, DEFAULT_MODEL_DIR,
                            IMAGE_DIR, cfg)
 from aethos.config.config import _global_config
 from aethos.util import _make_dir
@@ -300,7 +300,7 @@ def track_model(exp_name: str, model, model_name: str, model_kwargs: dict, metri
         Metrics for the model
     """
 
-    mlflow.set_tracking_uri(f'file:{DEFAULT_EXPERIMENTS_DIR}')
+    mlflow.set_tracking_uri(EXP_DIR)
     mlflow.set_experiment(exp_name)
 
     with mlflow.start_run(run_name=model_name) as run:

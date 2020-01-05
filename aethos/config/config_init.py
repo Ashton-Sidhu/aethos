@@ -1,6 +1,7 @@
 import aethos.config.config as cf
-from aethos.config import DEFAULT_EXPERIMENTS_DIR, cfg, shell
+from aethos.config import cfg, shell
 from aethos.config.config import is_bool, is_list
+from aethos.config.user_config import _make_experiment_dir
 from aethos.util import _make_dir
 
 interactive_df_doc = """
@@ -98,7 +99,6 @@ def use_qgrid(key):
         else:
             qgrid.disable()
 
-
 def use_itable(key):
     import itables.interactive
     import itables.options as opt
@@ -107,13 +107,7 @@ def use_itable(key):
     opt.maxBytes = 0
 
 def create_experiment_dir(key):
-
-    if not cfg["models"]["experiments_dir"]:
-        image_dir = DEFAULT_EXPERIMENTS_DIR
-    else:
-        image_dir = cfg["models"]["experiments_dir"]
-
-    _make_dir(image_dir)
+    _make_experiment_dir()
 
 
 cf.register_option(

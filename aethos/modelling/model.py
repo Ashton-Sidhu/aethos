@@ -80,7 +80,7 @@ class Model(Visualizations):
             self.target_mapping = step.target_mapping
             self.report_name = step.report_name
 
-        if split and x_test is None:
+        if self.split and self.x_test is None:
             # Generate train set and test set.
             self.x_train, self.x_test = split_data(self.x_train, test_split_percentage)
             self.x_train.reset_index(drop=True, inplace=True)

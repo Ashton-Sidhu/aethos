@@ -5,16 +5,27 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from aethos import Model
 from sklearn.datasets import make_blobs
+
+from aethos import Model
 
 
 class TestModelling(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
-        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
-        shutil.rmtree(str(Path.home()) + "/.aethos/models/")
-        shutil.rmtree(str(Path.home()) + "/.aethos/projects/")
+
+        reports_path = str(Path.home()) + "/.aethos/reports/"
+        models_path = str(Path.home()) + "/.aethos/models/"
+        projects_path = str(Path.home()) + "/.aethos/projects/"
+
+        if os.path.exists(reports_path):
+            shutil.rmtree(reports_path)
+
+        if os.path.exists(models_path):
+            shutil.rmtree(models_path)
+        
+        if os.path.exists(projects_path):
+            shutil.rmtree(projects_path)
 
     def test_text_gensim_summarize(self):
 
