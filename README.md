@@ -42,6 +42,7 @@ Aethos provides:
   - Interactive checklists and tips to either remind or help you through your analysis.
   - Comparing train and test data distribution
   - Exporting trained models as a service (Generates the necessary code, files and folder structure)
+  - Experiment tracking with MLFlow
   
 You can view a full list of implemented techniques in the documentation or here: [TECHNIQUES.md](https://github.com/Ashton-Sidhu/aethos/blob/develop/TECHNIQUES.md)
 
@@ -85,6 +86,7 @@ Currently the following options are:
   - `project_metrics`: Setting project metrics
     - Project metrics is a metric or set of metrics to evaluate models.
   - `word_report`: Writes report to a word document as well as the .txt file
+  - `track_experiments`: Uses MLFlow to track models and experiments.
 
 User options such as changing the directory where images, reports, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
 
@@ -257,6 +259,14 @@ To create a Data Science project run:
 
 This will create a full folder strucuture for you to manage data, unit tests, experiments and source code.
 
+If experiment tracking is enabled or if you want to start the MLFlow UI:
+
+`aethos mlflow-ui`
+
+This will start the MLFlow UI in the directory where your Aethos experiemnts are run.
+NOTE: This only works for local use of MLFLOW, if you are running MLFlow on a remote server, just start it on the remote server and enter the address in the `%HOME%/.aethos/config.yml` file.
+
+
 ## Development Phases
 
 #### Phase 1
@@ -273,7 +283,7 @@ This will create a full folder strucuture for you to manage data, unit tests, ex
 #### Phase 3
   - [x] Quality of life/addons
   - [x] Code Generation V1
-  - [ ] Experiment Tracking
+  - [x] Experiment Tracking
   - [ ] Pre trained models
 
 #### Phase 4
@@ -324,7 +334,11 @@ Community credits go to:
 
 [@Quantopian](https://github.com/quantopian?type=source) for their interactive DataFrame library [qgrid](https://github.com/quantopian/qgrid).
 
-[@mwouts](https://github.com/mwouts) for their interactive Dataframe library [itable](https://github.com/mwouts/itables)
+[@mwouts](https://github.com/mwouts) for their interactive Dataframe library [itable](https://github.com/mwouts/itables).
+
+[@jmcarpenter2](https://github.com/jmcarpenter2/) for his parallelization library [Swifter](https://github.com/jmcarpenter2/swifter).
+
+[@mlflow](https://github.com/mlflow/) for their model tracking library [mlflow](https://github.com/mlflow/mlflow/).
 
 ## For Developers
 

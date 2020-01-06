@@ -20,7 +20,7 @@ shell = get_ipython().__class__.__name__
 DEFAULT_MODEL_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "models")
 DEFAULT_REPORT_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "reports")
 DEFAULT_IMAGE_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "images")
-DEFAULT_EXPERIMENTS_DIR = 'file:' + os.path.join(os.path.expanduser("~"), ".aethos", "experiments", "mlruns")
+DEFAULT_EXPERIMENTS_DIR = 'file:' + os.path.join(os.path.expanduser("~"), ".aethos", "experiments")
 DEFAULT_DEPLOYMENTS_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "projects")
 
 def _make_image_dir():
@@ -44,7 +44,7 @@ def _make_experiment_dir(): # pragma: no cover
         exp_dir = cfg["mlflow"]["dir"]
 
     if exp_dir.startswith('file:'):
-        _make_dir(exp_dir)
+        _make_dir(exp_dir[5:])
 
     return exp_dir
 
