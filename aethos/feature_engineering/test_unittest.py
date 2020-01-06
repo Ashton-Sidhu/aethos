@@ -191,6 +191,22 @@ class TestFeatureExtraction(unittest.TestCase):
 
         self.assertTrue(validate, 2)
 
+    def test_featureextractiontext_spacypostag_detailed(self):
+
+        normal_data = [
+            "hi welcome to aethos.",
+            "This application automates common Data Science/ML analysis tasks.",
+        ]
+
+        columns = ["text"]
+        data = pd.DataFrame(normal_data, columns=columns)
+
+        feature = Data(x_train=data, test_split_percentage=0.5, report_name="test")
+        feature.postag_spacy_detailed()
+        validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
+
+        self.assertTrue(validate, 2)
+        
     def test_featureextractiontext_spacyphrases(self):
 
         normal_data = [

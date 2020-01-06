@@ -249,9 +249,8 @@ def nltk_feature_noun_phrases(
     return x_train, x_test
 
 
-# TODO: Add simple and complex spacy pos tagging
 def spacy_feature_postag(
-    x_train, x_test=None, list_of_cols=[], new_col_name="_postagged"
+    x_train, x_test=None, list_of_cols=[], new_col_name="_postagged", method="s"
 ):
     """
     Part of Speech tag the text data provided. Used to tag each word as a Noun, Adjective,
@@ -272,6 +271,9 @@ def spacy_feature_postag(
 
     new_col_name : str, optional
         New column name to be created when applying this technique, by default `COLUMN_postagged`
+
+    method : str {'s', 'd'}, optional
+        Spacey PoS tagging method either simple or detailed
     
     Returns
     -------
@@ -285,16 +287,21 @@ def spacy_feature_postag(
 
     nlp = spacy.load("en_core_web_sm")
 
+    if method == 's':
+        func = lambda x: [(token, token.pos_) for token in x]
+    else:
+        func = lambda x: [(token, token.tag_) for token in x]
+
     for col in list_of_cols:
         transformed_text = map(nlp, x_train[col])
         x_train[col + new_col_name] = pd.Series(
-            map(lambda x: [(token, token.pos_) for token in x], transformed_text,)
+            map(func, transformed_text,)
         )
 
         if x_test is not None:
             transformed_text = map(nlp, x_test[col])
             x_test[col + new_col_name] = pd.Series(
-                map(lambda x: [(token, token.pos_) for token in x], transformed_text,)
+                map(func, transformed_text,)
             )
 
     return x_train, x_test

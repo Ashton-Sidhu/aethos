@@ -42,6 +42,7 @@ Note this does not include quality of life functions.
   - Bag of words
   - Text Hashing
   - PoS Tagging with spaCy
+  - Detailed PoS tagging with spaCy
   - PoS Tagging with NLTK
   - Noun phrases with NLTK
   - Noun phrases with spaCy
