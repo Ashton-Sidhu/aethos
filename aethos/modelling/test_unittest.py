@@ -566,13 +566,13 @@ class TestModelling(unittest.TestCase):
             report_name="modelweights",
         )
         model.LogisticRegression(
-            random_state=2, penalty="l2", model_name="l1", run=True
+            random_state=2, penalty="l2", model_name="l1", run=False
         )
         model.LogisticRegression(
-            random_state=2, penalty="l2", model_name="l2", run=True
+            gridsearch={'C': [0.1, 0.2]}, random_state=2, penalty="l2", model_name="l2", run=False
         )
         model.LogisticRegression(
-            random_state=2, penalty="l2", model_name="l3", run=True
+            random_state=2, penalty="l2", model_name="l3", run=False
         )
 
         model.run_models()

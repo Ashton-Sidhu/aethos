@@ -346,8 +346,6 @@ class Model(Visualizations):
         >>> model.run_models(method='series')
         """
 
-        num_ran_models = len(self._models)
-
         if method == "parallel":
             _run_models_parallel(self)
         elif method == "series":
@@ -357,9 +355,6 @@ class Model(Visualizations):
             raise ValueError(
                 'Invalid run method, accepted run methods are either "parallel" or "series".'
             )
-
-        if len(self._models) == (num_ran_models + len(self._queued_models)):
-            self._queued_models = {}
 
     def list_models(self):
         """

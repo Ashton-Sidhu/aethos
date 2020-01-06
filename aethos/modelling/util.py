@@ -14,7 +14,6 @@ import mlflow.lightgbm
 import mlflow.sklearn
 import mlflow.xgboost
 import xgboost as xgb
-from pathos.multiprocessing import ProcessingPool
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
 
@@ -22,6 +21,7 @@ from aethos.config import (EXP_DIR, DEFAULT_MODEL_DIR,
                            IMAGE_DIR, cfg)
 from aethos.config.config import _global_config
 from aethos.util import _make_dir
+from pickle import dump
 
 
 def add_to_queue(model_function):
@@ -40,8 +40,9 @@ def add_to_queue(model_function):
             return model_function(self, *args, **kwargs)
         else:
             kwargs["run"] = True
+            pickle.dump
             self._queued_models[kwargs["model_name"]] = partial(
-                model_function, self, *args, **kwargs
+                getattr(self, model_function.__name__), *args, **kwargs
             )
 
     return wrapper
@@ -148,16 +149,12 @@ def _run_models_parallel(model_obj):
         Model object
     """
 
-    p = ProcessingPool(mp.cpu_count())
-
-    results = p.map(_run, list(model_obj._queued_models.values()))
+    with mp.Pool(mp.cpu_count()) as pool:
+        results = pool.map(_run, list(model_obj._queued_models.values()))
 
     for result in results:
         model_obj._models[result.model_name] = result
-
-    p.close()
-    p.join()
-
+        del model_obj._queued_models[result.model_name] 
 
 def _run(model):
     """
@@ -168,6 +165,7 @@ def _run(model):
     Model
         Trained model
     """
+
     return model()
 
 

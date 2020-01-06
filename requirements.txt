@@ -8,7 +8,6 @@ matplotlib<3.1.1
 numpy==1.17.4
 pandas>=0.25.1
 bokeh
-pathos
 shap
 textblob
 Click

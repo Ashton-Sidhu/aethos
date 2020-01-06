@@ -21,7 +21,6 @@ pkgs = [
     "gensim==3.8.1",
     "pandas-profiling==2.3.0",
     "cookiecutter==1.6.0",
-    "pathos==0.2.5",
     "shap==0.33.0",
     "interpret==0.1.20",
     "yellowbrick==1.0.1",
