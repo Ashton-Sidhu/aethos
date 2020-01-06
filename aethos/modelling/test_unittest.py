@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets import make_blobs
 
-from aethos import Model
+from aethos import Data, Model
 
 
 class TestModelling(unittest.TestCase):
@@ -1676,6 +1676,18 @@ class TestModelling(unittest.TestCase):
         model.help_debug()
 
         self.assertTrue(True)
+
+    def test_model_transition(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+        df = Data(data, target_field="col3")
+        m = Model(df)
+
+        self.assertListEqual(m.x_train.values.tolist(), df.x_train.drop('col3', axis=1).values.tolist())
+        self.assertListEqual(m.x_test.values.tolist(), df.x_test.drop('col3', axis=1).values.tolist())
+        self.assertListEqual(m.y_train.values.tolist(), df.y_train.values.tolist())
+        self.assertListEqual(m.y_test.values.tolist(), df.y_test.values.tolist())
 
 
 if __name__ == "__main__":
