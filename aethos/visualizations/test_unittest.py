@@ -65,6 +65,23 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+    def test_pairplot_custom(self):
+
+        data = sns.load_dataset("iris")
+
+        base = Data(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="species",
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+
+        base.pairplot(diag_kind='hist', upper_kind='scatter', lower_kind='kde')
+
+        self.assertTrue(True)
+
     def test_jointplot(self):
 
         data = sns.load_dataset("iris")

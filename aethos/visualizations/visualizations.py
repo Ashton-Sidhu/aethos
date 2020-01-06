@@ -393,7 +393,7 @@ class Visualizations(object):
             self.report.write_image(output_file)
 
     def pairplot(
-        self, kind="scatter", diag_kind="auto", hue=None, output_file="", **kwargs
+        self, cols=[], kind="scatter", diag_kind="auto", upper_kind=None, lower_kind=None, hue=None, output_file="", **kwargs
     ):
         """
         Plots pairplots of the variables from the training data.
@@ -404,14 +404,20 @@ class Visualizations(object):
         
         Parameters
         ----------
-        df : DataFrame
-                Data
+        cols : list
+            Columns to view pairplot of.
 
-        kind : {'scatter', 'reg'}, optional
+        kind : str {'scatter', 'reg'}, optional
             Type of plot for off-diag plots, by default 'scatter'
 
-        diag_kind : {'auto', 'hist', 'kde'}, optional
+        diag_kind : str {'auto', 'hist', 'kde'}, optional
             Type of plot for diagonal, by default 'auto'
+
+        upper_kind : str {'scatter', 'kde'}, optional
+            Type of plot for upper triangle of pair plot, by default None
+
+        lower_kind : str {'scatter', 'kde'}, optional
+            Type of plot for lower triangle of pair plot, by default None
 
         hue : str, optional
             Column to colour points by, by default None
@@ -436,10 +442,14 @@ class Visualizations(object):
         elif not self.target_field and hue:
             hue = hue
 
+        data = self.data if not cols else self.data[cols]
+
         pairplot(
-            self.data,
+            data,
             kind=kind,
             diag_kind=diag_kind,
+            upper_kind=upper_kind,
+            lower_kind=lower_kind,
             hue=hue,
             output_file=output_file,
             **kwargs,

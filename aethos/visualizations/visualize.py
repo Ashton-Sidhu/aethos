@@ -283,9 +283,8 @@ def correlation_matrix(
         fig.savefig(os.path.join(IMAGE_DIR, output_file))
 
 
-# TODO: Make pair plots customizable using PairGrid
 def pairplot(
-    df, kind="scatter", diag_kind="auto", hue=None, output_file=None, **kwargs
+    df, kind="scatter", diag_kind="auto", upper_kind=None, lower_kind=None, hue=None, output_file=None, **kwargs
 ):
     """
     Plots pairplots of the variables in the DataFrame
@@ -301,6 +300,12 @@ def pairplot(
     diag_kind : {'auto', 'hist', 'kde'}, optional
         Type of plot for diagonal, by default 'auto'
 
+    upper_kind : str {'scatter', 'kde'}, optional
+        Type of plot for upper triangle of pair plot, by default None
+
+    lower_kind : str {'scatter', 'kde'}, optional
+        Type of plot for lower triangle of pair plot, by default None
+
     hue : str, optional
         Column to colour points by, by default None
 
@@ -308,11 +313,29 @@ def pairplot(
         Output file name for the image including extension (.jpg, .png, etc.)
     """
 
+    plot_mapping = {
+        'scatter': plt.scatter,
+        'kde': sns.kdeplot,
+        'hist': sns.distplot
+    }
+
     palette = kwargs.pop("color", sns.color_palette("pastel"))
 
-    g = sns.pairplot(
-        df, kind=kind, diag_kind=diag_kind, hue=hue, palette=palette, **kwargs
-    )
+    if upper_kind or lower_kind:
+        assert (upper_kind is not None), "upper_kind cannot be None."
+        assert (lower_kind is not None), "lower_kind cannot be None."
+        assert (diag_kind is not "auto"), "diag_kind must be either `hist` or `kde`."
+
+        g = sns.PairGrid(df, hue=hue, palette=palette, **kwargs)
+        g = g.map_upper(plot_mapping[upper_kind])
+        g = g.map_diag(plot_mapping[diag_kind])
+        g = g.map_lower(plot_mapping[lower_kind])
+        g = g.add_legend()        
+
+    else:
+        g = sns.pairplot(
+            df, kind=kind, diag_kind=diag_kind, hue=hue, palette=palette, **kwargs
+        )
 
     if output_file:  # pragma: no cover
         g.savefig(os.path.join(IMAGE_DIR, output_file))
