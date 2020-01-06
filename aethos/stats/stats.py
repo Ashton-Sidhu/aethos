@@ -119,11 +119,12 @@ class Stats(object):
                 n_cols = 4
                 n_rows = int(len(diff_df) / n_cols) + 1
 
-                _, ax = plt.subplots(n_rows, n_cols, figsize=(40, 6 * n_rows))
+                _, ax = plt.subplots(n_rows, n_cols, figsize=(40, 8 * n_rows))
 
                 for i, (_, row) in enumerate(diff_df.iterrows()):
                     if i >= len(ax):
                         break
+                    
                     extreme = np.max(
                         np.abs(
                             self.x_train[row.feature].tolist()

@@ -44,7 +44,7 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.histogram("sepal_length", "sepal_width")
+        base.histogram()
 
         self.assertTrue(True)
 

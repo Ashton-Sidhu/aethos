@@ -379,7 +379,7 @@ def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
         g.savefig(os.path.join(IMAGE_DIR, output_file))
 
 
-def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
+def histogram(x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwargs):
     """
     Plots a histogram.
     
@@ -388,26 +388,53 @@ def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
     x : list
         Columns to plot histogram for.
 
-    data : pd.DataFrame
+    x_train : pd.DataFrame
+        Dataframe of the data.
+
+    x_test : pd.DataFrame
         Dataframe of the data.
 
     ouput_file : str
         Output file name for the image including extension (.jpg, .png, etc.)
     """
 
+    import math
+
     sns.set(style="ticks", color_codes=True)
     sns.set_palette(sns.color_palette("pastel"))
 
+    # Make the single plot look pretty
     if len(x) == 1:
-        data = data[~data[x[0]].isnull()]
-        g = sns.distplot(data[x], **kwargs)
+        data = x_train[~x_train[x[0]].isnull()]
+        g = sns.distplot(data[x], label='Train Data', **kwargs)
+
+        if x_test is not None:
+            data = x_test[~x_test[x[0]].isnull()]
+            g = sns.distplot(data[x], label='Test Data', **kwargs)
+            g.legend(loc='upper right')
+
+        g.set_title(f'Histogram for {x[0].capitalize()}')        
 
     else:
-        for col in x:
-            data = data[~data[col].isnull()]
-            g = sns.distplot(data[col], label=col, **kwargs)
+        n_cols = 2
+        n_rows = math.ceil(len(x) / n_cols)
 
-        plt.legend()
+        _, ax = plt.subplots(n_rows, n_cols, figsize=(30, 10 * n_cols))
+
+        for ax, col in zip(ax.flat, x):
+            g = None
+
+            data = x_train[~x_train[col].isnull()]
+            g = sns.distplot(data[col], ax=ax, label='Train Data', **kwargs)
+
+            if x_test is not None:
+                data = x_test[~x_test[col].isnull()]
+                g = sns.distplot(data[col], ax=ax, label='Test Data', **kwargs)
+                ax.legend(loc='upper right')
+            
+            ax.set_title(f'Histogram for {col.capitalize()}', fontsize=20)
+
+        plt.tight_layout()
 
     if output_file:  # pragma: no cover
         g.figure.savefig(os.path.join(IMAGE_DIR, output_file))

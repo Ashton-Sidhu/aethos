@@ -26,11 +26,18 @@ class Visualizations(object):
         IFrame("https://seaborn.pydata.org/tutorial/color_palettes.html")
 
     @property
-    def data(self): # pragma: no cover
+    def train_data(self): # pragma: no cover
         if hasattr(self, '_train_result_data'):
             return self._train_result_data
         else:
             return self.x_train
+
+    @property
+    def test_data(self): # pragma: no cover
+        if hasattr(self, '_test_result_data'):
+            return self._test_result_data
+        else:
+            return self.x_test
 
     def raincloud(self, x=None, y=None, output_file="", **params):
         """
@@ -137,7 +144,7 @@ class Visualizations(object):
         if y is None:
             y = self.target_field
 
-        raincloud(y, x, self.data, output_file=output_file, **params)
+        raincloud(y, x, self.train_data, output_file=output_file, **params)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
@@ -201,7 +208,7 @@ class Visualizations(object):
         barplot(
             x,
             y,
-            self.data,
+            self.train_data,
             method=method,
             orient=orient,
             stacked=stacked,
@@ -274,7 +281,7 @@ class Visualizations(object):
             x,
             y,
             z=z,
-            data=self.data,
+            data=self.train_data,
             title=title,
             category=category,
             size=size,
@@ -350,7 +357,7 @@ class Visualizations(object):
         """
 
         lineplot(
-            x, y, self.data, title=title, output_file=output_file, **lineplot_kwargs,
+            x, y, self.train_data, title=title, output_file=output_file, **lineplot_kwargs,
         )
 
         if output_file and self.report:  # pragma: no cover
@@ -382,7 +389,7 @@ class Visualizations(object):
         """
 
         correlation_matrix(
-            self.data,
+            self.train_data,
             data_labels=data_labels,
             hide_mirror=hide_mirror,
             output_file=output_file,
@@ -442,7 +449,7 @@ class Visualizations(object):
         elif not self.target_field and hue:
             hue = hue
 
-        data = self.data if not cols else self.data[cols]
+        data = self.train_data if not cols else self.train_data[cols]
 
         pairplot(
             data,
@@ -506,14 +513,16 @@ class Visualizations(object):
         >>> data.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        jointplot(x=x, y=y, df=self.data, kind=kind, output_file=output_file, **kwargs)
+        jointplot(x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
-    def histogram(self, *x, output_file="", **kwargs):
+    def histogram(self, *x, plot_test=False, output_file="", **kwargs):
         """
         Plots a histogram of the given column(s).
+
+        If no columns are provided, histograms are plotted for all numeric columns
 
         For more histogram key word arguments, please see https://seaborn.pydata.org/generated/seaborn.distplot.html
 
@@ -521,6 +530,9 @@ class Visualizations(object):
         ----------
         x: str or str(s)
             Column(s) to plot histograms for.
+
+        plot_test : bool, optional
+            True to plot distribution of the test data for the same variable
 
         bins : argument for matplotlib hist(), or None, optional
             Specification of hist bins, or None to use Freedman-Diaconis rule.
@@ -542,15 +554,19 @@ class Visualizations(object):
 
         Examples
         --------
+        >>> data.histogram()
         >>> data.histogram('col1')
-        >>> data.histogram('col1', 'col2')
+        >>> data.histogram('col1', 'col2', plot_test=True)
         >>> data.histogram('col1', kde=False)
         >>> data.histogram('col1', 'col2', hist=False)
         >>> data.histogram('col1', kde=False, fit=stat.normal)
         >>> data.histogram('col1', kde=False, output_file='hist.png')
         """
 
-        histogram(list(x), data=self.data, output_file=output_file, **kwargs)
+        x_test = self.test_data if plot_test else None
+        columns = list(x) if x else list(self.train_data.select_dtypes(include=[np.number]).columns)
+
+        histogram(columns, x_train=self.train_data, x_test=x_test, output_file=output_file, **kwargs)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
