@@ -1,6 +1,8 @@
 import aethos.config.config as cf
-from aethos.config import shell
+from aethos.config import cfg, shell
 from aethos.config.config import is_bool, is_list
+from aethos.config.user_config import _make_experiment_dir
+from aethos.util import _make_dir
 
 interactive_df_doc = """
 : bool
@@ -79,6 +81,13 @@ word_doc = """
     Valid values: False, True
 """
 
+track_experiments_doc = """
+: bool
+    Track experminets with MLFlow
+    Default value is False
+    Valid values: False, True
+"""
+
 
 def use_qgrid(key):
     import qgrid
@@ -90,13 +99,15 @@ def use_qgrid(key):
         else:
             qgrid.disable()
 
-
 def use_itable(key):
     import itables.interactive
     import itables.options as opt
 
     opt.lengthMenu = [5, 10, 20, 50, 100, 200, 500]
     opt.maxBytes = 0
+
+def create_experiment_dir(key):
+    _make_experiment_dir()
 
 
 cf.register_option(
@@ -121,4 +132,8 @@ cf.register_option(
 
 cf.register_option(
     "word_report", default=False, doc=word_doc, validator=is_bool,
+)
+
+cf.register_option(
+    "track_experiments", default=False, doc=track_experiments_doc, validator=is_bool, cb=create_experiment_dir,
 )

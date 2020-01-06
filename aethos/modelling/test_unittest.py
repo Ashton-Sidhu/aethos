@@ -5,16 +5,27 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from aethos import Model
 from sklearn.datasets import make_blobs
+
+from aethos import Data, Model
 
 
 class TestModelling(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
-        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
-        shutil.rmtree(str(Path.home()) + "/.aethos/models/")
-        shutil.rmtree(str(Path.home()) + "/.aethos/projects/")
+
+        reports_path = str(Path.home()) + "/.aethos/reports/"
+        models_path = str(Path.home()) + "/.aethos/models/"
+        projects_path = str(Path.home()) + "/.aethos/projects/"
+
+        if os.path.exists(reports_path):
+            shutil.rmtree(reports_path)
+
+        if os.path.exists(models_path):
+            shutil.rmtree(models_path)
+        
+        if os.path.exists(projects_path):
+            shutil.rmtree(projects_path)
 
     def test_text_gensim_summarize(self):
 
@@ -1665,6 +1676,18 @@ class TestModelling(unittest.TestCase):
         model.help_debug()
 
         self.assertTrue(True)
+
+    def test_model_transition(self):
+
+        data = np.random.randint(0, 2, size=(1000, 3))
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+        df = Data(data, target_field="col3")
+        m = Model(df)
+
+        self.assertListEqual(m.x_train.values.tolist(), df.x_train.drop('col3', axis=1).values.tolist())
+        self.assertListEqual(m.x_test.values.tolist(), df.x_test.drop('col3', axis=1).values.tolist())
+        self.assertListEqual(m.y_train.values.tolist(), df.y_train.values.tolist())
+        self.assertListEqual(m.y_test.values.tolist(), df.y_test.values.tolist())
 
 
 if __name__ == "__main__":

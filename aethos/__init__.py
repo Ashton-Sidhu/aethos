@@ -1,21 +1,17 @@
 import warnings
 
 warnings.simplefilter("ignore", FutureWarning)
+warnings.simplefilter("ignore", DeprecationWarning)
 
 import pandas as pd
-
-# let init-time option registration happen
-import aethos.config.config_init
 import shap
 from bokeh.io import output_notebook
 from IPython import get_ipython
-from aethos.config.config import (
-    describe_option,
-    get_option,
-    options,
-    reset_option,
-    set_option,
-)
+
+# let init-time option registration happen
+import aethos.config.config_init
+from aethos.config.config import (describe_option, get_option, options,
+                                  reset_option, set_option)
 
 from .core import Data
 from .modelling import Model

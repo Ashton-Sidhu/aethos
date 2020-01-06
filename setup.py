@@ -37,7 +37,8 @@ pkgs = [
     "pyldavis==2.1.2",
     "swifter==0.297",
     "lightgbm==2.3.1",
-    "catboost==0.20.1"
+    "catboost==0.20.1",
+    "mlflow==1.5.0"
 ]
 
 

@@ -19,6 +19,7 @@ Aethos provides:
   - Interactive checklists and tips to either remind or help you through your analysis.
   - Comparing train and test data distribution
   - Exporting trained models as a service (Generates the necessary code, files and folder structure)
+  - Experiment tracking with MLFlow
 
 Plus more coming soon such as:
 
@@ -48,7 +49,7 @@ To start, we need to import the ethos dependencies as well as pandas.
 
 Before that, we can create a full data science folder structure by running :code:`aethos create` from the command line and follow the command prompts.
 
-For a full list of methods please see the full docs or [TECHNIQUES.md]()
+For a full list of methods please see the full docs or `TECHNIQUES.md <https://github.com/Ashton-Sidhu/aethos/blob/develop/TECHNIQUES.md/>`_.
 
 Options
 -------
@@ -67,6 +68,7 @@ Currently the following options are:
   - `project_metrics`: Setting project metrics
     - Project metrics is a metric or set of metrics to evaluate models.
   - `word_report`: Writes report to a word document as well as the .txt file
+  - `track_experiments`: Uses MLFlow to track models and experiments.
 
 User options such as changing the directory where images, reports, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
 
@@ -228,6 +230,95 @@ To create a Data Science project run:
 :code:`aethos create`
 
 This will create a full folder strucuture for you to manage data, unit tests, experiments and source code.
+
+If experiment tracking is enabled or if you want to start the MLFlow UI:
+
+:code:`aethos mlflow-ui`
+
+This will start the MLFlow UI in the directory where your Aethos experiemnts are run.
+NOTE: This only works for local use of MLFLOW, if you are running MLFlow on a remote server, just start it on the remote server and enter the address in the `%HOME%/.aethos/config.yml` file.
+
+Configuration
+=============
+
+By default the configuration file is located at :code:`%HOME%/.aethos/config.yml`.
+
+You can use the configuration file to specify the full path of where to store reports, images, deployed projects and experiments.
+
+Project Metrics
+===============
+
+Often in data science projects, you define a metric or metrics to evaluate how well your model performs.
+
+By default when training a model and viewing the results, Aethos calculates all possible metrics for the problem type (Unsupervised, Text, Classification, Regression, etc.).
+
+To change this behaviour it is recommended to set project metrics:
+
+.. code:: python
+
+    import aethos as at
+
+    at.options.project_metrics = ['F1', 'Precision', 'Recall']
+
+Now when comparing models or viewing metrics for models, only the F1 score, precision and recall metrics will be shown and consequently tracked if tracking is enabled.
+
+The supported project metrics are the following:
+
+Classification
+--------------
+
+    - Accuracy
+    - Balanced Accuracy
+    - Average Precision
+    - ROC AUC
+    - Zero One Loss
+    - Precision
+    - Recall
+    - Matthews Correlation Coefficient
+    - Log Loss
+    - Jaccard
+    - Hinge Loss
+    - Hamming Loss
+    - F-Beta
+    - F1
+    - Cohen Kappa
+    - Brier Loss
+    - Explained Variance
+
+Regression
+----------
+
+    - Max Error
+    - Mean Absolute Error
+    - Mean Squared Error
+    - Root Mean Sqaured Error
+    - Mean Squared Log Error
+    - Median Absolute Error
+    - R2
+    - SMAPE
+
+Using MLFlow
+=============
+
+To start tracking experiments with MLFlow, enable it runing the following:
+
+.. code:: python
+
+    import aethos as at
+    
+    at.options.track_experiments = True
+
+Now any models you train will be tracked with MLFlow against all metrics unless you set project metrics, MLFlow will then only track the project metrics.
+
+.. code:: python
+
+    at.options.project_metrics = ['F1', 'Precision', 'Recall']
+
+To start the MLFlow UI in the directory your experiments are stored run:
+
+:code:`aethos mlflow-ui`
+
+Note: This only works for local use of MLFlow, if you are running MLFlow on a remote server, start it on the server and enter in the address in the Aethos config file at `%HOME%/.aethos/config.yml`.
 
 Data API
 ========

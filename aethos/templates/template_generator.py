@@ -2,8 +2,10 @@ import os
 import subprocess
 from pathlib import Path
 
-from aethos.templates.util import _create_project_dir, _get_model_type_kwarg
 from jinja2 import Environment, PackageLoader
+
+from aethos.templates.util import (_create_dir, _create_project_dir,
+                                   _get_model_type_kwarg)
 
 
 class TemplateGenerator(object):
@@ -15,7 +17,7 @@ class TemplateGenerator(object):
         lstrip_blocks=True,
     )
 
-    project_dir = os.path.join(os.path.expanduser("~"), ".aethos", "projects")
+    project_dir = _create_dir()
 
     @classmethod
     def generate_service(cls, name: str, filename: str, model):

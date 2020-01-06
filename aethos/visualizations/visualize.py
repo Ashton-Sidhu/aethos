@@ -8,9 +8,8 @@ import pandas_bokeh
 import plotly.express as px
 import ptitprince as pt
 import seaborn as sns
-from aethos.config import DEFAULT_IMAGE_DIR, cfg
+from aethos.config import IMAGE_DIR, cfg
 from aethos.util import _make_dir
-from aethos.visualizations.util import _make_image_dir
 from bokeh.io import export_png
 from scipy import stats
 
@@ -52,8 +51,7 @@ def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **p
     ax = pt.RainCloud(x=col, y=target_col, data=data.infer_objects(), **params)
 
     if output_file:  # pragma: no cover
-        img_dir = _make_image_dir()
-        fig.savefig(os.path.join(img_dir, output_file))
+        fig.savefig(os.path.join(IMAGE_DIR, output_file))
 
 
 def barplot(
@@ -116,12 +114,11 @@ def barplot(
         )
 
     if output_file:  # pragma: no cover
-        img_dir = _make_image_dir()
 
         if Path(output_file).suffix == ".html":
-            pandas_bokeh.output_file(os.path.join(img_dir, output_file))
+            pandas_bokeh.output_file(os.path.join(IMAGE_DIR, output_file))
         else:
-            export_png(p_bar, os.path.join(img_dir, output_file))
+            export_png(p_bar, os.path.join(IMAGE_DIR, output_file))
 
 
 def scatterplot(
@@ -181,19 +178,17 @@ def scatterplot(
         )
 
         if output_file:  # pragma: no cover
-            img_dir = _make_image_dir()
 
             if Path(output_file).suffix == ".html":
-                pandas_bokeh.output_file(os.path.join(img_dir, output_file))
+                pandas_bokeh.output_file(os.path.join(IMAGE_DIR, output_file))
             else:
-                export_png(p_scatter, os.path.join(img_dir, output_file))
+                export_png(p_scatter, os.path.join(IMAGE_DIR, output_file))
 
     else:
         fig = px.scatter_3d(data, x=x, y=y, z=z, **scatterplot_kwargs)
 
         if output_file:  # pragma: no cover
-            img_dir = _make_image_dir()
-            fig.write_image(os.path.join(img_dir, output_file))
+            fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
         fig.show()
 
@@ -230,12 +225,11 @@ def lineplot(
     p_line = data_copy.plot_bokeh.line(title=title, xlabel=xlabel, **lineplot_kwargs)
 
     if output_file:  # pragma: no cover
-        img_dir = _make_image_dir()
 
         if Path(output_file).suffix == ".html":
-            pandas_bokeh.output_file(os.path.join(img_dir, output_file))
+            pandas_bokeh.output_file(os.path.join(IMAGE_DIR, output_file))
         else:
-            export_png(p_line, os.path.join(img_dir, output_file))
+            export_png(p_line, os.path.join(IMAGE_DIR, output_file))
 
 
 def correlation_matrix(
@@ -286,8 +280,7 @@ def correlation_matrix(
     )
 
     if output_file:  # pragma: no cover
-        img_dir = _make_image_dir()
-        fig.savefig(os.path.join(img_dir, output_file))
+        fig.savefig(os.path.join(IMAGE_DIR, output_file))
 
 
 # TODO: Make pair plots customizable using PairGrid
@@ -322,8 +315,7 @@ def pairplot(
     )
 
     if output_file:  # pragma: no cover
-        img_dir = _make_image_dir()
-        g.savefig(os.path.join(img_dir, output_file))
+        g.savefig(os.path.join(IMAGE_DIR, output_file))
 
 
 def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
@@ -361,8 +353,7 @@ def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
     )
 
     if output_file:  # pragma: no cover
-        img_dir = _make_image_dir()
-        g.savefig(os.path.join(img_dir, output_file))
+        g.savefig(os.path.join(IMAGE_DIR, output_file))
 
 
 def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
@@ -396,5 +387,4 @@ def histogram(x: list, data: pd.DataFrame, output_file="", **kwargs):
         plt.legend()
 
     if output_file:  # pragma: no cover
-        img_dir = _make_image_dir()
-        g.figure.savefig(os.path.join(img_dir, output_file))
+        g.figure.savefig(os.path.join(IMAGE_DIR, output_file))

@@ -15,18 +15,20 @@ import plotly.graph_objects as go
 import seaborn as sns
 import sklearn
 import xgboost as xgb
+from graphviz import Source
+from IPython.display import HTML, SVG, display
+
+from aethos.config import IMAGE_DIR
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import pca
 from aethos.modelling.constants import (CLASS_METRICS_DESC,
                                         INTERPRET_EXPLAINERS, PROBLEM_TYPE,
                                         REG_METRICS_DESC, SHAP_LEARNERS)
 from aethos.modelling.model_explanation import MSFTInterpret, Shap
-from aethos.modelling.util import to_pickle
+from aethos.modelling.util import (_make_img_project_dir, to_pickle,
+                                   track_artifacts)
 from aethos.templates.template_generator import TemplateGenerator as tg
-from aethos.visualizations.util import _make_image_dir
 from aethos.visualizations.visualize import *
-from graphviz import Source
-from IPython.display import HTML, SVG, display
 
 
 class ModelBase(object):
@@ -46,6 +48,7 @@ class ModelBase(object):
         if isinstance(self, ClassificationModel) or isinstance(self, RegressionModel):
             self.shap = Shap(
                 self.model,
+                self.model_name,
                 self.x_train,
                 self.x_test,
                 self.y_test,
@@ -176,6 +179,9 @@ class ModelBase(object):
 
         if output_file and self.report:
             self.report.write_image(output_file)
+
+        if _global_config['track_experiments']: # pragma: no cover
+            track_artifacts(self.run_id, self.model_name)
 
     def decision_plot(
         self,
@@ -325,6 +331,9 @@ class ModelBase(object):
         if output_file and self.report:
             self.report.write_image(output_file)
 
+        if _global_config['track_experiments']: # pragma: no cover
+            track_artifacts(self.run_id, self.model_name)
+
         return dp
 
     def force_plot(
@@ -378,6 +387,9 @@ class ModelBase(object):
 
         if output_file and self.report:
             self.report.write_image(output_file)
+
+        if _global_config['track_experiments']: # pragma: no cover
+            track_artifacts(self.run_id, self.model_name)
 
         return fp
 
@@ -444,6 +456,9 @@ class ModelBase(object):
 
         if output_file and self.report:
             self.report.write_image(output_file)
+
+        if _global_config['track_experiments']: # pragma: no cover
+            track_artifacts(self.run_id, self.model_name)
 
         return dp
 
@@ -1045,6 +1060,7 @@ class UnsupervisedModel(ModelBase):
 
         reduced_df[self.cluster_col] = dataset[self.cluster_col]
         reduced_df.columns = list(map(str, reduced_df.columns))
+        output_file_path = os.path.join(self.model_name, output_file) if output_file else output_file
 
         if dim == 2:
             scatterplot(
@@ -1052,7 +1068,7 @@ class UnsupervisedModel(ModelBase):
                 "1",
                 data=reduced_df,
                 color=reduced_df[self.cluster_col].tolist(),
-                output_file=output_file,
+                output_file=output_file_path,
                 **kwargs,
             )
         else:
@@ -1062,9 +1078,12 @@ class UnsupervisedModel(ModelBase):
                 "2",
                 data=reduced_df,
                 color=self.cluster_col,
-                output_file=output_file,
+                output_file=output_file_path,
                 **kwargs,
             )
+
+        if _global_config['track_experiments']: # pragma: no cover
+            track_artifacts(self.run_id, self.model_name)
 
 
 class ClassificationModel(ModelBase):
@@ -1076,6 +1095,7 @@ class ClassificationModel(ModelBase):
         predictions_col,
         shap_values=None,
         pool=None,
+        run_id=None,
     ):
 
         self.y_train = model_object.y_train
@@ -1107,11 +1127,12 @@ class ClassificationModel(ModelBase):
         else:
             self.classes = [str(item) for item in self.target_mapping.values()]
 
-        self.features = self.x_test.columns
-        self.pool = pool
-
         if hasattr(model, "predict_proba"):
             self.probabilities = model.predict_proba(model_object.x_test)
+
+        self.features = self.x_test.columns
+        self.pool = pool
+        self.run_id = run_id
 
     def accuracy(self, **kwargs):
         """
@@ -1712,11 +1733,13 @@ class ClassificationModel(ModelBase):
         plt.show()
 
         if output_file:  # pragma: no cover
-            image_dir = _make_image_dir()
-            heatmap.figure.savefig(os.path.join(image_dir, output_file))
+            heatmap.figure.savefig(os.path.join(IMAGE_DIR, self.model_name, output_file))
 
             if self.report:
-                self.report.write_image(os.path.join(image_dir, output_file))
+                self.report.write_image(os.path.join(IMAGE_DIR, self.model_name, output_file))
+
+        if _global_config['track_experiments']: # pragma: no cover
+            track_artifacts(self.run_id, self.model_name)
 
     def roc_curve(self, title=True, output_file=""):
         """
@@ -1755,11 +1778,13 @@ class ClassificationModel(ModelBase):
                 roc_plot.figure_.suptitle("ROC Curve (area = {:.2f})".format(roc_auc))
 
         if output_file:  # pragma: no cover
-            image_dir = _make_image_dir()
-            roc_plot.figure_.savefig(os.path.join(image_dir, output_file))
+            roc_plot.figure_.savefig(os.path.join(IMAGE_DIR, self.model_name, output_file))
 
             if self.report:
-                self.report.write_image(os.path.join(image_dir, output_file))
+                self.report.write_image(os.path.join(IMAGE_DIR, self.model_name, output_file))
+
+        if _global_config['track_experiments']: # pragma: no cover
+            track_artifacts(self.run_id, self.model_name)
 
         return roc_plot
 
@@ -1804,6 +1829,7 @@ class RegressionModel(ModelBase):
         predictions_col,
         shap_values=None,
         pool=None,
+        run_id=None,
     ):
 
         self.y_train = model_object.y_train
@@ -1826,6 +1852,7 @@ class RegressionModel(ModelBase):
 
         self.features = self.x_test.columns
         self.pool = pool
+        self.run_id = run_id
 
     def explained_variance(self, multioutput="uniform_average", **kwargs):
         """
