@@ -173,63 +173,63 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
-    # def test_plot_clusters_pca(self):
+    def test_plot_clusters_pca(self):
 
-    #     data, label = make_blobs(500, 10, centers=5)
+        data, label = make_blobs(100, 4, centers=3)
 
-    #     df = pd.DataFrame(data)
-    #     df['label'] = label
-    #     df = Data(df, split=False)
-    #     df.plot_clusters('label', algo='pca', dim=2)
+        df = pd.DataFrame(data)
+        df['label'] = label
+        df = Data(df, split=False)
+        df.plot_clusters('label', algo='pca', dim=2)
 
-    #     self.assertTrue(True)
+        self.assertTrue(True)
 
-    # def test_plot_clusters_lle(self):
+    def test_plot_clusters_lle(self):
 
-    #     data, label = make_blobs(500, 10, centers=5)
+        data, label = make_blobs(100, 4, centers=3)
 
-    #     df = pd.DataFrame(data)
-    #     df['label'] = label
+        df = pd.DataFrame(data)
+        df['label'] = label
 
-    #     df = Data(df, split=False)
+        df = Data(df, split=False)
 
-    #     df.plot_clusters('label', algo='lle', dim=2)
+        df.plot_clusters('label', algo='lle', dim=2)
 
-    #     self.assertTrue(True)
+        self.assertTrue(True)
 
-    # def test_plot_clusters_svd(self):
+    def test_plot_clusters_svd(self):
 
-    #     data, label = make_blobs(500, 10, centers=5)
+        data, label = make_blobs(100, 4, centers=3)
 
-    #     df = pd.DataFrame(data)
-    #     df['label'] = label
+        df = pd.DataFrame(data)
+        df['label'] = label
 
-    #     df = Data(df, split=False)
+        df = Data(df, split=False)
 
-    #     df.plot_clusters('label', algo='tsvd', dim=2)
+        df.plot_clusters('label', algo='tsvd', dim=2)
 
-    #     self.assertTrue(True)
+        self.assertTrue(True)
 
-    # def test_plot_clusters_tsne(self):
+    def test_plot_clusters_tsne(self):
 
-    #     data, label = make_blobs(500, 10, centers=5)
+        data, label = make_blobs(100, 4, centers=3)
 
-    #     df = pd.DataFrame(data)
-    #     df['label'] = label
+        df = pd.DataFrame(data)
+        df['label'] = label
         
-    #     df = Data(df, split=False)
-    #     df.plot_clusters('label', dim=2)
+        df = Data(df, split=False)
+        df.plot_clusters('label', dim=2)
 
-    #     self.assertTrue(True)
+        self.assertTrue(True)
 
-    # def test_plot_clusters_3d(self):
+    def test_plot_clusters_3d(self):
 
-    #     data, label = make_blobs(500, 10, centers=5)
-    #     df = pd.DataFrame(data)
-    #     df['label'] = label
+        data, label = make_blobs(100, 4, centers=3)
+        df = pd.DataFrame(data)
+        df['label'] = label
 
-    #     df = Data(df, split=False)
+        df = Data(df, split=False)
 
-    #     df.plot_clusters('label', dim=3)
+        df.plot_clusters('label', dim=3)
 
-    #     self.assertTrue(True)
+        self.assertTrue(True)
