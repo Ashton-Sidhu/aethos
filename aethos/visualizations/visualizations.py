@@ -577,11 +577,11 @@ class Visualizations(object):
         
         Parameters
         ----------
-        dim : int {2, 3}
-            Dimensions of the plot to show, either 2d or 3d, by default 2
-
         category : str
             Column name of the labels/data points to highlight in the plot
+            
+        dim : int {2, 3}
+            Dimensions of the plot to show, either 2d or 3d, by default 2
 
         algo : str {'tsne', 'lle', 'pca', 'tsvd'}, optional
             Algorithm to reduce the dimensions by, by default 'tsne'
