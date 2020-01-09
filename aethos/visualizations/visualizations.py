@@ -591,6 +591,10 @@ class Visualizations(object):
 
         kwargs: 
             See plotting options
+
+        Examples
+        --------
+        >>> data.plot_clusters('cluster_labels', dim=3)
         """
 
         viz_clusters(

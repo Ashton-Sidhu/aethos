@@ -553,31 +553,31 @@ class TestModelling(unittest.TestCase):
 
         self.assertTrue(True)
 
-    # def test_local_multiprocessing(self):
+    def test_local_multiprocessing(self):
 
-    #     data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(1000, 3))
 
-    #     data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-    #     model = Model(
-    #         x_train=data,
-    #         target_field="col3",
-    #         test_split_percentage=0.5,
-    #         report_name="modelweights",
-    #     )
-    #     model.LogisticRegression(
-    #         random_state=2, penalty="l2", model_name="l1", run=False
-    #     )
-    #     model.LogisticRegression(
-    #         gridsearch={'C': [0.1, 0.2]}, random_state=2, penalty="l2", model_name="l2", run=False
-    #     )
-    #     model.LogisticRegression(
-    #         random_state=2, penalty="l2", model_name="l3", run=False
-    #     )
+        model = Model(
+            x_train=data,
+            target_field="col3",
+            test_split_percentage=0.5,
+            report_name="modelweights",
+        )
+        model.LogisticRegression(
+            random_state=2, penalty="l2", model_name="l1", run=False
+        )
+        model.LogisticRegression(
+            gridsearch={'C': [0.1, 0.2]}, random_state=2, penalty="l2", model_name="l2", run=False
+        )
+        model.LogisticRegression(
+            random_state=2, penalty="l2", model_name="l3", run=False
+        )
 
-    #     model.run_models()
+        model.run_models()
 
-    #     self.assertTrue(len(model._models) == 3 and len(model._queued_models) == 0)
+        self.assertTrue(len(model._models) == 3 and len(model._queued_models) == 0)
 
     def test_local_seriesprocessing(self):
 
