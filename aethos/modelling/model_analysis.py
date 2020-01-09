@@ -20,7 +20,7 @@ from IPython.display import HTML, SVG, display
 
 from aethos.config import IMAGE_DIR
 from aethos.config.config import _global_config
-from aethos.feature_engineering.util import pca
+from aethos.feature_engineering.util import sklearn_dim_reduction
 from aethos.modelling.constants import (CLASS_METRICS_DESC,
                                         INTERPRET_EXPLAINERS, PROBLEM_TYPE,
                                         REG_METRICS_DESC, SHAP_LEARNERS)
@@ -1031,7 +1031,7 @@ class UnsupervisedModel(ModelBase):
         dim : 2 or 3, optional
             Dimension of the plot, either 2 for 2d, 3 for 3d, by default 2
 
-        reduce : str, optional
+        reduce : str {'pca', 'tvsd', 'lle', 'tsne'}, optional
             Dimension reduction strategy i.e. pca, by default "pca"
 
         output_file: str
@@ -1044,43 +1044,17 @@ class UnsupervisedModel(ModelBase):
         >>> m.plot_clusters(dim=3)
         """
 
-        if dim != 2 and dim != 3:
-            raise ValueError("Dimension must be either 2d (2) or 3d (3)")
-
         dataset = self.x_test if self.x_test is not None else self.x_train
-
-        if reduce == "pca":
-            reduced_df, _ = pca(
-                dataset.drop(self.cluster_col, axis=1),
-                n_components=dim,
-                random_state=42,
-            )
-        else:
-            raise ValueError("Currently supported dimensionality reducers are: PCA.")
-
-        reduced_df[self.cluster_col] = dataset[self.cluster_col]
-        reduced_df.columns = list(map(str, reduced_df.columns))
         output_file_path = os.path.join(self.model_name, output_file) if output_file else output_file
 
-        if dim == 2:
-            scatterplot(
-                "0",
-                "1",
-                data=reduced_df,
-                color=reduced_df[self.cluster_col].tolist(),
-                output_file=output_file_path,
-                **kwargs,
-            )
-        else:
-            scatterplot(
-                "0",
-                "1",
-                "2",
-                data=reduced_df,
-                color=self.cluster_col,
-                output_file=output_file_path,
-                **kwargs,
-            )
+        viz_clusters(
+            dataset,
+            algo=reduce,
+            category=self.cluster_col,
+            dim=dim,
+            output_file=output_file_path,
+            **kwargs
+        )
 
         if _global_config['track_experiments']: # pragma: no cover
             track_artifacts(self.run_id, self.model_name)

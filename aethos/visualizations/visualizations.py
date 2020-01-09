@@ -226,22 +226,19 @@ class Visualizations(object):
         z=None,
         category=None,
         title="Scatter Plot",
-        size=8,
         output_file="",
         **scatterplot_kwargs,
     ):
         """
-        Plots a scatterplot for the given x and y columns provided using Bokeh.
+        Plots a scatterplot for the given x and y columns provided using Plotly Express.
 
         For a list of possible scatterplot_kwargs for 2 dimensional data please check out the following links:
 
-        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.scatter
-
-        https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#userguide-styling-line-properties 
+            https://plot.ly/python-api-reference/generated/plotly.express.scatter.html
 
         For more information on key word arguments for 3d data, please check them out here:
 
-        https://www.plotly.express/plotly_express/#plotly_express.scatter_3d
+            https://www.plotly.express/plotly_express/#plotly_express.scatter_3d
         
         Parameters
         ----------
@@ -259,10 +256,6 @@ class Visualizations(object):
 
         title : str, optional
             Title of the plot, by default 'Scatter Plot'
-
-        size : int or str, optional
-            Size of the circle, can either be a number
-            or a column name to scale the size, by default 8
 
         output_file : str, optional
             Output html file name for image
@@ -284,7 +277,6 @@ class Visualizations(object):
             data=self.train_data,
             title=title,
             category=category,
-            size=size,
             output_file=output_file,
             **scatterplot_kwargs,
         )
@@ -444,11 +436,6 @@ class Visualizations(object):
         >>> data.pairplot(kind='kde', output_file='pair.png')
         """
 
-        if self.target_field and not hue:
-            hue = self.target_field
-        elif not self.target_field and hue:
-            hue = hue
-
         data = self.train_data if not cols else self.train_data[cols]
 
         pairplot(
@@ -567,6 +554,52 @@ class Visualizations(object):
         columns = list(x) if x else list(self.train_data.select_dtypes(include=[np.number]).columns)
 
         histogram(columns, x_train=self.train_data, x_test=x_test, output_file=output_file, **kwargs)
+
+        if output_file and self.report:  # pragma: no cover
+            self.report.write_image(output_file)
+
+    def plot_clusters(self, category: str, dim=2, algo='tsne', output_file="", **kwargs):
+        """
+        Reduce the dimensions of your data and then view similarly grouped data points (clusters)
+
+        For 2d plotting options, see:
+        
+            https://plot.ly/python-api-reference/generated/plotly.express.scatter.html
+
+        For 3d plotting options, see:
+
+            https://www.plotly.express/plotly_express/#plotly_express.scatter_3d
+        
+        Parameters
+        ----------
+        category : str
+            Column name of the labels/data points to highlight in the plot
+            
+        dim : int {2, 3}
+            Dimensions of the plot to show, either 2d or 3d, by default 2
+
+        algo : str {'tsne', 'lle', 'pca', 'tsvd'}, optional
+            Algorithm to reduce the dimensions by, by default 'tsne'
+
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
+        kwargs: 
+            See plotting options
+
+        Examples
+        --------
+        >>> data.plot_clusters('cluster_labels', dim=3)
+        """
+
+        viz_clusters(
+            self.train_data,
+            algo=algo,
+            category=category,
+            dim=dim,
+            output_file=output_file,
+            **kwargs,
+        )
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)

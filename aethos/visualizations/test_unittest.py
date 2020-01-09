@@ -7,6 +7,8 @@ from pathlib import Path
 import shutil
 
 from aethos.core import Data
+from sklearn.datasets import make_blobs
+
 
 
 class Test_TestBase(unittest.TestCase):
@@ -168,5 +170,54 @@ class Test_TestBase(unittest.TestCase):
 
         clean = Data(x_train=df, split=False)
         clean.lineplot(x="date", y=["Google", "Apple"], show_figure=False)
+
+        self.assertTrue(True)
+
+    def test_plot_clusters_pca(self):
+
+        data, label = make_blobs(100, 4, centers=3)
+
+        df = pd.DataFrame(data)
+        df['label'] = label
+        df = Data(df, split=False)
+        df.plot_clusters('label', algo='pca', dim=2)
+
+        self.assertTrue(True)
+
+    def test_plot_clusters_lle(self):
+
+        data, label = make_blobs(100, 4, centers=3)
+
+        df = pd.DataFrame(data)
+        df['label'] = label
+
+        df = Data(df, split=False)
+
+        df.plot_clusters('label', algo='lle', dim=2)
+
+        self.assertTrue(True)
+
+    def test_plot_clusters_svd(self):
+
+        data, label = make_blobs(100, 4, centers=3)
+
+        df = pd.DataFrame(data)
+        df['label'] = label
+
+        df = Data(df, split=False)
+
+        df.plot_clusters('label', algo='tsvd', dim=2)
+
+        self.assertTrue(True)
+
+    def test_plot_clusters_3d(self):
+
+        data, label = make_blobs(100, 4, centers=3)
+        df = pd.DataFrame(data)
+        df['label'] = label
+
+        df = Data(df, split=False)
+
+        df.plot_clusters('label', algo='tsvd', dim=3)
 
         self.assertTrue(True)

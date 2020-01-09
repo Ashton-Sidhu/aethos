@@ -783,9 +783,11 @@ class Feature(object):
 
         return self.copy()
 
-    def pca(self, **pca_kwargs):
+    def pca(self, n_components=10, **pca_kwargs):
         """
-        Reduces the dimensionality of the data using Principal Component Analysis.
+        Reduces the dimensionality of the data using Principal Component Analysis. 
+        
+        Use PCA when the data is dense.
 
         This can be used to reduce complexity as well as speed up computation.
 
@@ -795,7 +797,7 @@ class Feature(object):
         
         Parameters
         ----------
-        n_components : int, float, None or string
+        n_components : int, float, None or string, by default 10
             Number of components to keep.
             
             If n_components is not set all components are kept.
@@ -837,33 +839,62 @@ class Feature(object):
 
         Examples
         --------
-        >>> data.pca('col1', 'col2', 'col3', n_components=2)
+        >>> data.pca(n_components=2)
         """
 
         report_info = technique_reason_repo["feature"]["general"]["pca"]
 
-        if self.target_field:
-            train_target_data = self.x_train[self.target_field]
-            test_target_data = (
-                self.x_test[self.target_field] if self.x_test is not None else None
-            )
-            x_train = self.x_train.drop(self.target_field, axis=1)
-            x_test = (
-                self.x_test.drop(self.target_field, axis=1)
-                if self.x_test is not None
-                else None
-            )
-        else:
-            x_train = self.x_train
-            x_test = self.x_test
+        self._run_sklearn_dim_reduction("pca", n_components=n_components, **pca_kwargs)
 
-        self.x_train, self.x_test = pca(x_train=x_train, x_test=x_test, **pca_kwargs)
+        if self.report is not None:
+            self.report.report_technique(report_info, [])
 
-        if self.target_field:
-            self.x_train[self.target_field] = train_target_data
-            self.x_test[self.target_field] = (
-                test_target_data if test_target_data is not None else None
-            )
+        return self.copy()
+
+    def truncated_svd(self, n_components=50, **svd_kwargs):
+        """
+        Reduces the dimensionality of the data using Truncated SVD.
+
+        In particular, truncated SVD works on term count/tf-idf matrices.
+        In that context, it is known as latent semantic analysis (LSA).
+        
+        Use Truncated SVD when the data is sparse.
+
+        This can be used to reduce complexity as well as speed up computation.
+
+        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.TruncatedSVD.html
+
+        This function exists in `feature-extraction/util.py`
+        
+        Parameters
+        ---------- 
+        n_components: int, default = 2
+            Desired dimensionality of output data. Must be strictly less than the number of features.
+            The default value is useful for visualisation. For LSA, a value of 100 is recommended.
+
+        algorithm: string, default = “randomized”
+            SVD solver to use. Either “arpack” for the ARPACK wrapper in SciPy (scipy.sparse.linalg.svds), or “randomized” for the randomized algorithm due to Halko (2009).
+
+        n_iter: int, optional (default 5)
+            Number of iterations for randomized SVD solver. Not used by ARPACK.
+            The default is larger than the default in ~sklearn.utils.extmath.randomized_svd to handle sparse matrices that may have large slowly decaying spectrum.
+
+        tol: float, optional
+            Tolerance for ARPACK. 0 means machine precision. Ignored by randomized SVD solver.
+        
+        Returns
+        -------
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.truncated_svd(n_components=2)
+        """
+
+        report_info = technique_reason_repo["feature"]["general"]["tsvd"]
+
+        self._run_sklearn_dim_reduction("tsvd", n_components=n_components, **svd_kwargs)
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
@@ -902,3 +933,36 @@ class Feature(object):
             )
 
         return self.copy()
+
+    def _run_sklearn_dim_reduction(self, algo: str, n_components, **kwargs):
+        """
+        Generalized helper function to run dimensionality reduction algorithms from sklearn.
+        
+        Parameters
+        ----------
+        algo : str {'pca', 'tsne', 'lle', 'tsvd'}
+            Dim Reduction algorithm to run.
+        """
+
+        if self.target_field:
+            train_target_data = self.x_train[self.target_field]
+            test_target_data = (
+                self.x_test[self.target_field] if self.x_test is not None else None
+            )
+            x_train = self.x_train.drop(self.target_field, axis=1)
+            x_test = (
+                self.x_test.drop(self.target_field, axis=1)
+                if self.x_test is not None
+                else None
+            )
+        else:
+            x_train = self.x_train
+            x_test = self.x_test
+
+        self.x_train, self.x_test = sklearn_dim_reduction(x_train=x_train, x_test=x_test, algo=algo, n_components=n_components, **kwargs)
+
+        if self.target_field:
+            self.x_train[self.target_field] = train_target_data
+            self.x_test[self.target_field] = (
+                test_target_data if test_target_data is not None else None
+            )

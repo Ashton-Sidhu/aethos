@@ -128,10 +128,11 @@ DEBUG_OVERFIT = [
     "Feature selection to decrease number/type of input features.",
     "Modify input features based on insights from error analysis​ - add more features.",
     "Modify model architecture",
+    "Reduce the noise in the training data (e.g. fix data errors and remove outliers)."
 ]
 
 DEBUG_UNDERFIT = [
-    "Increase the size of your model (for example, increase thesize of your neural network by adding layers/neurons)",
+    "Increase the size/complexity of your model (for example, increase thesize of your neural network by adding layers/neurons)",
     "Modify input features based on insights from error analysis​ - add more features",
     "Reduce or eliminate regularization​.",
 ]

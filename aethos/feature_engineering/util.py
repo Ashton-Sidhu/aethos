@@ -1,16 +1,16 @@
 """
 This file contains the following functions:
 
-pca
+sklearn_dim_reduction
 apply
 """
 
 import pandas as pd
 import swifter
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, TruncatedSVD
 
 
-def pca(x_train, x_test=None, **pca_kwargs):
+def sklearn_dim_reduction(x_train, x_test=None, algo=None, n_components=50, **dim_reduce_kwargs):
     """
     Performs Principal Component Analysis on a dataset.
     
@@ -19,11 +19,11 @@ def pca(x_train, x_test=None, **pca_kwargs):
     x_train : DataFrame
         Dataset
 
+    n_components : Any
+        Number of components to reduce to - algo dependent.
+
     x_test : DataFrame
         Testing dataset, by default None
-
-    pca_kwargs : dict or key word args
-        PCA properties
     
     Returns
     -------
@@ -33,12 +33,19 @@ def pca(x_train, x_test=None, **pca_kwargs):
     Returns 2 Dataframes if x_test is provided. 
     """
 
-    pca = PCA(**pca_kwargs)
+    algorithms = {
+        'pca': PCA(n_components=n_components, **dim_reduce_kwargs),
+        'tsvd': TruncatedSVD(n_components=n_components, **dim_reduce_kwargs), 
+    }
 
-    x_train = pd.DataFrame(pca.fit_transform(x_train))
+    reducer = algorithms[algo]
+
+    x_train = pd.DataFrame(reducer.fit_transform(x_train))
+    x_train.columns = map(str, x_train.columns)
 
     if x_test is not None:
-        x_test = pd.DataFrame(pca.transform(x_test))
+        x_test = pd.DataFrame(reducer.transform(x_test))
+        x_test.columns = map(str, x_test.columns)
 
     return x_train, x_test
 

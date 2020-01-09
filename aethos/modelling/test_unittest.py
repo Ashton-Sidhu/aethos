@@ -1231,7 +1231,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostClassification(run=True)
+        model.CatBoostClassification(iterations=10, run=True)
         validate = model.cb_cls is not None
 
         self.assertTrue(validate)
@@ -1243,7 +1243,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostRegression(run=True)
+        model.CatBoostRegression(iterations=10, run=True)
         validate = model.cb_reg is not None
 
         self.assertTrue(True)
@@ -1255,7 +1255,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostRegression(cv="kfold", gridsearch={"learning_rate": [0.03, 0.1]})
+        model.CatBoostRegression(cv="kfold", gridsearch={"learning_rate": [0.03, 0.1]}, iterations=10)
         validate = model.cb_reg is not None
 
         self.assertTrue(True)
@@ -1267,7 +1267,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostRegression(cv="kfold")
+        model.CatBoostRegression(cv="kfold", iterations=10)
         validate = model.cb_reg is not None
 
         self.assertTrue(True)
@@ -1279,7 +1279,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostClassification(run=True)
+        model.CatBoostClassification(run=True, iterations=10)
         model.cb_cls.view_tree()
 
         self.assertTrue(True)
