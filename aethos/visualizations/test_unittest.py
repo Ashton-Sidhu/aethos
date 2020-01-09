@@ -210,17 +210,17 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
-    def test_plot_clusters_tsne(self):
+    # def test_plot_clusters_tsne(self):
 
-        data, label = make_blobs(100, 4, centers=3)
+    #     data, label = make_blobs(100, 4, centers=3)
 
-        df = pd.DataFrame(data)
-        df['label'] = label
+    #     df = pd.DataFrame(data)
+    #     df['label'] = label
         
-        df = Data(df, split=False)
-        df.plot_clusters('label', dim=2)
+    #     df = Data(df, split=False)
+    #     df.plot_clusters('label', dim=2)
 
-        self.assertTrue(True)
+    #     self.assertTrue(True)
 
     # def test_plot_clusters_3d(self):
 
