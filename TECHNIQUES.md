@@ -34,6 +34,7 @@ Note this does not include quality of life functions.
   - Splits text data into words
   - Remove stop words
   - Remove punctuation
+  - Full text preprocessing
 
 ## Feature Engineering
 
@@ -50,6 +51,7 @@ Note this does not include quality of life functions.
   - Apply custom function (currently unoptimized)
   - Ordinally encode categorical variables
   - PCA Dim reduction
+  - Truncated SVD Dim reduction
   - Drop correlated features
 
 ## Models
@@ -113,6 +115,7 @@ Note this does not include quality of life functions.
   - Histograms
   - Jointplots
   - Correlation Matrix
+  - Dim Reduction with TSNE, TSVD, LLE, PCA
 
 ## Statistical Methods
   - Predict whether sample is from train or test set to compare train and test set distributions
