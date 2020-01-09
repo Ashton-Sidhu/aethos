@@ -436,11 +436,6 @@ class Visualizations(object):
         >>> data.pairplot(kind='kde', output_file='pair.png')
         """
 
-        if self.target_field and not hue:
-            hue = self.target_field
-        elif not self.target_field and hue:
-            hue = hue
-
         data = self.train_data if not cols else self.train_data[cols]
 
         pairplot(
