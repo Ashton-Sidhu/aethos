@@ -844,103 +844,7 @@ class Feature(object):
 
         report_info = technique_reason_repo["feature"]["general"]["pca"]
 
-        _run_sklearn_dim_reduction("pca")
-
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
-
-        return self.copy()
-
-    def tsne(self, n_components=2, **tsne_kwargs):
-        """
-        Reduces the dimensionality of the data using T-SNE. 
-        
-        It converts similarities between data points to joint probabilities and tries to minimize the Kullback-Leibler divergence between the joint probabilities of the low-dimensional embedding and the high-dimensional data.
-        t-SNE has a cost function that is not convex, i.e. with different initializations we can get different results
-
-        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
-
-        This function exists in `feature-extraction/util.py`
-        
-        Parameters
-        ----------
-        n_components : int, float, None or string
-            Number of components to keep.
-            
-            If n_components is not set all components are kept.
-            If n_components == 'mle' and svd_solver == 'full', Minka’s MLE is used to guess the dimension.
-            Use of n_components == 'mle' will interpret svd_solver == 'auto' as svd_solver == 'full'
-            If 0 < n_components < 1 and svd_solver == 'full', select the number of components such that the amount of variance that needs to be explained is greater than the percentage specified by n_components
-            If svd_solver == 'arpack', the number of components must be strictly less than the minimum of n_features and n_samples
-
-        perplexity: float, optional (default: 30)
-            The perplexity is related to the number of nearest neighbors that is used in other manifold learning algorithms.
-            Larger datasets usually require a larger perplexity.
-            Consider selecting a value between 5 and 50.
-            Different values can result in significanlty different results.
-
-        early_exaggeration: float, optional (default: 12.0)
-            Controls how tight natural clusters in the original space are in the embedded space and how much space will be between them.
-            For larger values, the space between natural clusters will be larger in the embedded space.
-            Again, the choice of this parameter is not very critical.
-            If the cost function increases during initial optimization, the early exaggeration factor or the learning rate might be too high.
-
-        learning_rate: float, optional (default: 200.0)
-            The learning rate for t-SNE is usually in the range [10.0, 1000.0].
-            If the learning rate is too high, the data may look like a ‘ball’ with any point approximately equidistant from its nearest neighbours.
-            If the learning rate is too low, most points may look compressed in a dense cloud with few outliers.
-            If the cost function gets stuck in a bad local minimum increasing the learning rate may help.
-
-        n_iter: int, optional (default: 1000)
-            Maximum number of iterations for the optimization. Should be at least 250.
-
-        n_iter_without_progress: int, optional (default: 300)
-            Maximum number of iterations without progress before we abort the optimization, used after 250 initial iterations with early exaggeration.
-            Note that progress is only checked every 50 iterations so this value is rounded to the next multiple of 50.
-
-        min_grad_norm: float, optional (default: 1e-7)
-            If the gradient norm is below this threshold, the optimization will be stopped.
-
-        metric: string or callable, optional
-            The metric to use when calculating distance between instances in a feature array.
-            If metric is a string, it must be one of the options allowed by scipy.spatial.distance.pdist for its metric parameter, or a metric listed in pairwise.PAIRWISE_DISTANCE_FUNCTIONS. If metric is “precomputed”, X is assumed to be a distance matrix.
-            Alternatively, if metric is a callable function, it is called on each pair of instances (rows) and the resulting value recorded.
-            The callable should take two arrays from X as input and return a value indicating the distance between them.
-            The default is “euclidean” which is interpreted as squared euclidean distance.
-
-        init: string or numpy array, optional (default: “random”)
-            Initialization of embedding.
-            Possible options are ‘random’, ‘pca’, and a numpy array of shape (n_samples, n_components).
-            PCA initialization cannot be used with precomputed distances and is usually more globally stable than random initialization.
-
-        verbose: int, optional (default: 0)
-            Verbosity level.
-
-        method: string (default: ‘barnes_hut’)
-            By default the gradient calculation algorithm uses Barnes-Hut approximation running in O(NlogN) time.
-            method=’exact’ will run on the slower, but exact, algorithm in O(N^2) time.
-            The exact algorithm should be used when nearest-neighbor errors need to be better than 3%.
-            However, the exact method cannot scale to millions of examples.
-
-        angle: float (default: 0.5)
-            Only used if method=’barnes_hut’ This is the trade-off between speed and accuracy for Barnes-Hut T-SNE.
-            ‘angle’ is the angular size (referred to as theta in [3]) of a distant node as measured from a point.
-            If this size is below ‘angle’ then it is used as a summary node of all points contained within it.
-            This method is not very sensitive to changes in this parameter in the range of 0.2 - 0.8. Angle less than 0.2 has quickly increasing computation time and angle greater 0.8 has quickly increasing error.
-
-        Returns
-        -------
-        Data:
-            Returns a deep copy of the Data object.
-
-        Examples
-        --------
-        >>> data.tsne(n_components=2)
-        """
-
-        report_info = technique_reason_repo["feature"]["general"]["tsne"]
-
-        _run_sklearn_dim_reduction("tsne")
+        self._run_sklearn_dim_reduction("pca", n_components=n_components, **pca_kwargs)
 
         if self.report is not None:
             self.report.report_technique(report_info, [])
@@ -963,41 +867,20 @@ class Feature(object):
         This function exists in `feature-extraction/util.py`
         
         Parameters
-        ----------
-        n_components : int, float, None or string
-            Number of components to keep.
-            
-            If n_components is not set all components are kept.
-            If n_components == 'mle' and svd_solver == 'full', Minka’s MLE is used to guess the dimension.
-            Use of n_components == 'mle' will interpret svd_solver == 'auto' as svd_solver == 'full'
-            If 0 < n_components < 1 and svd_solver == 'full', select the number of components such that the amount of variance that needs to be explained is greater than the percentage specified by n_components
-            If svd_solver == 'arpack', the number of components must be strictly less than the minimum of n_features and n_samples
+        ---------- 
+        n_components: int, default = 2
+            Desired dimensionality of output data. Must be strictly less than the number of features.
+            The default value is useful for visualisation. For LSA, a value of 100 is recommended.
 
-        whiten : bool, optional (default False)
-            When True (False by default) the components_ vectors are multiplied by the square root of n_samples and then divided by the singular values to ensure uncorrelated outputs with unit component-wise variances.
-            Whitening will remove some information from the transformed signal (the relative variance scales of the components) but can sometime improve the predictive accuracy of the downstream estimators by making their data respect some hard-wired assumptions.
+        algorithm: string, default = “randomized”
+            SVD solver to use. Either “arpack” for the ARPACK wrapper in SciPy (scipy.sparse.linalg.svds), or “randomized” for the randomized algorithm due to Halko (2009).
 
-        svd_solver : string {‘auto’, ‘full’, ‘arpack’, ‘randomized’}
-            auto :
-                the solver is selected by a default policy based on X.shape and n_components: if the input data is larger than 500x500 and the number of components to extract is lower than 80% of the smallest dimension of the data, then the more efficient ‘randomized’ method is enabled. Otherwise the exact full SVD is computed and optionally truncated afterwards.
-            full :
-                run exact full SVD calling the standard LAPACK solver via scipy.linalg.svd and select the components by postprocessing
-            arpack :
-                run SVD truncated to n_components calling ARPACK solver via scipy.sparse.linalg.svds. It requires strictly 0 < n_components < min(X.shape)
-            randomized :
-                run randomized SVD by the method of Halko et al.
+        n_iter: int, optional (default 5)
+            Number of iterations for randomized SVD solver. Not used by ARPACK.
+            The default is larger than the default in ~sklearn.utils.extmath.randomized_svd to handle sparse matrices that may have large slowly decaying spectrum.
 
-        tol : float >= 0, optional (default .0)
-            Tolerance for singular values computed by svd_solver == ‘arpack’.
-
-        iterated_power : int >= 0, or ‘auto’, (default ‘auto’)
-            Number of iterations for the power method computed by svd_solver == ‘randomized’.
-
-        random_state : int, RandomState instance or None, optional (default None)
-            If int, random_state is the seed used by the random number generator;
-            If RandomState instance, random_state is the random number generator;
-            If None, the random number generator is the RandomState instance used by np.random.
-            Used when svd_solver == ‘arpack’ or ‘randomized’.
+        tol: float, optional
+            Tolerance for ARPACK. 0 means machine precision. Ignored by randomized SVD solver.
         
         Returns
         -------
@@ -1011,75 +894,7 @@ class Feature(object):
 
         report_info = technique_reason_repo["feature"]["general"]["tsvd"]
 
-        _run_sklearn_dim_reduction("tsvd")
-
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
-
-        return self.copy()
-
-    def local_linear_embedding(self, n_components=50, **pca_kwargs):
-        """
-        Reduces the dimensionality of the data using Locally Linear Embedding. 
-        
-        Use PCA when the data is dense.
-
-        This can be used to reduce complexity as well as speed up computation.
-
-        For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html 
-
-        This function exists in `feature-extraction/util.py`
-        
-        Parameters
-        ----------
-        n_components : int, float, None or string
-            Number of components to keep.
-            
-            If n_components is not set all components are kept.
-            If n_components == 'mle' and svd_solver == 'full', Minka’s MLE is used to guess the dimension.
-            Use of n_components == 'mle' will interpret svd_solver == 'auto' as svd_solver == 'full'
-            If 0 < n_components < 1 and svd_solver == 'full', select the number of components such that the amount of variance that needs to be explained is greater than the percentage specified by n_components
-            If svd_solver == 'arpack', the number of components must be strictly less than the minimum of n_features and n_samples
-
-        whiten : bool, optional (default False)
-            When True (False by default) the components_ vectors are multiplied by the square root of n_samples and then divided by the singular values to ensure uncorrelated outputs with unit component-wise variances.
-            Whitening will remove some information from the transformed signal (the relative variance scales of the components) but can sometime improve the predictive accuracy of the downstream estimators by making their data respect some hard-wired assumptions.
-
-        svd_solver : string {‘auto’, ‘full’, ‘arpack’, ‘randomized’}
-            auto :
-                the solver is selected by a default policy based on X.shape and n_components: if the input data is larger than 500x500 and the number of components to extract is lower than 80% of the smallest dimension of the data, then the more efficient ‘randomized’ method is enabled. Otherwise the exact full SVD is computed and optionally truncated afterwards.
-            full :
-                run exact full SVD calling the standard LAPACK solver via scipy.linalg.svd and select the components by postprocessing
-            arpack :
-                run SVD truncated to n_components calling ARPACK solver via scipy.sparse.linalg.svds. It requires strictly 0 < n_components < min(X.shape)
-            randomized :
-                run randomized SVD by the method of Halko et al.
-
-        tol : float >= 0, optional (default .0)
-            Tolerance for singular values computed by svd_solver == ‘arpack’.
-
-        iterated_power : int >= 0, or ‘auto’, (default ‘auto’)
-            Number of iterations for the power method computed by svd_solver == ‘randomized’.
-
-        random_state : int, RandomState instance or None, optional (default None)
-            If int, random_state is the seed used by the random number generator;
-            If RandomState instance, random_state is the random number generator;
-            If None, the random number generator is the RandomState instance used by np.random.
-            Used when svd_solver == ‘arpack’ or ‘randomized’.
-        
-        Returns
-        -------
-        Data:
-            Returns a deep copy of the Data object.
-
-        Examples
-        --------
-        >>> data.pca(n_components=2)
-        """
-
-        report_info = technique_reason_repo["feature"]["general"]["pca"]
-
-        _run_sklearn_dim_reduction("pca")
+        self._run_sklearn_dim_reduction("tsvd", n_components=n_components, **svd_kwargs)
 
         if self.report is not None:
             self.report.report_technique(report_info, [])

@@ -1,14 +1,13 @@
 """
 This file contains the following functions:
 
-pca
+sklearn_dim_reduction
 apply
 """
 
 import pandas as pd
 import swifter
 from sklearn.decomposition import PCA, TruncatedSVD
-from sklearn.manifold import LocallyLinearEmbedding, TSNE
 
 
 def sklearn_dim_reduction(x_train, x_test=None, algo=None, n_components=50, **dim_reduce_kwargs):
@@ -36,17 +35,17 @@ def sklearn_dim_reduction(x_train, x_test=None, algo=None, n_components=50, **di
 
     algorithms = {
         'pca': PCA(n_components=n_components, **dim_reduce_kwargs),
-        'tsne': TruncatedSVD(n_components=n_components, **dim_reduce_kwargs),
-        'lle': LocallyLinearEmbedding(n_components=n_components, **dim_reduce_kwargs),
         'tsvd': TruncatedSVD(n_components=n_components, **dim_reduce_kwargs), 
     }
 
     reducer = algorithms[algo]
 
     x_train = pd.DataFrame(reducer.fit_transform(x_train))
+    x_train.columns = map(str, x_train.columns)
 
     if x_test is not None:
         x_test = pd.DataFrame(reducer.transform(x_test))
+        x_test.columns = map(str, x_test.columns)
 
     return x_train, x_test
 

@@ -264,6 +264,19 @@ class TestFeatureExtraction(unittest.TestCase):
 
         self.assertTrue(validate)
 
+    def test_feature_tsvd(self):
+
+        data = np.arange(9).reshape(3, 3)
+
+        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
+
+        feature = Data(x_train=data, test_split_percentage=0.33, report_name="test")
+        feature.truncated_svd(n_components=2)
+
+        validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
+
+        self.assertTrue(validate)
+
     def test_feature_pcatarget(self):
 
         data = np.arange(9).reshape(3, 3)

@@ -12,6 +12,9 @@ from aethos.config import IMAGE_DIR, cfg
 from aethos.util import _make_dir
 from bokeh.io import export_png
 from scipy import stats
+from sklearn.manifold import LocallyLinearEmbedding, TSNE
+from sklearn.decomposition import PCA, TruncatedSVD
+
 
 
 def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **params):
@@ -128,7 +131,6 @@ def scatterplot(
     data=None,
     category=None,
     title="Scatter Plot",
-    size=8,
     output_file="",
     **scatterplot_kwargs,
 ):
@@ -164,33 +166,24 @@ def scatterplot(
     """
 
     if z is None:
-        fill_alpha = scatterplot_kwargs.pop("fill_alpha", 0.6)
-        data[[x, y]] = data[[x, y]].apply(pd.to_numeric)
 
-        p_scatter = data.plot_bokeh.scatter(
+        fig = px.scatter(
+            data,
             x=x,
             y=y,
-            category=category,
+            color=category,
             title=title,
-            size=size,
-            fill_alpha=fill_alpha,
-            **scatterplot_kwargs,
+            template="plotly_white",
+            **scatterplot_kwargs
         )
 
-        if output_file:  # pragma: no cover
-
-            if Path(output_file).suffix == ".html":
-                pandas_bokeh.output_file(os.path.join(IMAGE_DIR, output_file))
-            else:
-                export_png(p_scatter, os.path.join(IMAGE_DIR, output_file))
-
     else:
-        fig = px.scatter_3d(data, x=x, y=y, z=z, **scatterplot_kwargs)
+        fig = px.scatter_3d(data, x=x, y=y, z=z, color=category, title=title, **scatterplot_kwargs)
 
-        if output_file:  # pragma: no cover
-            fig.write_image(os.path.join(IMAGE_DIR, output_file))
+    if output_file:  # pragma: no cover
+        fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-        fig.show()
+    fig.show()
 
 
 def lineplot(
@@ -438,3 +431,61 @@ def histogram(x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwa
 
     if output_file:  # pragma: no cover
         g.figure.savefig(os.path.join(IMAGE_DIR, output_file))
+
+def viz_clusters(data: pd.DataFrame, algo: str, category: str, dim=2, output_file="", **kwargs):
+    """
+    Visualize clusters
+    
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Data
+
+    algo : str {'tsne', 'lle', 'pca', 'tsvd'}, optional
+        Algorithm to reduce the dimensions by, by default 'tsne'
+
+    category : str
+        Column name of the labels/data points to highlight in the plot
+
+    dim : int {2, 3}
+        Dimensions of the plot to show, either 2d or 3d, by default 2
+
+    output_file : str, optional
+        Output file name for image with extension (i.e. jpeg, png, etc.)
+    """
+
+    if dim != 2 and dim != 3:
+        raise ValueError("Dimension must be either 2d (2) or 3d (3)")
+
+    algorithms = {
+        'tsne': TSNE(n_components=dim, random_state=42,),
+        'lle': LocallyLinearEmbedding(n_components=dim, random_state=42,),
+        'pca': PCA(n_components=dim, random_state=42,),
+        'tsvd': TruncatedSVD(n_components=dim, random_state=42,), 
+    }
+
+    reducer = algorithms[algo]
+    reduced_df = pd.DataFrame(reducer.fit_transform(data.drop(category, axis=1)))
+    reduced_df.columns = map(str, reduced_df.columns)
+    reduced_df[category] = data[category]
+    reduced_df[category] = reduced_df[category].astype(str)
+
+    if dim == 2:
+        scatterplot(
+            "0",
+            "1",
+            data=reduced_df,
+            category=category,
+            output_file=output_file,
+            **kwargs,
+        )
+    else:
+        scatterplot(
+            "0",
+            "1",
+            "2",
+            data=reduced_df,
+            category=category,
+            output_file=output_file,
+            **kwargs,
+        )

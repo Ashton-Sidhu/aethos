@@ -111,6 +111,9 @@ feature:
     pca: >
       Reduced the dimension of the data using Principal Component Analysis to speed up computation and reduce model complexity.
 
+    tsvd: >
+      Reduced the dimension of the data using Truncated SVD to speed up computation and reduce model complexity.
+
   categorical:
     onehotencode: >
       Converted the categories in column(s) column_name_placeholder into its own feature where the value is 1 if the category exists
