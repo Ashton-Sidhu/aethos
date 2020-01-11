@@ -201,9 +201,7 @@ class Model(Visualizations):
 
     def _repr_html_(self):  # pragma: no cover
 
-        return self._train_result_data.head().to_html(
-            show_dimensions=True, notebook=True
-        )
+        return self._train_result_data._repr_html_()
 
     @property
     def y_train(self):
@@ -936,6 +934,9 @@ class Model(Visualizations):
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+
+        num_topics: (int, optional)
+            The number of requested latent topics to be extracted from the training corpus.
 
         distributed: (bool, optional)
             Whether distributed computing should be used to accelerate training.

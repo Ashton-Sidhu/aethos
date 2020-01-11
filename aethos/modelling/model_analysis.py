@@ -28,10 +28,11 @@ from aethos.modelling.model_explanation import MSFTInterpret, Shap
 from aethos.modelling.util import (_make_img_project_dir, to_pickle,
                                    track_artifacts)
 from aethos.templates.template_generator import TemplateGenerator as tg
-from aethos.visualizations.visualize import *
+from aethos.visualizations.visualizations import Visualizations
+from aethos.stats.stats import Stats
 
 
-class ModelBase(object):
+class ModelBase(Visualizations, Stats):
 
     # TODO: Add more SHAP use cases
 
@@ -906,6 +907,7 @@ class TextModel(ModelBase):
         pyLDAvis.enable_notebook()
 
         return pyLDAvis.gensim.prepare(self.model, self.corpus, self.id2word, **kwargs)
+ 
 
     def coherence_score(self, col_name):
         """
@@ -1047,11 +1049,10 @@ class UnsupervisedModel(ModelBase):
         dataset = self.x_test if self.x_test is not None else self.x_train
         output_file_path = os.path.join(self.model_name, output_file) if output_file else output_file
 
-        viz_clusters(
-            dataset,
-            algo=reduce,
+        self.plot_dim_reduction(
             category=self.cluster_col,
             dim=dim,
+            algo=reduce,
             output_file=output_file_path,
             **kwargs
         )

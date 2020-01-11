@@ -1,4 +1,5 @@
 from aethos.visualizations.visualize import *
+from typing import Union
 
 
 class Visualizations(object):
@@ -152,36 +153,37 @@ class Visualizations(object):
     def barplot(
         self,
         x: str,
-        y=None,
+        y: Union[str, list],
         method=None,
         orient="v",
-        stacked=False,
+        barmode='relative',
+        title='',
+        yaxis_params=None,
+        xaxis_params=None,
         output_file="",
         **barplot_kwargs,
     ):
         """
-        Plots a bar plot for the given columns provided using Bokeh.
+        Plots a bar plot for the given columns provided using Plotly Express.
 
         If `groupby` is provided, method must be provided for example you may want to plot Age against survival rate,
         so you would want to `groupby` Age and then find the `mean` as the method.
 
         For a list of group by methods please checkout the following pandas link:
-        https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html#computations-descriptive-stats
+        
+            https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html#computations-descriptive-stats
 
         For a list of possible arguments for the bar plot please checkout the following links:
-        https://github.com/PatrikHlobil/Pandas-Bokeh#barplot and
 
-        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.vbar or
-
-        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.hbar for horizontal
+            https://plot.ly/python-api-reference/generated/plotly.express.bar.html#plotly.express.bar
         
         Parameters
         ----------
         x : str
             Column name for the x axis.
 
-        y : list
-            Columns you would like to see plotted against the x_col
+        y : str or list
+            Column(s) you would like to see plotted against the x_col
 
         method : str
             Method to aggregate groupy data
@@ -192,15 +194,25 @@ class Visualizations(object):
             Orientation of graph, 'h' for horizontal
             'v' for vertical, by default 'v',
 
-        stacked : bool
-            Whether to stack the different columns resulting in a stacked bar chart,
-            by default False
+        barmode : str {'relative', 'overlay', 'group', 'stack'}
+            Relative is a normal barplot
+            Overlay barplot shows positive values above 0 and negative values below 0
+            Group are the bars beside each other.
+            Stack groups the bars on top of each other
+            by default 'relative'
+
+        yaxis_params : dict
+            Parameters for the y axis
+
+        xaxis_params : dict
+            Parameters for the x axis
 
         output_file : str, optional
             Output html file name for image
 
         Examples
         --------
+        >>> data.barplot(x='x', y='y')
         >>> data.barplot(x='x', y=['y', 'z'], method='mean')
         >>> data.barplot(x='x', y=['y', 'z'], method='max', orient='h')
         """
@@ -211,7 +223,7 @@ class Visualizations(object):
             self.train_data,
             method=method,
             orient=orient,
-            stacked=stacked,
+            barmode=barmode,
             output_file=output_file,
             **barplot_kwargs,
         )
@@ -558,7 +570,7 @@ class Visualizations(object):
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
-    def plot_clusters(self, category: str, dim=2, algo='tsne', output_file="", **kwargs):
+    def plot_dim_reduction(self, category: str, dim=2, algo='tsne', output_file="", **kwargs):
         """
         Reduce the dimensions of your data and then view similarly grouped data points (clusters)
 
@@ -589,7 +601,7 @@ class Visualizations(object):
 
         Examples
         --------
-        >>> data.plot_clusters('cluster_labels', dim=3)
+        >>> data.plot_dim_reduction('cluster_labels', dim=3)
         """
 
         viz_clusters(

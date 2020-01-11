@@ -214,6 +214,8 @@ def gensim_lda(x_train, x_test=None, prep=False, col_name=None, **algo_kwargs):
 
     if prep:
         texts = [word_tokenize(process_text(text)) for text in texts]
+    elif isinstance(texts[0], str):
+        texts = [word_tokenize(process_text(text, stemmer=False)) for text in texts]
 
     id2word = gensim.corpora.Dictionary(texts)
     corpus = [id2word.doc2bow(text) for text in texts]
@@ -227,6 +229,8 @@ def gensim_lda(x_train, x_test=None, prep=False, col_name=None, **algo_kwargs):
 
         if prep:
             texts = [word_tokenize(process_text(text)) for text in texts]
+        elif isinstance(texts[0], str):
+            texts = [word_tokenize(text) for text in texts]
 
         test_corpus = [id2word.doc2bow(text) for text in texts]
 
@@ -260,14 +264,17 @@ def _assign_topic_doc(lda_model, texts, corpus):
 
     for i, row in enumerate(lda_model[corpus]):
 
-        row = sorted(row, key=lambda x: (x[1]), reverse=True)
+        if not row:
+            keywords.append('')
+        else:
+            row = sorted(row, key=lambda x: (x[1]), reverse=True)
 
-        for j, (topic_num, prop_topic) in enumerate(row):
-            if j == 0:
-                wp = lda_model.show_topic(topic_num)
-                topic_keywords = ", ".join([word for word, prop in wp])
-                keywords.append(topic_keywords)
+            for j, (topic_num, prop_topic) in enumerate(row):
+                if j == 0:
+                    wp = lda_model.show_topic(topic_num)
+                    topic_keywords = ", ".join([word for word, prop in wp])
+                    keywords.append(topic_keywords)
 
-                break
+                    break
 
     return keywords

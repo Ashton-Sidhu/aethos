@@ -60,7 +60,7 @@ def feature_bag_of_words(
 
         if x_test is not None:
             enc_x_test = enc.transform(x_test[col]).toarray()
-            enc_test_df = pd.DataFrame(enc_x_test, columns=enc.get_features_names())
+            enc_test_df = pd.DataFrame(enc_x_test, columns=enc.get_feature_names())
             x_test = drop_replace_columns(x_test, col, enc_test_df, keep_col)
 
     return x_train, x_test

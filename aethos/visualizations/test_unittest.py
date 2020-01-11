@@ -132,10 +132,10 @@ class Test_TestBase(unittest.TestCase):
         )
 
         base.barplot(
-            x="species", y=["sepal_length", "sepal_width"], method="mean", orient="h",
+            x="species", y=["sepal_length", "sepal_width"], method="mean", orient="h", barmode="group",
         )
         base.barplot(
-            x="species", y=["sepal_length", "sepal_width"], method="mean", orient="v",
+            x="species", y=["sepal_length", "sepal_width"], method="mean", orient="v", barmode="group",
         )
 
         self.assertTrue(True)
@@ -180,7 +180,7 @@ class Test_TestBase(unittest.TestCase):
         df = pd.DataFrame(data)
         df['label'] = label
         df = Data(df, split=False)
-        df.plot_clusters('label', algo='pca', dim=2)
+        df.plot_dim_reduction('label', algo='pca', dim=2)
 
         self.assertTrue(True)
 
@@ -193,7 +193,7 @@ class Test_TestBase(unittest.TestCase):
 
         df = Data(df, split=False)
 
-        df.plot_clusters('label', algo='lle', dim=2)
+        df.plot_dim_reduction('label', algo='lle', dim=2)
 
         self.assertTrue(True)
 
@@ -206,7 +206,7 @@ class Test_TestBase(unittest.TestCase):
 
         df = Data(df, split=False)
 
-        df.plot_clusters('label', algo='tsvd', dim=2)
+        df.plot_dim_reduction('label', algo='tsvd', dim=2)
 
         self.assertTrue(True)
 
@@ -218,6 +218,6 @@ class Test_TestBase(unittest.TestCase):
 
         df = Data(df, split=False)
 
-        df.plot_clusters('label', algo='tsvd', dim=3)
+        df.plot_dim_reduction('label', algo='tsvd', dim=3)
 
         self.assertTrue(True)

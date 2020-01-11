@@ -9,6 +9,9 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from tqdm import tqdm
+import itertools
+from collections import Counter
+from aethos.visualizations.visualize import barplot
 
 
 class Stats(object):
@@ -158,3 +161,50 @@ class Stats(object):
                 self.report.report_technique(report_info, [])
 
         return diff_df
+
+    def most_common(self, col: str, n=15, plot=False, use_test=False):
+        """
+        Analyzes the most common values in the column and either prints them or displays a bar chart.
+        
+        Parameters
+        ----------
+        col : str
+            Column to analyze
+
+        n : int, optional
+            Number of top most common values to display, by default 15
+
+        plot : bool, optional
+            True to plot a bar chart, by default False
+
+        use_test : bool, optional
+            True to analyze the test set, by default False
+        """
+
+        if use_test:
+            data = self.x_test[col].tolist()
+        else:
+            data = self.x_train[col].tolist()
+
+        test_sample = data[0]
+
+        if isinstance(test_sample, list):
+            data = itertools.chain(*map(list, data))
+        elif isinstance(test_sample, str):
+            data = map(str.split, data)
+            data = itertools.chain(*data)
+
+        counter = Counter(data)
+        most_common = dict(counter.most_common(n))
+
+        if plot:
+            df = pd.DataFrame(list(most_common.items()), columns=['Word', 'Count'])
+
+            barplot(
+                x='Word',
+                y='Count',
+                data=df,
+            )
+        else:
+            for k,v in most_common.items():
+                print(f'{k}: {v}')

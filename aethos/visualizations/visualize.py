@@ -14,6 +14,7 @@ from bokeh.io import export_png
 from scipy import stats
 from sklearn.manifold import LocallyLinearEmbedding, TSNE
 from sklearn.decomposition import PCA, TruncatedSVD
+import plotly.graph_objects as go
 
 
 
@@ -63,21 +64,22 @@ def barplot(
     data,
     method=None,
     orient="v",
-    stacked=False,
+    barmode='relative',
+    title='',
+    yaxis_params=None,
+    xaxis_params=None,
     output_file="",
     **barplot_kwargs,
 ):
     """
     Visualizes a bar plot.
-
-    Kwargs are bokeh plot, vbar, and hbar bokeh plots.
     
     Parameters
     ----------
     x : str
         Column name for the x axis.
 
-    y : list
+    y : str, list
         Columns for the y axis
 
     data : Dataframe
@@ -92,38 +94,86 @@ def barplot(
         Orientation of graph, 'h' for horizontal
         'v' for vertical, by default 'v'
 
-    stacked : bool
-        Whether to stack the different columns resulting in a stacked bar chart,
-        by default False
+    barmode : str {'relative', 'overlay', 'group', 'stack'}
+        Relative is a normal barplot
+        Overlay barplot shows positive values above 0 and negative values below 0
+        Group are the bars beside each other.
+        Stack groups the bars on top of each other
+        by default 'relative'
+
+    yaxis_params : dict
+        Parameters for the y axis
+
+    xaxis_params : dict
+        Parameters for the x axis
     """
 
-    alpha = barplot_kwargs.pop("alpha", 0.6)
-    y.append(x)
+    if isinstance(y, str):
+        y = [y]
 
-    data_copy = data[y].copy()
-    data_copy = data_copy.groupby(x, as_index=False)
-    data_copy = getattr(data_copy, method)()
-    data_copy = data_copy.set_index(x)
+    data_copy = data.copy()
 
-    if orient == "v":
+    if method:
+        data_copy = data_copy.groupby(x, as_index=False)
+        data_copy = getattr(data_copy, method)()
 
-        p_bar = data_copy.plot_bokeh.bar(
-            stacked=stacked, alpha=alpha, **barplot_kwargs,
+    fig = go.Figure()
+
+    if not xaxis_params:
+        xaxis_params = {
+            'title': x.capitalize()
+        }
+
+    if not yaxis_params:
+        if method:
+            yaxis_params = {
+                'title': method.capitalize()
+            }
+
+    if len(y) > 1:
+
+        for col in y:
+            fig.add_trace(go.Bar(
+                x=data_copy[x],
+                y=data[col],
+                name=col,
+                width=[0.1] * len(data_copy[x]),
+                orientation=orient,
+
+            ))
+
+        fig.update_layout(
+            title=title,
+            xaxis=xaxis_params,
+            yaxis=yaxis_params,
+            barmode=barmode,
+            bargap=0.8, # gap between bars of adjacent location coordinates.
+            bargroupgap=0.1 # gap between bars of the same location coordinate
         )
-
+    
     else:
-        p_bar = data_copy.plot_bokeh.barh(
-            stacked=stacked, alpha=alpha, **barplot_kwargs
+        for col in y:
+            fig.add_trace(go.Bar(
+                x=data_copy[x],
+                y=data[col],
+                name=col,
+                width=[0.5] * len(data_copy[x]),
+                orientation=orient,
+
+            ))
+
+        fig.update_layout(
+            title=title,
+            xaxis=xaxis_params,
+            yaxis=yaxis_params,
+            barmode=barmode,
         )
 
     if output_file:  # pragma: no cover
+            fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-        if Path(output_file).suffix == ".html":
-            pandas_bokeh.output_file(os.path.join(IMAGE_DIR, output_file))
-        else:
-            export_png(p_bar, os.path.join(IMAGE_DIR, output_file))
-
-
+    fig.show()
+    
 def scatterplot(
     x: str,
     y: str,
@@ -173,7 +223,6 @@ def scatterplot(
             y=y,
             color=category,
             title=title,
-            template="plotly_white",
             **scatterplot_kwargs
         )
 

@@ -364,6 +364,8 @@ def process_text(corpus, lower=True, punctuation=True, stopwords=True, stemmer=T
             if token in string.punctuation:
                 continue
 
+            token = token.translate(str.maketrans('', '', string.punctuation))
+
         if stopwords:
             stop_words = nltk.corpus.stopwords.words("english")
             if token in stop_words:
