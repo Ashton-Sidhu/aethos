@@ -166,7 +166,7 @@ class TestPreprocessing(unittest.TestCase):
         prep.clean_text("data")
         validate = prep.x_train["data_clean"].tolist()
 
-        self.assertListEqual(validate, ["please.ex split", "hello 's testing.dl"])
+        self.assertListEqual(validate, ["pleaseex split", "hello testingdl"])
 
     def test_preprocess_nltkremove_punctuation_exception(self):
 
