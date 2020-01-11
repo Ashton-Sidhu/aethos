@@ -1,6 +1,9 @@
 import os
 import warnings
 from pathlib import Path
+import pandas as pd
+import sklearn
+import numpy as np
 
 from IPython.display import display
 from ipywidgets import widgets
@@ -10,8 +13,8 @@ from aethos.config import shell, technique_reason_repo
 from aethos.config.config import _global_config
 from aethos.core import Data
 from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
-from aethos.modelling.model_analysis import *
-from aethos.modelling.text import *
+from aethos.modelling.model_analysis import ClassificationModel, RegressionModel, UnsupervisedModel, TextModel
+from aethos.modelling import text
 from aethos.modelling.util import (_get_cv_type, _make_img_project_dir,
                                    _run_models_parallel, add_to_queue,
                                    run_crossvalidation, run_gridsearch,
@@ -542,7 +545,7 @@ class Model(Visualizations):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._train_result_data, self._test_result_data = gensim_textrank_summarizer(
+        self._train_result_data, self._test_result_data = text.gensim_textrank_summarizer(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -623,7 +626,7 @@ class Model(Visualizations):
         report_info = technique_reason_repo["model"]["text"]["textrank_keywords"]
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._train_result_data, self._test_result_data = gensim_textrank_keywords(
+        self._train_result_data, self._test_result_data = text.gensim_textrank_keywords(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -761,7 +764,7 @@ class Model(Visualizations):
 
         report_info = technique_reason_repo["model"]["text"]["word2vec"]
 
-        w2v_model = gensim_word2vec(
+        w2v_model = text.gensim_word2vec(
             x_train=self.x_train,
             x_test=self.x_test,
             prep=prep,
@@ -894,7 +897,7 @@ class Model(Visualizations):
 
         report_info = technique_reason_repo["model"]["text"]["doc2vec"]
 
-        d2v_model = gensim_doc2vec(
+        d2v_model = text.gensim_doc2vec(
             x_train=self.x_train,
             x_test=self.x_test,
             prep=prep,
@@ -1015,7 +1018,7 @@ class Model(Visualizations):
             lda_model,
             corpus,
             id2word,
-        ) = gensim_lda(
+        ) = text.gensim_lda(
             x_train=self.x_train,
             x_test=self.x_test,
             prep=prep,

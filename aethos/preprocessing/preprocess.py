@@ -1,10 +1,8 @@
-import pandas as pd
 from aethos.config import technique_reason_repo
-from aethos.preprocessing.categorical import *
-from aethos.preprocessing.numeric import *
-from aethos.preprocessing.text import *
-from aethos.util import (_input_columns, _numeric_input_conditions,
-                         label_encoder)
+from aethos.preprocessing import categorical as cat
+from aethos.preprocessing import numeric as num
+from aethos.preprocessing import text
+from aethos.util import (_input_columns, _numeric_input_conditions,)
 
 
 class Preprocess(object):
@@ -51,7 +49,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = scale(
+        self.x_train, self.x_test = num.scale(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -127,7 +125,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = scale(
+        self.x_train, self.x_test = num.scale(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -176,7 +174,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = log_scale(
+        self.x_train, self.x_test = num.log_scale(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -224,7 +222,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = split_sentences(
+        self.x_train, self.x_test = text.split_sentences(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -281,7 +279,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = nltk_stem(
+        self.x_train, self.x_test = text.nltk_stem(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -331,7 +329,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = nltk_word_tokenizer(
+        (self.x_train, self.x_test,) = text.nltk_word_tokenizer(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -383,7 +381,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = nltk_remove_stopwords(
+        (self.x_train, self.x_test,) = text.nltk_remove_stopwords(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -447,7 +445,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = remove_punctuation(
+        (self.x_train, self.x_test,) = text.remove_punctuation(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -520,12 +518,12 @@ class Preprocess(object):
 
         for col in list_of_cols:
             self.x_train[col + new_col_name] = [
-                process_text(text) for text in self.x_train[col]
+                text.process_text(txt) for txt in self.x_train[col]
             ]
 
             if self.x_test is not None:
                 self.x_test[col + new_col_name] = [
-                    process_text(text) for text in self.x_test[col]
+                    text.process_text(txt) for txt in self.x_test[col]
                 ]
 
         if self.report is not None:

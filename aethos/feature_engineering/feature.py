@@ -1,9 +1,8 @@
-import pandas as pd
 from aethos.config import technique_reason_repo
-from aethos.feature_engineering.categorical import *
-from aethos.feature_engineering.numeric import *
-from aethos.feature_engineering.text import *
-from aethos.feature_engineering.util import *
+from aethos.feature_engineering import categorical as cat
+from aethos.feature_engineering import numeric as num
+from aethos.feature_engineering import text
+from aethos.feature_engineering import util
 from aethos.util import _input_columns, label_encoder
 
 
@@ -75,7 +74,7 @@ class Feature(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = feature_one_hot_encode(
+        (self.x_train, self.x_test,) = cat.feature_one_hot_encode(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -220,7 +219,7 @@ class Feature(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = feature_tfidf(
+        self.x_train, self.x_test = text.feature_tfidf(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -348,7 +347,7 @@ class Feature(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = feature_bag_of_words(
+        (self.x_train, self.x_test,) = text.feature_bag_of_words(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -415,7 +414,7 @@ class Feature(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = feature_hash_vectorizer(
+        (self.x_train, self.x_test,) = text.feature_hash_vectorizer(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -461,7 +460,7 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = nltk_feature_postag(
+        (self.x_train, self.x_test,) = text.nltk_feature_postag(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -506,7 +505,7 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = spacy_feature_postag(
+        (self.x_train, self.x_test,) = text.spacy_feature_postag(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -552,7 +551,7 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = spacy_feature_postag(
+        (self.x_train, self.x_test,) = text.spacy_feature_postag(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -596,7 +595,7 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = nltk_feature_noun_phrases(
+        (self.x_train, self.x_test,) = text.nltk_feature_noun_phrases(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -639,7 +638,7 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = spacy_feature_noun_phrases(
+        (self.x_train, self.x_test,) = text.spacy_feature_noun_phrases(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -689,7 +688,7 @@ class Feature(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = polynomial_features(
+        (self.x_train, self.x_test,) = num.polynomial_features(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -735,7 +734,7 @@ class Feature(object):
             2     1     0     1     1
         """
 
-        self.x_train, self.x_test = apply(
+        self.x_train, self.x_test = util.apply(
             x_train=self.x_train, func=func, output_col=output_col, x_test=self.x_test,
         )
 
@@ -923,7 +922,7 @@ class Feature(object):
         report_info = technique_reason_repo["clean"]["numeric"]["corr"]
         orig_cols = set(self.x_train.columns)
 
-        (self.x_train, self.x_test,) = drop_correlated_features(
+        (self.x_train, self.x_test,) = num.drop_correlated_features(
             x_train=self.x_train, x_test=self.x_test, threshold=threshold,
         )
 
@@ -959,7 +958,7 @@ class Feature(object):
             x_train = self.x_train
             x_test = self.x_test
 
-        self.x_train, self.x_test = sklearn_dim_reduction(x_train=x_train, x_test=x_test, algo=algo, n_components=n_components, **kwargs)
+        self.x_train, self.x_test = util.sklearn_dim_reduction(x_train=x_train, x_test=x_test, algo=algo, n_components=n_components, **kwargs)
 
         if self.target_field:
             self.x_train[self.target_field] = train_target_data

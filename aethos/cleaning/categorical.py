@@ -6,7 +6,6 @@ replace_missing_remove_row
 """
 
 import numpy as np
-import pandas as pd
 from aethos.util import _get_columns
 
 

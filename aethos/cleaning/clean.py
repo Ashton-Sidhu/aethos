@@ -1,8 +1,6 @@
-import pandas as pd
 from aethos.cleaning import util
-from aethos.cleaning.categorical import *
-from aethos.cleaning.numeric import *
-from aethos.cleaning.util import replace_missing_fill
+from aethos.cleaning import categorical as cat
+from aethos.cleaning import numeric as num
 from aethos.config import technique_reason_repo
 from aethos.util import _input_columns, _numeric_input_conditions
 
@@ -176,7 +174,7 @@ class Clean(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = replace_missing_mean_median_mode(
+        (self.x_train, self.x_test,) = num.replace_missing_mean_median_mode(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -228,7 +226,7 @@ class Clean(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = replace_missing_mean_median_mode(
+        (self.x_train, self.x_test,) = num.replace_missing_mean_median_mode(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -278,7 +276,7 @@ class Clean(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = replace_missing_mean_median_mode(
+        (self.x_train, self.x_test,) = num.replace_missing_mean_median_mode(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -339,7 +337,7 @@ class Clean(object):
             # If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_constant = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = replace_missing_constant(
+        (self.x_train, self.x_test,) = num.replace_missing_constant(
             x_train=self.x_train,
             x_test=self.x_test,
             col_to_constant=col_to_constant,
@@ -403,7 +401,7 @@ class Clean(object):
             # If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_category = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = replace_missing_new_category(
+        (self.x_train, self.x_test,) = cat.replace_missing_new_category(
             x_train=self.x_train,
             x_test=self.x_test,
             col_to_category=col_to_category,
@@ -450,7 +448,7 @@ class Clean(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = replace_missing_remove_row(
+        (self.x_train, self.x_test,) = cat.replace_missing_remove_row(
             x_train=self.x_train, x_test=self.x_test, cols_to_remove=list_of_cols,
         )
 

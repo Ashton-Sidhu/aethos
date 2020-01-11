@@ -11,8 +11,6 @@ from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from tqdm import tqdm
 import itertools
 from collections import Counter
-from aethos.visualizations.visualize import barplot
-
 
 class Stats(object):
     def predict_data_sample(self):
@@ -198,6 +196,8 @@ class Stats(object):
         most_common = dict(counter.most_common(n))
 
         if plot:
+            from aethos.visualizations.visualize import barplot
+
             df = pd.DataFrame(list(most_common.items()), columns=['Word', 'Count'])
 
             barplot(

@@ -1,5 +1,6 @@
-from aethos.visualizations.visualize import *
+from aethos.visualizations import visualize as viz
 from typing import Union
+import numpy as np
 
 
 class Visualizations(object):
@@ -145,7 +146,7 @@ class Visualizations(object):
         if y is None:
             y = self.target_field
 
-        raincloud(y, x, self.train_data, output_file=output_file, **params)
+        viz.raincloud(y, x, self.train_data, output_file=output_file, **params)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
@@ -220,7 +221,7 @@ class Visualizations(object):
         >>> data.barplot(x='x', y=['y', 'z'], method='max', orient='h')
         """
 
-        barplot(
+        viz.barplot(
             x,
             y,
             self.train_data,
@@ -285,7 +286,7 @@ class Visualizations(object):
         >>> data.scatterplot(x='x', y='y', z='z', output_file='scatt')
         """
 
-        scatterplot(
+        viz.scatterplot(
             x,
             y,
             z=z,
@@ -363,7 +364,7 @@ class Visualizations(object):
         >>> data.line_plot(x='x', y='y', output_file='line')
         """
 
-        lineplot(
+        viz.lineplot(
             x, y, self.train_data, title=title, output_file=output_file, **lineplot_kwargs,
         )
 
@@ -395,7 +396,7 @@ class Visualizations(object):
         >>> data.correlation_matrix(data_labels=True, output_file='corr.png')
         """
 
-        correlation_matrix(
+        viz.correlation_matrix(
             self.train_data,
             data_labels=data_labels,
             hide_mirror=hide_mirror,
@@ -453,7 +454,7 @@ class Visualizations(object):
 
         data = self.train_data if not cols else self.train_data[cols]
 
-        pairplot(
+        viz.pairplot(
             data,
             kind=kind,
             diag_kind=diag_kind,
@@ -515,7 +516,7 @@ class Visualizations(object):
         >>> data.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        jointplot(x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs)
+        viz.jointplot(x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
@@ -568,7 +569,7 @@ class Visualizations(object):
         x_test = self.test_data if plot_test else None
         columns = list(x) if x else list(self.train_data.select_dtypes(include=[np.number]).columns)
 
-        histogram(columns, x_train=self.train_data, x_test=x_test, output_file=output_file, **kwargs)
+        viz.histogram(columns, x_train=self.train_data, x_test=x_test, output_file=output_file, **kwargs)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
@@ -607,7 +608,7 @@ class Visualizations(object):
         >>> data.plot_dim_reduction('cluster_labels', dim=3)
         """
 
-        viz_clusters(
+        viz.viz_clusters(
             self.train_data,
             algo=algo,
             category=category,

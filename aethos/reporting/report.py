@@ -37,6 +37,7 @@ class Report:
             if self.docx:  # pragma: no cover
                 self.doc = Document(docx=self.docx_filename)
                 style = self.doc.styles
+                
                 if not style["Indent"]:
                     style.add_style("Indent", WD_STYLE_TYPE.PARAGRAPH)
                     paragraph_format = style.paragraph_format
