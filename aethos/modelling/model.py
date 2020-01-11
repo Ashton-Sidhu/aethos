@@ -2,7 +2,6 @@ import os
 import warnings
 from pathlib import Path
 
-import catboost as cb
 from IPython.display import display
 from ipywidgets import widgets
 from ipywidgets.widgets.widget_layout import Layout
@@ -21,7 +20,6 @@ from aethos.reporting.report import Report
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import _input_columns, _set_item, split_data
 from aethos.visualizations.visualizations import Visualizations
-
 warnings.simplefilter("ignore", FutureWarning)
 
 
@@ -4248,6 +4246,8 @@ class Model(Visualizations):
         """
         # endregion
 
+        import catboost as cb
+
         objective = kwargs.pop(
             "objective", "Logloss" if len(self.y_train.unique()) == 2 else "MultiClass",
         )
@@ -6483,6 +6483,8 @@ class Model(Visualizations):
         """
         # endregion
 
+        import catboost as cb
+
         report_info = technique_reason_repo["model"]["regression"]["cb_reg"]
 
         model = cb.CatBoostRegressor
@@ -6523,6 +6525,8 @@ class Model(Visualizations):
         """
         Helper function that generalizes model orchestration.
         """
+
+        import catboost as cb
 
         #############################################################
         ################## Initialize Variables #####################

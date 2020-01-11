@@ -1,5 +1,4 @@
 import pandas as pd
-from aethos import *
 from aethos.config import technique_reason_repo
 from aethos.preprocessing.categorical import *
 from aethos.preprocessing.numeric import *
