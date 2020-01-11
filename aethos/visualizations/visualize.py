@@ -170,7 +170,7 @@ def barplot(
         )
 
     if output_file:  # pragma: no cover
-            fig.write_image(os.path.join(IMAGE_DIR, output_file))
+        fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
     fig.show()
     

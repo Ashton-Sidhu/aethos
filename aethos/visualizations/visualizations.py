@@ -164,7 +164,7 @@ class Visualizations(object):
         **barplot_kwargs,
     ):
         """
-        Plots a bar plot for the given columns provided using Plotly Express.
+        Plots a bar plot for the given columns provided using Plotly.
 
         If `groupby` is provided, method must be provided for example you may want to plot Age against survival rate,
         so you would want to `groupby` Age and then find the `mean` as the method.
@@ -175,8 +175,8 @@ class Visualizations(object):
 
         For a list of possible arguments for the bar plot please checkout the following links:
 
-            https://plot.ly/python-api-reference/generated/plotly.express.bar.html#plotly.express.bar
-        
+            https://plot.ly/python/reference/#bar
+
         Parameters
         ----------
         x : str
@@ -201,11 +201,14 @@ class Visualizations(object):
             Stack groups the bars on top of each other
             by default 'relative'
 
+        title : str
+            Title of the plot, by default ''
+
         yaxis_params : dict
-            Parameters for the y axis
+            Parameters for the y axis, by default None
 
         xaxis_params : dict
-            Parameters for the x axis
+            Parameters for the x axis, by default None
 
         output_file : str, optional
             Output html file name for image
