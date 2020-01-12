@@ -1,7 +1,18 @@
 import warnings
+import os
+import shutil
 
 warnings.simplefilter("ignore", FutureWarning)
 warnings.simplefilter("ignore", DeprecationWarning)
+
+aethos_home = os.path.join(os.path.expanduser('~'), '.aethos')
+config_home = os.path.join(aethos_home, 'config.yml')
+pkg_directory = os.path.dirname(__file__)
+
+# Create the config file 
+if not os.path.exists(config_home):
+    os.makedirs(aethos_home)
+    shutil.copyfile(os.path.join(pkg_directory, 'config', 'config.yml'), os.path.join(config_home))
 
 import pandas as pd
 import shap

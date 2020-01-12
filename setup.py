@@ -5,7 +5,7 @@ from subprocess import check_call
 from setuptools import find_packages, setup
 from setuptools.command.install import install
 
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 
 pkgs = [
     "numpy==1.17.4",
@@ -73,12 +73,6 @@ setup(
     long_description_content_type="text/markdown",
     include_package_data=True,
     keywords="datascience, machinelearning, automation, analysis",
-    data_files=[
-        (
-            str(os.path.join(os.path.expanduser("~"), ".aethos")),
-            ["aethos/config/config.yml"],
-        )
-    ],
     python_requires=">= 3.6",
     classifiers=[
         "Programming Language :: Python :: 3.6",
