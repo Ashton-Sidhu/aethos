@@ -1,0 +1,23 @@
+report:
+  # Directory where reports are saved, default is $HOME/.aethos/reports/
+  dir: ''
+
+models:
+  # Directory where any pickled models would be stored
+  dir: ''
+  # Directory where any deployment packages are stored
+  deployment_dir: ''
+
+images:
+  # Directory where images are stored
+  dir: ''
+
+mlflow:
+  # There are different kinds of directory settings:
+  #   Local file path (specified as file:/my/local/dir), where data is just directly stored locally.
+  #   Database encoded as <dialect>+<driver>://<username>:<password>@<host>:<port>/<database>. MLflow supports the dialects mysql, mssql, sqlite, and postgresql.
+  #     For more details, see SQLAlchemy database uri.
+  #   HTTP server (specified as https://my-server:5000), which is a server hosting an MLFlow tracking server.
+  #   Databricks workspace (specified as databricks or as databricks://<profileName>, a Databricks CLI profile. 
+  #     See docs on logging to Databricks-hosted MLflow, or the quickstart to easily get started with hosted MLflow on Databricks Community Edition.
+  dir: ''

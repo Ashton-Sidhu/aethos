@@ -120,6 +120,6 @@ dmypy.json
 datasets/
 
 #reports
-pyautoml_reports/
+aethos_reports/
 
-pyautoml_web/*/sources/*
+aethos_web/*/sources/*

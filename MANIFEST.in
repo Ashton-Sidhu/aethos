@@ -1,2 +1,5 @@
 include README.md
-include pyautoml/technique_reasons.yml 
+include aethos/config/technique_reasons.yml
+exclude */test_*.py
+include aethos/templates/files/*
+include aethos/config/config.yml
