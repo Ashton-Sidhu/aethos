@@ -619,3 +619,127 @@ class Visualizations(object):
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+    def boxplot(self, x=None, y=None, color=None, title="", output_file="", **kwargs):
+        """
+        Plots a box plot for the given x and y columns.
+
+        For more info and kwargs for box plots, see https://plot.ly/python-api-reference/generated/plotly.express.box.html#plotly.express.box
+        and https://plot.ly/python/box-plots/ 
+        
+        Parameters
+        ----------
+        x : str
+            X axis column
+
+        y : str
+            y axis column
+
+        color : str, optional
+            Column name to add a dimension by color.
+
+        orient : str, optional
+            Orientation of graph, 'h' for horizontal
+            'v' for vertical, by default 'v',
+
+        points : str, bool {'outlier', 'suspectedoutliers', 'all', False}
+            One of 'outliers', 'suspectedoutliers', 'all', or False.
+            If 'outliers', only the sample points lying outside the whiskers are shown.
+            If 'suspectedoutliers', all outlier points are shown and those less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1 are highlighted with the marker’s 'outliercolor'.
+            If 'outliers', only the sample points lying outside the whiskers are shown.
+            If 'all', all sample points are shown. If False, no sample points are shown and the whiskers extend to the full range of the sample.
+
+        notched : bool, optional
+            If True, boxes are drawn with notches, by default False.
+
+        title : str, optional
+            Title of the plot, by default "".
+
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
+        Examples
+        --------
+        >>> data.boxplot(y='y', color='z')
+        >>> data.boxplot(x='x', y='y', color='z', points='all')
+        >>> data.boxplot(x='x', y='y', output_file='pair.png')
+        """
+
+        assert (x is not None or y is not None), "An x column or a y column must be provided."
+
+        viz.boxplot(
+            x=x,
+            y=y,
+            data=self.train_data,
+            color=color,
+            title=title,
+            output_file=output_file,
+            **kwargs
+        )
+
+        if output_file and self.report:  # pragma: no cover
+            self.report.write_image(output_file)
+
+    def violinplot(self, x=None, y=None, color=None, title="", output_file="", **kwargs):
+        """
+        Plots a violin plot for the given x and y columns.
+
+        For more info and kwargs for violin plots, see https://plot.ly/python-api-reference/generated/plotly.express.violin.html#plotly.express.violin 
+        and https://plot.ly/python/violin/
+        
+        Parameters
+        ----------
+        x : str
+            X axis column
+
+        y : str
+            y axis column
+
+        color : str, optional
+            Column name to add a dimension by color.
+
+        orient : str, optional
+            Orientation of graph, 'h' for horizontal
+            'v' for vertical, by default 'v',
+
+        points : str, bool {'outlier', 'suspectedoutliers', 'all', False}
+            One of 'outliers', 'suspectedoutliers', 'all', or False.
+            If 'outliers', only the sample points lying outside the whiskers are shown.
+            If 'suspectedoutliers', all outlier points are shown and those less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1 are highlighted with the marker’s 'outliercolor'.
+            If 'outliers', only the sample points lying outside the whiskers are shown.
+            If 'all', all sample points are shown. If False, no sample points are shown and the whiskers extend to the full range of the sample.
+
+        violinmode : str {'group', 'overlay'}
+            In 'overlay' mode, violins are on drawn top of one another.
+            In 'group' mode, violins are placed beside each other.
+
+        box : bool, optional
+            If True, boxes are drawn inside the violins.
+
+        title : str, optional
+            Title of the plot, by default "".
+
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
+        Examples
+        --------
+        >>> data.violinplot(y='y', color='z', box=True)
+        >>> data.violinplot(x='x', y='y', color='z', points='all')
+        >>> data.violinplot(x='x', y='y', violinmode='overlay', output_file='pair.png')
+        """
+
+        assert (x is not None or y is not None), "An x column or a y column must be provided."
+
+        viz.violinplot(
+            x=x,
+            y=y,
+            data=self.train_data,
+            color=color,
+            title=title,
+            output_file=output_file,
+            **kwargs
+        )
+
+        if output_file and self.report:  # pragma: no cover
+            self.report.write_image(output_file)

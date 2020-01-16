@@ -140,6 +140,42 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+
+    def test_boxplot(self):
+
+        data = sns.load_dataset("iris")
+
+        base = Data(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="species",
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+
+        base.boxplot(x='species', y='sepal_width', color='species')
+
+        self.assertTrue(True)
+
+    def test_vioplot(self):
+
+        data = sns.load_dataset("iris")
+
+        base = Data(
+            x_train=data,
+            x_test=None,
+            split=True,
+            target_field="species",
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+
+        base.violinplot(x='species', y='sepal_width', color='species')
+
+        self.assertTrue(True)
+
+
     def test_correlation_plot(self):
 
         data = pd.DataFrame(np.random.rand(100, 10))
