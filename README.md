@@ -355,6 +355,8 @@ Community credits go to:
 
 [@mlflow](https://github.com/mlflow/) for their model tracking library [mlflow](https://github.com/mlflow/mlflow/).
 
+[@huggingface](https://github.com/huggingface/) for their automated pretrained model library [transformers](https://github.com/huggingface/transformers).
+
 ## For Developers
 
 ### Contributing data analysis techniques
