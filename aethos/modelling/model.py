@@ -6528,7 +6528,6 @@ class Model(Visualizations):
 
     ################## PRE TRAINED MODELS #######################
 
-    @add_to_queue
     def pretrained_sentiment_analysis(
         self, col: str, model_type=None, new_col_name="sent_score", run=True
     ):
@@ -6619,8 +6618,6 @@ class Model(Visualizations):
         new_col_name : str, optional
             New column name for the sentiment scores, by default "sent_score"
 
-        run : bool, optional
-            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
         
         Returns
         -------
@@ -6657,7 +6654,6 @@ class Model(Visualizations):
 
         return nlp.model
 
-    @add_to_queue
     def pretrained_question_answer(
         self,
         context_col: str,
@@ -6756,9 +6752,6 @@ class Model(Visualizations):
 
         new_col_name : str, optional
             New column name for the sentiment scores, by default "sent_score"
-
-        run : bool, optional
-            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
         
         Returns
         -------
