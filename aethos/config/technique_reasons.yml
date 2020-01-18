@@ -289,6 +289,13 @@ model:
     cb_reg: >
       Trained a CatBoost Regressor model.
 
+  pretrained:
+    sent: >
+      Ran sentiment analysis using a pretrained model.
+
+    qa: >
+      Trained a model for Q&A using a pre trained model.
+
 stats:
   dist_compare:
     predict: >

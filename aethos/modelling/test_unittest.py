@@ -23,7 +23,7 @@ class TestModelling(unittest.TestCase):
 
         if os.path.exists(models_path):
             shutil.rmtree(models_path)
-        
+
         if os.path.exists(projects_path):
             shutil.rmtree(projects_path)
 
@@ -569,7 +569,11 @@ class TestModelling(unittest.TestCase):
             random_state=2, penalty="l2", model_name="l1", run=False
         )
         model.LogisticRegression(
-            gridsearch={'C': [0.1, 0.2]}, random_state=2, penalty="l2", model_name="l2", run=False
+            gridsearch={"C": [0.1, 0.2]},
+            random_state=2,
+            penalty="l2",
+            model_name="l2",
+            run=False,
         )
         model.LogisticRegression(
             random_state=2, penalty="l2", model_name="l3", run=False
@@ -1255,7 +1259,9 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         model = Model(x_train=data, target_field="col3")
-        model.CatBoostRegression(cv="kfold", gridsearch={"learning_rate": [0.03, 0.1]}, iterations=10)
+        model.CatBoostRegression(
+            cv="kfold", gridsearch={"learning_rate": [0.03, 0.1]}, iterations=10
+        )
         validate = model.cb_reg is not None
 
         self.assertTrue(True)
@@ -1684,10 +1690,50 @@ class TestModelling(unittest.TestCase):
         df = Data(data, target_field="col3")
         m = Model(df)
 
-        self.assertListEqual(m.x_train.values.tolist(), df.x_train.drop('col3', axis=1).values.tolist())
-        self.assertListEqual(m.x_test.values.tolist(), df.x_test.drop('col3', axis=1).values.tolist())
+        self.assertListEqual(
+            m.x_train.values.tolist(), df.x_train.drop("col3", axis=1).values.tolist()
+        )
+        self.assertListEqual(
+            m.x_test.values.tolist(), df.x_test.drop("col3", axis=1).values.tolist()
+        )
         self.assertListEqual(m.y_train.values.tolist(), df.y_train.values.tolist())
         self.assertListEqual(m.y_test.values.tolist(), df.y_test.values.tolist())
+
+    def test_pretrained_sent(self):
+
+        data = [
+            "",
+            "I'm very excited to be here :).",
+            "I'm not very excited to be here.",
+        ]
+
+        data = pd.DataFrame(data, columns=["text"])
+
+        df = Model(data, test_split_percentage=0.33, report_name="test")
+        df.pretrained_sentiment_analysis("text")
+
+        validate = df["sent_score"][0][0]
+
+        self.assertIsInstance(validate, dict)
+
+    def test_pretrained_qa(self):
+
+        data = {
+            "context": [
+                "Pipeline have been included in the huggingface/transformers repository.",
+                "hello",
+            ],
+            "question": ["What is the name of the repository ?", "Is anything here?"],
+        }
+
+        data = pd.DataFrame(data)
+
+        df = Model(data, test_split_percentage=0.5, report_name="test")
+        df.pretrained_question_answer("context", "question")
+
+        # validate = df['qa'][0]
+
+        # self.assertIsInstance(validate, dict)
 
 
 if __name__ == "__main__":

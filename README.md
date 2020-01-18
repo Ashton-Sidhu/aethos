@@ -210,6 +210,17 @@ model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic 
 model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
 ```
 
+#### Using Pretrained Models
+
+Currently you can use pretrained models such as BERT, XLNet, AlBERT, etc. to calculate sentiment and answer questions.
+
+```python
+model.pretrained_sentiment_analysis(`text_column`)
+
+# To answer questions, context for the question has to be supplied
+model.pretrained_question_answer(`context_column`, `question_column`)
+```
+
 ### Model Interpretability
 
 As mentioned in the Model section, whenever a model is trained you have access to use cases for model interpretability as well. There are prebuild SHAP usecases and an interactive dashboard that is equipped with LIME and SHAP for local model interpretability and Morris Sensitivity for global model interpretability.
@@ -242,6 +253,10 @@ Now navigate to 'your_home_folder'('~' on linux and Users/'your_user_name' on wi
 **Python Requirements**: 3.6, 3.7
 
 `pip install aethos`
+
+To install the dependencies to use pretrained models such as BERT, XLNet, AlBERT, etc:
+
+`pip install aethos[ptmodels]`
 
 To install associating corpora for nltk analysis:
 
@@ -284,7 +299,7 @@ NOTE: This only works for local use of MLFLOW, if you are running MLFlow on a re
   - [x] Quality of life/addons
   - [x] Code Generation V1
   - [x] Experiment Tracking
-  - [ ] Pre trained models
+  - [x] Pre trained models
 
 #### Phase 4
   - [ ]	Deep learning integration

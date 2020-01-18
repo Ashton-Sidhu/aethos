@@ -183,6 +183,18 @@ Running Multiple Models
     model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
     model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
 
+Using Pretrained Models
+------------------------
+
+Currently you can use pretrained models such as BERT, XLNet, AlBERT, etc. to calculate sentiment and answer questions.
+
+.. code:: python
+
+    model.pretrained_sentiment_analysis(`text_column`)
+
+    # To answer questions, context for the question has to be supplied
+    model.pretrained_question_answer(`context_column`, `question_column`)
+
 Model Interpretability
 ----------------------
 
@@ -214,6 +226,10 @@ Installation
 ============
 
 :code:`pip install aethos`
+
+To install the dependencies to use pretrained models such as BERT, XLNet, AlBERT, etc:
+
+:code:`pip install aethos[ptmodels]`
 
 To install associating corpora for nltk analysis:
 

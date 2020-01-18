@@ -37,8 +37,10 @@ pkgs = [
     "swifter==0.297",
     "lightgbm==2.3.1",
     "catboost==0.20.1",
-    "mlflow==1.5.0"
+    "mlflow==1.5.0",
 ]
+
+extras = {"ptmodels": ["transformers==2.3.0", "tensorflow==2.1.0"]}
 
 
 class VerifyVersionCommand(install):
@@ -66,6 +68,7 @@ setup(
     author="Ashton Sidhu",
     author_email="ashton.sidhu1994@gmail.com",
     install_requires=pkgs,
+    extras_require=extras,
     version=VERSION,
     license="GPL-3.0",
     description="A library of data science and machine learning techniques to help automate your workflow.",

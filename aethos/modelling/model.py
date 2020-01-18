@@ -30,6 +30,7 @@ from aethos.modelling.util import (
     to_pickle,
     track_model,
 )
+from aethos.reporting.report import Report
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import _input_columns, _set_item, split_data
 from aethos.visualizations.visualizations import Visualizations
@@ -6527,13 +6528,120 @@ class Model(Visualizations):
 
     ################## PRE TRAINED MODELS #######################
 
+    @add_to_queue
     def pretrained_sentiment_analysis(
-        self, col: str, model_type=None, new_col_name="sent_score"
+        self, col: str, model_type=None, new_col_name="sent_score", run=True
     ):
+        # region
+        """
+        Uses Huggingface's pipeline to automatically run sentiment analysis on text.
 
-        from transformers import pipeline
+        The default model is 'tf_distil_bert_for_sequence_classification_2'
 
-        nlp = pipeline("sentiment-analysis")
+        Possible model types are:
+
+            - bert-base-uncased
+            - bert-large-uncased
+            - bert-base-cased
+            - bert-large-cased
+            - bert-base-multilingual-uncased
+            - bert-base-multilingual-cased
+            - bert-base-chinese
+            - bert-base-german-cased
+            - bert-large-uncased-whole-word-masking
+            - bert-large-cased-whole-word-masking
+            - bert-large-uncased-whole-word-masking-finetuned-squad
+            - bert-large-cased-whole-word-masking-finetuned-squad
+            - bert-base-cased-finetuned-mrpc
+            - bert-base-german-dbmdz-cased
+            - bert-base-german-dbmdz-uncased
+            - bert-base-japanese
+            - bert-base-japanese-whole-word-masking
+            - bert-base-japanese-char
+            - bert-base-japanese-char-whole-word-masking
+            - bert-base-finnish-cased-v1
+            - bert-base-finnish-uncased-v1
+            - openai-gpt
+            - gpt2
+            - gpt2-medium
+            - gpt2-large
+            - gpt2-xl
+            - transfo-xl-wt103
+            - xlnet-base-cased
+            - xlnet-large-cased
+            - xlm-mlm-en-2048
+            - xlm-mlm-ende-1024
+            - xlm-mlm-enfr-1024
+            - xlm-mlm-enro-1024
+            - xlm-mlm-xnli15-1024
+            - xlm-mlm-tlm-xnli15-1024
+            - xlm-clm-enfr-1024
+            - xlm-clm-ende-1024
+            - xlm-mlm-17-1280
+            - xlm-mlm-100-1280
+            - roberta-base
+            - roberta-large
+            - roberta-large-mnli
+            - distilroberta-base
+            - roberta-base-openai-detector
+            - roberta-large-openai-detector
+            - distilbert-base-uncased
+            - distilbert-base-uncased-distilled-squad
+            - distilgpt2
+            - distilbert-base-german-cased
+            - distilbert-base-multilingual-cased
+            - ctrl
+            - camembert-base
+            - albert-base-v1
+            - albert-large-v1
+            - albert-xlarge-v1
+            - albert-xxlarge-v1
+            - albert-base-v2
+            - albert-large-v2
+            - albert-xlarge-v2
+            - albert-xxlarge-v2
+            - t5-small
+            - t5-base
+            - t5-large
+            - t5-3B
+            - t5-11B
+            - xlm-roberta-base
+            - xlm-roberta-large
+
+        Parameters
+        ----------
+        col : str
+            Column of text to get sentiment analysis
+
+        model_type : str, optional
+            Type of model, by default None
+
+        new_col_name : str, optional
+            New column name for the sentiment scores, by default "sent_score"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+        
+        Returns
+        -------
+        TF or PyTorch of model
+
+        Examples
+        --------
+        >>> m.pretrained_sentiment_analysis('col1')
+        >>> m.pretrained_sentiment_analysis('col1', model_type='albert-base-v1')
+        """
+        # endregion
+
+        try:
+            from transformers import pipeline
+        except ModuleNotFoundError as e:
+            raise EnvironmentError(
+                "Pre trained model dependencies have not been installed. Please run pip install aethos[ptmodels]"
+            )
+
+        report_info = technique_reason_repo["model"]["pretrained"]["sent"]
+        nlp = pipeline("sentiment-analysis", model=model_type)
 
         self._train_result_data[new_col_name] = pd.Series(
             map(nlp, self.x_train[col].tolist())
@@ -6544,33 +6652,159 @@ class Model(Visualizations):
                 map(nlp, self.x_test[col].tolist())
             )
 
+        if self.report is not None:
+            self.report.report_technique(report_info)
+
         return nlp.model
 
+    @add_to_queue
     def pretrained_question_answer(
-        self, context_col: str, question_col: str, model_type=None, new_col_name="qa"
+        self,
+        context_col: str,
+        question_col: str,
+        model_type=None,
+        new_col_name="qa",
+        run=True,
     ):
+        # region
+        """
+        Uses Huggingface's pipeline to automatically run Q&A analysis on text.
 
-        from transformers import pipeline
+        The default model is 'tf_distil_bert_for_question_answering_2'
 
-        nlp = pipeline("question-answering")
+        Possible model types are:
+
+            - bert-base-uncased
+            - bert-large-uncased
+            - bert-base-cased
+            - bert-large-cased
+            - bert-base-multilingual-uncased
+            - bert-base-multilingual-cased
+            - bert-base-chinese
+            - bert-base-german-cased
+            - bert-large-uncased-whole-word-masking
+            - bert-large-cased-whole-word-masking
+            - bert-large-uncased-whole-word-masking-finetuned-squad
+            - bert-large-cased-whole-word-masking-finetuned-squad
+            - bert-base-cased-finetuned-mrpc
+            - bert-base-german-dbmdz-cased
+            - bert-base-german-dbmdz-uncased
+            - bert-base-japanese
+            - bert-base-japanese-whole-word-masking
+            - bert-base-japanese-char
+            - bert-base-japanese-char-whole-word-masking
+            - bert-base-finnish-cased-v1
+            - bert-base-finnish-uncased-v1
+            - openai-gpt
+            - gpt2
+            - gpt2-medium
+            - gpt2-large
+            - gpt2-xl
+            - transfo-xl-wt103
+            - xlnet-base-cased
+            - xlnet-large-cased
+            - xlm-mlm-en-2048
+            - xlm-mlm-ende-1024
+            - xlm-mlm-enfr-1024
+            - xlm-mlm-enro-1024
+            - xlm-mlm-xnli15-1024
+            - xlm-mlm-tlm-xnli15-1024
+            - xlm-clm-enfr-1024
+            - xlm-clm-ende-1024
+            - xlm-mlm-17-1280
+            - xlm-mlm-100-1280
+            - roberta-base
+            - roberta-large
+            - roberta-large-mnli
+            - distilroberta-base
+            - roberta-base-openai-detector
+            - roberta-large-openai-detector
+            - distilbert-base-uncased
+            - distilbert-base-uncased-distilled-squad
+            - distilgpt2
+            - distilbert-base-german-cased
+            - distilbert-base-multilingual-cased
+            - ctrl
+            - camembert-base
+            - ALBERT
+            - albert-base-v1
+            - albert-large-v1
+            - albert-xlarge-v1
+            - albert-xxlarge-v1
+            - albert-base-v2
+            - albert-large-v2
+            - albert-xlarge-v2
+            - albert-xxlarge-v2
+            - t5-small
+            - t5-base
+            - t5-large
+            - t5-3B
+            - t5-11B
+            - xlm-roberta-base
+            - xlm-roberta-large
+
+        Parameters
+        ----------
+        context_col : str
+            Column name that contains the context for the question
+
+        question_col : str
+            Column name of the question
+
+        model_type : str, optional
+            Type of model, by default None
+
+        new_col_name : str, optional
+            New column name for the sentiment scores, by default "sent_score"
+
+        run : bool, optional
+            Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
+        
+        Returns
+        -------
+        TF or PyTorch of model
+
+        Examples
+        --------
+        >>> m.pretrained_question_answer('col1', 'col2')
+        >>> m.pretrained_question_answer('col1', 'col2' model_type='albert-base-v1')
+        """
+        # endregion
+
+        try:
+            from transformers import pipeline
+        except ModuleNotFoundError as e:
+            raise EnvironmentError(
+                "Pre trained model dependencies have not been installed. Please run pip install aethos[ptmodels]"
+            )
+
+        report_info = technique_reason_repo["model"]["pretrained"]["qa"]
+        nlp = pipeline("question-answering", model=model_type)
         q_and_a = lambda c, q: nlp({"question": q, "context": c})
 
-        self._train_result_data[new_col_name] = [
-            q_and_a(context, question)
-            for context, question in (
-                self._train_result_data[context_col],
-                self._train_result_data[question_col],
-            )
-        ]
-
-        if self.x_test is not None:
-            self._test_result_data[new_col_name] = [
+        self._train_result_data[new_col_name] = pd.Series(
+            [
                 q_and_a(context, question)
-                for context, question in (
-                    self._test_result_data[context_col],
-                    self._test_result_data[question_col],
+                for context, question in zip(
+                    self._train_result_data[context_col],
+                    self._train_result_data[question_col],
                 )
             ]
+        )
+
+        if self.x_test is not None:
+            self._test_result_data[new_col_name] = pd.Series(
+                [
+                    q_and_a(context, question)
+                    for context, question in zip(
+                        self._test_result_data[context_col],
+                        self._test_result_data[question_col],
+                    )
+                ]
+            )
+
+        if self.report is not None:
+            self.report.report_technique(report_info)
 
         return nlp.model
 
