@@ -43,3 +43,4 @@ sphinx_rtd_theme
 mlflow
 pre-commit
 transformers
+tensorflow
