@@ -13,16 +13,27 @@ from aethos.config import shell, technique_reason_repo
 from aethos.config.config import _global_config
 from aethos.core import Data
 from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
-from aethos.modelling.model_analysis import ClassificationModel, RegressionModel, UnsupervisedModel, TextModel
+from aethos.modelling.model_analysis import (
+    ClassificationModel,
+    RegressionModel,
+    UnsupervisedModel,
+    TextModel,
+)
 from aethos.modelling import text
-from aethos.modelling.util import (_get_cv_type, _make_img_project_dir,
-                                   _run_models_parallel, add_to_queue,
-                                   run_crossvalidation, run_gridsearch,
-                                   to_pickle, track_model)
-from aethos.reporting.report import Report
+from aethos.modelling.util import (
+    _get_cv_type,
+    _make_img_project_dir,
+    _run_models_parallel,
+    add_to_queue,
+    run_crossvalidation,
+    run_gridsearch,
+    to_pickle,
+    track_model,
+)
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.util import _input_columns, _set_item, split_data
 from aethos.visualizations.visualizations import Visualizations
+
 warnings.simplefilter("ignore", FutureWarning)
 
 
@@ -32,24 +43,24 @@ class Model(Visualizations):
 
     Parameters
     -----------
-        x_train: aethos.Data or pd.DataFrame
-            Training data or aethos data object
+    x_train: aethos.Data or pd.DataFrame
+        Training data or aethos data object
 
-        x_test: pd.DataFrame
-            Test data, by default None
+    x_test: pd.DataFrame
+        Test data, by default None
 
-        split: bool
-            True to split your training data into a train set and a test set
+    split: bool
+        True to split your training data into a train set and a test set
 
-        test_split_percentage: float
-            Percentage of data to split train data into a train and test set.
-            Only used if `split=True`
+    test_split_percentage: float
+        Percentage of data to split train data into a train and test set.
+        Only used if `split=True`
 
-        target_field: str
-            For supervised learning problems, the name of the column you're trying to predict.
+    target_field: str
+        For supervised learning problems, the name of the column you're trying to predict.
 
-        report_name: str
-            Name of the report to generate, by default None
+    report_name: str
+        Name of the report to generate, by default None
     """
 
     def __init__(
@@ -108,7 +119,7 @@ class Model(Visualizations):
 
         self._models = {}
         self._queued_models = {}
-        self.exp_name = exp_name if exp_name is not None else 'my-experiment'
+        self.exp_name = exp_name if exp_name is not None else "my-experiment"
 
     def __getitem__(self, key):
 
@@ -481,7 +492,9 @@ class Model(Visualizations):
             project=True,
             project_name=project_name,
         )
-        tg.generate_service(project_name, f"{model_obj.model_name}.pkl", model_obj.model)
+        tg.generate_service(
+            project_name, f"{model_obj.model_name}.pkl", model_obj.model
+        )
 
         print("To run:")
         print("\tdocker build -t `image_name` ./")
@@ -545,7 +558,10 @@ class Model(Visualizations):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._train_result_data, self._test_result_data = text.gensim_textrank_summarizer(
+        (
+            self._train_result_data,
+            self._test_result_data,
+        ) = text.gensim_textrank_summarizer(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -6509,6 +6525,55 @@ class Model(Visualizations):
 
         return model
 
+    ################## PRE TRAINED MODELS #######################
+
+    def pretrained_sentiment_analysis(
+        self, col: str, model_type=None, new_col_name="sent_score"
+    ):
+
+        from transformers import pipeline
+
+        nlp = pipeline("sentiment-analysis")
+
+        self._train_result_data[new_col_name] = pd.Series(
+            map(nlp, self.x_train[col].tolist())
+        )
+
+        if self.x_test is not None:
+            self._test_result_data[new_col_name] = pd.Series(
+                map(nlp, self.x_test[col].tolist())
+            )
+
+        return nlp.model
+
+    def pretrained_question_answer(
+        self, context_col: str, question_col: str, model_type=None, new_col_name="qa"
+    ):
+
+        from transformers import pipeline
+
+        nlp = pipeline("question-answering")
+        q_and_a = lambda c, q: nlp({"question": q, "context": c})
+
+        self._train_result_data[new_col_name] = [
+            q_and_a(context, question)
+            for context, question in (
+                self._train_result_data[context_col],
+                self._train_result_data[question_col],
+            )
+        ]
+
+        if self.x_test is not None:
+            self._test_result_data[new_col_name] = [
+                q_and_a(context, question)
+                for context, question in (
+                    self._test_result_data[context_col],
+                    self._test_result_data[question_col],
+                )
+            ]
+
+        return nlp.model
+
     ################### HELPER FUNCTIONS ########################
 
     def _run_supervised_model(
@@ -6660,23 +6725,29 @@ class Model(Visualizations):
             shap_values = model.get_feature_importance(pool, type="ShapValues")
 
         self._models[model_name] = model_type(
-            self, model_name, model, new_col_name, shap_values=shap_values, pool=pool, run_id=run_id
+            self,
+            model_name,
+            model,
+            new_col_name,
+            shap_values=shap_values,
+            pool=pool,
+            run_id=run_id,
         )
 
         #############################################################
         ######################## Tracking ###########################
         #############################################################
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             if random_state is not None:
-                kwargs['random_state'] = random_state
+                kwargs["random_state"] = random_state
 
             run_id = track_model(
-                self.exp_name, 
-                model, 
-                model_name, 
-                kwargs, 
-                self.compare_models()[model_name].to_dict()
+                self.exp_name,
+                model,
+                model_name,
+                kwargs,
+                self.compare_models()[model_name].to_dict(),
             )
             self._models[model_name].run_id = run_id
 
@@ -6705,7 +6776,7 @@ class Model(Visualizations):
         #############################################################
         ################## Initialize Variables #####################
         #############################################################
-        
+
         # Hard coding OneClassSVM due to its parent having random_state and the child not allowing it.
         random_state = kwargs.pop("random_state", None)
         if (
@@ -6805,9 +6876,9 @@ class Model(Visualizations):
         ######################## Tracking ###########################
         #############################################################
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             if random_state is not None:
-                kwargs['random_state'] = random_state
+                kwargs["random_state"] = random_state
 
             track_model(self.exp_name, model, model_name, kwargs)
 
