@@ -4,6 +4,7 @@ import pandas as pd
 import scipy as sc
 import swifter
 from aethos.config import technique_reason_repo
+from aethos.visualizations import visualize as viz
 from scipy.stats.stats import ks_2samp
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.metrics import classification_report
@@ -11,6 +12,9 @@ from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from tqdm import tqdm
 import itertools
 from collections import Counter
+from typing import Union
+from aethos.stats.util import run_2sample_ttest
+
 
 class Stats(object):
     def predict_data_sample(self):
@@ -125,7 +129,7 @@ class Stats(object):
                 for i, (_, row) in enumerate(diff_df.iterrows()):
                     if i >= len(ax):
                         break
-                    
+
                     extreme = np.max(
                         np.abs(
                             self.x_train[row.feature].tolist()
@@ -177,6 +181,12 @@ class Stats(object):
 
         use_test : bool, optional
             True to analyze the test set, by default False
+
+        Examples
+        --------
+        >>> data.most_common('col1', plot=True)
+        >>> data.most_common('col1', n=50, plot=True)
+        >>> data.most_common('col1', n=50)
         """
 
         if use_test:
@@ -198,13 +208,137 @@ class Stats(object):
         if plot:
             from aethos.visualizations.visualize import barplot
 
-            df = pd.DataFrame(list(most_common.items()), columns=['Word', 'Count'])
+            df = pd.DataFrame(list(most_common.items()), columns=["Word", "Count"])
 
             barplot(
-                x='Word',
-                y='Count',
-                data=df,
+                x="Word", y="Count", data=df,
             )
         else:
-            for k,v in most_common.items():
-                print(f'{k}: {v}')
+            for k, v in most_common.items():
+                print(f"{k}: {v}")
+
+    def ind_ttest(self, group1: str, group2: str, equal_var=True, output_file=None):
+        """
+        Performs an Independent T test.
+
+        This is to be used when you want to compare the means of 2 groups.
+
+        If group 2 column name is not provided and there is a test set, it will compare the same column in the train and test set.
+
+        If there are any NaN's they will be omitted.
+        
+        Parameters
+        ----------
+        group1 : str
+            Column for group 1 to compare.
+        
+        group2 : str, optional
+            Column for group 2 to compare, by default None
+
+        equal_var : bool, optional
+            If True (default), perform a standard independent 2 sample test that assumes equal population variances.
+            If False, perform Welch's t-test, which does not assume equal population variance, by default True
+
+        output_file : str, optional
+            Name of the file to output, by default None
+
+        Returns
+        -------
+        list
+            T test statistic, P value
+
+        Examples
+        --------
+        >>> data.ind_ttest('col1', 'col2')
+        >>> data.ind_ttest('col1', 'col2', output_file='ind_ttest.png')
+        """
+
+        res = run_2sample_ttest(
+            group1, group2, self.x_train, "ind", output_file, equal_var=equal_var
+        )
+
+        return res
+
+    def paired_ttest(self, group1: str, group2=None, output_file=None):
+        """
+        Performs a Paired t-test.
+
+        This is to be used when you want to compare the means from the same group at different times.
+
+        If group 2 column name is not provided and there is a test set, it will compare the same column in the train and test set.
+
+        If there are any NaN's they will be omitted.
+        
+        Parameters
+        ----------
+        group1 : str
+            Column for group 1 to compare.
+        
+        group2 : str, optional
+            Column for group 2 to compare, by default None
+
+        equal_var : bool, optional
+            If True (default), perform a standard independent 2 sample test that assumes equal population variances.
+            If False, perform Welch's t-test, which does not assume equal population variance, by default True
+
+        output_file : str, optional
+            Name of the file to output, by default None
+
+        Returns
+        -------
+        list
+            T test statistic, P value
+
+        Examples
+        --------
+        >>> data.paired_ttest('col1', 'col2')
+        >>> data.paired_ttest('col1', 'col2', output_file='pair_ttest.png')
+        """
+
+        # The implementation is the same as an independent t-test
+        res = run_2sample_ttest(group1, group2, self.x_train, "pair", output_file)
+
+        return res
+
+    def onesample_ttest(self, group1: str, mean: Union[float, int], output_file=None):
+        """
+        Performs a One Sample t-test.
+
+        This is to be used when you want to compare the mean of a single group against a known mean.
+
+        If there are any NaN's they will be omitted.
+        
+        Parameters
+        ----------
+        group1 : str
+            Column for group 1 to compare.
+        
+        mean : float, int, optional
+            Sample mean to compare to.
+
+        output_file : str, optional
+            Name of the file to output, by default None
+
+        Returns
+        -------
+        list
+            T test statistic, P value
+
+        Examples
+        --------
+        >>> data.onesample_ttest('col1', 1)
+        >>> data.onesample_ttest('col1', 1, output_file='ones_ttest.png')
+        """
+
+        data_group1 = self.x_train[group1].tolist()
+
+        results = sc.stats.ttest_1samp(data_group1, mean, nan_policy="omit")
+
+        matrix = [
+            ["", "Test Statistic", "p-value"],
+            ["Sample Data", results[0], results[1]],
+        ]
+
+        viz.create_table(matrix, True, output_file)
+
+        return results

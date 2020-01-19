@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import pandas as pd
-import seaborn as sns
 import shutil
 from pathlib import Path
 
@@ -41,30 +40,88 @@ class Test_TestBase(unittest.TestCase):
 
     def test_most_common_list(self):
 
-        data = pd.Series([['hi', 'aethos'], ['hi', 'py-automl'], [], ['hi']])
-        data = pd.DataFrame(data, columns=['col1'])
+        data = pd.Series([["hi", "aethos"], ["hi", "py-automl"], [], ["hi"]])
+        data = pd.DataFrame(data, columns=["col1"])
 
         df = Data(data, split=False)
-        df.most_common('col1', plot=True)
+        df.most_common("col1", plot=True)
 
         self.assertTrue(True)
 
     def test_most_common_str(self):
 
-        data = pd.Series(['hi aethos', 'aethos is awesome', 'hi', 'py-automl is the old name', 'hi everyone'])
-        data = pd.DataFrame(data, columns=['col1'])
+        data = pd.Series(
+            [
+                "hi aethos",
+                "aethos is awesome",
+                "hi",
+                "py-automl is the old name",
+                "hi everyone",
+            ]
+        )
+        data = pd.DataFrame(data, columns=["col1"])
 
         df = Data(data, split=False)
-        df.most_common('col1')
+        df.most_common("col1")
 
         self.assertTrue(True)
 
     def test_most_common_int(self):
 
         data = pd.Series([1, 1, 2, 4, 2, 5])
-        data = pd.DataFrame(data, columns=['col1'])
+        data = pd.DataFrame(data, columns=["col1"])
 
         df = Data(data, test_split_percentage=0.5)
-        df.most_common('col1', plot=True, use_test=True)
+        df.most_common("col1", plot=True, use_test=True)
+
+        self.assertTrue(True)
+
+    def test_2s_ttest_atterror(self):
+
+        data1 = np.random.normal(0, 1, size=50)
+        data2 = np.random.normal(2, 1, size=50)
+
+        data = pd.DataFrame({"d1": data1, "d2": data2})
+
+        df = Data(data, split=False)
+
+        self.assertRaises(AttributeError, df.paired_ttest, "d1")
+
+    def test_2s_pairedttest(self):
+
+        data1 = np.random.normal(0, 1, size=50)
+        data2 = np.random.normal(2, 1, size=50)
+
+        data = pd.DataFrame({"d1": data1, "d2": data2})
+
+        df = Data(data)
+
+        df.paired_ttest("d1", "d2")
+
+        self.assertTrue(True)
+
+    def test_2s_indttest(self):
+
+        data1 = np.random.normal(0, 1, size=50)
+        data2 = np.random.normal(2, 1, size=50)
+
+        data = pd.DataFrame({"d1": data1, "d2": data2})
+
+        df = Data(data)
+
+        df.ind_ttest("d1", "d2")
+
+        self.assertTrue(True)
+
+    def test_1s_indttest(self):
+
+        data1 = np.random.normal(0, 1, size=50)
+        data2 = np.random.normal(2, 1, size=50)
+
+        data = pd.DataFrame({"d1": data1, "d2": data2})
+
+        df = Data(data)
+
+        df.onesample_ttest("d1", 1.0)
 
         self.assertTrue(True)

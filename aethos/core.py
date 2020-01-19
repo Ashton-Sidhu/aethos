@@ -13,10 +13,18 @@ from aethos.feature_engineering.feature import Feature
 from aethos.preprocessing.preprocess import Preprocess
 from aethos.reporting.report import Report
 from aethos.stats.stats import Stats
-from aethos.util import (CLEANING_CHECKLIST, DATA_CHECKLIST, ISSUES_CHECKLIST,
-                         MULTI_ANALYSIS_CHECKLIST, PREPARATION_CHECKLIST,
-                         UNI_ANALYSIS_CHECKLIST, _get_columns, _set_item,
-                         label_encoder, split_data)
+from aethos.util import (
+    CLEANING_CHECKLIST,
+    DATA_CHECKLIST,
+    ISSUES_CHECKLIST,
+    MULTI_ANALYSIS_CHECKLIST,
+    PREPARATION_CHECKLIST,
+    UNI_ANALYSIS_CHECKLIST,
+    _get_columns,
+    _set_item,
+    label_encoder,
+    split_data,
+)
 from aethos.visualizations.visualizations import Visualizations
 from IPython import get_ipython
 from IPython.display import HTML, display
@@ -346,6 +354,9 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
 
         for name in self.x_train.columns:
             new_column_names[name] = re.sub(pattern, "_", name.lower())
+
+        if self.target_field is not None:
+            self.target_field = re.sub(pattern, "_", self.target_field.lower())
 
         self.col_mapping = new_column_names
 
@@ -891,8 +902,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
             target=True,
         )
 
-        for k,v in self.target_mapping.items():
-            print(f'{k}: {v}')
+        for k, v in self.target_mapping.items():
+            print(f"{k}: {v}")
 
         if self.report is not None:
             self.report.log("Encoded the target variable as numeric values.")

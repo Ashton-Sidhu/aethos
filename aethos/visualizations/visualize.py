@@ -15,7 +15,7 @@ from scipy import stats
 from sklearn.manifold import LocallyLinearEmbedding, TSNE
 from sklearn.decomposition import PCA, TruncatedSVD
 import plotly.graph_objects as go
-
+from plotly.tools import FigureFactory as FF
 
 
 def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **params):
@@ -64,8 +64,8 @@ def barplot(
     data,
     method=None,
     orient="v",
-    barmode='relative',
-    title='',
+    barmode="relative",
+    title="",
     yaxis_params=None,
     xaxis_params=None,
     output_file="",
@@ -120,60 +120,56 @@ def barplot(
     fig = go.Figure()
 
     if not xaxis_params:
-        xaxis_params = {
-            'title': x.capitalize()
-        }
+        xaxis_params = {"title": x.capitalize()}
 
     if not yaxis_params:
         if method:
-            yaxis_params = {
-                'title': method.capitalize()
-            }
+            yaxis_params = {"title": method.capitalize()}
 
     if len(y) > 1:
 
         for col in y:
-            fig.add_trace(go.Bar(
-                x=data_copy[x],
-                y=data[col],
-                name=col,
-                width=[0.1] * len(data_copy[x]),
-                orientation=orient,
-
-            ))
+            fig.add_trace(
+                go.Bar(
+                    x=data_copy[x],
+                    y=data[col],
+                    name=col,
+                    width=[0.1] * len(data_copy[x]),
+                    orientation=orient,
+                )
+            )
 
         fig.update_layout(
             title=title,
             xaxis=xaxis_params,
             yaxis=yaxis_params,
             barmode=barmode,
-            bargap=0.8, # gap between bars of adjacent location coordinates.
-            bargroupgap=0.1 # gap between bars of the same location coordinate
+            bargap=0.8,  # gap between bars of adjacent location coordinates.
+            bargroupgap=0.1,  # gap between bars of the same location coordinate
         )
-    
+
     else:
         for col in y:
-            fig.add_trace(go.Bar(
-                x=data_copy[x],
-                y=data[col],
-                name=col,
-                width=[0.5] * len(data_copy[x]),
-                orientation=orient,
-
-            ))
+            fig.add_trace(
+                go.Bar(
+                    x=data_copy[x],
+                    y=data[col],
+                    name=col,
+                    width=[0.5] * len(data_copy[x]),
+                    orientation=orient,
+                )
+            )
 
         fig.update_layout(
-            title=title,
-            xaxis=xaxis_params,
-            yaxis=yaxis_params,
-            barmode=barmode,
+            title=title, xaxis=xaxis_params, yaxis=yaxis_params, barmode=barmode,
         )
 
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
     fig.show()
-    
+
+
 def scatterplot(
     x: str,
     y: str,
@@ -218,16 +214,13 @@ def scatterplot(
     if z is None:
 
         fig = px.scatter(
-            data,
-            x=x,
-            y=y,
-            color=category,
-            title=title,
-            **scatterplot_kwargs
+            data, x=x, y=y, color=category, title=title, **scatterplot_kwargs
         )
 
     else:
-        fig = px.scatter_3d(data, x=x, y=y, z=z, color=category, title=title, **scatterplot_kwargs)
+        fig = px.scatter_3d(
+            data, x=x, y=y, z=z, color=category, title=title, **scatterplot_kwargs
+        )
 
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
@@ -326,7 +319,14 @@ def correlation_matrix(
 
 
 def pairplot(
-    df, kind="scatter", diag_kind="auto", upper_kind=None, lower_kind=None, hue=None, output_file=None, **kwargs
+    df,
+    kind="scatter",
+    diag_kind="auto",
+    upper_kind=None,
+    lower_kind=None,
+    hue=None,
+    output_file=None,
+    **kwargs,
 ):
     """
     Plots pairplots of the variables in the DataFrame
@@ -355,24 +355,20 @@ def pairplot(
         Output file name for the image including extension (.jpg, .png, etc.)
     """
 
-    plot_mapping = {
-        'scatter': plt.scatter,
-        'kde': sns.kdeplot,
-        'hist': sns.distplot
-    }
+    plot_mapping = {"scatter": plt.scatter, "kde": sns.kdeplot, "hist": sns.distplot}
 
     palette = kwargs.pop("color", sns.color_palette("pastel"))
 
     if upper_kind or lower_kind:
-        assert (upper_kind is not None), "upper_kind cannot be None."
-        assert (lower_kind is not None), "lower_kind cannot be None."
-        assert (diag_kind is not "auto"), "diag_kind must be either `hist` or `kde`."
+        assert upper_kind is not None, "upper_kind cannot be None."
+        assert lower_kind is not None, "lower_kind cannot be None."
+        assert diag_kind is not "auto", "diag_kind must be either `hist` or `kde`."
 
         g = sns.PairGrid(df, hue=hue, palette=palette, **kwargs)
         g = g.map_upper(plot_mapping[upper_kind])
         g = g.map_diag(plot_mapping[diag_kind])
         g = g.map_lower(plot_mapping[lower_kind])
-        g = g.add_legend()        
+        g = g.add_legend()
 
     else:
         g = sns.pairplot(
@@ -448,14 +444,14 @@ def histogram(x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwa
     # Make the single plot look pretty
     if len(x) == 1:
         data = x_train[~x_train[x[0]].isnull()]
-        g = sns.distplot(data[x], label='Train Data', **kwargs)
+        g = sns.distplot(data[x], label="Train Data", **kwargs)
 
         if x_test is not None:
             data = x_test[~x_test[x[0]].isnull()]
-            g = sns.distplot(data[x], label='Test Data', **kwargs)
-            g.legend(loc='upper right')
+            g = sns.distplot(data[x], label="Test Data", **kwargs)
+            g.legend(loc="upper right")
 
-        g.set_title(f'Histogram for {x[0].capitalize()}')        
+        g.set_title(f"Histogram for {x[0].capitalize()}")
 
     else:
         n_cols = 2
@@ -467,21 +463,24 @@ def histogram(x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwa
             g = None
 
             data = x_train[~x_train[col].isnull()]
-            g = sns.distplot(data[col], ax=ax, label='Train Data', **kwargs)
+            g = sns.distplot(data[col], ax=ax, label="Train Data", **kwargs)
 
             if x_test is not None:
                 data = x_test[~x_test[col].isnull()]
-                g = sns.distplot(data[col], ax=ax, label='Test Data', **kwargs)
-                ax.legend(loc='upper right')
-            
-            ax.set_title(f'Histogram for {col.capitalize()}', fontsize=20)
+                g = sns.distplot(data[col], ax=ax, label="Test Data", **kwargs)
+                ax.legend(loc="upper right")
+
+            ax.set_title(f"Histogram for {col.capitalize()}", fontsize=20)
 
         plt.tight_layout()
 
     if output_file:  # pragma: no cover
         g.figure.savefig(os.path.join(IMAGE_DIR, output_file))
 
-def viz_clusters(data: pd.DataFrame, algo: str, category: str, dim=2, output_file="", **kwargs):
+
+def viz_clusters(
+    data: pd.DataFrame, algo: str, category: str, dim=2, output_file="", **kwargs
+):
     """
     Visualize clusters
     
@@ -507,10 +506,10 @@ def viz_clusters(data: pd.DataFrame, algo: str, category: str, dim=2, output_fil
         raise ValueError("Dimension must be either 2d (2) or 3d (3)")
 
     algorithms = {
-        'tsne': TSNE(n_components=dim, random_state=42,),
-        'lle': LocallyLinearEmbedding(n_components=dim, random_state=42,),
-        'pca': PCA(n_components=dim, random_state=42,),
-        'tsvd': TruncatedSVD(n_components=dim, random_state=42,), 
+        "tsne": TSNE(n_components=dim, random_state=42,),
+        "lle": LocallyLinearEmbedding(n_components=dim, random_state=42,),
+        "pca": PCA(n_components=dim, random_state=42,),
+        "tsvd": TruncatedSVD(n_components=dim, random_state=42,),
     }
 
     reducer = algorithms[algo]
@@ -539,14 +538,9 @@ def viz_clusters(data: pd.DataFrame, algo: str, category: str, dim=2, output_fil
             **kwargs,
         )
 
+
 def boxplot(
-    x=None,
-    y=None,
-    data=None,
-    orient="v",
-    title='',
-    output_file="",
-    **boxplot_kwargs,
+    x=None, y=None, data=None, orient="v", title="", output_file="", **boxplot_kwargs,
 ):
     """
     Plots a box plot
@@ -572,14 +566,7 @@ def boxplot(
         File name, by default ""
     """
 
-    fig = px.box(
-        data,
-        x=x,
-        y=y,
-        orientation=orient,
-        title=title,
-        **boxplot_kwargs
-    )
+    fig = px.box(data, x=x, y=y, orientation=orient, title=title, **boxplot_kwargs)
 
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
@@ -588,13 +575,7 @@ def boxplot(
 
 
 def violinplot(
-    x=None,
-    y=None,
-    data=None,
-    orient="v",
-    title='',
-    output_file="",
-    **violin_kwargs,
+    x=None, y=None, data=None, orient="v", title="", output_file="", **violin_kwargs,
 ):
     """
     Plots a violin plot.
@@ -620,16 +601,27 @@ def violinplot(
         File name, by default ""
     """
 
-    fig = px.violin(
-        data,
-        x=x,
-        y=y,
-        orientation=orient,
-        title=title,
-        **violin_kwargs
-    )
+    fig = px.violin(data, x=x, y=y, orientation=orient, title=title, **violin_kwargs)
 
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
     fig.show()
+
+
+def create_table(matrix, index, output_file, **kwargs):
+    """
+    Creates a table using plotly.
+    
+    Parameters
+    ----------
+    matrix : 2d array
+        Table values
+    """
+
+    table = FF.create_table(matrix, index=True)
+
+    if output_file:  # pragma: no cover
+        table.write_image(os.path.join(IMAGE_DIR, output_file))
+
+    table.show()
