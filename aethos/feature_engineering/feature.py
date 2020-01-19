@@ -510,7 +510,7 @@ class Feature(object):
             x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
-            method='s'
+            method="s",
         )
 
         if self.report is not None:
@@ -518,7 +518,9 @@ class Feature(object):
 
         return self.copy()
 
-    def postag_spacy_detailed(self, *list_args, list_of_cols=[], new_col_name="_postagged"):
+    def postag_spacy_detailed(
+        self, *list_args, list_of_cols=[], new_col_name="_postagged"
+    ):
         """
         Tag documents with their respective "Part of Speech" tag with the Spacy NLP engine and the PennState PoS tags.
         These tags classify a word as a noun, verb, adjective, etc. A full list and their meaning can be found here:
@@ -556,7 +558,7 @@ class Feature(object):
             x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
-            method='d',
+            method="d",
         )
 
         if self.report is not None:
@@ -933,6 +935,55 @@ class Feature(object):
 
         return self.copy()
 
+    def chi2_feature_selection(self, k: int, verbose=False):
+        """
+        Uses Chi2 to choose the best K features.
+
+        The Chi2 null hypothesis is that 2 variables are independent.
+
+        Chi-square test feature selection “weeds out” the features that are the most likely to be independent of class and therefore irrelevant for classification.
+        
+        Parameters
+        ----------
+        k : int or "all"
+            Number of features to keep.
+
+        verbose : bool
+            True to print p-values for each feature, by default False
+        
+        Returns
+        -------
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.chi2_feature_selection(k=10)
+        """
+
+        report_info = technique_reason_repo["feature"]["numeric"]["chi2"]
+
+        y_train = self.y_train
+        y_test = self.y_test
+        x_train = self.x_train.drop(self.target_field, axis=1)
+        x_test = (
+            None if self.x_test is None else self.x_test.drop(self.target_field, axis=1)
+        )
+
+        (self.x_train, self.x_test,) = num.kbest_chi2(
+            x_train, self.y_train, x_test, k, verbose=verbose
+        )
+
+        # Re add the target field back to the dataset.
+        self.x_train[self.target_field] = y_train
+        if self.x_test is not None:
+            self.x_test[self.target_field] = y_test
+
+        if self.report is not None:
+            self.report.report_technique(report_info)
+
+        return self.copy()
+
     def _run_sklearn_dim_reduction(self, algo: str, n_components, **kwargs):
         """
         Generalized helper function to run dimensionality reduction algorithms from sklearn.
@@ -958,7 +1009,13 @@ class Feature(object):
             x_train = self.x_train
             x_test = self.x_test
 
-        self.x_train, self.x_test = util.sklearn_dim_reduction(x_train=x_train, x_test=x_test, algo=algo, n_components=n_components, **kwargs)
+        self.x_train, self.x_test = util.sklearn_dim_reduction(
+            x_train=x_train,
+            x_test=x_test,
+            algo=algo,
+            n_components=n_components,
+            **kwargs,
+        )
 
         if self.target_field:
             self.x_train[self.target_field] = train_target_data

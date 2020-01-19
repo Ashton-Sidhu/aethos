@@ -123,6 +123,9 @@ feature:
     poly: >
       Derived polynomial features from column(s) column_name_placeholder.
 
+    chi2: >
+      Used the chi2 test to choose the best k dependant features.
+
   text:
     tfidf: >
       Converted text to a numeric representation where each number represents how important a word(s) is to a corpus. The higher the number,

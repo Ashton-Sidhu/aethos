@@ -2,6 +2,7 @@ import pandas as pd
 from aethos.util import _numeric_input_conditions, drop_replace_columns
 from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
+from sklearn.feature_selection import SelectKBest, chi2
 
 
 def polynomial_features(x_train, x_test=None, list_of_cols=[], **poly_kwargs):
@@ -83,5 +84,52 @@ def drop_correlated_features(x_train, x_test=None, threshold=0.95):
 
     if x_test is not None:
         x_test.drop(drop_cols, axis=1, inplace=True)
+
+    return x_train, x_test
+
+
+def kbest_chi2(x_train, y_train, x_test, k, verbose=False):
+    """
+    Computes the topk features using the Chi2 test.
+    
+    Parameters
+    ----------
+    x_train: Dataframe or array like - 2d
+        Training dataset, by default None.
+        
+    y_train : array - 1d
+        Training labels or values
+
+    x_test: Dataframe or array like - 2d
+        Testing dataset, by default None.
+
+    k : int or "all"
+        Number of features to use.
+
+    verbose : bool
+        True to print p-values for each feature, by default False
+    
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with rows with a missing values in a specific column are missing
+
+    Returns 2 Dataframes if x_test is provided. 
+    """
+
+    chi2_best = SelectKBest(chi2, k=k).fit(x_train, y_train)
+
+    column_indices = chi2_best.get_support()
+
+    if verbose:
+        for col, p in zip(
+            x_train.columns[column_indices], chi2_best.pvalues_[column_indices]
+        ):
+            print(f"{col} p-value: {p}")
+
+    x_train = x_train[x_train.columns[column_indices]]
+
+    if x_test is not None:
+        x_test = x_test[x_test.columns[column_indices]]
 
     return x_train, x_test

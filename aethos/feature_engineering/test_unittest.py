@@ -206,7 +206,7 @@ class TestFeatureExtraction(unittest.TestCase):
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
         self.assertTrue(validate, 2)
-        
+
     def test_featureextractiontext_spacyphrases(self):
 
         normal_data = [
@@ -312,13 +312,36 @@ class TestFeatureExtraction(unittest.TestCase):
         feat = Data(x_train=data, test_split_percentage=0.5, report_name="test")
         feat.drop_correlated_features()
 
-        validate = feat.x_test.columns.tolist() == feat.x_train.columns.tolist() and feat.x_test.columns.tolist() == [
-            "col2",
-            "col3",
-            "col4",
+        self.assertTrue(True)
+
+    def test_numeric_chi2(self):
+
+        int_missing_data = [
+            [1, 8, 3, 1],
+            [2, 8, 5, 0],
+            [3, 8, 5, 0],
+            [4, 8, 5, 1],
+            [5, 8, 5, 1],
+            [6, 8, 5, 0],
         ]
 
-        self.assertTrue(True)
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        feat = Data(
+            x_train=data,
+            target_field="col4",
+            test_split_percentage=0.5,
+            report_name="test",
+        )
+        feat.chi2_feature_selection(k=2, verbose=True)
+
+        validate = feat.x_train.shape[1] == 3
+
+        self.assertTrue(validate)
+        self.assertListEqual(
+            feat.x_train.columns.tolist(), feat.x_test.columns.tolist()
+        )
 
 
 if __name__ == "__main__":
