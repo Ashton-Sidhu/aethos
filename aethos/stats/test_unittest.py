@@ -76,17 +76,6 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
-    def test_2s_ttest_atterror(self):
-
-        data1 = np.random.normal(0, 1, size=50)
-        data2 = np.random.normal(2, 1, size=50)
-
-        data = pd.DataFrame({"d1": data1, "d2": data2})
-
-        df = Data(data, split=False)
-
-        self.assertRaises(AttributeError, df.paired_ttest, "d1")
-
     def test_2s_pairedttest(self):
 
         data1 = np.random.normal(0, 1, size=50)
