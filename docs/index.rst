@@ -20,12 +20,12 @@ Aethos provides:
   - Comparing train and test data distribution
   - Exporting trained models as a service (Generates the necessary code, files and folder structure)
   - Experiment tracking with MLFlow
+  - Statistical tests - Anova, T-test, etc.
 
 Plus more coming soon such as:
 
   - Testing for model drift
   - Recommendation models
-  - Statistical tests - Anova, T-test, etc.
   - Pre-trained models - BERT, GPT2, etc.
   - Parralelization through Dask and/or Spark
   - Uniform API for deep learning models and automated code and file generation jupyter notebook development, python file of your data    pipeline.

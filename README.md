@@ -44,6 +44,7 @@ Aethos provides:
   - Exporting trained models as a service (Generates the necessary code, files and folder structure)
   - Experiment tracking with MLFlow
   - Pre-trained models - BERT, GPT2, etc.
+  - Statistical tests - Anova, T-test, etc.
   
 You can view a full list of implemented techniques in the documentation or here: [TECHNIQUES.md](https://github.com/Ashton-Sidhu/aethos/blob/develop/TECHNIQUES.md)
 
@@ -51,7 +52,6 @@ Plus more coming soon such as:
 
   - Testing for model drift
   - Recommendation models
-  - Statistical tests - Anova, T-test, etc.
   - Parralelization through Dask and/or Spark
   - Uniform API for deep learning models
   - Automated code and file generation for jupyter notebook development and a python file of your data pipeline.
@@ -303,11 +303,12 @@ NOTE: This only works for local use of MLFLOW, if you are running MLFlow on a re
 
 #### Phase 4
   - [ ]	Deep learning integration
-  - [ ] Statistical Models
+  - [x] Statistical Tests
   - [ ] Recommendation Models
   - [ ] Code Generation V2
     
 #### Phase 5
+  - [ ] Add time series models (i.e ARIMA) and feature engineering
   - [ ] Parallelization (Spark, Dask, etc.)
   - [ ]	Cloud computing
   - [ ] Graph based learning and representation
