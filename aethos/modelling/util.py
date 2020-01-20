@@ -11,19 +11,18 @@ import lightgbm as lgb
 import matplotlib.pyplot as plt
 
 with warnings.catch_warnings():
-    warnings.simplefilter('ignore', category=DeprecationWarning)
-    
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+
     import mlflow
     import mlflow.lightgbm
     import mlflow.sklearn
     import mlflow.xgboost
-    
+
 import xgboost as xgb
 from sklearn.model_selection import GridSearchCV, KFold, StratifiedKFold
 from yellowbrick.model_selection import CVScores, LearningCurve
 
-from aethos.config import (EXP_DIR, DEFAULT_MODEL_DIR,
-                           IMAGE_DIR, cfg)
+from aethos.config import EXP_DIR, DEFAULT_MODEL_DIR, IMAGE_DIR, cfg
 from aethos.config.config import _global_config
 from aethos.util import _make_dir
 from pickle import dump
@@ -44,11 +43,15 @@ def add_to_queue(model_function):
         if kwargs["run"] or cv:
             return model_function(self, *args, **kwargs)
         else:
-            kwargs["run"] = True
-            pickle.dump
-            self._queued_models[kwargs["model_name"]] = partial(
-                getattr(self, model_function.__name__), *args, **kwargs
-            )
+            if "XGBoost" in model_function.__name__:
+                print(
+                    "XGBoost is not comptabile to be run in parallel. Please run it normally or in run all models in a series."
+                )
+            else:
+                kwargs["run"] = True
+                self._queued_models[kwargs["model_name"]] = partial(
+                    getattr(self, model_function.__name__), *args, **kwargs
+                )
 
     return wrapper
 
@@ -140,7 +143,7 @@ def run_crossvalidation(
     visualizer_scores.show()
     visualizer_lcurve.show()
 
-    if report or _global_config['track_experiments']:  # pragma: no cover
+    if report or _global_config["track_experiments"]:  # pragma: no cover
         fig.savefig(os.path.join(IMAGE_DIR, model_name, "cv.png"))
 
 
@@ -159,7 +162,10 @@ def _run_models_parallel(model_obj):
 
     for result in results:
         model_obj._models[result.model_name] = result
-        del model_obj._queued_models[result.model_name] 
+        del model_obj._queued_models[result.model_name]
+
+    return results
+
 
 def _run(model):
     """
@@ -245,6 +251,7 @@ def to_pickle(model, name, project=False, project_name=None):
 
     pickle.dump(model, open(os.path.join(path, name + ".pkl"), "wb"))
 
+
 def _make_img_project_dir(model_name: str):
     """
     Make a model dir in images directory.
@@ -256,6 +263,7 @@ def _make_img_project_dir(model_name: str):
     """
 
     _make_dir(os.path.join(IMAGE_DIR, model_name))
+
 
 def _validate_model_name(model_obj, model_name: str) -> bool:
     """
@@ -281,7 +289,10 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
 
     return True
 
-def track_model(exp_name: str, model, model_name: str, model_kwargs: dict, metrics=None): # pragma: no cover
+
+def track_model(
+    exp_name: str, model, model_name: str, model_kwargs: dict, metrics=None
+):  # pragma: no cover
     """
     Logs model information into MLFlow console.
     
@@ -309,12 +320,10 @@ def track_model(exp_name: str, model, model_name: str, model_kwargs: dict, metri
     with mlflow.start_run(run_name=model_name) as run:
 
         mlflow.log_params(model_kwargs)
-        mlflow.set_tag('name', model_name)
+        mlflow.set_tag("name", model_name)
 
         if isinstance(model, xgb.XGBModel):
             mlflow.xgboost.log_model(model, model_name)
-        elif isinstance(model, lgb.sklearn.LGBMModel):
-            mlflow.lightgbm.log_model(model, model_name)
         else:
             mlflow.sklearn.log_model(model, model_name)
 
@@ -327,7 +336,8 @@ def track_model(exp_name: str, model, model_name: str, model_kwargs: dict, metri
 
     return run_id
 
-def track_artifacts(run_id, model_name): # pragma: no cover
+
+def track_artifacts(run_id, model_name):  # pragma: no cover
     """
     Track artificats for modelling.
     

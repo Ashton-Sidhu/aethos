@@ -7,13 +7,18 @@ import matplotlib.pyplot as pl
 import numpy as np
 import pandas as pd
 import shap
+import warnings
 
 from aethos.config import IMAGE_DIR
 from aethos.modelling.constants import INTERPRET_EXPLAINERS
 
+warnings.simplefilter("ignore", UserWarning)
+
 
 class Shap(object):
-    def __init__(self, model, model_name, x_train, x_test, y_test, learner: str, shap_values):
+    def __init__(
+        self, model, model_name, x_train, x_test, y_test, learner: str, shap_values
+    ):
 
         self.model = model
         self.model_name = model_name

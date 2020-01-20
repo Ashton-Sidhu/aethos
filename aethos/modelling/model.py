@@ -357,15 +357,19 @@ class Model(Visualizations):
         >>> model.run_models(method='series')
         """
 
+        models = []
+
         if method == "parallel":
-            _run_models_parallel(self)
+            models = _run_models_parallel(self)
         elif method == "series":
             for model in self._queued_models:
-                self._queued_models[model]()
+                models.append(self._queued_models[model]())
         else:
             raise ValueError(
                 'Invalid run method, accepted run methods are either "parallel" or "series".'
             )
+
+        return models
 
     def list_models(self):
         """
