@@ -114,3 +114,217 @@ class Test_TestBase(unittest.TestCase):
         df.onesample_ttest("d1", 1.0)
 
         self.assertTrue(True)
+
+    def test_anova_asserterror(self):
+
+        data1 = np.random.normal(0, 1, size=50)
+        data2 = np.random.normal(2, 1, size=50)
+
+        data = pd.DataFrame({"d1": data1, "d2": data2})
+
+        df = Data(data)
+
+        self.assertRaises(AssertionError, df.anova, "d1")
+
+    def test_anova_numvar(self):
+
+        int_missing_data = [
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+        ]
+
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        feat = Data(
+            x_train=data,
+            target_field="col4",
+            test_split_percentage=0.5,
+            report_name="test",
+        )
+
+        feat.anova("col4", num_variables=["col1", "col2"], verbose=True)
+
+        self.assertTrue(True)
+
+    def test_anova_catvar(self):
+
+        int_missing_data = [
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+        ]
+
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        feat = Data(
+            x_train=data,
+            target_field="col4",
+            test_split_percentage=0.5,
+            report_name="test",
+        )
+
+        feat.anova("col4", cat_variables=["col3"], verbose=True)
+
+        self.assertTrue(True)
+
+    def test_anova(self):
+
+        int_missing_data = [
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+            [1, 8, "blue", 1],
+            [2, 8, "blue", 0],
+            [3, 8, "green", 0],
+            [4, 8, "green", 1],
+            [5, 8, "yellow", 1],
+            [6, 8, "yellow", 0],
+        ]
+
+        columns = ["col1", "col2", "col3", "col4"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        feat = Data(
+            x_train=data,
+            target_field="col4",
+            test_split_percentage=0.5,
+            report_name="test",
+        )
+
+        feat.anova(
+            "col4", num_variables=["col1", "col2"], cat_variables=["col3"], verbose=True
+        )
+
+        self.assertTrue(True)

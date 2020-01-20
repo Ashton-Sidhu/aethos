@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import itertools
 import pandas as pd
 import scipy as sc
+import statsmodels.api as sm
 import swifter
 from aethos.config import technique_reason_repo
 from aethos.visualizations import visualize as viz
@@ -10,7 +12,6 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from tqdm import tqdm
-import itertools
 from collections import Counter
 from typing import Union
 from aethos.stats.util import run_2sample_ttest
@@ -342,3 +343,71 @@ class Stats(object):
         viz.create_table(matrix, True, output_file)
 
         return results
+
+    def anova(
+        self,
+        dep_var: str,
+        num_variables=[],
+        cat_variables=[],
+        formula=None,
+        verbose=False,
+    ):
+        """
+        Runs an anova.
+
+        Anovas are to be used when one wants to compare the means of a condition between 2+ groups.
+
+        ANOVA tests if there is a difference in the mean somewhere in the model (testing if there was an overall effect), but it does not tell one where the difference is if the there is one.
+        
+        Parameters
+        ----------
+        dep_var : str
+            Dependent variable you want to explore the relationship of
+
+        num_variables : list, optional
+            Numeric variable columns, by default []
+
+        cat_variables : list, optional
+            Categorical variable columns, by default []
+
+        formula : str, optional
+            OLS formula statsmodel lib, by default None
+
+        verbose : bool, optional
+            True to print OLS model summary and formula, by default False
+
+        Returns
+        -------
+
+
+        Examples
+        --------
+        >>> data.anova('dep_col', num_variables=['col1', 'col2'], verbose=True)
+        >>> data.anova('dep_col', cat_variables=['col1', 'col2'], verbose=True)
+        >>> data.anova('dep_col', num_variables=['col1', 'col2'], cat_variables=['col3'] verbose=True)
+        """
+
+        from statsmodels.formula.api import ols
+
+        assert (
+            num_variables != [] or cat_variables != []
+        ), "You must specify variables, either categorical or numerical."
+
+        # Create the formula string to pass into OLS in the form of `dep_colname` ~ `num_col1` + C(`cat_col1`) + ...
+        cat_variables = [f"C({var})" for var in cat_variables]
+        join = "+" if cat_variables and num_variables else ""
+        formula = (
+            f'{dep_var} ~ {" + ".join(num_variables)} {join} {" + ".join(cat_variables)}'
+            if not formula
+            else formula
+        )
+
+        mod = ols(formula, data=self.x_train).fit()
+
+        if verbose:
+            print(formula)
+            print(mod.summary())
+
+        table = sm.stats.anova_lm(mod, typ=2)
+
+        print(table)
