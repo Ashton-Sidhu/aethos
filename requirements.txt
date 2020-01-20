@@ -39,3 +39,4 @@ catboost
 mlflow
 transformers
 tensorflow
+statsmodels

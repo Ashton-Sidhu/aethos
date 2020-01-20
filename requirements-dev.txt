@@ -44,3 +44,4 @@ mlflow
 pre-commit
 transformers
 tensorflow
+statsmodels

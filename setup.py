@@ -38,6 +38,7 @@ pkgs = [
     "lightgbm==2.3.1",
     "catboost==0.20.1",
     "mlflow==1.5.0",
+    "statsmodels==0.10.2",
 ]
 
 extras = {"ptmodels": ["transformers==2.3.0", "tensorflow==2.1.0"]}
