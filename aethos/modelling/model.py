@@ -72,7 +72,7 @@ class Model(Visualizations):
         test_split_percentage=0.2,
         target_field="",
         report_name=None,
-        exp_name=None,
+        exp_name="my-experiment",
     ):
         step = x_train
 
@@ -120,7 +120,7 @@ class Model(Visualizations):
 
         self._models = {}
         self._queued_models = {}
-        self.exp_name = exp_name if exp_name is not None else "my-experiment"
+        self.exp_name = exp_name
 
     def __getitem__(self, key):
 
@@ -6862,11 +6862,11 @@ class Model(Visualizations):
         #############################################################
 
         if gridsearch:
-            cv = cv if cv else 5
+            grid_cv = cv if cv else 5
 
             if isinstance(model, cb.CatBoost):
                 model.grid_search(
-                    gridsearch, self.x_train, self.y_train, cv=cv, plot=True
+                    gridsearch, self.x_train, self.y_train, cv=grid_cv, plot=True
                 )
 
             else:
@@ -7040,8 +7040,8 @@ class Model(Visualizations):
                     "Target field (.target_field) must be set to evaluate best model against a scoring metric."
                 )
 
-            cv = cv if cv else 5
-            model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
+            grid_cv = cv if cv else 5
+            model = run_gridsearch(model, gridsearch, grid_cv, score, verbose=verbose)
 
             model.fit(self.x_train, self.y_train)
 

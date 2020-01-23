@@ -21,12 +21,15 @@ from IPython.display import HTML, SVG, display
 from aethos.config import IMAGE_DIR
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import sklearn_dim_reduction
-from aethos.modelling.constants import (CLASS_METRICS_DESC,
-                                        INTERPRET_EXPLAINERS, PROBLEM_TYPE,
-                                        REG_METRICS_DESC, SHAP_LEARNERS)
+from aethos.modelling.constants import (
+    CLASS_METRICS_DESC,
+    INTERPRET_EXPLAINERS,
+    PROBLEM_TYPE,
+    REG_METRICS_DESC,
+    SHAP_LEARNERS,
+)
 from aethos.modelling.model_explanation import MSFTInterpret, Shap
-from aethos.modelling.util import (_make_img_project_dir, to_pickle,
-                                   track_artifacts)
+from aethos.modelling.util import _make_img_project_dir, to_pickle, track_artifacts
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.visualizations.visualizations import Visualizations
 from aethos.stats.stats import Stats
@@ -181,7 +184,7 @@ class ModelBase(Visualizations, Stats):
         if output_file and self.report:
             self.report.write_image(output_file)
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
     def decision_plot(
@@ -332,7 +335,7 @@ class ModelBase(Visualizations, Stats):
         if output_file and self.report:
             self.report.write_image(output_file)
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
         return dp
@@ -389,7 +392,7 @@ class ModelBase(Visualizations, Stats):
         if output_file and self.report:
             self.report.write_image(output_file)
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
         return fp
@@ -458,7 +461,7 @@ class ModelBase(Visualizations, Stats):
         if output_file and self.report:
             self.report.write_image(output_file)
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
         return dp
@@ -480,7 +483,7 @@ class ModelBase(Visualizations, Stats):
             )
         )
 
-        print(", ".join(str(np.array(sample_list) + 1)))
+        return sample_list
 
     def interpret_model(self, show=True):  # pragma: no cover
         """
@@ -907,7 +910,6 @@ class TextModel(ModelBase):
         pyLDAvis.enable_notebook()
 
         return pyLDAvis.gensim.prepare(self.model, self.corpus, self.id2word, **kwargs)
- 
 
     def coherence_score(self, col_name):
         """
@@ -1047,17 +1049,19 @@ class UnsupervisedModel(ModelBase):
         """
 
         dataset = self.x_test if self.x_test is not None else self.x_train
-        output_file_path = os.path.join(self.model_name, output_file) if output_file else output_file
+        output_file_path = (
+            os.path.join(self.model_name, output_file) if output_file else output_file
+        )
 
         self.plot_dim_reduction(
             category=self.cluster_col,
             dim=dim,
             algo=reduce,
             output_file=output_file_path,
-            **kwargs
+            **kwargs,
         )
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
 
@@ -1214,7 +1218,7 @@ class ClassificationModel(ModelBase):
         >>> m.zero_one_loss()
         """
 
-        return sklearn.metrics.zero_one_loss(self.y_test, self.y_test, **kwargs)
+        return sklearn.metrics.zero_one_loss(self.y_test, self.y_pred, **kwargs)
 
     def recall(self, **kwargs):
         """
@@ -1707,13 +1711,17 @@ class ClassificationModel(ModelBase):
         )
         plt.show()
 
-        if output_file:  # pragma: no cover
-            heatmap.figure.savefig(os.path.join(IMAGE_DIR, self.model_name, output_file))
+        if output_file or _global_config["track_experiments"]:  # pragma: no cover
+            heatmap.figure.savefig(
+                os.path.join(IMAGE_DIR, self.model_name, output_file)
+            )
 
             if self.report:
-                self.report.write_image(os.path.join(IMAGE_DIR, self.model_name, output_file))
+                self.report.write_image(
+                    os.path.join(IMAGE_DIR, self.model_name, output_file)
+                )
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
     def roc_curve(self, title=True, output_file=""):
@@ -1753,12 +1761,16 @@ class ClassificationModel(ModelBase):
                 roc_plot.figure_.suptitle("ROC Curve (area = {:.2f})".format(roc_auc))
 
         if output_file:  # pragma: no cover
-            roc_plot.figure_.savefig(os.path.join(IMAGE_DIR, self.model_name, output_file))
+            roc_plot.figure_.savefig(
+                os.path.join(IMAGE_DIR, self.model_name, output_file)
+            )
 
             if self.report:
-                self.report.write_image(os.path.join(IMAGE_DIR, self.model_name, output_file))
+                self.report.write_image(
+                    os.path.join(IMAGE_DIR, self.model_name, output_file)
+                )
 
-        if _global_config['track_experiments']: # pragma: no cover
+        if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
         return roc_plot

@@ -40,7 +40,7 @@ def add_to_queue(model_function):
         if not _validate_model_name(self, kwargs["model_name"]):
             raise AttributeError("Invalid model name. Please choose another one.")
 
-        if kwargs["run"] or cv:
+        if kwargs["run"]:
             return model_function(self, *args, **kwargs)
         else:
             if "XGBoost" in model_function.__name__:

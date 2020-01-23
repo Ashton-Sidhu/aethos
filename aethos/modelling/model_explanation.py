@@ -327,7 +327,10 @@ class MSFTInterpret(object):
                 raise ValueError
 
             explainer = INTERPRET_EXPLAINERS["local"][method.lower()](
-                predict_fn=predict_fn, data=data, **kwargs
+                predict_fn=predict_fn,
+                data=data,
+                feature_names=self.x_train.columns.tolist(),
+                **kwargs,
             )
 
         else:
