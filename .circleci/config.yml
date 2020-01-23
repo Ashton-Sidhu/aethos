@@ -32,7 +32,7 @@ jobs:
       - run:
           name: install python dependencies
           command: |  # use pipenv to install dependencies
-            sudo apt-get install graphviz
+            sudo apt-get install graphviz cmake
             python3 -m venv venv
             . venv/bin/activate
             pip3 install -U pip setuptools codecov coverage
@@ -64,7 +64,7 @@ jobs:
         - run:
             name: install python dependencies
             command: |  # use pipenv to install dependencies
-              sudo apt-get install graphviz
+              sudo apt-get install graphviz cmake
               python3 -m venv venv
               . venv/bin/activate
               pip3 install -U pip setuptools
@@ -93,7 +93,7 @@ jobs:
       - run:
             name: install python dependencies
             command: |  # use pipenv to install dependencies
-              sudo apt-get install graphviz
+              sudo apt-get install graphviz cmake
               python3 -m venv venv
               . venv/bin/activate
               pip3 install -U pip setuptools
