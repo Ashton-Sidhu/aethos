@@ -22,17 +22,10 @@ spacy
 xgboost
 qgrid
 ipywidgets
-SAlib
-dash
-lime
-dash_cytoscape
-gevent
 python-dateutil<2.8.1
 itables
-selenium
 python-docx
 graphviz
-pyldavis
 swifter
 lightgbm
 catboost
