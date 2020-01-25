@@ -39,12 +39,15 @@ def gensim_textrank_summarizer(
     """
 
     for col in list_of_cols:
-        x_train.loc[:, col + new_col_name] = [
+        if new_col_name.startswith("_"):
+            new_col_name = col + new_col_name
+
+        x_train.loc[:, new_col_name] = [
             summarize(x, **algo_kwargs) for x in x_train[col]
         ]
 
         if x_test is not None:
-            x_test.loc[:, col + new_col_name] = [
+            x_test.loc[:, new_col_name] = [
                 summarize(x, **algo_kwargs) for x in x_test[col]
             ]
 
@@ -86,12 +89,16 @@ def gensim_textrank_keywords(
     """
 
     for col in list_of_cols:
-        x_train.loc[:, col + new_col_name] = [
+
+        if new_col_name.startswith("_"):
+            new_col_name = col + new_col_name
+
+        x_train.loc[:, new_col_name] = [
             keywords(x, **algo_kwargs) for x in x_train[col]
         ]
 
         if x_test is not None:
-            x_test.loc[:, col + new_col_name] = [
+            x_test.loc[:, new_col_name] = [
                 keywords(x, **algo_kwargs) for x in x_test[col]
             ]
 
@@ -265,7 +272,7 @@ def _assign_topic_doc(lda_model, texts, corpus):
     for i, row in enumerate(lda_model[corpus]):
 
         if not row:
-            keywords.append('')
+            keywords.append("")
         else:
             row = sorted(row, key=lambda x: (x[1]), reverse=True)
 

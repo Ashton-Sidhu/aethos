@@ -2,13 +2,14 @@ from aethos.config import technique_reason_repo
 from aethos.preprocessing import categorical as cat
 from aethos.preprocessing import numeric as num
 from aethos.preprocessing import text
-from aethos.util import (_input_columns, _numeric_input_conditions,)
+from aethos.util import (
+    _input_columns,
+    _numeric_input_conditions,
+)
 
 
 class Preprocess(object):
-    def normalize_numeric(
-        self, *list_args, list_of_cols=[], **normalize_params
-    ):
+    def normalize_numeric(self, *list_args, list_of_cols=[], **normalize_params):
         """
         Function that normalizes all numeric values between 2 values to bring features into same domain.
         
@@ -66,9 +67,7 @@ class Preprocess(object):
 
         return self.copy()
 
-    def normalize_quantile_range(
-        self, *list_args, list_of_cols=[], **robust_params
-    ):
+    def normalize_quantile_range(self, *list_args, list_of_cols=[], **robust_params):
         """
         Scale features using statistics that are robust to outliers.
 
@@ -517,12 +516,15 @@ class Preprocess(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
-            self.x_train[col + new_col_name] = [
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
+
+            self.x_train[new_col_name] = [
                 text.process_text(txt) for txt in self.x_train[col]
             ]
 
             if self.x_test is not None:
-                self.x_test[col + new_col_name] = [
+                self.x_test[new_col_name] = [
                     text.process_text(txt) for txt in self.x_test[col]
                 ]
 

@@ -194,12 +194,14 @@ def nltk_feature_postag(
     list_of_cols = _get_columns(list_of_cols, x_train)
 
     for col in list_of_cols:
-        x_train[col + new_col_name] = pd.Series([TextBlob(x) for x in x_train[col]])
+
+        if new_col_name.startswith("_"):
+            new_col_name = col + new_col_name
+
+        x_train[new_col_name] = pd.Series([TextBlob(x) for x in x_train[col]])
 
         if x_test is not None:
-            x_test[col + new_col_name] = pd.Series(
-                [TextBlob(x).tags for x in x_test[col]]
-            )
+            x_test[new_col_name] = pd.Series([TextBlob(x).tags for x in x_test[col]])
 
     return x_train, x_test
 
@@ -237,12 +239,16 @@ def nltk_feature_noun_phrases(
     list_of_cols = _get_columns(list_of_cols, x_train)
 
     for col in list_of_cols:
-        x_train[col + new_col_name] = pd.Series(
+
+        if new_col_name.startswith("_"):
+            new_col_name = col + new_col_name
+
+        x_train[new_col_name] = pd.Series(
             [TextBlob(x).noun_phrases for x in x_train[col]]
         )
 
         if x_test is not None:
-            x_test[col + new_col_name] = pd.Series(
+            x_test[new_col_name] = pd.Series(
                 [TextBlob(x).noun_phrases for x in x_train[col]]
             )
 
@@ -287,22 +293,22 @@ def spacy_feature_postag(
 
     nlp = spacy.load("en_core_web_sm")
 
-    if method == 's':
+    if method == "s":
         func = lambda x: [(token, token.pos_) for token in x]
     else:
         func = lambda x: [(token, token.tag_) for token in x]
 
     for col in list_of_cols:
+
+        if new_col_name.startswith("_"):
+            new_col_name = col + new_col_name
+
         transformed_text = map(nlp, x_train[col])
-        x_train[col + new_col_name] = pd.Series(
-            map(func, transformed_text,)
-        )
+        x_train[new_col_name] = pd.Series(map(func, transformed_text,))
 
         if x_test is not None:
             transformed_text = map(nlp, x_test[col])
-            x_test[col + new_col_name] = pd.Series(
-                map(func, transformed_text,)
-            )
+            x_test[new_col_name] = pd.Series(map(func, transformed_text,))
 
     return x_train, x_test
 
@@ -343,14 +349,18 @@ def spacy_feature_noun_phrases(
     nlp = spacy.load("en")
 
     for col in list_of_cols:
+
+        if new_col_name.startswith("_"):
+            new_col_name = col + new_col_name
+
         transformed_text = list(map(nlp, x_train[col]))
-        x_train[col + new_col_name] = pd.Series(
+        x_train[new_col_name] = pd.Series(
             map(lambda x: [str(phrase) for phrase in x.noun_chunks], transformed_text)
         )
 
         if x_test is not None:
             transformed_text = map(nlp, x_test[col])
-            x_test[col + new_col_name] = pd.Series(
+            x_test[new_col_name] = pd.Series(
                 map(
                     lambda x: [str(phrase) for phrase in x.noun_chunks],
                     transformed_text,
