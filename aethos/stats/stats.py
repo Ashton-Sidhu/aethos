@@ -165,7 +165,9 @@ class Stats(object):
 
         return diff_df
 
-    def most_common(self, col: str, n=15, plot=False, use_test=False):
+    def most_common(
+        self, col: str, n=15, plot=False, use_test=False, output_file="", **plot_kwargs
+    ):
         """
         Analyzes the most common values in the column and either prints them or displays a bar chart.
         
@@ -182,6 +184,9 @@ class Stats(object):
 
         use_test : bool, optional
             True to analyze the test set, by default False
+
+        output_file : str,
+            File name to save plot as, IF plot=True
 
         Examples
         --------
@@ -211,12 +216,14 @@ class Stats(object):
 
             df = pd.DataFrame(list(most_common.items()), columns=["Word", "Count"])
 
-            barplot(
-                x="Word", y="Count", data=df,
-            )
+            fig = barplot(x="Word", y="Count", data=df,)
+
+            return fig
         else:
             for k, v in most_common.items():
                 print(f"{k}: {v}")
+
+            return most_common
 
     def ind_ttest(self, group1: str, group2: str, equal_var=True, output_file=None):
         """
