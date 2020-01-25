@@ -6,11 +6,12 @@ apply
 """
 
 import pandas as pd
-import swifter
 from sklearn.decomposition import PCA, TruncatedSVD
 
 
-def sklearn_dim_reduction(x_train, x_test=None, algo=None, n_components=50, **dim_reduce_kwargs):
+def sklearn_dim_reduction(
+    x_train, x_test=None, algo=None, n_components=50, **dim_reduce_kwargs
+):
     """
     Performs Principal Component Analysis on a dataset.
     
@@ -34,8 +35,8 @@ def sklearn_dim_reduction(x_train, x_test=None, algo=None, n_components=50, **di
     """
 
     algorithms = {
-        'pca': PCA(n_components=n_components, **dim_reduce_kwargs),
-        'tsvd': TruncatedSVD(n_components=n_components, **dim_reduce_kwargs), 
+        "pca": PCA(n_components=n_components, **dim_reduce_kwargs),
+        "tsvd": TruncatedSVD(n_components=n_components, **dim_reduce_kwargs),
     }
 
     reducer = algorithms[algo]
@@ -76,6 +77,8 @@ def apply(x_train, func, output_col: str, x_test=None):
 
     Returns 2 Dataframes if x_test is provided. 
     """
+
+    import swifter
 
     x_train.loc[:, output_col] = x_train.swifter.progress_bar().apply(func, axis=1)
 

@@ -2,11 +2,9 @@ import copy
 import os
 import re
 
-import aethos
 import ipywidgets as widgets
 import numpy as np
 import pandas as pd
-import pandas_profiling
 from aethos.cleaning.clean import Clean
 from aethos.config import shell
 from aethos.feature_engineering.feature import Feature
@@ -29,8 +27,6 @@ from aethos.visualizations.visualizations import Visualizations
 from IPython import get_ipython
 from IPython.display import HTML, display
 from ipywidgets import Layout
-from pandas.io.json import json_normalize
-from pandas_summary import DataFrameSummary
 
 
 class Data(Clean, Preprocess, Feature, Visualizations, Stats):
@@ -386,6 +382,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         >>> data.expand_json_column('col1')
         """
 
+        from pandas.io.json import json_normalize
+
         df = json_normalize(self.x_train[col], sep="_")
         self.x_train.drop(col, axis=1, inplace=True)
         self.x_train = pd.concat([self.x_train, df], axis=1)
@@ -655,6 +653,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         >>> data.data_report(title='Titanic EDA', output_file='titanic.html')
         """
 
+        import pandas_profiling
+
         if shell == "ZMQInteractiveShell":  # pragma : no cover
             report = self.x_train.profile_report(
                 title=title, style={"full_width": True}
@@ -692,6 +692,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         ---------
         >>> data.describe()
         """
+
+        from pandas_summary import DataFrameSummary
 
         if dataset == "train":
             x_train_summary = DataFrameSummary(self.x_train)
@@ -733,6 +735,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         ---------
         >>> data.column_info()
         """
+
+        from pandas_summary import DataFrameSummary
 
         if dataset == "train":
             x_train_summary = DataFrameSummary(self.x_train)
@@ -801,6 +805,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         --------
         >>> data.describe_column('col1')
         """
+
+        from pandas_summary import DataFrameSummary
 
         if dataset == "train":
             x_train_summary = DataFrameSummary(self.x_train)

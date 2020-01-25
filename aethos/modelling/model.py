@@ -11,8 +11,6 @@ from ipywidgets.widgets.widget_layout import Layout
 
 from aethos.config import shell, technique_reason_repo
 from aethos.config.config import _global_config
-from aethos.core import Data
-from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 from aethos.modelling.model_analysis import (
     ClassificationModel,
     RegressionModel,
@@ -315,6 +313,8 @@ class Model(Visualizations):
         --------
         >>> model.help_debug()
         """
+
+        from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 
         overfit_labels = []
         underfit_labels = []

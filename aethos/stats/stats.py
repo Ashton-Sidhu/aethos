@@ -3,15 +3,11 @@ import numpy as np
 import itertools
 import pandas as pd
 import scipy as sc
-import statsmodels.api as sm
-import swifter
 from aethos.config import technique_reason_repo
-from aethos.visualizations import visualize as viz
 from scipy.stats.stats import ks_2samp
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold, cross_val_predict
-from tqdm import tqdm
 from collections import Counter
 from typing import Union
 from aethos.stats.util import run_2sample_ttest
@@ -91,6 +87,9 @@ class Stats(object):
         >>> data.ks_feature_distribution()
         >>> data.ks_feature_distribution(threshold=0.2)
         """
+
+        import swifter
+        from tqdm import tqdm
 
         if self.x_test is None:
             raise ValueError(
@@ -338,6 +337,8 @@ class Stats(object):
         >>> data.onesample_ttest('col1', 1, output_file='ones_ttest.png')
         """
 
+        from aethos.visualizations import visualize as viz
+
         data_group1 = self.x_train[group1].tolist()
 
         results = sc.stats.ttest_1samp(data_group1, mean, nan_policy="omit")
@@ -395,6 +396,7 @@ class Stats(object):
         """
 
         from statsmodels.formula.api import ols
+        import statsmodels.api as sm
 
         assert (
             num_variables != [] or cat_variables != []

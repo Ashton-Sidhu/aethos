@@ -4,18 +4,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import pandas_bokeh
 import plotly.express as px
-import ptitprince as pt
 import seaborn as sns
 from aethos.config import IMAGE_DIR, cfg
 from aethos.util import _make_dir
-from bokeh.io import export_png
-from scipy import stats
-from sklearn.manifold import LocallyLinearEmbedding, TSNE
-from sklearn.decomposition import PCA, TruncatedSVD
-import plotly.graph_objects as go
-from plotly.tools import FigureFactory as FF
 
 
 def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **params):
@@ -39,6 +31,8 @@ def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **p
     ouput_file : str
         Output file name for the image including extension (.jpg, .png, etc.)
     """
+
+    import ptitprince as pt
 
     fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -107,6 +101,8 @@ def barplot(
     xaxis_params : dict
         Parameters for the x axis
     """
+
+    import plotly.graph_objects as go
 
     if isinstance(y, str):
         y = [y]
@@ -251,6 +247,9 @@ def lineplot(
     output_file : str, optional
         If a name is provided save the plot to an html file, by default ''
     """
+
+    import pandas_bokeh
+    from bokeh.io import export_png
 
     y.append(x)
     data_copy = data[y].copy()
@@ -403,6 +402,7 @@ def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
 
     # NOTE: Ignore the deprecation warning for showing the R^2 statistic until Seaborn reimplements it
     import warnings
+    from scipy import stats
 
     warnings.simplefilter("ignore", UserWarning)
 
@@ -501,6 +501,9 @@ def viz_clusters(
     output_file : str, optional
         Output file name for image with extension (i.e. jpeg, png, etc.)
     """
+
+    from sklearn.manifold import LocallyLinearEmbedding, TSNE
+    from sklearn.decomposition import PCA, TruncatedSVD
 
     if dim != 2 and dim != 3:
         raise ValueError("Dimension must be either 2d (2) or 3d (3)")
@@ -618,6 +621,8 @@ def create_table(matrix, index, output_file, **kwargs):
     matrix : 2d array
         Table values
     """
+
+    from plotly.tools import FigureFactory as FF
 
     table = FF.create_table(matrix, index=True)
 

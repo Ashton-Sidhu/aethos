@@ -1,16 +1,11 @@
 import os
 
-import catboost as cb
-import interpret
-import lightgbm as lgb
 import matplotlib.pyplot as pl
 import numpy as np
 import pandas as pd
-import shap
 import warnings
 
 from aethos.config import IMAGE_DIR
-from aethos.modelling.constants import INTERPRET_EXPLAINERS
 
 warnings.simplefilter("ignore", UserWarning)
 
@@ -19,6 +14,9 @@ class Shap(object):
     def __init__(
         self, model, model_name, x_train, x_test, y_test, learner: str, shap_values
     ):
+
+        import lightgbm as lgb
+        import shap
 
         self.model = model
         self.model_name = model_name
@@ -72,6 +70,8 @@ class Shap(object):
             Output file name including extension (.png, .jpg, etc.) to save image as.
         """
 
+        import shap
+
         shap.summary_plot(
             self.shap_values,
             self.x_test_array,
@@ -103,6 +103,8 @@ class Shap(object):
         DecisionPlotResult 
             If return_objects=True (the default). Returns None otherwise.
         """
+
+        import shap
 
         return_objects = decisionplot_kwargs.pop("return_objects", True)
         highlight = decisionplot_kwargs.pop("highlight", None)
@@ -147,6 +149,8 @@ class Shap(object):
         Plots a SHAP force plot.
         """
 
+        import shap
+
         shap_values = forceplot_kwargs.pop("shap_values", self.shap_values)
 
         if sample_no is not None:
@@ -175,6 +179,8 @@ class Shap(object):
         """
         Plots a SHAP dependence plot.
         """
+
+        import shap
 
         interaction = dependenceplot_kwargs.pop("interaction_index", interaction)
 
@@ -247,6 +253,9 @@ class MSFTInterpret(object):
             Interpretable dashboard of your model
         """
 
+        import interpret
+        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+
         if predictions == "probability":
             predict_fn = self.model.predict_proba
         else:
@@ -311,6 +320,9 @@ class MSFTInterpret(object):
         Interpret
             Interpretable dashboard of your model
         """
+
+        import interpret
+        from aethos.modelling.constants import INTERPRET_EXPLAINERS
 
         if predictions == "probability":
             predict_fn = self.model.predict_proba
@@ -391,6 +403,9 @@ class MSFTInterpret(object):
             Interpretable dashboard of your model
         """
 
+        import interpret
+        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+
         if predictions == "probability":
             predict_fn = self.model.predict_proba
         else:
@@ -421,6 +436,9 @@ class MSFTInterpret(object):
         
         If a plot hasn't been interpreted yet it is created using default parameters for the dashboard.
         """
+
+        import interpret
+        from aethos.modelling.constants import INTERPRET_EXPLAINERS
 
         dashboard_plots = []
 

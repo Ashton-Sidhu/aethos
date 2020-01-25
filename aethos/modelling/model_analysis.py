@@ -5,29 +5,16 @@ import warnings
 from collections import OrderedDict
 from itertools import compress
 
-import catboost as cb
-import interpret
-import lightgbm as lgb
+import xgboost as xgb
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
-import seaborn as sns
 import sklearn
-import xgboost as xgb
-from graphviz import Source
 from IPython.display import HTML, SVG, display
 
 from aethos.config import IMAGE_DIR
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import sklearn_dim_reduction
-from aethos.modelling.constants import (
-    CLASS_METRICS_DESC,
-    INTERPRET_EXPLAINERS,
-    PROBLEM_TYPE,
-    REG_METRICS_DESC,
-    SHAP_LEARNERS,
-)
 from aethos.modelling.model_explanation import MSFTInterpret, Shap
 from aethos.modelling.util import _make_img_project_dir, to_pickle, track_artifacts
 from aethos.templates.template_generator import TemplateGenerator as tg
@@ -40,6 +27,11 @@ class ModelBase(Visualizations, Stats):
     # TODO: Add more SHAP use cases
 
     def __init__(self, model_object, model, model_name, **kwargs):
+
+        from aethos.modelling.constants import (
+            PROBLEM_TYPE,
+            SHAP_LEARNERS,
+        )
 
         self.model = model
         self.model_name = model_name
@@ -538,6 +530,9 @@ class ModelBase(Visualizations, Stats):
         >>> m.interpret_model_performance()
         """
 
+        import interpret
+        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+
         warnings.simplefilter("ignore")
 
         if isinstance(self.model, xgb.XGBModel):  # pragma: no cover
@@ -603,6 +598,9 @@ class ModelBase(Visualizations, Stats):
         >>> m.interpret_model_predictions()
         """
 
+        import interpret
+        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+
         warnings.simplefilter("ignore")
 
         if isinstance(self.model, xgb.XGBModel):  # pragma: no cover
@@ -662,6 +660,9 @@ class ModelBase(Visualizations, Stats):
         >>> m.interpret_model_behavior()
         """
 
+        import interpret
+        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+
         warnings.simplefilter("ignore")
 
         if isinstance(self.model, xgb.XGBModel):  # pragma: no cover
@@ -706,6 +707,10 @@ class ModelBase(Visualizations, Stats):
         >>> m = model.XGBoostClassifier()
         >>> m.view_tree(2)
         """
+
+        import catboost as cb
+        import lightgbm as lgb
+        from graphviz import Source
 
         if hasattr(self, "classes"):
             classes = self.classes
@@ -929,6 +934,7 @@ class TextModel(ModelBase):
         """
 
         import gensim
+        import plotly.graph_objects as go
 
         texts = self.result_data[col_name].tolist()
 
@@ -961,6 +967,8 @@ class TextModel(ModelBase):
         >>> m = model.LDA()
         >>> m.model_perplexity()
         """
+
+        import plotly.graph_objects as go
 
         fig = go.Figure(
             go.Indicator(
@@ -1647,6 +1655,8 @@ class ClassificationModel(ModelBase):
         >>> m.confusion_matrix(normalize=True)      
         """
 
+        import seaborn as sns
+
         y_true = self.y_test
         y_pred = self.y_pred
 
@@ -2076,6 +2086,8 @@ class RegressionModel(ModelBase):
         >>> m.metrics()
         >>> m.metrics('SMAPE', 'Root Mean Squared Error')
         """
+
+        from aethos.modelling.constants import REG_METRICS_DESC
 
         metric_list = {
             "Explained Variance": self.explained_variance(),
