@@ -1555,6 +1555,8 @@ class ClassificationModel(ModelBase):
         >>> m.metrics('F1', 'F-Beta')
         """
 
+        from aethos.modelling.constants import CLASS_METRICS_DESC
+
         metric_list = {
             "Accuracy": self.accuracy(),
             "Balanced Accuracy": self.balanced_accuracy(),

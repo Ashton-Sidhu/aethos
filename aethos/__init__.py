@@ -34,9 +34,6 @@ from aethos.config.config import (
 from .core import Data
 from .modelling import Model
 
-# profile = cProfile.Profile()
-# profile.enable()
-
 pd.options.mode.chained_assignment = None
 pio.templates.default = "plotly_white"
 
