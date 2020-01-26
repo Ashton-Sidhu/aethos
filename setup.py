@@ -5,7 +5,7 @@ from subprocess import check_call
 from setuptools import find_packages, setup
 from setuptools.command.install import install
 
-VERSION = "1.2.2"
+VERSION = "1.2.3"
 
 pkgs = [
     "numpy==1.17.4",
