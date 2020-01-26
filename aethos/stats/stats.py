@@ -215,7 +215,9 @@ class Stats(object):
 
             df = pd.DataFrame(list(most_common.items()), columns=["Word", "Count"])
 
-            fig = barplot(x="Word", y="Count", data=df,)
+            fig = barplot(
+                x="Word", y="Count", data=df, output_file=output_file, **plot_kwargs
+            )
 
             return fig
         else:
