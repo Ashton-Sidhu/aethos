@@ -104,7 +104,10 @@ preprocess:
       Removed punctuation from all the text.
 
     clean_text: >
-      Cleaned the text in column(s) column_name_placeholder .
+      Cleaned the text in column(s) column_name_placeholder.
+
+    remove_numbers: >
+      Removed any numerical values from the text.
 
 feature:
   general:

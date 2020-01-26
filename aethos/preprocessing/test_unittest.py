@@ -159,7 +159,7 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_preprocess_cleantext(self):
 
-        text_data = ["Please.exe, split me.", "hello it's me, testing.dll."]
+        text_data = ["Please.exe, split me.", "hello it's me123, test1ing.dll."]
         data = pd.DataFrame(data=text_data, columns=["data"])
 
         prep = Data(x_train=data, split=False, report_name="test")
@@ -189,6 +189,21 @@ class TestPreprocessing(unittest.TestCase):
         validate = prep.x_train.data_rem_stop.values.tolist()
 
         self.assertListEqual(validate, ["split ."])
+
+    def test_preprocess_remnum(self):
+
+        text_data = ["0Please.3exe,56 split me1.", "h123ello it'1s me, testing.dll.123"]
+        data = pd.DataFrame(data=text_data, columns=["data"])
+
+        prep = Data(x_train=data, report_name="test", test_split_percentage=0.5)
+        prep.remove_numbers("data", new_col_name="test")
+        text = prep.x_train["test"].tolist()[0]
+
+        validate = (
+            text == "Please.exe, split me." or text == "hello it's me, testing.dll."
+        )
+
+        self.assertTrue(validate)
 
 
 if __name__ == "__main__":

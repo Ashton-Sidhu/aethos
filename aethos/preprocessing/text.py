@@ -302,7 +302,60 @@ def remove_punctuation(
     return x_train, x_test
 
 
-def process_text(corpus, lower=True, punctuation=True, stopwords=True, stemmer=True):
+def remove_numbers(
+    x_train, x_test=None, list_of_cols=[], new_col_name="_rem_num",
+):
+    """
+    Removes numbers from text.
+
+    Parameters
+    ----------
+    x_train : DataFrame
+        Dataset
+
+    x_test : DataFrame
+        Testing dataset, by default None
+
+    list_of_cols : list, optional
+        Column name(s) of text data
+
+
+    new_col_name : str, optional
+        New column name to be created when applying this technique, by default `_rem_num`
+
+    Returns
+    -------
+    Dataframe, *Dataframe
+        Transformed dataframe with the new column.
+
+    Returns 2 Dataframes if x_test is provided. 
+    """
+
+    for col in list_of_cols:
+        if new_col_name.startswith("_"):
+            new_col_name = col + new_col_name
+
+        x_train[new_col_name] = pd.Series(
+            map(
+                lambda x: str.translate(x, str.maketrans("", "", "0123456789")),
+                x_train[col],
+            )
+        )
+
+        if x_test is not None:
+            x_test[new_col_name] = pd.Series(
+                map(
+                    lambda x: str.translate(x, str.maketrans("", "", "0123456789")),
+                    x_test[col],
+                )
+            )
+
+        return x_train, x_test
+
+
+def process_text(
+    corpus, lower=True, punctuation=True, stopwords=True, stemmer=True, numbers=True
+):
     """
     Function that takes text and does the following:
 
@@ -310,6 +363,7 @@ def process_text(corpus, lower=True, punctuation=True, stopwords=True, stemmer=T
       - Removes punctuation
       - Removes stopwords
       - Stems the text
+      - Removes any numerical values
     
     Parameters
     ----------
@@ -327,6 +381,9 @@ def process_text(corpus, lower=True, punctuation=True, stopwords=True, stemmer=T
     
     stemmer : bool, optional
         True to stem the data, by default True
+
+    numbers : bool, optional
+        True to remove any numbers, by default True
     
     Returns
     -------
@@ -348,6 +405,9 @@ def process_text(corpus, lower=True, punctuation=True, stopwords=True, stemmer=T
                 continue
 
             token = token.translate(str.maketrans("", "", string.punctuation))
+
+        if numbers:
+            token = token.translate(str.maketrans("", "", "0123456789"))
 
         if stopwords:
             stop_words = nltk.corpus.stopwords.words("english")

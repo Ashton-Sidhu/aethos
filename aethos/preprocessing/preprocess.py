@@ -458,6 +458,47 @@ class Preprocess(object):
 
         return self.copy()
 
+    def remove_numbers(self, *list_args, list_of_cols=[], new_col_name="_rem_num"):
+        """
+        Removes numbers from text in a column.
+        
+        Parameters
+        ----------
+        list_args : str(s), optional
+            Specific columns to apply this technique to.
+
+        list_of_cols : list, optional
+            A list of specific columns to apply this technique to., by default []
+
+        new_col_name : str, optional
+            New column name to be created when applying this technique, by default `COLUMN_rem_num`
+
+        Returns
+        -------
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.remove_numbers('col1', new_col_name="text_wo_num)
+        """
+
+        report_info = technique_reason_repo["preprocess"]["text"]["remove_numbers"]
+
+        list_of_cols = _input_columns(list_args, list_of_cols)
+
+        (self.x_train, self.x_test,) = text.remove_numbers(
+            x_train=self.x_train,
+            x_test=self.x_test,
+            list_of_cols=list_of_cols,
+            new_col_name=new_col_name,
+        )
+
+        if self.report is not None:
+            self.report.report_technique(report_info, list_of_cols)
+
+        return self.copy()
+
     def clean_text(
         self,
         *list_args,
@@ -466,6 +507,7 @@ class Preprocess(object):
         punctuation=True,
         stopwords=True,
         stemmer=True,
+        numbers=True,
         new_col_name="_clean",
     ):
         """
@@ -475,6 +517,7 @@ class Preprocess(object):
         - Removes punctuation
         - Removes stopwords
         - Stems the text
+        - Removes any numerical text
         
         Parameters
         ----------
@@ -495,6 +538,9 @@ class Preprocess(object):
         
         stemmer : bool, optional
             True to stem the data, by default True
+
+        numbers : bool, optional
+            True to remove numerical data, by default True
 
         new_col_name : str, optional
             New column name to be created when applying this technique, by default `COLUMN_clean`            
@@ -520,12 +566,28 @@ class Preprocess(object):
                 new_col_name = col + new_col_name
 
             self.x_train[new_col_name] = [
-                text.process_text(txt) for txt in self.x_train[col]
+                text.process_text(
+                    txt,
+                    lower=lower,
+                    punctuation=punctuation,
+                    stopwords=stopwords,
+                    stemmer=stemmer,
+                    numbers=numbers,
+                )
+                for txt in self.x_train[col]
             ]
 
             if self.x_test is not None:
                 self.x_test[new_col_name] = [
-                    text.process_text(txt) for txt in self.x_test[col]
+                    text.process_text(
+                        txt,
+                        lower=lower,
+                        punctuation=punctuation,
+                        stopwords=stopwords,
+                        stemmer=stemmer,
+                        numbers=numbers,
+                    )
+                    for txt in self.x_test[col]
                 ]
 
         if self.report is not None:
