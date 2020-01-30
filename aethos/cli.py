@@ -1,6 +1,7 @@
 import os
 
 import click
+import subprocess
 from aethos.config.user_config import EXP_DIR
 
 
@@ -31,10 +32,28 @@ def install_corpora():
     """
     Installs the necessary corpora from spaCy and NLTK for NLP analysis.
     """
-    os.system("python3 -m textblob.download_corpora")
-    os.system("python3 -c 'import nltk; nltk.download(\"stopwords\")'")
-    os.system("python3 -m spacy download en")
+    
+    py_exe = ""
 
+    try:
+        if "3." in subprocess.check_output("python --version", stderr=subprocess.STDOUT, shell=True).decode("utf-8"):
+            py_exe = "python"
+    except subprocess.CalledProcessError as e:
+        pass
+
+    try:
+        subprocess.check_output("python3 --version", stderr=subprocess.STDOUT, shell=True).decode("utf-8")
+        py_exe = "python3"
+    except  subprocess.CalledProcessError as e:
+        pass
+    
+    if not py_exe:
+        raise EnvironmentError("Python is not in your path, please add it your path.")
+
+    os.system(f"{py_exe} -m textblob.download_corpora")
+    os.system(f"{py_exe} -c 'import nltk; nltk.download(\"stopwords\")'")
+    os.system(f"{py_exe} -m spacy download en")
+    
 
 @main.command()
 @click.option(
