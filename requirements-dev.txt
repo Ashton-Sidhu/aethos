@@ -6,7 +6,7 @@ gensim
 nltk
 matplotlib<3.1.1
 numpy
-pandas>=0.25.1
+pandas==0.25.1
 bokeh
 shap
 textblob

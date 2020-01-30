@@ -9,7 +9,7 @@ VERSION = "1.2.4"
 
 pkgs = [
     "numpy==1.17.4",
-    "pandas>=0.25",
+    "pandas==0.25.1",
     "scikit-learn>=0.22",
     "textblob==0.15.3",
     "matplotlib<3.2.0",
