@@ -74,11 +74,11 @@ class TemplateGenerator(object):
 
         _create_project_dir(self.project_dir, name=name)
 
-        files = ["custom_transformer.py", "transformers.py"]
+        files = ["pipeline.py"]
         for file in files:
-            script = self.env.get_template(
-                "files/clean/" + file.replace(".py", "")
-            ).render(methods=self.methods, params=self.params)
+            script = self.env.get_template("files/" + file.replace(".py", "")).render(
+                methods=self.methods, params=self.params
+            )
 
             script = fix_code(script)
 

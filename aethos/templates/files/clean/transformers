@@ -1,4 +1,5 @@
 transformers = [
+    ("custom_transformer", CustomCleanTransformer(), []),
     {% if "mean" in methods %}
     ("si_mean", SimpleImputer(strategy="mean"), {{ params["mean"][0] }}),
     {% endif %}
@@ -6,7 +7,7 @@ transformers = [
     ("si_median", SimpleImputer(strategy="median"), {{ params["median"][0] }}),
     {% endif %}
     {% if "mode" in methods %}
-    ("si_mode", SimpleImputer(strategy="mode"), {{ params["mode"][0] }}),
+    ("si_mode", SimpleImputer(strategy="most_frequent"), {{ params["mode"][0] }}),
     {% endif %}
     {% if "knn" in methods %}
     ("knn", KNNImputer(n_neighbors={{ params["knn"][0] }},
@@ -16,3 +17,5 @@ transformers = [
      ), {{ params["knn"][2]}})
     {% endif %}
 ]
+
+CleanTransformer = ColumnTransformer(transformers, remainder="passthrough")

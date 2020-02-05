@@ -1,4 +1,4 @@
-class CleanTransformer(BaseEstimator):
+class CustomCleanTransformer(BaseEstimator):
 
     def __init__(self):
         pass
@@ -24,7 +24,9 @@ class CleanTransformer(BaseEstimator):
         {% if "rmrd" in methods%}
         prob_cols = {{ params["rmrd"][0] }}
         self._probabilities = [X[col].value_counts(normalize=True) for col in prob_cols]
-        {% endif %}      
+        {% endif %}
+
+        return self   
 
     def transform(self, X):
 
@@ -132,6 +134,8 @@ class CleanTransformer(BaseEstimator):
         for col in ind_columns:
             X[col + "_missing"] = [{{ params["rmin"][1] }} if x else {{ params["rmin"][2] }} for x in X[col].isnull()]
         {% endif %}
+
+        return X
 
     def fit_transform(self, X, y=None):
         return self.fit(X).transform(X)
