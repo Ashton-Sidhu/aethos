@@ -243,14 +243,10 @@ def nltk_feature_noun_phrases(
         if new_col_name.startswith("_"):
             new_col_name = col + new_col_name
 
-        x_train[new_col_name] = pd.Series(
-            [TextBlob(x).noun_phrases for x in x_train[col]]
-        )
+        x_train[new_col_name] = [TextBlob(x).noun_phrases for x in x_train[col]]
 
         if x_test is not None:
-            x_test[new_col_name] = pd.Series(
-                [TextBlob(x).noun_phrases for x in x_train[col]]
-            )
+            x_test[new_col_name] = [TextBlob(x).noun_phrases for x in x_train[col]]
 
     return x_train, x_test
 

@@ -11,6 +11,7 @@ from aethos.feature_engineering.feature import Feature
 from aethos.preprocessing.preprocess import Preprocess
 from aethos.reporting.report import Report
 from aethos.stats.stats import Stats
+from aethos.templates.template_generator import TemplateGenerator
 from aethos.util import (
     CLEANING_CHECKLIST,
     DATA_CHECKLIST,
@@ -72,6 +73,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         self.report_name = report_name
         self.test_split_percentage = test_split_percentage
         self.target_mapping = None
+        self._tg = TemplateGenerator()
 
         if split and x_test is None:
             # Generate train set and test set.
@@ -183,6 +185,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
             target_field=self.target_field,
             report_name=self.report_name,
         )
+
+        # new_inst._tg = self._tg
 
         return new_inst
 
@@ -1043,3 +1047,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
             return self.x_train
         else:
             return self.x_train, self.x_test
+
+    def generate_python_files(self, name):
+
+        self._tg.generate_clean_files(name)

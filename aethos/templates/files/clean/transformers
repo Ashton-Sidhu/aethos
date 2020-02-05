@@ -1,0 +1,18 @@
+transformers = [
+    {% if "mean" in methods %}
+    ("si_mean", SimpleImputer(strategy="mean"), {{ params["mean"][0] }}),
+    {% endif %}
+    {% if "median" in methods %}
+    ("si_median", SimpleImputer(strategy="median"), {{ params["median"][0] }}),
+    {% endif %}
+    {% if "mode" in methods %}
+    ("si_mode", SimpleImputer(strategy="mode"), {{ params["mode"][0] }}),
+    {% endif %}
+    {% if "knn" in methods %}
+    ("knn", KNNImputer(n_neighbors={{ params["knn"][0] }},
+    {% for k,v in params["knn"][1].items() %}
+     {{ k + "=" + v + ","}}
+    {% endfor %}
+     ), {{ params["knn"][2]}})
+    {% endif %}
+]

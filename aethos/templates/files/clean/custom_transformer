@@ -1,0 +1,137 @@
+class CleanTransformer(BaseEstimator):
+
+    def __init__(self):
+        pass
+    
+    def fit(self, X, y=None):
+
+        {% if "dcmt" in methods %}
+        self._threshold_columns = X.columns[X.isnull().mean() < {{ params["dcmt"][0] }} ]
+        {% endif %}
+
+        {% if "dcc" in methods %}
+        self._unique_columns = [X.nunique()[col] not in [0, 1] for col in X.columns]
+        {% endif %}
+
+        {% if "duc" in methods %}
+        self._non_unique_columns = [X.nunique()[col] != X.shape[0] for col in X.columns]
+        {% endif %}
+
+        {% if "ddc" in methods %}
+        self._non_dup_columns = X.T.drop_duplicates().T.columns
+        {% endif %}
+
+        {% if "rmrd" in methods%}
+        prob_cols = {{ params["rmrd"][0] }}
+        self._probabilities = [X[col].value_counts(normalize=True) for col in prob_cols]
+        {% endif %}      
+
+    def transform(self, X):
+
+        {% if "dcmt" in methods %}
+        # Keep columns that are above the missing value threshold.
+        X = X[self._threshold_columns]
+        {% endif %}
+
+        {% if "dcc" in methods %}
+        # Keep columns that have > 1 unique value.
+        X = X[self._unique_columns]
+        {% endif %}
+
+        {% if "duc" in methods %}
+        # Remove columns that are purely unique.
+        X = X[self._non_unique_columns]
+        {% endif %}
+
+        {% if "drmt" in methods %}
+        # Drop rows that have greater than a % of missing values.
+        X = X.dropna(thresh=round(X.shape[1] * {{ params["dcmt"][0] }}), axis=0)
+        {% endif %}
+
+        {% if "rmc" in methods %}
+        # Replace missing values with a constant.
+        constant_dict = {{ params["rmc"][0] }}
+        X = X.fillna(constant_dict)
+        {% endif %}
+
+        {% if "rmc_list" in  methods %}
+        # Replace missing values with a constant.
+        constant = {{ params["rmc_list"][0] }}
+        columns = {{ params["rmc_list"][1] }}
+        for col in columns:
+            X[col].fillna(constant, inplace=True)
+        {% endif %}
+
+        {% if "rmrr" in methods %}
+        # Remove rows where the value of a column is missing.
+        columns_to_remove = {{ params["rmrr"][0] }}
+        X = X.dropna(axis=0, subset=columns_to_remove)
+        {% endif %}
+
+        {% if "ddr" in methods %}
+        # Remove duplicate rows.
+        chk_duplicate_cols = {{ params["ddr"][0] }}
+        X = X.drop_duplicates(chk_duplicate_cols)
+        {% endif %}
+ 
+        {% if "ddc" in methods %}
+        # Remove duplicate columns.
+        X = X[self._non_dup_columns]
+        {% endif %}
+
+        {% if "rmrd" in methods %}
+        # Replace missing values with a random number based off the distribution of the column.
+        prob_cols = {{ params["rmrd"][0] }}
+        for i, col in enumerate(prob_cols):
+            missing_data = X[col].isnull()
+
+            X.loc[missing_data, col] = np.random.choice(
+                self._probabilities[i].index,
+                size=len(X[missing_data]),
+                replace=True,
+                p=self._probabilities[i].values,
+            )
+        {% endif %}
+
+        {% if "rmi" in methods %}
+        # Interpolate missing values.
+        interp_columns = {{ params["rmi"][0] }}
+        for col in interp_columns:
+            X[col] = X[col].interpolate(method={{ params["rmi"][1] }}, 
+            {% for k,v in params["rmi"][2].items() %}
+             {{ k + "=" + v + ","}}
+            )
+            {% endfor %}
+        {% endif %}
+
+        {% if "rmbf" in methods %}
+        # Back fill missing values.
+        bfill_columns = {{ params["rmbf"][0] }}
+        for col in bfill_columns:
+            X[col] = X[col].fillna(method="bfill", 
+            {% for k,v in params["rmbf"][1].items() %}
+             {{ k + "=" + v + ","}}
+            )
+            {% endfor %}
+        {% endif %}
+
+        {% if "rmff" in methods %}
+        # Forward fill missing values.
+        ffill_columns = {{ params["rmff"][0] }}
+        for col in ffill_columns:
+            X[col] = X[col].fillna(method="ffill", 
+            {% for k,v in params["rmff"][1].items() %}
+             {{ k + "=" + v + ","}}
+            )
+            {% endfor %}
+        {% endif %}
+
+        {% if "rmin" in methods %}
+        # Add a missing indicator column
+        ind_columns = {{ params["rmin"][0] }}
+        for col in ind_columns:
+            X[col + "_missing"] = [{{ params["rmin"][1] }} if x else {{ params["rmin"][2] }} for x in X[col].isnull()]
+        {% endif %}
+
+    def fit_transform(self, X, y=None):
+        return self.fit(X).transform(X)

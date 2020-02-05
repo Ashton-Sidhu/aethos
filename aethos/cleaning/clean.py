@@ -36,6 +36,9 @@ class Clean(object):
             x_train=self.x_train, x_test=self.x_test, threshold=threshold,
         )
 
+        self._tg.methods.append("dcmt")
+        self._tg.params["dcmt"] = [threshold]
+
         if self.report is not None:
             new_columns = original_columns.difference(self.x_train.columns)
             self.report.report_technique(report_info, new_columns)
@@ -68,6 +71,8 @@ class Clean(object):
             x_train=self.x_train, x_test=self.x_test
         )
 
+        self._tg.methods.append("dcc")
+
         if self.report is not None:
             new_columns = original_columns.difference(self.x_train.columns)
             self.report.report_technique(report_info, new_columns)
@@ -97,6 +102,8 @@ class Clean(object):
         (self.x_train, self.x_test,) = util.remove_unique_columns(
             x_train=self.x_train, x_test=self.x_test
         )
+
+        self._tg.methods.append("duc")
 
         if self.report is not None:
             new_columns = original_columns.difference(self.x_train.columns)
@@ -131,6 +138,9 @@ class Clean(object):
         (self.x_train, self.x_test,) = util.remove_rows_threshold(
             x_train=self.x_train, x_test=self.x_test, threshold=threshold,
         )
+
+        self._tg.methods.append("drmt")
+        self._tg.params["drmt"] = [threshold]
 
         # Write to report
         if self.report is not None:
@@ -180,6 +190,9 @@ class Clean(object):
             list_of_cols=list_of_cols,
             strategy="mean",
         )
+
+        self._tg.methods.append("mean")
+        self._tg.params["mean"] = [list_of_cols]
 
         if self.report is not None:
             if list_of_cols:
@@ -233,6 +246,9 @@ class Clean(object):
             strategy="median",
         )
 
+        self._tg.methods.append("median")
+        self._tg.params["median"] = [list_of_cols]
+
         if self.report is not None:
             if list_of_cols:
                 self.report.report_technique(report_info, list_of_cols)
@@ -282,6 +298,10 @@ class Clean(object):
             list_of_cols=list_of_cols,
             strategy="most_frequent",
         )
+
+        self._tg.methods.append("mode")
+        self._tg.params["mode"] = [list_of_cols]
+
         if self.report is not None:
             if list_of_cols:
                 self.report.report_technique(report_info, list_of_cols)
@@ -343,6 +363,13 @@ class Clean(object):
             col_to_constant=col_to_constant,
             constant=constant,
         )
+
+        if isinstance(col_to_constant, dict):
+            self._tg.methods.append("rmc")
+            self._tg.params["rmc"] = [col_to_constant]
+        else:
+            self._tg.methods.append("rmc_list")
+            self._tg.params["rmc_list"] = [constant, col_to_constant]
 
         if self.report is not None:
             if not col_to_constant:
@@ -408,6 +435,13 @@ class Clean(object):
             constant=new_category,
         )
 
+        if isinstance(col_to_category, dict):
+            self._tg.methods.append("rmc")
+            self._tg.params["rmc"] = [col_to_category]
+        else:
+            self._tg.methods.append("rmc_list")
+            self._tg.params["rmc_list"] = [constant, col_to_category]
+
         if self.report is not None:
             if not col_to_category:
                 self.report.report_technique(report_info, self.x_train.columns)
@@ -451,6 +485,9 @@ class Clean(object):
         (self.x_train, self.x_test,) = cat.replace_missing_remove_row(
             x_train=self.x_train, x_test=self.x_test, cols_to_remove=list_of_cols,
         )
+
+        self._tg.methods.append("rmrr")
+        self._tg.params["rmrr"] = [list_of_cols]
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
@@ -496,6 +533,9 @@ class Clean(object):
             x_train=self.x_train, x_test=self.x_test, list_of_cols=list_of_cols,
         )
 
+        self._tg.methods.append("ddr")
+        self._tg.params["ddr"] = [list_of_cols]
+
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
@@ -522,6 +562,8 @@ class Clean(object):
         (self.x_train, self.x_test,) = util.remove_duplicate_columns(
             x_train=self.x_train, x_test=self.x_test
         )
+
+        self._tg.methods.append("ddc")
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -565,6 +607,9 @@ class Clean(object):
         (self.x_train, self.x_test,) = util.replace_missing_random_discrete(
             x_train=self.x_train, x_test=self.x_test, list_of_cols=list_of_cols,
         )
+
+        self._tg.methods.append("rmrd")
+        self._tg.params["rmrd"] = [list_of_cols]
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
@@ -622,6 +667,9 @@ class Clean(object):
         (self.x_train, self.x_test,) = util.replace_missing_knn(
             x_train=self.x_train, x_test=self.x_test, n_neighbors=k, **knn_kwargs
         )
+
+        self._tg.methods.append("knn")
+        self._tg.params["knn"] = [k, knn_kwargs, list(self.x_train.columns)]
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -691,6 +739,9 @@ class Clean(object):
             **inter_kwargs
         )
 
+        self._tg.methods.append("rmi")
+        self._tg.params["rmi"] = [list_of_cols, method, inter_kwargs]
+
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
@@ -734,6 +785,9 @@ class Clean(object):
             **extra_kwargs
         )
 
+        self._tg.methods.append("rmbf")
+        self._tg.params["rmbf"] = [list_of_cols, extra_kwargs]
+
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
 
@@ -776,6 +830,9 @@ class Clean(object):
             method="ffill",
             **extra_kwargs
         )
+
+        self._tg.methods.append("rmff")
+        self._tg.params["rmff"] = [list_of_cols, extra_kwargs]
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)
@@ -835,6 +892,9 @@ class Clean(object):
             valid_indicator=valid_indicator,
             keep_col=keep_col,
         )
+
+        self._tg.methods.append("rmin")
+        self._tg.params["rmin"] = [list_of_cols, missing_indicator, valid_indicator]
 
         if self.report is not None:
             self.report.report_technique(report_info, list_of_cols)

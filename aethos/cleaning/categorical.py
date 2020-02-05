@@ -46,7 +46,7 @@ def replace_missing_new_category(
     if isinstance(col_to_category, list):
         col_to_category = _get_columns(col_to_category, x_train)
 
-    str_missing_categories = ["Other", "Unknown", "Missingx_trainCategory"]
+    str_missing_categories = ["Other", "Unknown", "MissingCategory"]
     num_missing_categories = [-1, -999, -9999]
 
     if isinstance(col_to_category, dict):

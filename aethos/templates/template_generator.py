@@ -3,9 +3,13 @@ import subprocess
 from pathlib import Path
 
 from jinja2 import Environment, PackageLoader
+from autopep8 import fix_code
 
-from aethos.templates.util import (_create_dir, _create_project_dir,
-                                   _get_model_type_kwarg)
+from aethos.templates.util import (
+    _create_dir,
+    _create_project_dir,
+    _get_model_type_kwarg,
+)
 
 
 class TemplateGenerator(object):
@@ -18,6 +22,11 @@ class TemplateGenerator(object):
     )
 
     project_dir = _create_dir()
+
+    def __init__(self):
+
+        self.methods = []
+        self.params = {}
 
     @classmethod
     def generate_service(cls, name: str, filename: str, model):
@@ -41,9 +50,9 @@ class TemplateGenerator(object):
         model_kwargs = _get_model_type_kwarg(model)
 
         for file in files:
-            script = cls.env.get_template("files/" + file.replace(".py", "")).render(
-                name=name, filename=filename, service=True, **model_kwargs,
-            )
+            script = cls.env.get_template(
+                "files/deployment/" + file.replace(".py", "")
+            ).render(name=name, filename=filename, service=True, **model_kwargs,)
 
             if file.endswith(".py") or file.endswith(".txt"):
                 with open(
@@ -60,3 +69,23 @@ class TemplateGenerator(object):
 
         print(f"Deployment files can be found at {cls.project_dir}/{name}.")
         print()
+
+    def generate_clean_files(self, name: str):
+
+        _create_project_dir(self.project_dir, name=name)
+
+        files = ["custom_transformer.py", "transformers.py"]
+        for file in files:
+            script = self.env.get_template(
+                "files/clean/" + file.replace(".py", "")
+            ).render(methods=self.methods, params=self.params)
+
+            script = fix_code(script)
+
+            if file.endswith(".py"):
+                with open(
+                    os.path.join(self.project_dir, name, "src", file),
+                    "w",
+                    encoding="utf8",
+                ) as f:
+                    f.write(script)
