@@ -17,7 +17,7 @@ interpret
 scikit_learn
 PyYAML
 spacy
-xgboost
+xgboost==0.90
 qgrid
 ipywidgets
 SAlib
