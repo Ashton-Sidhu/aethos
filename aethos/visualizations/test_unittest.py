@@ -205,7 +205,7 @@ class Test_TestBase(unittest.TestCase):
         )
 
         clean = Data(x_train=df, split=False)
-        clean.lineplot(x="date", y=["Google", "Apple"], show_figure=False)
+        clean.lineplot(x="date", y=["Google", "Apple"])
 
         self.assertTrue(True)
 
