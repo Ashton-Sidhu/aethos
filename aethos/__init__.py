@@ -43,7 +43,5 @@ shell = get_ipython().__class__.__name__
 
 if shell == "ZMQInteractiveShell":
     import shap
-    from bokeh.io import output_notebook
 
-    output_notebook()
     shap.initjs()

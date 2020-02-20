@@ -51,6 +51,8 @@ def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **p
     if output_file:  # pragma: no cover
         fig.savefig(os.path.join(IMAGE_DIR, output_file))
 
+    return ax
+
 
 def barplot(
     x,
@@ -163,7 +165,7 @@ def barplot(
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-    fig.show()
+    return fig
 
 
 def scatterplot(
@@ -208,7 +210,6 @@ def scatterplot(
     """
 
     if z is None:
-
         fig = px.scatter(
             data, x=x, y=y, color=category, title=title, **scatterplot_kwargs
         )
@@ -221,11 +222,11 @@ def scatterplot(
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-    fig.show()
+    return fig
 
 
 def lineplot(
-    x: str, y: list, data, title="Line Plot", output_file="", **lineplot_kwargs
+    x: str, y: str, z: str, data, category=None, title="Line Plot", output_file="", **lineplot_kwargs
 ):
     """
     Plots a line plot.
@@ -235,11 +236,17 @@ def lineplot(
     x : str
         X axis column
 
-    y : list
+    y : str
         Y axis column
+
+    z : str
+        Z axis column
 
     data : Dataframe
         Dataframe
+
+    category : str
+        Category column to draw multiple line plots of
 
     title : str, optional
         Title of the plot, by default 'Line Plot'
@@ -248,23 +255,22 @@ def lineplot(
         If a name is provided save the plot to an html file, by default ''
     """
 
-    import pandas_bokeh
-    from bokeh.io import export_png
+    if z is None:
+        fig = px.line(
+            data, x=x, y=y, color=category, title=title, **lineplot_kwargs
+        )
 
-    y.append(x)
-    data_copy = data[y].copy()
-    data_copy = data_copy.set_index(x)
-    xlabel = lineplot_kwargs.pop("xlabel", x)
+        fig.data[0].update(mode='markers+lines')
 
-    p_line = data_copy.plot_bokeh.line(title=title, xlabel=xlabel, **lineplot_kwargs)
+    else:
+        fig = px.line_3d(
+            data, x=x, y=y, z=z, color=category, title=title, **lineplot_kwargs
+        )
 
     if output_file:  # pragma: no cover
+        fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-        if Path(output_file).suffix == ".html":
-            pandas_bokeh.output_file(os.path.join(IMAGE_DIR, output_file))
-        else:
-            export_png(p_line, os.path.join(IMAGE_DIR, output_file))
-
+    return fig
 
 def correlation_matrix(
     df, data_labels=False, hide_mirror=False, output_file="", **kwargs
@@ -316,6 +322,7 @@ def correlation_matrix(
     if output_file:  # pragma: no cover
         fig.savefig(os.path.join(IMAGE_DIR, output_file))
 
+    return ax
 
 def pairplot(
     df,
@@ -377,6 +384,8 @@ def pairplot(
     if output_file:  # pragma: no cover
         g.savefig(os.path.join(IMAGE_DIR, output_file))
 
+    return g
+
 
 def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
     """
@@ -415,6 +424,8 @@ def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
 
     if output_file:  # pragma: no cover
         g.savefig(os.path.join(IMAGE_DIR, output_file))
+
+    return g
 
 
 def histogram(x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwargs):
@@ -477,6 +488,8 @@ def histogram(x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwa
     if output_file:  # pragma: no cover
         g.figure.savefig(os.path.join(IMAGE_DIR, output_file))
 
+    return g
+
 
 def viz_clusters(
     data: pd.DataFrame, algo: str, category: str, dim=2, output_file="", **kwargs
@@ -522,7 +535,7 @@ def viz_clusters(
     reduced_df[category] = reduced_df[category].astype(str)
 
     if dim == 2:
-        scatterplot(
+        fig = scatterplot(
             "0",
             "1",
             data=reduced_df,
@@ -531,7 +544,7 @@ def viz_clusters(
             **kwargs,
         )
     else:
-        scatterplot(
+        fig = scatterplot(
             "0",
             "1",
             "2",
@@ -540,6 +553,8 @@ def viz_clusters(
             output_file=output_file,
             **kwargs,
         )
+
+    return fig
 
 
 def boxplot(
@@ -574,8 +589,7 @@ def boxplot(
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-    fig.show()
-
+    return fig
 
 def violinplot(
     x=None, y=None, data=None, orient="v", title="", output_file="", **violin_kwargs,
@@ -609,7 +623,7 @@ def violinplot(
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-    fig.show()
+    return fig
 
 
 def create_table(matrix, index, output_file, **kwargs):

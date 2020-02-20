@@ -146,10 +146,12 @@ class Visualizations(object):
         if y is None:
             y = self.target_field
 
-        viz.raincloud(y, x, self.train_data, output_file=output_file, **params)
+        fig = viz.raincloud(y, x, self.train_data, output_file=output_file, **params)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig
 
     def barplot(
         self,
@@ -221,7 +223,7 @@ class Visualizations(object):
         >>> data.barplot(x='x', y=['y', 'z'], method='max', orient='h')
         """
 
-        viz.barplot(
+        fig = viz.barplot(
             x,
             y,
             self.train_data,
@@ -234,6 +236,8 @@ class Visualizations(object):
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig
 
     def scatterplot(
         self,
@@ -286,7 +290,7 @@ class Visualizations(object):
         >>> data.scatterplot(x='x', y='y', z='z', output_file='scatt')
         """
 
-        viz.scatterplot(
+        fig = viz.scatterplot(
             x,
             y,
             z=z,
@@ -300,63 +304,96 @@ class Visualizations(object):
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
+        return fig
+
     def lineplot(
-        self, x: str, y: list, title="Line Plot", output_file="", **lineplot_kwargs
+        self, x: str, y: str, z=None, category=None, title="Line Plot", output_file="", **lineplot_kwargs
     ):
         """
-        Plots a lineplot for the given x and y columns provided using Bokeh.
+        Plots a lineplot for the given x and y columns provided using Plotly Express.
 
         For a list of possible lineplot_kwargs please check out the following links:
 
-        https://github.com/PatrikHlobil/Pandas-Bokeh#lineplot
+        For 2d:
 
-        https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.line 
+            https://plot.ly/python-api-reference/generated/plotly.express.line.html#plotly.express.line
+
+        For 3d:
+
+            https://plot.ly/python-api-reference/generated/plotly.express.line_3d.html#plotly.express.line_3d
         
         Parameters
         ----------
         x : str
             X column name
 
-        y : list
-            Column names to plot on the y axis.
+        y : str
+            Column name to plot on the y axis.
+
+        z: str
+            Column name to plot on the z axis.
 
         title : str, optional
             Title of the plot, by default 'Line Plot'
 
+        category : str
+            Category column to draw multiple line plots of
+
         output_file : str, optional
             Output html file name for image
 
-        color : str, optional
-            Define a single color for the plot
+        text : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like appear in the figure as text labels.
 
-        colormap : list or Bokeh color palette, optional
-            Can be used to specify multiple colors to plot.
-            Can be either a list of colors or the name of a Bokeh color palette : https://bokeh.pydata.org/en/latest/docs/reference/palettes.html
+        facet_row : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to assign marks to facetted subplots in the vertical direction.
 
-        rangetool : bool, optional
-            If true, will enable a scrolling range tool.
+        facet_col : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to assign marks to facetted subplots in the horizontal direction.
 
-        xlabel : str, optional
-            Name of the x axis
+        error_x : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to size x-axis error bars.
+            If error_x_minus is None, error bars will be symmetrical, otherwise error_x is used for the positive direction only.
 
-        ylabel : str, optional
-            Name of the y axis
+        error_x_minus : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to size x-axis error bars in the negative direction.
+            Ignored if error_x is None.
 
-        xticks : list, optional
-            Explicitly set ticks on x-axis
+        error_y : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to size y-axis error bars.
+            If error_y_minus is None, error bars will be symmetrical, otherwise error_y is used for the positive direction only.
 
-        yticks : list, optional
-            Explicitly set ticks on y-axis
+        error_y_minus : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to size y-axis error bars in the negative direction.
+            Ignored if error_y is None.
 
-        xlim : tuple (int or float), optional
-            Set visible range on x axis
+        animation_frame : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to assign marks to animation frames.
 
-        ylim : tuple (int or float), optional
-            Set visible range on y axis.
+        animation_group : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to provide object-constancy across animation frames: rows with matching `animation_group`s will be treated as if they describe the same object in each frame.
 
-        **lineplot_kwargs : optional
-            For a list of possible keyword arguments for line plot please see https://github.com/PatrikHlobil/Pandas-Bokeh#lineplot
-            and https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure.line
+        labels : dict with str keys and str values (default {})
+            By default, column names are used in the figure for axis titles, legend entries and hovers. 
+            his parameter allows this to be overridden. The keys of this dict should correspond to column names, and the values should correspond to the desired label to be displayed.
+
+        color_discrete_sequence : list of str
+            Strings should define valid CSS-colors. 
+            When color is set and the values in the corresponding column are not numeric, values in that column are assigned colors by cycling through color_discrete_sequence in the order described in category_orders, unless the value of color is a key in color_discrete_map.
+            Various useful color sequences are available in the plotly.express.colors submodules, specifically plotly.express.colors.qualitative.
+
+        color_discrete_map : dict with str keys and str values (default {})
+            String values should define valid CSS-colors Used to override color_discrete_sequence to assign a specific colors to marks corresponding with specific values.
+            Keys in color_discrete_map should be values in the column denoted by color.
 
         Examples
         --------
@@ -364,12 +401,14 @@ class Visualizations(object):
         >>> data.line_plot(x='x', y='y', output_file='line')
         """
 
-        viz.lineplot(
-            x, y, self.train_data, title=title, output_file=output_file, **lineplot_kwargs,
+        fig = viz.lineplot(
+            x, y, z, self.train_data, category=category, title=title, output_file=output_file, **lineplot_kwargs,
         )
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig
 
     def correlation_matrix(
         self, data_labels=False, hide_mirror=False, output_file="", **kwargs
@@ -396,7 +435,7 @@ class Visualizations(object):
         >>> data.correlation_matrix(data_labels=True, output_file='corr.png')
         """
 
-        viz.correlation_matrix(
+        fig = viz.correlation_matrix(
             self.train_data,
             data_labels=data_labels,
             hide_mirror=hide_mirror,
@@ -406,6 +445,8 @@ class Visualizations(object):
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig
 
     def pairplot(
         self, cols=[], kind="scatter", diag_kind="auto", upper_kind=None, lower_kind=None, hue=None, output_file="", **kwargs
@@ -454,7 +495,7 @@ class Visualizations(object):
 
         data = self.train_data if not cols else self.train_data[cols]
 
-        viz.pairplot(
+        fig = viz.pairplot(
             data,
             kind=kind,
             diag_kind=diag_kind,
@@ -467,6 +508,8 @@ class Visualizations(object):
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig
 
     def jointplot(self, x: str, y: str, kind="scatter", output_file="", **kwargs):
         """
@@ -516,10 +559,12 @@ class Visualizations(object):
         >>> data.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        viz.jointplot(x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs)
+        fig = viz.jointplot(x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs)
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig
 
     def histogram(self, *x, plot_test=False, output_file="", **kwargs):
         """
@@ -608,7 +653,7 @@ class Visualizations(object):
         >>> data.plot_dim_reduction('cluster_labels', dim=3)
         """
 
-        viz.viz_clusters(
+        fig = viz.viz_clusters(
             self.train_data,
             algo=algo,
             category=category,
@@ -619,6 +664,8 @@ class Visualizations(object):
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig
 
     def boxplot(self, x=None, y=None, color=None, title="", output_file="", **kwargs):
         """
@@ -667,7 +714,7 @@ class Visualizations(object):
 
         assert (x is not None or y is not None), "An x column or a y column must be provided."
 
-        viz.boxplot(
+        fig = viz.boxplot(
             x=x,
             y=y,
             data=self.train_data,
@@ -679,6 +726,8 @@ class Visualizations(object):
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig
 
     def violinplot(self, x=None, y=None, color=None, title="", output_file="", **kwargs):
         """
@@ -731,7 +780,7 @@ class Visualizations(object):
 
         assert (x is not None or y is not None), "An x column or a y column must be provided."
 
-        viz.violinplot(
+        fig = viz.violinplot(
             x=x,
             y=y,
             data=self.train_data,
@@ -743,3 +792,5 @@ class Visualizations(object):
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
+
+        return fig

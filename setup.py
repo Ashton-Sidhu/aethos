@@ -5,7 +5,7 @@ from subprocess import check_call
 from setuptools import find_packages, setup
 from setuptools.command.install import install
 
-VERSION = "1.2.4"
+VERSION = "1.2.5"
 
 pkgs = [
     "numpy==1.17.4",
@@ -14,7 +14,6 @@ pkgs = [
     "textblob==0.15.3",
     "matplotlib<3.2.0",
     "pandas_summary",
-    "pandas-bokeh==0.4.2",
     "ptitprince==0.1.5",
     "nltk==3.4.5",
     "ipython==7.10.1",

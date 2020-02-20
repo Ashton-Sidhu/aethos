@@ -7,11 +7,9 @@ nltk
 matplotlib<3.1.1
 numpy==1.17.4
 pandas==0.25.1
-bokeh
 shap
 textblob
 Click
-pandas_bokeh
 yellowbrick
 pandas_summary
 ipython
