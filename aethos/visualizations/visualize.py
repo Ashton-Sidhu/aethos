@@ -468,7 +468,7 @@ def histogram(x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwa
         n_cols = 2
         n_rows = math.ceil(len(x) / n_cols)
 
-        _, ax = plt.subplots(n_rows, n_cols, figsize=(30, 10 * n_cols))
+        _, ax = plt.subplots(n_rows, n_cols, figsize=(30, 5 * n_cols))
 
         for ax, col in zip(ax.flat, x):
             g = None
