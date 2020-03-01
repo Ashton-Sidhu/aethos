@@ -130,7 +130,7 @@ def barplot(
             fig.add_trace(
                 go.Bar(
                     x=data_copy[x],
-                    y=data[col],
+                    y=data_copy[col],
                     name=col,
                     width=[0.1] * len(data_copy[x]),
                     orientation=orient,
@@ -151,7 +151,7 @@ def barplot(
             fig.add_trace(
                 go.Bar(
                     x=data_copy[x],
-                    y=data[col],
+                    y=data_copy[col],
                     name=col,
                     width=[0.5] * len(data_copy[x]),
                     orientation=orient,
