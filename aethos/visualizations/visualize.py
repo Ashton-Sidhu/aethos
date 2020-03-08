@@ -55,17 +55,7 @@ def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **p
 
 
 def barplot(
-    x,
-    y,
-    data,
-    method=None,
-    orient="v",
-    barmode="relative",
-    title="",
-    yaxis_params=None,
-    xaxis_params=None,
-    output_file="",
-    **barplot_kwargs,
+    x, y, data, method=None, output_file="", **barplot_kwargs,
 ):
     """
     Visualizes a bar plot.
@@ -75,7 +65,7 @@ def barplot(
     x : str
         Column name for the x axis.
 
-    y : str, list
+    y : str
         Columns for the y axis
 
     data : Dataframe
@@ -85,29 +75,9 @@ def barplot(
         Method to aggregate groupy data
         Examples: min, max, mean, etc., optional
         by default None
-
-    orient : str, optional
-        Orientation of graph, 'h' for horizontal
-        'v' for vertical, by default 'v'
-
-    barmode : str {'relative', 'overlay', 'group', 'stack'}
-        Relative is a normal barplot
-        Overlay barplot shows positive values above 0 and negative values below 0
-        Group are the bars beside each other.
-        Stack groups the bars on top of each other
-        by default 'relative'
-
-    yaxis_params : dict
-        Parameters for the y axis
-
-    xaxis_params : dict
-        Parameters for the x axis
     """
 
-    import plotly.graph_objects as go
-
-    if isinstance(y, str):
-        y = [y]
+    import plotly.express as px
 
     data_copy = data.copy()
 
@@ -115,52 +85,7 @@ def barplot(
         data_copy = data_copy.groupby(x, as_index=False)
         data_copy = getattr(data_copy, method)()
 
-    fig = go.Figure()
-
-    if not xaxis_params:
-        xaxis_params = {"title": x.capitalize()}
-
-    if not yaxis_params:
-        if method:
-            yaxis_params = {"title": method.capitalize()}
-
-    if len(y) > 1:
-
-        for col in y:
-            fig.add_trace(
-                go.Bar(
-                    x=data_copy[x],
-                    y=data_copy[col],
-                    name=col,
-                    width=[0.1] * len(data_copy[x]),
-                    orientation=orient,
-                )
-            )
-
-        fig.update_layout(
-            title=title,
-            xaxis=xaxis_params,
-            yaxis=yaxis_params,
-            barmode=barmode,
-            bargap=0.8,  # gap between bars of adjacent location coordinates.
-            bargroupgap=0.1,  # gap between bars of the same location coordinate
-        )
-
-    else:
-        for col in y:
-            fig.add_trace(
-                go.Bar(
-                    x=data_copy[x],
-                    y=data_copy[col],
-                    name=col,
-                    width=[0.5] * len(data_copy[x]),
-                    orientation=orient,
-                )
-            )
-
-        fig.update_layout(
-            title=title, xaxis=xaxis_params, yaxis=yaxis_params, barmode=barmode,
-        )
+    fig = px.bar(data_copy, x=x, y=y, **barplot_kwargs)
 
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
@@ -226,7 +151,14 @@ def scatterplot(
 
 
 def lineplot(
-    x: str, y: str, z: str, data, category=None, title="Line Plot", output_file="", **lineplot_kwargs
+    x: str,
+    y: str,
+    z: str,
+    data,
+    category=None,
+    title="Line Plot",
+    output_file="",
+    **lineplot_kwargs,
 ):
     """
     Plots a line plot.
@@ -256,11 +188,9 @@ def lineplot(
     """
 
     if z is None:
-        fig = px.line(
-            data, x=x, y=y, color=category, title=title, **lineplot_kwargs
-        )
+        fig = px.line(data, x=x, y=y, color=category, title=title, **lineplot_kwargs)
 
-        fig.data[0].update(mode='markers+lines')
+        fig.data[0].update(mode="markers+lines")
 
     else:
         fig = px.line_3d(
@@ -271,6 +201,7 @@ def lineplot(
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
     return fig
+
 
 def correlation_matrix(
     df, data_labels=False, hide_mirror=False, output_file="", **kwargs
@@ -323,6 +254,7 @@ def correlation_matrix(
         fig.savefig(os.path.join(IMAGE_DIR, output_file))
 
     return ax
+
 
 def pairplot(
     df,
@@ -591,6 +523,7 @@ def boxplot(
 
     return fig
 
+
 def violinplot(
     x=None, y=None, data=None, orient="v", title="", output_file="", **violin_kwargs,
 ):
@@ -622,6 +555,46 @@ def violinplot(
 
     if output_file:  # pragma: no cover
         fig.write_image(os.path.join(IMAGE_DIR, output_file))
+
+    return fig
+
+
+def pieplot(
+    values: str,
+    names: str,
+    data=None,
+    textposition=None,
+    textinfo=None,
+    output_file="",
+    **pieplot_kwargs,
+):
+    """
+    Plots a pie plot.
+    
+    Parameters
+    ----------
+    values : str
+        Values of the pie plot.
+
+    names : str
+        Labels for the pie plot
+
+    data : DataFrame, optional
+        Data, by default None
+
+    textposition : str
+        Text position location
+
+    textinfo : str
+        Text info
+
+    output_file : str, optional
+        File name, by default ""
+    """
+
+    fig = px.pie(data, names=names, values=values, **pieplot_kwargs)
+
+    fig.update_traces(textposition=textposition, textinfo=textinfo)
 
     return fig
 

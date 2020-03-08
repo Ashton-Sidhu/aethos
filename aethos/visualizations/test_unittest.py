@@ -10,7 +10,6 @@ from aethos.core import Data
 from sklearn.datasets import make_blobs
 
 
-
 class Test_TestBase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
@@ -80,7 +79,7 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.pairplot(diag_kind='hist', upper_kind='scatter', lower_kind='kde')
+        base.pairplot(diag_kind="hist", upper_kind="scatter", lower_kind="kde")
 
         self.assertTrue(True)
 
@@ -132,14 +131,32 @@ class Test_TestBase(unittest.TestCase):
         )
 
         base.barplot(
-            x="species", y=["sepal_length", "sepal_width"], method="mean", orient="h", barmode="group",
+            x="species", y="sepal_length", method="mean", orient="h", barmode="group",
         )
         base.barplot(
-            x="species", y=["sepal_length", "sepal_width"], method="mean", orient="v", barmode="group",
+            x="species", y="sepal_length", method="mean", barmode="group",
         )
 
         self.assertTrue(True)
 
+    def test_pieplot(self):
+
+        import plotly.express as px
+
+        data = px.data.tips()
+
+        base = Data(
+            x_train=data,
+            x_test=None,
+            split=False,
+            target_field=None,
+            report_name="test",
+            test_split_percentage=0.5,
+        )
+
+        base.pieplot("tip", "day")
+
+        self.assertTrue(True)
 
     def test_boxplot(self):
 
@@ -154,7 +171,7 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.boxplot(x='species', y='sepal_width', color='species')
+        base.boxplot(x="species", y="sepal_width", color="species")
 
         self.assertTrue(True)
 
@@ -171,10 +188,9 @@ class Test_TestBase(unittest.TestCase):
             test_split_percentage=0.5,
         )
 
-        base.violinplot(x='species', y='sepal_width', color='species')
+        base.violinplot(x="species", y="sepal_width", color="species")
 
         self.assertTrue(True)
-
 
     def test_correlation_plot(self):
 
@@ -214,9 +230,9 @@ class Test_TestBase(unittest.TestCase):
         data, label = make_blobs(100, 4, centers=3)
 
         df = pd.DataFrame(data)
-        df['label'] = label
+        df["label"] = label
         df = Data(df, split=False)
-        df.plot_dim_reduction('label', algo='pca', dim=2)
+        df.plot_dim_reduction("label", algo="pca", dim=2)
 
         self.assertTrue(True)
 
@@ -225,11 +241,11 @@ class Test_TestBase(unittest.TestCase):
         data, label = make_blobs(100, 4, centers=3)
 
         df = pd.DataFrame(data)
-        df['label'] = label
+        df["label"] = label
 
         df = Data(df, split=False)
 
-        df.plot_dim_reduction('label', algo='lle', dim=2)
+        df.plot_dim_reduction("label", algo="lle", dim=2)
 
         self.assertTrue(True)
 
@@ -238,11 +254,11 @@ class Test_TestBase(unittest.TestCase):
         data, label = make_blobs(100, 4, centers=3)
 
         df = pd.DataFrame(data)
-        df['label'] = label
+        df["label"] = label
 
         df = Data(df, split=False)
 
-        df.plot_dim_reduction('label', algo='tsvd', dim=2)
+        df.plot_dim_reduction("label", algo="tsvd", dim=2)
 
         self.assertTrue(True)
 
@@ -250,10 +266,10 @@ class Test_TestBase(unittest.TestCase):
 
         data, label = make_blobs(100, 4, centers=3)
         df = pd.DataFrame(data)
-        df['label'] = label
+        df["label"] = label
 
         df = Data(df, split=False)
 
-        df.plot_dim_reduction('label', algo='tsvd', dim=3)
+        df.plot_dim_reduction("label", algo="tsvd", dim=3)
 
         self.assertTrue(True)

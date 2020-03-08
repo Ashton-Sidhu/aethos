@@ -1,10 +1,8 @@
 from aethos.visualizations import visualize as viz
-from typing import Union
 import numpy as np
 
 
 class Visualizations(object):
-
     @property
     def plot_colors(self):  # pragma: no cover
         """
@@ -28,15 +26,15 @@ class Visualizations(object):
         IFrame("https://seaborn.pydata.org/tutorial/color_palettes.html")
 
     @property
-    def train_data(self): # pragma: no cover
-        if hasattr(self, '_train_result_data'):
+    def train_data(self):  # pragma: no cover
+        if hasattr(self, "_train_result_data"):
             return self._train_result_data
         else:
             return self.x_train
 
     @property
-    def test_data(self): # pragma: no cover
-        if hasattr(self, '_test_result_data'):
+    def test_data(self):  # pragma: no cover
+        if hasattr(self, "_test_result_data"):
             return self._test_result_data
         else:
             return self.x_test
@@ -156,13 +154,10 @@ class Visualizations(object):
     def barplot(
         self,
         x: str,
-        y: Union[str, list],
+        y: str,
         method=None,
         orient="v",
-        barmode='relative',
-        title='',
-        yaxis_params=None,
-        xaxis_params=None,
+        title="",
         output_file="",
         **barplot_kwargs,
     ):
@@ -173,12 +168,10 @@ class Visualizations(object):
         so you would want to `groupby` Age and then find the `mean` as the method.
 
         For a list of group by methods please checkout the following pandas link:
-        
-            https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html#computations-descriptive-stats
+        https://pandas.pydata.org/pandas-docs/stable/reference/groupby.html#computations-descriptive-stats
 
         For a list of possible arguments for the bar plot please checkout the following links:
-
-            https://plot.ly/python/reference/#bar
+        https://plot.ly/python-api-reference/generated/plotly.express.bar.html
 
         Parameters
         ----------
@@ -193,34 +186,87 @@ class Visualizations(object):
             Examples: min, max, mean, etc., optional
             by default None
 
-        orient : str, optional
-            Orientation of graph, 'h' for horizontal
-            'v' for vertical, by default 'v',
-
-        barmode : str {'relative', 'overlay', 'group', 'stack'}
-            Relative is a normal barplot
-            Overlay barplot shows positive values above 0 and negative values below 0
-            Group are the bars beside each other.
-            Stack groups the bars on top of each other
-            by default 'relative'
+        orient : str (default 'v')
+            One of 'h' for horizontal or 'v' for vertical
 
         title : str
-            Title of the plot, by default ''
+            The figure title.
 
-        yaxis_params : dict
-            Parameters for the y axis, by default None
+        color : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to assign color to marks.
 
-        xaxis_params : dict
-            Parameters for the x axis, by default None
+        hover_name : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like appear in bold in the hover tooltip.
+
+        hover_data : list of str or int, or Series or array-like
+            Either names of columns in data_frame, or pandas Series, or array_like objects Values from these columns appear as extra data in the hover tooltip.
+
+        custom_data : list of str or int, or Series or array-like
+            Either names of columns in data_frame, or pandas Series, or array_like objects
+            Values from these columns are extra data, to be used in widgets or Dash callbacks for example.
+            This data is not user-visible but is included in events emitted by the figure (lasso selection etc.)
+
+        text : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like appear in the figure as text labels.
+
+        animation_frame : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to assign marks to animation frames.
+
+        animation_group : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to provide object-constancy across animation frames: rows with matching `animation_group`s will be treated as if they describe the same object in each frame.
+
+        labels : dict with str keys and str values (default {})
+            By default, column names are used in the figure for axis titles, legend entries and hovers.
+            This parameter allows this to be overridden.
+            The keys of this dict should correspond to column names, and the values should correspond to the desired label to be displayed.
+
+        color_discrete_sequence : list of str
+            Strings should define valid CSS-colors.
+            When color is set and the values in the corresponding column are not numeric, values in that column are assigned colors by cycling through color_discrete_sequence in the order described in category_orders, unless the value of color is a key in color_discrete_map.
+            Various useful color sequences are available in the plotly.express.colors submodules, specifically plotly.express.colors.qualitative.
+
+        color_discrete_map : dict with str keys and str values (default {})
+            String values should define valid CSS-colors Used to override color_discrete_sequence to assign a specific colors to marks corresponding with specific values.
+            Keys in color_discrete_map should be values in the column denoted by color.
+
+        color_continuous_scale : list of str
+            Strings should define valid CSS-colors. 
+            This list is used to build a continuous color scale when the column denoted by color contains numeric data.
+            Various useful color scales are available in the plotly.express.colors submodules, specifically plotly.express.colors.sequential, plotly.express.colors.diverging and plotly.express.colors.cyclical.
+
+        opacity : float
+            Value between 0 and 1. Sets the opacity for markers.
+
+        barmode : str (default 'relative')
+            One of 'group', 'overlay' or 'relative'
+            In 'relative' mode, bars are stacked above zero for positive values and below zero for negative values.
+            In 'overlay' mode, bars are drawn on top of one another.
+            In 'group' mode, bars are placed beside each other.
+
+        width : int (default None)
+            The figure width in pixels.
+
+        height : int (default 600)
+            The figure height in pixels.
 
         output_file : str, optional
             Output html file name for image
 
+        Returns
+        -------
+        Plotly Figure
+            Plotly Figure Object of Bar Plot
+
         Examples
         --------
         >>> data.barplot(x='x', y='y')
-        >>> data.barplot(x='x', y=['y', 'z'], method='mean')
-        >>> data.barplot(x='x', y=['y', 'z'], method='max', orient='h')
+        >>> data.barplot(x='x', y='y', method='mean')
+        >>> data.barplot(x='x', y='y', method='max', orient='h')
         """
 
         fig = viz.barplot(
@@ -228,9 +274,9 @@ class Visualizations(object):
             y,
             self.train_data,
             method=method,
-            orient=orient,
-            barmode=barmode,
             output_file=output_file,
+            orientation=orient,
+            title=title,
             **barplot_kwargs,
         )
 
@@ -283,6 +329,11 @@ class Visualizations(object):
         **scatterplot_kwargs : optional
             See above links for list of possible scatterplot options.
 
+        Returns
+        -------
+        Plotly Figure
+            Plotly Figure Object of Scatter Plot
+
         Examples
         --------
         >>> data.scatterplot(x='x', y='y') #2d
@@ -307,7 +358,14 @@ class Visualizations(object):
         return fig
 
     def lineplot(
-        self, x: str, y: str, z=None, category=None, title="Line Plot", output_file="", **lineplot_kwargs
+        self,
+        x: str,
+        y: str,
+        z=None,
+        category=None,
+        title="Line Plot",
+        output_file="",
+        **lineplot_kwargs,
     ):
         """
         Plots a lineplot for the given x and y columns provided using Plotly Express.
@@ -395,6 +453,11 @@ class Visualizations(object):
             String values should define valid CSS-colors Used to override color_discrete_sequence to assign a specific colors to marks corresponding with specific values.
             Keys in color_discrete_map should be values in the column denoted by color.
 
+        Returns
+        -------
+        Plotly Figure
+            Plotly Figure Object of Line Plot
+
         Examples
         --------
         >>> data.line_plot(x='x', y='y')
@@ -402,7 +465,14 @@ class Visualizations(object):
         """
 
         fig = viz.lineplot(
-            x, y, z, self.train_data, category=category, title=title, output_file=output_file, **lineplot_kwargs,
+            x,
+            y,
+            z,
+            self.train_data,
+            category=category,
+            title=title,
+            output_file=output_file,
+            **lineplot_kwargs,
         )
 
         if output_file and self.report:  # pragma: no cover
@@ -449,7 +519,15 @@ class Visualizations(object):
         return fig
 
     def pairplot(
-        self, cols=[], kind="scatter", diag_kind="auto", upper_kind=None, lower_kind=None, hue=None, output_file="", **kwargs
+        self,
+        cols=[],
+        kind="scatter",
+        diag_kind="auto",
+        upper_kind=None,
+        lower_kind=None,
+        hue=None,
+        output_file="",
+        **kwargs,
     ):
         """
         Plots pairplots of the variables from the training data.
@@ -559,7 +637,9 @@ class Visualizations(object):
         >>> data.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        fig = viz.jointplot(x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs)
+        fig = viz.jointplot(
+            x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs
+        )
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
@@ -612,14 +692,26 @@ class Visualizations(object):
         """
 
         x_test = self.test_data if plot_test else None
-        columns = list(x) if x else list(self.train_data.select_dtypes(include=[np.number]).columns)
+        columns = (
+            list(x)
+            if x
+            else list(self.train_data.select_dtypes(include=[np.number]).columns)
+        )
 
-        viz.histogram(columns, x_train=self.train_data, x_test=x_test, output_file=output_file, **kwargs)
+        viz.histogram(
+            columns,
+            x_train=self.train_data,
+            x_test=x_test,
+            output_file=output_file,
+            **kwargs,
+        )
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
 
-    def plot_dim_reduction(self, category: str, dim=2, algo='tsne', output_file="", **kwargs):
+    def plot_dim_reduction(
+        self, category: str, dim=2, algo="tsne", output_file="", **kwargs
+    ):
         """
         Reduce the dimensions of your data and then view similarly grouped data points (clusters)
 
@@ -647,6 +739,11 @@ class Visualizations(object):
 
         kwargs: 
             See plotting options
+
+        Returns
+        -------
+        Plotly Figure
+            Plotly Figure Object of Scatter Plot
 
         Examples
         --------
@@ -705,6 +802,11 @@ class Visualizations(object):
         output_file : str, optional
             Output file name for image with extension (i.e. jpeg, png, etc.)
 
+        Returns
+        -------
+        Plotly Figure
+            Plotly Figure Object of Box Plot
+
         Examples
         --------
         >>> data.boxplot(y='y', color='z')
@@ -712,7 +814,9 @@ class Visualizations(object):
         >>> data.boxplot(x='x', y='y', output_file='pair.png')
         """
 
-        assert (x is not None or y is not None), "An x column or a y column must be provided."
+        assert (
+            x is not None or y is not None
+        ), "An x column or a y column must be provided."
 
         fig = viz.boxplot(
             x=x,
@@ -721,7 +825,7 @@ class Visualizations(object):
             color=color,
             title=title,
             output_file=output_file,
-            **kwargs
+            **kwargs,
         )
 
         if output_file and self.report:  # pragma: no cover
@@ -729,7 +833,9 @@ class Visualizations(object):
 
         return fig
 
-    def violinplot(self, x=None, y=None, color=None, title="", output_file="", **kwargs):
+    def violinplot(
+        self, x=None, y=None, color=None, title="", output_file="", **kwargs
+    ):
         """
         Plots a violin plot for the given x and y columns.
 
@@ -771,6 +877,11 @@ class Visualizations(object):
         output_file : str, optional
             Output file name for image with extension (i.e. jpeg, png, etc.)
 
+        Returns
+        -------
+        Plotly Figure
+            Plotly Figure Object of Violin Plot
+
         Examples
         --------
         >>> data.violinplot(y='y', color='z', box=True)
@@ -778,7 +889,9 @@ class Visualizations(object):
         >>> data.violinplot(x='x', y='y', violinmode='overlay', output_file='pair.png')
         """
 
-        assert (x is not None or y is not None), "An x column or a y column must be provided."
+        assert (
+            x is not None or y is not None
+        ), "An x column or a y column must be provided."
 
         fig = viz.violinplot(
             x=x,
@@ -787,7 +900,120 @@ class Visualizations(object):
             color=color,
             title=title,
             output_file=output_file,
-            **kwargs
+            **kwargs,
+        )
+
+        if output_file and self.report:  # pragma: no cover
+            self.report.write_image(output_file)
+
+        return fig
+
+    def pieplot(
+        self,
+        values: str,
+        names: str,
+        title="",
+        textposition="inside",
+        textinfo="percent",
+        output_file="",
+        **pieplot_kwargs,
+    ):
+        """
+        Plots a Pie plot of a given column.
+
+        For more information regarding pie plots please see the following links: https://plot.ly/python/pie-charts/#customizing-a-pie-chart-created-with-pxpie
+        and https://plot.ly/python-api-reference/generated/plotly.express.pie.html#plotly.express.pie.
+        
+        Parameters
+        ----------
+        values : str
+            Column in the DataFrame.
+            Values from this column or array_like are used to set values associated to sectors.
+
+        names : str
+            Column in the DataFrame.
+            Values from this column or array_like are used as labels for sectors.
+
+        title : str, optional
+            The figure title, by default ''
+
+        textposition : {'inside', 'outside'}, optional
+            Position the text in the plot, by default 'inside'
+
+        textinfo : str, optional
+            textinfo' can take any of the following values, joined with a '+':
+                'label' - displays the label on the segment
+                'text' - displays the text on the segment (this can be set separately to the label)
+                'value' - displays the value passed into the trace
+                'percent' - displayed the computer percentage
+        , by default 'percent'
+
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
+        color : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like are used to assign color to marks.
+
+        color_discrete_sequence : list of str
+            Strings should define valid CSS-colors.
+            When color is set and the values in the corresponding column are not numeric, values in that column are assigned colors by cycling through color_discrete_sequence in the order described in category_orders, unless the value of color is a key in color_discrete_map.
+            Various useful color sequences are available in the plotly.express.colors submodules, specifically plotly.express.colors.qualitative.
+
+        color_discrete_map : dict with str keys and str values (default {})
+            String values should define valid CSS-colors Used to override color_discrete_sequence to assign a specific colors to marks corresponding with specific values.
+            Keys in color_discrete_map should be values in the column denoted by color.
+
+        hover_name : str or int or Series or array-like
+            Either a name of a column in data_frame, or a pandas Series or array_like object.
+            Values from this column or array_like appear in bold in the hover tooltip.
+
+        hover_data : list of str or int, or Series or array-like
+            Either names of columns in data_frame, or pandas Series, or array_like objects.
+            Values from these columns appear as extra data in the hover tooltip.
+
+        custom_data : list of str or int, or Series or array-like
+            Either names of columns in data_frame, or pandas Series, or array_like objects Values from these columns are extra data, to be used in widgets or Dash callbacks for example.
+            This data is not user-visible but is included in events emitted by the figure (lasso selection etc.)
+
+        labels : dict with str keys and str values (default {})
+            By default, column names are used in the figure for axis titles, legend entries and hovers.
+            This parameter allows this to be overridden.
+            The keys of this dict should correspond to column names, and the values should correspond to the desired label to be displayed.
+
+        width : int (default None)
+            The figure width in pixels.
+
+        height : int (default 600)
+            The figure height in pixels.
+
+        opacity : float
+            Value between 0 and 1.
+            Sets the opacity for markers.
+
+        hole : float
+            Value between 0 and 1.
+            Sets the size of the hole in the middle of the pie chart.
+        
+        Returns
+        -------
+        Plotly Figure
+            Plotly Figure Object of Pie Chart
+
+        Examples
+        --------
+        >>> data.pieplot(val_column, name_column)
+        """
+
+        fig = viz.pieplot(
+            values,
+            names,
+            data=self.train_data,
+            textposition=textposition,
+            textinfo=textinfo,
+            title=title,
+            output_file=output_file,
+            **pieplot_kwargs,
         )
 
         if output_file and self.report:  # pragma: no cover
