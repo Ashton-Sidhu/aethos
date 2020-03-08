@@ -33,7 +33,7 @@ graphviz
 pyldavis
 swifter
 lightgbm
-catboost
+catboost==0.20.1
 black
 sphinx
 doc8
