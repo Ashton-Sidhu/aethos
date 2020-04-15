@@ -1852,6 +1852,26 @@ class RegressionModel(ModelBase):
         self.features = self.x_test.columns
         self.pool = pool
         self.run_id = run_id
+        self.predictions_col = predictions_col
+        self.train_labels = model_object.target_field
+
+    def plot_predicted_actual(self, output_file="", **scatterplot_kwargs):
+        """
+        Plots the actual data vs. predictions
+        
+        Parameters
+        ----------
+        output_file : str, optional
+            [description], by default ""
+        """
+
+        self.scatterplot(
+            x=self.train_labels,
+            y=self.predictions_col,
+            title="Actual vs. Predictions",
+            output_file=output_file,
+            **scatterplot_kwargs,
+        )
 
     def explained_variance(self, multioutput="uniform_average", **kwargs):
         """
