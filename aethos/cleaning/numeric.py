@@ -101,14 +101,14 @@ def replace_missing_constant(x_train, x_test=None, col_to_constant=None, constan
 
     if isinstance(col_to_constant, dict):
         x_train, x_test = replace_missing_new_category(
-            col_to_cateogory=col_to_constant, x_train=x_train, x_test=x_test
+            x_train=x_train, x_test=x_test, col_to_category=col_to_constant,
         )
     elif isinstance(col_to_constant, list):
         x_train, x_test = replace_missing_new_category(
-            constant=constant,
-            col_to_category=col_to_constant,
             x_train=x_train,
             x_test=x_test,
+            col_to_category=col_to_constant,
+            constant=constant,
         )
     else:
         x_train, x_test = replace_missing_new_category(
