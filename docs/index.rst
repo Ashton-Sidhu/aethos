@@ -57,6 +57,7 @@ Options
 To enable extensions, such as QGrid interactive filtering:
 
 .. code:: python
+
     import aethos as at
 
     at.options.interactive_df = True
