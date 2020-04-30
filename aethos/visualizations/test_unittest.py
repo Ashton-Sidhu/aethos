@@ -6,7 +6,7 @@ import seaborn as sns
 from pathlib import Path
 import shutil
 
-from aethos.core import Data
+from aethos.analysis import Analysis
 from sklearn.datasets import make_blobs
 
 
@@ -19,14 +19,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, target="species",)
 
         base.histogram("sepal_length")
 
@@ -36,14 +29,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, target="species",)
 
         base.histogram()
 
@@ -53,14 +39,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None, target="species",)
 
         base.pairplot()
 
@@ -70,14 +49,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None, target="species",)
 
         base.pairplot(diag_kind="hist", upper_kind="scatter", lower_kind="kde")
 
@@ -87,14 +59,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, target="species",)
 
         base.jointplot(x="sepal_width", y="sepal_length")
 
@@ -104,14 +69,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None, target="species",)
 
         base.raincloud(x="sepal_width", y="sepal_length")
 
@@ -121,14 +79,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None, target="species",)
 
         base.barplot(
             x="species", y="sepal_length", method="mean", orient="h", barmode="group",
@@ -145,14 +96,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = px.data.tips()
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=False,
-            target_field=None,
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None,)
 
         base.pieplot("tip", "day")
 
@@ -162,14 +106,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None, target="species",)
 
         base.boxplot(x="species", y="sepal_width", color="species")
 
@@ -179,14 +116,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = sns.load_dataset("iris")
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="species",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None, target="species",)
 
         base.violinplot(x="species", y="sepal_width", color="species")
 
@@ -196,14 +126,7 @@ class Test_TestBase(unittest.TestCase):
 
         data = pd.DataFrame(np.random.rand(100, 10))
 
-        base = Data(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="col3",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None, target="col3",)
 
         base.correlation_matrix(data_labels=True, hide_mirror=True)
 
@@ -220,7 +143,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        clean = Data(x_train=df, split=False)
+        clean = Analysis(x_train=df)
         clean.lineplot(x="date", y="Google")
 
         self.assertTrue(True)
@@ -231,7 +154,7 @@ class Test_TestBase(unittest.TestCase):
 
         df = pd.DataFrame(data)
         df["label"] = label
-        df = Data(df, split=False)
+        df = Analysis(df)
         df.plot_dim_reduction("label", algo="pca", dim=2)
 
         self.assertTrue(True)
@@ -243,7 +166,7 @@ class Test_TestBase(unittest.TestCase):
         df = pd.DataFrame(data)
         df["label"] = label
 
-        df = Data(df, split=False)
+        df = Analysis(df)
 
         df.plot_dim_reduction("label", algo="lle", dim=2)
 
@@ -256,7 +179,7 @@ class Test_TestBase(unittest.TestCase):
         df = pd.DataFrame(data)
         df["label"] = label
 
-        df = Data(df, split=False)
+        df = Analysis(df)
 
         df.plot_dim_reduction("label", algo="tsvd", dim=2)
 
@@ -268,7 +191,7 @@ class Test_TestBase(unittest.TestCase):
         df = pd.DataFrame(data)
         df["label"] = label
 
-        df = Data(df, split=False)
+        df = Analysis(df)
 
         df.plot_dim_reduction("label", algo="tsvd", dim=3)
 

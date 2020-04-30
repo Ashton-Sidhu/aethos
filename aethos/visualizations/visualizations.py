@@ -1,8 +1,12 @@
-from aethos.visualizations import visualize as viz
+from aethos.visualizations.visualize import VizCreator
 import numpy as np
 
 
 class Visualizations(object):
+    def __init__(self):
+
+        self._viz = VizCreator()
+
     @property
     def plot_colors(self):  # pragma: no cover
         """
@@ -66,7 +70,7 @@ class Visualizations(object):
 
         y : str
             Y axis data, reference by column name, measurable data (numeric)
-            by default target_field
+            by default target
 
         hue : Iterable, np.array, or dataframe column name if 'data' is specified
             Second categorical data. Use it to obtain different clouds and rainpoints
@@ -142,9 +146,11 @@ class Visualizations(object):
         """
 
         if y is None:
-            y = self.target_field
+            y = self.target
 
-        fig = viz.raincloud(y, x, self.train_data, output_file=output_file, **params)
+        fig = self._viz.raincloud(
+            y, x, self.train_data, output_file=output_file, **params
+        )
 
         if output_file and self.report:  # pragma: no cover
             self.report.write_image(output_file)
@@ -269,7 +275,7 @@ class Visualizations(object):
         >>> data.barplot(x='x', y='y', method='max', orient='h')
         """
 
-        fig = viz.barplot(
+        fig = self._viz.barplot(
             x,
             y,
             self.train_data,
@@ -341,7 +347,7 @@ class Visualizations(object):
         >>> data.scatterplot(x='x', y='y', z='z', output_file='scatt')
         """
 
-        fig = viz.scatterplot(
+        fig = self._viz.scatterplot(
             x,
             y,
             z=z,
@@ -464,7 +470,7 @@ class Visualizations(object):
         >>> data.line_plot(x='x', y='y', output_file='line')
         """
 
-        fig = viz.lineplot(
+        fig = self._viz.lineplot(
             x,
             y,
             z,
@@ -505,7 +511,7 @@ class Visualizations(object):
         >>> data.correlation_matrix(data_labels=True, output_file='corr.png')
         """
 
-        fig = viz.correlation_matrix(
+        fig = self._viz.correlation_matrix(
             self.train_data,
             data_labels=data_labels,
             hide_mirror=hide_mirror,
@@ -573,7 +579,7 @@ class Visualizations(object):
 
         data = self.train_data if not cols else self.train_data[cols]
 
-        fig = viz.pairplot(
+        fig = self._viz.pairplot(
             data,
             kind=kind,
             diag_kind=diag_kind,
@@ -637,7 +643,7 @@ class Visualizations(object):
         >>> data.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        fig = viz.jointplot(
+        fig = self._viz.jointplot(
             x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs
         )
 
@@ -698,7 +704,7 @@ class Visualizations(object):
             else list(self.train_data.select_dtypes(include=[np.number]).columns)
         )
 
-        viz.histogram(
+        self._viz.histogram(
             columns,
             x_train=self.train_data,
             x_test=x_test,
@@ -750,7 +756,7 @@ class Visualizations(object):
         >>> data.plot_dim_reduction('cluster_labels', dim=3)
         """
 
-        fig = viz.viz_clusters(
+        fig = self._viz.viz_clusters(
             self.train_data,
             algo=algo,
             category=category,
@@ -818,7 +824,7 @@ class Visualizations(object):
             x is not None or y is not None
         ), "An x column or a y column must be provided."
 
-        fig = viz.boxplot(
+        fig = self._viz.boxplot(
             x=x,
             y=y,
             data=self.train_data,
@@ -893,7 +899,7 @@ class Visualizations(object):
             x is not None or y is not None
         ), "An x column or a y column must be provided."
 
-        fig = viz.violinplot(
+        fig = self._viz.violinplot(
             x=x,
             y=y,
             data=self.train_data,
@@ -1005,7 +1011,7 @@ class Visualizations(object):
         >>> data.pieplot(val_column, name_column)
         """
 
-        fig = viz.pieplot(
+        fig = self._viz.pieplot(
             values,
             names,
             data=self.train_data,

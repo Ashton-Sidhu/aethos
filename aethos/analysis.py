@@ -19,9 +19,10 @@ from aethos.util import (
     PREPARATION_CHECKLIST,
     UNI_ANALYSIS_CHECKLIST,
     _get_columns,
-    _set_item,
+    _get_attr_,
+    _get_item_,
+    _set_item_,
     label_encoder,
-    split_data,
 )
 from aethos.visualizations.visualizations import Visualizations
 from IPython import get_ipython
@@ -29,9 +30,9 @@ from IPython.display import HTML, display
 from ipywidgets import Layout
 
 
-class Data(Clean, Preprocess, Feature, Visualizations, Stats):
+class Analysis(Clean, Preprocess, Feature, Visualizations, Stats):
     """
-    Data class thats run analytical techniques.
+    Core class thats run analytical techniques.
 
     Parameters
     -----------
@@ -48,7 +49,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         Percentage of data to split train data into a train and test set.
         Only used if `split=True`
 
-    target_field: str
+    target: str
         For supervised learning problems, the name of the column you're trying to predict.
 
     report_name: str
@@ -56,133 +57,45 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
     """
 
     def __init__(
-        self,
-        x_train,
-        x_test=None,
-        split=True,
-        test_split_percentage=0.2,
-        target_field="",
-        report_name=None,
+        self, x_train, x_test=None, target="",
     ):
 
         self.x_train = x_train
         self.x_test = x_test
-        self.split = split
-        self.target_field = target_field
-        self.report_name = report_name
-        self.test_split_percentage = test_split_percentage
+        self.target = target
         self.target_mapping = None
 
-        if split and x_test is None:
-            # Generate train set and test set.
-            self.x_train, self.x_test = split_data(self.x_train, test_split_percentage)
-            self.x_train.reset_index(drop=True, inplace=True)
-            self.x_test.reset_index(drop=True, inplace=True)
-
-        if report_name is not None:
-            self.report = Report(report_name)
-            self.report_name = self.report.filename
-        else:
-            self.report = None
-            self.report_name = None
-
     def __repr__(self):
-
         return self.x_train.to_string()
 
-    def _repr_html_(self):  # pragma: no cover
-
-        return self.x_train._repr_html_()
+    def _repr_html_(self):
+        return self.x_train._repr_html_()  # pragma: no cover
 
     def __getitem__(self, column):
-
-        try:
-            return self.x_train[column]
-
-        except Exception as e:
-            raise AttributeError(e)
+        return _get_item_(self, column)
 
     def __setitem__(self, column, value):
-
-        if not self.split:
-            self.x_train[column] = value
-
-            return self.x_train.head()
-        else:
-            x_train_length = self.x_train.shape[0]
-            x_test_length = self.x_test.shape[0]
-
-            if isinstance(value, (list, np.ndarray)):
-                ## If the number of entries in the list does not match the number of rows in the training or testing
-                ## set raise a value error
-                if len(value) != x_train_length and len(value) != x_test_length:
-                    raise ValueError(
-                        f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
-                    )
-
-                self.x_train, self.x_test = _set_item(
-                    self.x_train,
-                    self.x_test,
-                    column,
-                    value,
-                    x_train_length,
-                    x_test_length,
-                )
-
-            elif isinstance(value, tuple):
-                for data in value:
-                    if len(data) != x_train_length and len(data) != x_test_length:
-                        raise ValueError(
-                            f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
-                        )
-
-                    (self.x_train, self.x_test,) = _set_item(
-                        self.x_train,
-                        self.x_test,
-                        column,
-                        data,
-                        x_train_length,
-                        x_test_length,
-                    )
-
-            else:
-                self.x_train[column] = value
-                self.x_test[column] = value
-
-            return self.x_train.head()
+        _set_item_(self, column, value)
 
     def __getattr__(self, key):
+        return _get_attr_(self, key)
 
-        if key in self.__dict__:
-            return getattr(self, key)
+    # def __setattr__(self, item, value):
 
-        if key in self.x_train.columns:
-            return self.x_train[key]
-        else:
-            if hasattr(self.x_train, key):
-                return getattr(self.x_train, key)
-            else:
-                raise AttributeError(f"Data object does not have attribute {key}.")
-
-    def __setattr__(self, item, value):
-
-        if item not in self.__dict__ or hasattr(
-            self, item
-        ):  # any normal attributes are handled normally
-            dict.__setattr__(self, item, value)
-        else:
-            self.__setitem__(item, value)
+    #     if item not in self.__dict__ or hasattr(
+    #         self, item
+    #     ):  # any normal attributes are handled normally
+    #         dict.__setattr__(self, item, value)
+    #     else:
+    #         self.__setitem__(item, value)
 
     def __deepcopy__(self, memo):
 
         new_inst = type(self)(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            split=self.split,
-            test_split_percentage=self.test_split_percentage,
-            target_field=self.target_field,
-            report_name=self.report_name,
+            x_train=self.x_train, x_test=self.x_test, target=self.target,
         )
+
+        new_inst.target_mapping = self.target_mapping
 
         return new_inst
 
@@ -192,7 +105,7 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         Property function for the training predictor variable
         """
 
-        return self.x_train[self.target_field] if self.target_field else None
+        return self.x_train[self.target] if self.target else None
 
     @y_train.setter
     def y_train(self, value):
@@ -200,10 +113,10 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         Setter function for the training predictor variable
         """
 
-        if self.target_field:
-            self.x_train[self.target_field] = value
+        if self.target:
+            self.x_train[self.target] = value
         else:
-            self.target_field = "label"
+            self.target = "label"
             self.x_train["label"] = value
             print('Added a target (predictor) field (column) named "label".')
 
@@ -214,8 +127,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         """
 
         if self.x_test is not None:
-            if self.target_field:
-                return self.x_test[self.target_field]
+            if self.target:
+                return self.x_test[self.target]
             else:
                 return None
         else:
@@ -228,10 +141,10 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         """
 
         if self.x_test is not None:
-            if self.target_field:
-                self.x_test[self.target_field] = value
+            if self.target:
+                self.x_test[self.target] = value
             else:
-                self.target_field = "label"
+                self.target = "label"
                 self.x_test["label"] = value
                 print('Added a target (predictor) field (column) named "label".')
 
@@ -242,10 +155,10 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         """
 
         if self.x_test is not None:
-            if self.target_field:
-                self.x_test[self.target_field] = value
+            if self.target:
+                self.x_test[self.target] = value
             else:
-                self.target_field = "label"
+                self.target = "label"
                 self.x_test["label"] = value
                 print('Added a target (predictor) field (column) named "label".')
 
@@ -351,8 +264,8 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         for name in self.x_train.columns:
             new_column_names[name] = re.sub(pattern, "_", name.lower())
 
-        if self.target_field is not None:
-            self.target_field = re.sub(pattern, "_", self.target_field.lower())
+        if self.target is not None:
+            self.target = re.sub(pattern, "_", self.target.lower())
 
         self.col_mapping = new_column_names
 
@@ -451,46 +364,6 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
                 data = data[~data.isin(list(values))].dropna(how="all")
 
             return data
-
-    def where(self, *filter_columns, **columns):
-        """
-        Filters the dataframe down for highlevel analysis. 
-
-        Can only handle '==', for more complex queries, interact with pandas.
-        
-        Parameters
-        ----------
-        filter_columns : str(s)
-            Columns you want to see at the end result
-
-        columns : key word arguments
-            Columns and the associated value to filter on.
-            Columns can equal a value or a list of values to include.
-        
-        Returns
-        -------
-        Dataframe
-            A view of your data or training data
-
-        Examples
-        --------
-        '''This translates to your data where col2 is equal to 3 and col 3 is equal to 4 and column 4 is equal to 1, 2 or 3.
-        The col1 specifies that this this is the only column you want to see at the output.'''
-        >>> data.where('col1', col2=3, col3=4, col4=[1,2,3])
-        """
-
-        filtered_data = self.x_train.copy()
-
-        for col in columns.keys():
-            if isinstance(columns[col], list):
-                filtered_data = filtered_data[filtered_data[col].isin(columns[col])]
-            else:
-                filtered_data = filtered_data[filtered_data[col] == columns[col]]
-
-        if filter_columns:
-            return filtered_data[list(filter_columns)]
-        else:
-            return filtered_data
 
     def groupby(self, *groupby, replace=False):
         """
@@ -896,15 +769,13 @@ class Data(Clean, Preprocess, Feature, Visualizations, Stats):
         >>> data.encode_target()
         """
 
-        if not self.target_field:
-            raise ValueError(
-                "Please set the `target_field` field variable before encoding."
-            )
+        if not self.target:
+            raise ValueError("Please set the `target` field variable before encoding.")
 
         (self.x_train, self.x_test, self.target_mapping,) = label_encoder(
             x_train=self.x_train,
             x_test=self.x_test,
-            list_of_cols=[self.target_field],
+            list_of_cols=[self.target],
             target=True,
         )
 

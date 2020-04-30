@@ -171,7 +171,7 @@ def drop_replace_columns(df, drop_cols, new_data, keep_col=False):
     return df
 
 
-def split_data(df, split_percentage: float):
+def split_data(df, split_percentage: float, target: str):
     """
     Function that splits the data into a training and testing set. Split percentage is passed in through
     the split_percentage variable.
@@ -183,6 +183,9 @@ def split_data(df, split_percentage: float):
 
     split_percentage : float
         The % of data that you want in your test set, split_percentage is the percentage of data in the traning set.
+
+    target : str 
+        Target variable to stratify to ensure class balance.
     
     Returns
     -------
@@ -190,7 +193,9 @@ def split_data(df, split_percentage: float):
         Train data and test data.
     """
 
-    x_train, x_test = train_test_split(df, test_size=split_percentage)
+    target = target if target else None
+
+    x_train, x_test = train_test_split(df, test_size=split_percentage, stratify=target)
 
     return x_train, x_test
 
@@ -305,6 +310,68 @@ def _set_item(
         x_test[column] = value
 
     return x_train, x_test
+
+
+def _set_item_(self, key, value):
+    """Function for __setitem__ class methods"""
+
+    if self.x_test is None:
+        self.x_train[key] = value
+
+        return self.x_train.head()
+    else:
+        x_train_length = self.x_train.shape[0]
+        x_test_length = self.x_test.shape[0]
+
+        if isinstance(value, (list, np.ndarray)):
+            ## If the number of entries in the list does not match the number of rows in the training or testing
+            ## set raise a value error
+            if len(value) != x_train_length and len(value) != x_test_length:
+                raise ValueError(
+                    f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
+                )
+
+            self.x_train, self.x_test = _set_item(
+                self.x_train, self.x_test, key, value, x_train_length, x_test_length,
+            )
+
+        elif isinstance(value, tuple):
+            for data in value:
+                if len(data) != x_train_length and len(data) != x_test_length:
+                    raise ValueError(
+                        f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
+                    )
+
+                (self.x_train, self.x_test,) = _set_item(
+                    self.x_train, self.x_test, key, data, x_train_length, x_test_length,
+                )
+
+        else:
+            self.x_train[key] = value
+            self.x_test[key] = value
+
+        return self.x_train.head()
+
+
+def _get_item_(self, key):
+    """Function for __getitem__ class methods"""
+
+    try:
+        return self.x_train[key]
+
+    except Exception as e:
+        raise AttributeError(e)
+
+
+def _get_attr_(self, key):
+    """Function for __getattr__ class methods"""
+
+    if key in self.__dict__:
+        return getattr(self, key)
+    elif hasattr(self.x_train, key):
+        return getattr(self.x_train, key)
+    else:
+        raise AttributeError(f"Data object does not have attribute {key}.")
 
 
 def _make_dir(path: str):
