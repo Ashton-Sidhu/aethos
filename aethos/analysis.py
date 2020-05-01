@@ -5,10 +5,12 @@ import re
 import ipywidgets as widgets
 import numpy as np
 import pandas as pd
-from aethos.cleaning.clean import Clean
+
+# from aethos.cleaning.clean import Clean
 from aethos.config import shell
-from aethos.feature_engineering.feature import Feature
-from aethos.preprocessing.preprocess import Preprocess
+
+# from aethos.feature_engineering.feature import Feature
+# from aethos.preprocessing.preprocess import Preprocess
 from aethos.reporting.report import Report
 from aethos.stats.stats import Stats
 from aethos.util import (
@@ -30,7 +32,7 @@ from IPython.display import HTML, display
 from ipywidgets import Layout
 
 
-class Analysis(Clean, Preprocess, Feature, Visualizations, Stats):
+class Analysis(Visualizations, Stats):
     """
     Core class thats run analytical techniques.
 
@@ -746,9 +748,6 @@ class Analysis(Clean, Preprocess, Feature, Visualizations, Stats):
         if self.x_test is not None:
             self.x_test = self.x_test.drop(drop_columns, axis=1)
 
-        if self.report is not None:
-            self.report.log(f'Dropped columns: {", ".join(drop_columns)}. {reason}')
-
         return self.copy()
 
     def encode_target(self):
@@ -781,9 +780,6 @@ class Analysis(Clean, Preprocess, Feature, Visualizations, Stats):
 
         for k, v in self.target_mapping.items():
             print(f"{k}: {v}")
-
-        if self.report is not None:
-            self.report.log("Encoded the target variable as numeric values.")
 
         return self.copy()
 
