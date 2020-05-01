@@ -479,7 +479,7 @@ class VizCreator(object):
         reduced_df[category] = reduced_df[category].astype(str)
 
         if dim == 2:
-            fig = scatterplot(
+            fig = self.scatterplot(
                 "0",
                 "1",
                 data=reduced_df,
@@ -488,7 +488,7 @@ class VizCreator(object):
                 **kwargs,
             )
         else:
-            fig = scatterplot(
+            fig = self.scatterplot(
                 "0",
                 "1",
                 "2",

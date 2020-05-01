@@ -8,13 +8,13 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from aethos.analysis import Analysis
+from aethos import Analysis
 
 
 class Test_TestBase(unittest.TestCase):
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
+    # @classmethod
+    # def tearDownClass(cls):
+    #     shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
 
     def test_setitem_constant(self):
 
@@ -119,7 +119,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data)
+        clean = Analysis(x_train=data, x_test=data)
         clean_inst = clean.drop("col1", "col3", reason="Columns were unimportant.")
 
         validate = (
@@ -136,7 +136,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data)
+        clean = Analysis(x_train=data, x_test=data)
         clean_inst = clean.drop(keep=["col2"], reason="Columns were unimportant.")
 
         validate = (
@@ -153,7 +153,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3", "py"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=None,)
+        clean = Analysis(x_train=data, x_test=data)
         clean.drop(
             "col1", keep=["col2"], regexp=r"col*", reason="Columns were unimportant."
         )
@@ -193,14 +193,7 @@ class Test_TestBase(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = Analysis(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target="",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Analysis(x_train=data, x_test=None,)
 
         self.assertIsNotNone(base.col1)
 
@@ -225,7 +218,7 @@ class Test_TestBase(unittest.TestCase):
         base = Analysis(x_train=data, x_test=None,)
         base["col5"] = 4
 
-        self.assertListEqual(base.col5.tolist(), [4, 4])
+        self.assertListEqual(base.col5.tolist(), [4, 4, 4, 4])
 
     def test_setattr_testset(self):
 
@@ -259,10 +252,10 @@ class Test_TestBase(unittest.TestCase):
         test_data = pd.DataFrame(int_missing_data, columns=columns)
 
         base = Analysis(x_train=train_data, x_test=test_data,)
-        base["col5"] = ([4], [4, 4, 4])
+        base["col5"] = ([4], [4, 4, 4, 4])
 
         self.assertListEqual(base["col5"].tolist(), [4])
-        self.assertListEqual(base.x_test["col5"].tolist(), [4, 4, 4])
+        self.assertListEqual(base.x_test["col5"].tolist(), [4, 4, 4, 4])
 
     def test_setattr_old(self):
 
@@ -286,20 +279,6 @@ class Test_TestBase(unittest.TestCase):
         base.x_train = int_missing_data_rep
 
         self.assertEqual(base.x_train, int_missing_data_rep)
-
-    def test_where(self):
-
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-
-        columns = ["col1", "col2", "col3"]
-        data = pd.DataFrame(data, columns=columns)
-
-        base = Analysis(x_train=data, x_test=None,)
-
-        subset = base.where(col1=0, col2=2, col3=[3, 4])
-        validate = subset.values.tolist()
-
-        self.assertListEqual(validate, [[0, 2, 3]])
 
     def test_groupbyanalysis(self):
 
@@ -511,17 +490,17 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
-    def test_ytrain_split(self):
+    # def test_ytrain_split(self):
 
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-        columns = ["col1", "col2", "col3"]
-        data = pd.DataFrame(data, columns=columns)
+    #     data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+    #     columns = ["col1", "col2", "col3"]
+    #     data = pd.DataFrame(data, columns=columns)
 
-        base = Analysis(x_train=data, x_test=None, target="col3",)
+    #     base = Analysis(x_train=data, x_test=None, target="col3",)
 
-        validate = len(base.y_train) == 2
+    #     validate = len(base.y_train) == 2
 
-        self.assertTrue(validate)
+    #     self.assertTrue(validate)
 
     def test_ytrain_nosplit(self):
 
@@ -560,7 +539,7 @@ class Test_TestBase(unittest.TestCase):
         train_data = pd.DataFrame(data, columns=columns)
         test_data = pd.DataFrame(data, columns=columns)
 
-        base = Analysis(x_train=data, x_test=None, target="col3",)
+        base = Analysis(x_train=data, x_test=test_data, target="col3",)
 
         validate = len(base.y_test) == 4
 
@@ -573,7 +552,7 @@ class Test_TestBase(unittest.TestCase):
         train_data = pd.DataFrame(data, columns=columns)
         test_data = pd.DataFrame(data, columns=columns)
 
-        base = Analysis(x_train=data, x_test=None,)
+        base = Analysis(x_train=data, x_test=test_data,)
 
         base.y_test = [1, 1, 1, 1]
 
@@ -645,7 +624,7 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        base = Analysis(x_train=data, x_test=data,)
+        base = Analysis(x_train=data.copy(), x_test=data.copy())
 
         base.expand_json_column("col2")
 

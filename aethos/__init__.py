@@ -30,14 +30,12 @@ from aethos.config.config import (
     set_option,
 )
 
-
-from .core import Data
-from .modelling import Model
+from .analysis import Analysis
 
 pd.options.mode.chained_assignment = None
 pio.templates.default = "plotly_white"
 
-__all__ = ["Data", "Model"]
+__all__ = ["Analysis"]
 
 shell = get_ipython().__class__.__name__
 

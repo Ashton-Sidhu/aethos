@@ -3,9 +3,9 @@ import numpy as np
 
 
 class Visualizations(object):
-    def __init__(self):
-
-        self._viz = VizCreator()
+    @property
+    def _viz(self):
+        return VizCreator()
 
     @property
     def plot_colors(self):  # pragma: no cover

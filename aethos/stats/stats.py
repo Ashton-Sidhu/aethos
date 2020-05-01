@@ -33,15 +33,15 @@ class Stats(object):
         >>> data.predict_data_sample()
         """
 
-        if self.x_test is None or not self.target_field:
+        if self.x_test is None or not self.target:
             raise ValueError(
-                "Test data or target field must be set. They can be set by assigning values to the `target_field` or the `x_test` variable."
+                "Test data or target field must be set. They can be set by assigning values to the `target` or the `x_test` variable."
             )
 
         report_info = technique_reason_repo["stats"]["dist_compare"]["predict"]
 
-        x_train = self.x_train.drop(self.target_field, axis=1)
-        x_test = self.x_test.drop(self.target_field, axis=1)
+        x_train = self.x_train.drop(self.target, axis=1)
+        x_test = self.x_test.drop(self.target, axis=1)
 
         x_train["label"] = 1
         x_test["label"] = 0
@@ -55,9 +55,6 @@ class Stats(object):
             label,
             cv=StratifiedKFold(n_splits=10, shuffle=True, random_state=42),
         )
-
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
 
         print(classification_report(data["label"].tolist(), predictions))
 
@@ -211,11 +208,9 @@ class Stats(object):
         most_common = dict(counter.most_common(n))
 
         if plot:
-            from aethos.visualizations.visualize import barplot
-
             df = pd.DataFrame(list(most_common.items()), columns=["Word", "Count"])
 
-            fig = barplot(
+            fig = self._viz.barplot(
                 x="Word", y="Count", data=df, output_file=output_file, **plot_kwargs
             )
 
@@ -262,11 +257,18 @@ class Stats(object):
         >>> data.ind_ttest('col1', 'col2', output_file='ind_ttest.png')
         """
 
-        res = run_2sample_ttest(
+        results = run_2sample_ttest(
             group1, group2, self.x_train, "ind", output_file, equal_var=equal_var
         )
 
-        return res
+        matrix = [
+            ["", "Test Statistic", "p-value"],
+            ["Sample Data", results[0], results[1]],
+        ]
+
+        self._viz.create_table(matrix, True, output_file)
+
+        return results
 
     def paired_ttest(self, group1: str, group2=None, output_file=None):
         """
@@ -305,9 +307,18 @@ class Stats(object):
         """
 
         # The implementation is the same as an independent t-test
-        res = run_2sample_ttest(group1, group2, self.x_train, "pair", output_file)
+        results = run_2sample_ttest(group1, group2, self.x_train, "pair", output_file)
 
-        return res
+        matrix = [
+            ["", "Test Statistic", "p-value"],
+            ["Sample Data", results[0], results[1]],
+        ]
+
+        self._viz.create_table(matrix, True, output_file)
+
+        return results
+
+        return results
 
     def onesample_ttest(self, group1: str, mean: Union[float, int], output_file=None):
         """
@@ -339,8 +350,6 @@ class Stats(object):
         >>> data.onesample_ttest('col1', 1, output_file='ones_ttest.png')
         """
 
-        from aethos.visualizations import visualize as viz
-
         data_group1 = self.x_train[group1].tolist()
 
         results = sc.stats.ttest_1samp(data_group1, mean, nan_policy="omit")
@@ -350,7 +359,7 @@ class Stats(object):
             ["Sample Data", results[0], results[1]],
         ]
 
-        viz.create_table(matrix, True, output_file)
+        self._viz.create_table(matrix, True, output_file)
 
         return results
 

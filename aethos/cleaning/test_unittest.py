@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from aethos import Analysis
+from aethos import Analysis1
 import shutil
 from pathlib import Path
 
