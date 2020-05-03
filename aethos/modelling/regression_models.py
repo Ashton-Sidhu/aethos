@@ -113,8 +113,6 @@ class RegressionModel(
 
         from sklearn.linear_model import LinearRegression
 
-        report_info = technique_reason_repo["model"]["regression"]["linreg"]
-
         model = LinearRegression
 
         model = self._run_supervised_model(
@@ -122,7 +120,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -234,8 +231,6 @@ class RegressionModel(
 
         from sklearn.linear_model import BayesianRidge
 
-        report_info = technique_reason_repo["model"]["regression"]["bay_reg"]
-
         model = BayesianRidge
 
         model = self._run_supervised_model(
@@ -243,7 +238,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -367,8 +361,6 @@ class RegressionModel(
 
         from sklearn.linear_model import ElasticNet
 
-        report_info = technique_reason_repo["model"]["regression"]["el_net"]
-
         model = ElasticNet
 
         model = self._run_supervised_model(
@@ -376,7 +368,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -495,8 +486,6 @@ class RegressionModel(
 
         from sklearn.linear_model import Lasso
 
-        report_info = technique_reason_repo["model"]["regression"]["lasso"]
-
         model = Lasso
 
         model = self._run_supervised_model(
@@ -504,7 +493,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -609,8 +597,6 @@ class RegressionModel(
 
         from sklearn.linear_model import Ridge
 
-        report_info = technique_reason_repo["model"]["regression"]["ridge_reg"]
-
         model = Ridge
 
         model = self._run_supervised_model(
@@ -618,7 +604,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -796,8 +781,6 @@ class RegressionModel(
 
         from sklearn.linear_model import SGDRegressor
 
-        report_info = technique_reason_repo["model"]["regression"]["sgd_reg"]
-
         model = SGDRegressor
 
         model = self._run_supervised_model(
@@ -805,7 +788,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -908,8 +890,6 @@ class RegressionModel(
 
         from sklearn.ensemble import AdaBoostRegressor
 
-        report_info = technique_reason_repo["model"]["regression"]["ada_reg"]
-
         model = AdaBoostRegressor
 
         model = self._run_supervised_model(
@@ -917,7 +897,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1032,8 +1011,6 @@ class RegressionModel(
 
         from sklearn.ensemble import BaggingRegressor
 
-        report_info = technique_reason_repo["model"]["regression"]["bag_reg"]
-
         model = BaggingRegressor
 
         model = self._run_supervised_model(
@@ -1041,7 +1018,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1210,8 +1186,6 @@ class RegressionModel(
 
         from sklearn.ensemble import GradientBoostingRegressor
 
-        report_info = technique_reason_repo["model"]["regression"]["grad_reg"]
-
         model = GradientBoostingRegressor
 
         model = self._run_supervised_model(
@@ -1219,7 +1193,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1369,8 +1342,6 @@ class RegressionModel(
 
         from sklearn.ensemble import RandomForestRegressor
 
-        report_info = technique_reason_repo["model"]["regression"]["rf_reg"]
-
         model = RandomForestRegressor
 
         model = self._run_supervised_model(
@@ -1378,7 +1349,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1533,8 +1503,6 @@ class RegressionModel(
 
         from sklearn.tree import DecisionTreeRegressor
 
-        report_info = technique_reason_repo["model"]["regression"]["dt_reg"]
-
         model = DecisionTreeRegressor
 
         model = self._run_supervised_model(
@@ -1542,7 +1510,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1660,8 +1627,6 @@ class RegressionModel(
 
         from sklearn.svm import LinearSVR
 
-        report_info = technique_reason_repo["model"]["regression"]["linsvr"]
-
         model = LinearSVR
 
         model = self._run_supervised_model(
@@ -1669,7 +1634,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1793,8 +1757,6 @@ class RegressionModel(
 
         from sklearn.svm import SVR
 
-        report_info = technique_reason_repo["model"]["regression"]["svr"]
-
         model = SVR
 
         model = self._run_supervised_model(
@@ -1802,7 +1764,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1967,8 +1928,6 @@ class RegressionModel(
 
         import xgboost as xgb
 
-        report_info = technique_reason_repo["model"]["regression"]["xgb_reg"]
-
         model = xgb.XGBRegressor
 
         model = self._run_supervised_model(
@@ -1976,7 +1935,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -2127,8 +2085,6 @@ class RegressionModel(
 
         import lightgbm as lgb
 
-        report_info = technique_reason_repo["model"]["regression"]["lgbm_reg"]
-
         model = lgb.LGBMRegressor
 
         model = self._run_supervised_model(
@@ -2136,7 +2092,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -2242,8 +2197,6 @@ class RegressionModel(
 
         import catboost as cb
 
-        report_info = technique_reason_repo["model"]["regression"]["cb_reg"]
-
         model = cb.CatBoostRegressor
 
         model = self._run_supervised_model(
@@ -2251,7 +2204,6 @@ class RegressionModel(
             model_name,
             RegressionModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,

@@ -527,8 +527,6 @@ class ModelBase(object):
         """
         # endregion
 
-        report_info = technique_reason_repo["model"]["text"]["textrank_summarizer"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (self.x_train, self.x_test,) = text.gensim_textrank_summarizer(
@@ -611,7 +609,6 @@ class ModelBase(object):
         """
         # endregion
 
-        report_info = technique_reason_repo["model"]["text"]["textrank_keywords"]
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self.x_train, self.x_test = text.gensim_textrank_keywords(
@@ -752,8 +749,6 @@ class ModelBase(object):
         """
         # endregion
 
-        report_info = technique_reason_repo["model"]["text"]["word2vec"]
-
         w2v_model = text.gensim_word2vec(
             x_train=self.train_data,
             x_test=self.test_data,
@@ -887,8 +882,6 @@ class ModelBase(object):
         """
         # endregion
 
-        report_info = technique_reason_repo["model"]["text"]["doc2vec"]
-
         d2v_model = text.gensim_doc2vec(
             x_train=self.train_data,
             x_test=self.test_data,
@@ -1001,8 +994,6 @@ class ModelBase(object):
         >>> model.LDA('col1', run=False) # Add model to the queue
         """
         # endregion
-
-        report_info = technique_reason_repo["model"]["text"]["lda"]
 
         (self.x_train, self.x_test, lda_model, corpus, id2word,) = text.gensim_lda(
             x_train=self.x_train,
@@ -1132,7 +1123,6 @@ class ModelBase(object):
                 "Pre trained model dependencies have not been installed. Please run pip install aethos[ptmodels]"
             )
 
-        report_info = technique_reason_repo["model"]["pretrained"]["sent"]
         nlp = pipeline("sentiment-analysis", model=model_type)
 
         self.x_train[new_col_name] = pd.Series(map(nlp, self.x_train[col].tolist()))
@@ -1264,7 +1254,6 @@ class ModelBase(object):
                 "Pre trained model dependencies have not been installed. Please run pip install aethos[ptmodels]"
             )
 
-        report_info = technique_reason_repo["model"]["pretrained"]["qa"]
         nlp = pipeline("question-answering", model=model_type)
         q_and_a = lambda c, q: nlp({"question": q, "context": c})
 
@@ -1302,7 +1291,6 @@ class ModelBase(object):
         model_name,
         model_type,
         new_col_name,
-        report_info,
         cv=None,
         gridsearch=None,
         score="accuracy",
@@ -1483,7 +1471,6 @@ class ModelBase(object):
         model,
         model_name,
         new_col_name,
-        report_info,
         cv=None,
         gridsearch=None,
         score="accuracy",

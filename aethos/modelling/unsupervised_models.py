@@ -150,7 +150,6 @@ class Unsupervised(
 
             return visualizer.elbow_value_
 
-        report_info = technique_reason_repo["model"]["unsupervised"]["kmeans"]
         n_clusters = kwargs.pop("n_clusters", None)
 
         if not n_clusters:
@@ -162,7 +161,6 @@ class Unsupervised(
             model,
             model_name,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -272,15 +270,12 @@ class Unsupervised(
 
         from sklearn.cluster import DBSCAN
 
-        report_info = technique_reason_repo["model"]["unsupervised"]["dbscan"]
-
         model = DBSCAN
 
         model = self._run_unsupervised_model(
             model,
             model_name,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -394,15 +389,12 @@ class Unsupervised(
 
         from sklearn.ensemble import IsolationForest
 
-        report_info = technique_reason_repo["model"]["unsupervised"]["iso_forest"]
-
         model = IsolationForest
 
         model = self._run_unsupervised_model(
             model,
             model_name,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -519,15 +511,12 @@ class Unsupervised(
 
         from sklearn.svm import OneClassSVM
 
-        report_info = technique_reason_repo["model"]["unsupervised"]["oneclass_cls"]
-
         model = OneClassSVM
 
         model = self._run_unsupervised_model(
             model,
             model_name,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -651,15 +640,12 @@ class Unsupervised(
 
         from sklearn.cluster import AgglomerativeClustering
 
-        report_info = technique_reason_repo["model"]["unsupervised"]["agglom"]
-
         model = AgglomerativeClustering
 
         model = self._run_unsupervised_model(
             model,
             model_name,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -770,15 +756,12 @@ class Unsupervised(
 
         from sklearn.cluster import MeanShift
 
-        report_info = technique_reason_repo["model"]["unsupervised"]["ms"]
-
         model = MeanShift
 
         model = self._run_unsupervised_model(
             model,
             model_name,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -928,15 +911,12 @@ class Unsupervised(
 
         from sklearn.mixture import GaussianMixture
 
-        report_info = technique_reason_repo["model"]["unsupervised"]["em_gmm"]
-
         model = GaussianMixture
 
         model = self._run_unsupervised_model(
             model,
             model_name,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
