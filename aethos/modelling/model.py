@@ -72,7 +72,7 @@ class ModelBase(object):
     #         self.split = split
     #         self.target = target
     #         self.target_mapping = None
-    #         self.report_name = report_name
+
     #         self.test_split_percentage = test_split_percentage
     #     else:
     #         self.x_train = step.x_train
@@ -81,7 +81,6 @@ class ModelBase(object):
     #         self.split = step.split
     #         self.target = step.target
     #         self.target_mapping = step.target_mapping
-    #         self.report_name = step.report_name
 
     #     if self.split and self.x_test is None:
     #         # Generate train set and test set.
@@ -90,11 +89,8 @@ class ModelBase(object):
     #         self.x_test.reset_index(drop=True, inplace=True)
 
     #     if report_name is not None:
-    #         self.report = Report(report_name)
-    #         self.report_name = self.report.filename
+
     #     else:
-    #         self.report = None
-    #         self.report_name = None
 
     #     # Create a master dataset that houses training data + results
     #     self.x_train = self.x_train.copy()
@@ -539,9 +535,6 @@ class ModelBase(object):
 
         self._predicted_cols.append(col + new_col_name for col in list_of_cols)
 
-        if self.report is not None:
-            self.report.report_technique(report_info)
-
         self._models[model_name] = TextModel(self, None, model_name)
 
         return self._models[model_name]
@@ -620,9 +613,6 @@ class ModelBase(object):
         )
 
         self._predicted_cols.append(col + new_col_name for col in list_of_cols)
-
-        if self.report is not None:
-            self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(self, None, model_name)
 
@@ -759,9 +749,6 @@ class ModelBase(object):
 
         self._predicted_cols.append(col_name)
 
-        if self.report is not None:
-            self.report.report_technique(report_info)
-
         self._models[model_name] = TextModel(self, w2v_model, model_name)
 
         return self._models[model_name]
@@ -890,9 +877,6 @@ class ModelBase(object):
             **kwargs,
         )
 
-        if self.report is not None:
-            self.report.report_technique(report_info)
-
         self._models[model_name] = TextModel(self, d2v_model, model_name)
 
         return self._models[model_name]
@@ -1002,9 +986,6 @@ class ModelBase(object):
             col_name=col_name,
             **kwargs,
         )
-
-        if self.report is not None:
-            self.report.report_technique(report_info)
 
         self._models[model_name] = TextModel(
             self, lda_model, model_name, corpus=corpus, id2word=id2word
@@ -1131,9 +1112,6 @@ class ModelBase(object):
             self.x_test[new_col_name] = pd.Series(map(nlp, self.x_test[col].tolist()))
 
         self._predicted_cols.append(new_col_name)
-
-        if self.report is not None:
-            self.report.report_technique(report_info)
 
         return nlp.model
 
@@ -1278,9 +1256,6 @@ class ModelBase(object):
 
         self._predicted_cols.append(new_col_name)
 
-        if self.report is not None:
-            self.report.report_technique(report_info)
-
         return nlp.model
 
     ################### HELPER FUNCTIONS ########################
@@ -1378,7 +1353,6 @@ class ModelBase(object):
                     self.y_train,
                     cv=cv,
                     scoring=score,
-                    report=self.report,
                     model_name=model_name,
                 )
 
@@ -1409,11 +1383,8 @@ class ModelBase(object):
         # ############################################################
 
         # # Report the results
-        # if self.report is not None:
-        #     if gridsearch:
-        #         self.report.report_gridsearch(model, verbose)
 
-        #     self.report.report_technique(report_info)
+        #     if gridsearch:
 
         #############################################################
         ############### Initialize Model Analysis ###################
@@ -1554,7 +1525,6 @@ class ModelBase(object):
                 self.y_train,
                 cv=cv,
                 scoring=score,
-                report=self.report,
                 model_name=model_name,
             )
 
@@ -1566,11 +1536,7 @@ class ModelBase(object):
         # ####################### Reporting ##########################
         # ############################################################
 
-        # if self.report is not None:
         #     if gridsearch:
-        #         self.report.report_gridsearch(model, verbose)
-
-        #     self.report.report_technique(report_info)
 
         #############################################################
         ############### Initialize Model Analysis ###################
