@@ -29,7 +29,7 @@ from aethos.modelling.util import (
     track_model,
 )
 from aethos.templates.template_generator import TemplateGenerator as tg
-from aethos.util import _input_columns, _set_item, split_data
+from aethos.util import _input_columns, split_data, _set_item_, _get_attr_, _get_item_
 
 warnings.simplefilter("ignore", FutureWarning)
 
@@ -147,11 +147,7 @@ class ModelBase(object):
 
     def __getitem__(self, key):
 
-        try:
-            return self.x_train[key]
-
-        except Exception as e:
-            raise AttributeError(e)
+        return _get_item_(self, key)
 
     def __getattr__(self, key):
 
@@ -162,74 +158,22 @@ class ModelBase(object):
         if key in self._models:
             return self._models[key]
 
-        try:
-            if not self.split:
-                return self.x_train[key]
-            else:
-                return self.x_test[key]
+        return _get_attr_(self, key)
 
-        except Exception as e:
-            raise AttributeError(e)
+    # def __setattr__(self, key, value):
 
-    def __setattr__(self, key, value):
-
-        if key not in self.__dict__ or hasattr(self, key):
-            # any normal attributes are handled normally
-            dict.__setattr__(self, key, value)
-        else:
-            self.__setitem__(key, value)
+    #     if key not in self.__dict__ or hasattr(self, key):
+    #         # any normal attributes are handled normally
+    #         dict.__setattr__(self, key, value)
+    #     else:
+    #         self.__setitem__(key, value)
 
     def __setitem__(self, key, value):
 
         if key in self.__dict__:
             dict.__setitem__(self.__dict__, key, value)
         else:
-            if not self.split:
-                self.x_train[key] = value
-
-                return self.x_train.head()
-            else:
-                x_train_length = self.x_train.shape[0]
-                x_test_length = self.x_test.shape[0]
-
-                if isinstance(value, (list, np.ndarray)):
-                    ## If the number of entries in the list does not match the number of rows in the training or testing
-                    ## set raise a value error
-                    if len(value) != x_train_length and len(value) != x_test_length:
-                        raise ValueError(
-                            f"Length of list: {len(value)} does not equal the number rows as the training set or test set."
-                        )
-
-                    self.x_train, self.x_test = _set_item(
-                        self.x_train,
-                        self.x_test,
-                        key,
-                        value,
-                        x_train_length,
-                        x_test_length,
-                    )
-
-                elif isinstance(value, tuple):
-                    for data in value:
-                        if len(data) != x_train_length and len(data) != x_test_length:
-                            raise ValueError(
-                                f"Length of list: {len(data)} does not equal the number rows as the training set or test set."
-                            )
-
-                        self.x_train, self.x_test = _set_item(
-                            self.x_train,
-                            self.x_test,
-                            key,
-                            data,
-                            x_train_length,
-                            x_test_length,
-                        )
-
-                else:
-                    self.x_train[key] = value
-                    self.x_test[key] = value
-
-                return self.x_test.head()
+            _set_item_(self, key, value)
 
     def __repr__(self):
 

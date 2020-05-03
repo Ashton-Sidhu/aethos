@@ -31,11 +31,17 @@ from aethos.config.config import (
 )
 
 from .analysis import Analysis
+from .modelling import Classification, Regression, Unsupervised
 
 pd.options.mode.chained_assignment = None
 pio.templates.default = "plotly_white"
 
-__all__ = ["Analysis"]
+__all__ = [
+    "Analysis",
+    "Classification",
+    "Regression",
+    "Unsupervised",
+]
 
 shell = get_ipython().__class__.__name__
 
