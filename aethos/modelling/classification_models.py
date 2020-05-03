@@ -129,7 +129,6 @@ class Classification(
         from sklearn.linear_model import LogisticRegression
 
         solver = kwargs.pop("solver", "lbfgs")
-        report_info = technique_reason_repo["model"]["classification"]["logreg"]
 
         model = LogisticRegression
 
@@ -138,7 +137,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -251,8 +249,6 @@ class Classification(
 
         from sklearn.linear_model import RidgeClassifier
 
-        report_info = technique_reason_repo["model"]["classification"]["ridge_cls"]
-
         model = RidgeClassifier
 
         model = self._run_supervised_model(
@@ -260,7 +256,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -431,8 +426,6 @@ class Classification(
 
         from sklearn.linear_model import SGDClassifier
 
-        report_info = technique_reason_repo["model"]["classification"]["sgd_cls"]
-
         model = SGDClassifier
 
         model = self._run_supervised_model(
@@ -440,7 +433,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -547,8 +539,6 @@ class Classification(
 
         from sklearn.ensemble import AdaBoostClassifier
 
-        report_info = technique_reason_repo["model"]["classification"]["ada_cls"]
-
         model = AdaBoostClassifier
 
         model = self._run_supervised_model(
@@ -556,7 +546,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -678,8 +667,6 @@ class Classification(
 
         from sklearn.ensemble import BaggingClassifier
 
-        report_info = technique_reason_repo["model"]["classification"]["bag_cls"]
-
         model = BaggingClassifier
 
         model = self._run_supervised_model(
@@ -687,7 +674,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -856,8 +842,6 @@ class Classification(
 
         from sklearn.ensemble import GradientBoostingClassifier
 
-        report_info = technique_reason_repo["model"]["classification"]["grad_cls"]
-
         model = GradientBoostingClassifier
 
         model = self._run_supervised_model(
@@ -865,7 +849,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1033,8 +1016,6 @@ class Classification(
 
         from sklearn.ensemble import RandomForestClassifier
 
-        report_info = technique_reason_repo["model"]["classification"]["rf_cls"]
-
         model = RandomForestClassifier
 
         model = self._run_supervised_model(
@@ -1042,7 +1023,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1149,8 +1129,6 @@ class Classification(
 
         from sklearn.naive_bayes import BernoulliNB
 
-        report_info = technique_reason_repo["model"]["classification"]["bern"]
-
         model = BernoulliNB
 
         model = self._run_supervised_model(
@@ -1158,7 +1136,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1255,8 +1232,6 @@ class Classification(
 
         from sklearn.naive_bayes import GaussianNB
 
-        report_info = technique_reason_repo["model"]["classification"]["gauss"]
-
         model = GaussianNB
 
         model = self._run_supervised_model(
@@ -1264,7 +1239,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1368,8 +1342,6 @@ class Classification(
 
         from sklearn.naive_bayes import MultinomialNB
 
-        report_info = technique_reason_repo["model"]["classification"]["multi"]
-
         model = MultinomialNB
 
         model = self._run_supervised_model(
@@ -1377,7 +1349,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1550,8 +1521,6 @@ class Classification(
 
         from sklearn.tree import DecisionTreeClassifier
 
-        report_info = technique_reason_repo["model"]["classification"]["dt_cls"]
-
         model = DecisionTreeClassifier
 
         model = self._run_supervised_model(
@@ -1559,7 +1528,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1697,8 +1665,6 @@ class Classification(
 
         from sklearn.svm import LinearSVC
 
-        report_info = technique_reason_repo["model"]["classification"]["linsvc"]
-
         model = LinearSVC
 
         model = self._run_supervised_model(
@@ -1706,7 +1672,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -1848,8 +1813,6 @@ class Classification(
 
         from sklearn.svm import SVC
 
-        report_info = technique_reason_repo["model"]["classification"]["svc"]
-
         model = SVC
 
         model = self._run_supervised_model(
@@ -1857,7 +1820,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -2033,7 +1995,6 @@ class Classification(
             "objective",
             "binary:logistic" if len(self.y_train.unique()) == 2 else "multi:softprob",
         )
-        report_info = technique_reason_repo["model"]["classification"]["xgb_cls"]
 
         model = xgb.XGBClassifier
 
@@ -2042,7 +2003,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -2204,7 +2164,6 @@ class Classification(
         objective = kwargs.pop(
             "objective", "binary" if len(self.y_train.unique()) == 2 else "multiclass",
         )
-        report_info = technique_reason_repo["model"]["classification"]["lgbm_cls"]
 
         model = lgb.LGBMClassifier
 
@@ -2213,7 +2172,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
@@ -2332,7 +2290,6 @@ class Classification(
         objective = kwargs.pop(
             "objective", "Logloss" if len(self.y_train.unique()) == 2 else "MultiClass",
         )
-        report_info = technique_reason_repo["model"]["classification"]["cb_cls"]
 
         model = cb.CatBoostClassifier
 
@@ -2341,7 +2298,6 @@ class Classification(
             model_name,
             ClassificationModel,
             new_col_name,
-            report_info,
             cv=cv,
             gridsearch=gridsearch,
             score=score,
