@@ -2,23 +2,19 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from aethos import Analysis1
+from aethos import Unsupervised
 import shutil
 from pathlib import Path
 
 
 class TestCleaning(unittest.TestCase):
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
-
     def test_cleanutil_removecolumns(self):
 
         int_missing_data = [[1, 0, 0], [0, None, None], [None, None, None]]
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.drop_column_missing_threshold(0.5)
         validate = clean.x_train.columns.tolist()
 
@@ -30,7 +26,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.drop_rows_missing_threshold(0.5)
         validate = clean.x_train.values.tolist()
 
@@ -42,7 +38,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4", "col5"]
         dataset = pd.DataFrame(data, columns=columns)
 
-        clean = Analysis(x_train=dataset)
+        clean = Unsupervised(x_train=dataset)
 
         self.assertEqual(clean.x_train.shape[0], 4)
 
@@ -52,7 +48,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_mean()
         validate = clean.x_train.values.tolist()
 
@@ -69,7 +65,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_mean()
         validate = (
             clean.x_train.isnull().values.any() and clean.x_test.isnull().values.any()
@@ -83,7 +79,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_median()
         validate = clean.x_train.values.tolist()
 
@@ -95,7 +91,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_mostcommon()
         validate = clean.x_train.values.tolist()
 
@@ -110,7 +106,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_constant("col1", "col3", constant=10.5)
         validate = clean.x_train.values.tolist()
 
@@ -125,7 +121,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_remove_row("col1", "col2")
         validate = clean.x_train.values.tolist()
 
@@ -139,7 +135,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         category_dict_mapping = {"col1": 2, "col2": "Blue", "col3": 4}
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_new_category(col_mapping=category_dict_mapping)
         validate = clean.x_train.values.tolist()
 
@@ -155,7 +151,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         list_col = ["col1", "col3"]
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_new_category(list_of_cols=list_col, new_category=0)
         validate = clean.x_train.values.tolist()
 
@@ -172,7 +168,7 @@ class TestCleaning(unittest.TestCase):
         data = pd.DataFrame(missing_data, columns=columns)
         list_col = ["col1", "col2"]
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_new_category(list_of_cols=list_col)
 
         # Replacing NaNs with strings for validations as regular assert does == and to compare NaNs you need `is`
@@ -191,7 +187,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_new_category(new_category=1)
         validate = clean.x_train.values.tolist()
 
@@ -206,7 +202,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(missing_data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.replace_missing_new_category()
         validate = clean.x_train.values.tolist()
 
@@ -221,7 +217,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.drop_duplicate_rows()
         validate = clean.x_train.values.tolist()
 
@@ -234,7 +230,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.drop_duplicate_rows(list_of_cols=columns)
         validate = clean.x_train.values.tolist()
 
@@ -247,7 +243,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        clean = Analysis(x_train=data,)
+        clean = Unsupervised(x_train=data,)
         clean.drop_duplicate_columns()
         validate = clean.x_train.values.tolist()
 
@@ -265,7 +261,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.replace_missing_random_discrete("col1", "col2", "col3")
 
         validate = np.any(clean.x_train.isnull()) and np.any(clean.x_test.isnull())
@@ -292,7 +288,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.replace_missing_knn(k=4)
 
         validate = np.any(clean.x_train.isnull()) and np.any(clean.x_test.isnull())
@@ -319,7 +315,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.replace_missing_interpolate(
             "col1", "col2", "col3", limit_direction="both"
         )
@@ -342,7 +338,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.replace_missing_forwardfill("col1", "col2", "col3")
 
         self.assertTrue(True)
@@ -361,7 +357,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.replace_missing_backfill("col1", "col2", "col3")
 
         self.assertTrue(True)
@@ -380,7 +376,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.replace_missing_indicator("col1", "col2", "col3")
 
         validate = (clean.x_train.shape[1] == 6) and (clean.x_test.shape[1] == 6)
@@ -401,7 +397,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.replace_missing_indicator("col1", "col2", "col3", keep_col=False)
 
         validate = (clean.x_train.shape[1] == 3) and (clean.x_test.shape[1] == 3)
@@ -422,7 +418,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.drop_constant_columns()
 
         validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == [
@@ -445,7 +441,7 @@ class TestCleaning(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        clean = Analysis(x_train=data, x_test=data)
+        clean = Unsupervised(x_train=data, x_test=data)
         clean.drop_unique_columns()
 
         validate = clean.x_test.columns.tolist() == clean.x_train.columns.tolist() and clean.x_test.columns.tolist() == [
