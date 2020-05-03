@@ -371,7 +371,7 @@ def _get_attr_(self, key):
     elif hasattr(self.x_train, key):
         return getattr(self.x_train, key)
     else:
-        raise AttributeError(f"Data object does not have attribute {key}.")
+        raise AttributeError(f"{type(self)} object does not have attribute {key}.")
 
 
 def _make_dir(path: str):
