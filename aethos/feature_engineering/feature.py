@@ -965,19 +965,17 @@ class Feature(object):
 
         y_train = self.y_train
         y_test = self.y_test
-        x_train = self.x_train.drop(self.target_field, axis=1)
-        x_test = (
-            None if self.x_test is None else self.x_test.drop(self.target_field, axis=1)
-        )
+        x_train = self.x_train.drop(self.target, axis=1)
+        x_test = None if self.x_test is None else self.x_test.drop(self.target, axis=1)
 
         (self.x_train, self.x_test,) = num.kbest_chi2(
             x_train, self.y_train, x_test, k, verbose=verbose
         )
 
         # Re add the target field back to the dataset.
-        self.x_train[self.target_field] = y_train
+        self.x_train[self.target] = y_train
         if self.x_test is not None:
-            self.x_test[self.target_field] = y_test
+            self.x_test[self.target] = y_test
 
         if self.report is not None:
             self.report.report_technique(report_info)
@@ -994,14 +992,14 @@ class Feature(object):
             Dim Reduction algorithm to run.
         """
 
-        if self.target_field:
-            train_target_data = self.x_train[self.target_field]
+        if self.target:
+            train_target_data = self.x_train[self.target]
             test_target_data = (
-                self.x_test[self.target_field] if self.x_test is not None else None
+                self.x_test[self.target] if self.x_test is not None else None
             )
-            x_train = self.x_train.drop(self.target_field, axis=1)
+            x_train = self.x_train.drop(self.target, axis=1)
             x_test = (
-                self.x_test.drop(self.target_field, axis=1)
+                self.x_test.drop(self.target, axis=1)
                 if self.x_test is not None
                 else None
             )
@@ -1017,8 +1015,8 @@ class Feature(object):
             **kwargs,
         )
 
-        if self.target_field:
-            self.x_train[self.target_field] = train_target_data
-            self.x_test[self.target_field] = (
+        if self.target:
+            self.x_train[self.target] = train_target_data
+            self.x_test[self.target] = (
                 test_target_data if test_target_data is not None else None
             )

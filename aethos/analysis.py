@@ -44,18 +44,12 @@ class Analysis(Visualizations, Stats):
     x_test: pd.DataFrame
         Test data, by default None
 
-    split: bool
-        True to split your training data into a train set and a test set
-
     test_split_percentage: float
         Percentage of data to split train data into a train and test set.
         Only used if `split=True`
 
     target: str
         For supervised learning problems, the name of the column you're trying to predict.
-
-    report_name: str
-        Name of the report to generate, by default None
     """
 
     def __init__(
