@@ -7,7 +7,6 @@ __all__ = [
     "options",
     "cfg",
     "shell",
-    "technique_reason_repo",
 ]
 
 from . import config

@@ -12,9 +12,6 @@ with open(
 ) as ymlfile:
     cfg = yaml.safe_load(ymlfile)
 
-with open(f"{pkg_directory}/technique_reasons.yml", "r") as stream:
-    technique_reason_repo = yaml.safe_load(stream)
-
 shell = get_ipython().__class__.__name__
 
 DEFAULT_MODEL_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "models")
