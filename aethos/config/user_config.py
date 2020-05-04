@@ -14,14 +14,6 @@ with open(
 
 shell = get_ipython().__class__.__name__
 
-DEFAULT_MODEL_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "models")
-DEFAULT_REPORT_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "reports")
-DEFAULT_IMAGE_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "images")
-DEFAULT_EXPERIMENTS_DIR = "file:" + os.path.join(
-    os.path.expanduser("~"), ".aethos", "experiments", "mlruns"
-)
-DEFAULT_DEPLOYMENTS_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "projects")
-
 
 def _make_image_dir():
 
@@ -33,9 +25,6 @@ def _make_image_dir():
     _make_dir(image_dir)
 
     return image_dir
-
-
-IMAGE_DIR = _make_image_dir()
 
 
 def _make_experiment_dir():  # pragma: no cover
@@ -51,4 +40,12 @@ def _make_experiment_dir():  # pragma: no cover
     return exp_dir
 
 
+DEFAULT_MODEL_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "models")
+DEFAULT_IMAGE_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "images")
+DEFAULT_EXPERIMENTS_DIR = "file:" + os.path.join(
+    os.path.expanduser("~"), ".aethos", "experiments", "mlruns"
+)
+DEFAULT_DEPLOYMENTS_DIR = os.path.join(os.path.expanduser("~"), ".aethos", "projects")
+
+IMAGE_DIR = _make_image_dir()
 EXP_DIR = _make_experiment_dir()

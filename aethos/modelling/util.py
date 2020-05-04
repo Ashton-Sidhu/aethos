@@ -108,7 +108,7 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
 
 
 def run_crossvalidation(
-    model, x_train, y_train, cv=5, scoring="accuracy", report=None, model_name=None
+    model, x_train, y_train, cv=5, scoring="accuracy", model_name=None
 ):
     """
     Runs cross validation on a certain model.
@@ -143,7 +143,7 @@ def run_crossvalidation(
     visualizer_scores.show()
     visualizer_lcurve.show()
 
-    if report or _global_config["track_experiments"]:  # pragma: no cover
+    if _global_config["track_experiments"]:  # pragma: no cover
         fig.savefig(os.path.join(IMAGE_DIR, model_name, "cv.png"))
 
 

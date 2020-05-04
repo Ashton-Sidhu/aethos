@@ -722,7 +722,7 @@ class Feature(object):
 
         return self.copy()
 
-    def apply(self, func, output_col: str, description=""):
+    def apply(self, func, output_col: str):
         """
         Calls pandas apply function. Will apply the function to your dataset, or
         both your training and testing dataset.
@@ -734,9 +734,6 @@ class Feature(object):
 
         output_col : str
             New column name
-            
-        description : str, optional
-            Description of the new column to be logged into the report, by default ''
         
         Returns
         -------

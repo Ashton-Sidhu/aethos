@@ -11,7 +11,6 @@ from aethos.config import shell
 
 # from aethos.feature_engineering.feature import Feature
 # from aethos.preprocessing.preprocess import Preprocess
-from aethos.reporting.report import Report
 from aethos.stats.stats import Stats
 from aethos.util import (
     CLEANING_CHECKLIST,
