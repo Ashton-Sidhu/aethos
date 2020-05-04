@@ -1,9 +1,24 @@
-from aethos.config import technique_reason_repo
-from aethos.feature_engineering import categorical as cat
-from aethos.feature_engineering import numeric as num
+import pandas as pd
+import numpy as np
+
+from sklearn.feature_extraction.text import (
+    CountVectorizer,
+    HashingVectorizer,
+    TfidfVectorizer,
+)
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.preprocessing import PolynomialFeatures
+
 from aethos.feature_engineering import text
 from aethos.feature_engineering import util
-from aethos.util import _input_columns, label_encoder
+from aethos.util import (
+    _input_columns,
+    _get_columns,
+    label_encoder,
+    drop_replace_columns,
+    _numeric_input_conditions,
+)
 
 
 class Feature(object):
@@ -69,20 +84,26 @@ class Feature(object):
         >>> data.onehot_encode('col1', 'col2', 'col3', drop='first')
         """
 
-        report_info = technique_reason_repo["feature"]["categorical"]["onehotencode"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = cat.feature_one_hot_encode(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            keep_col=keep_col,
-            **onehot_kwargs,
+        enc = OneHotEncoder(handle_unknown="ignore", **onehot_kwargs)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
+
+        enc_data = enc.fit_transform(self.x_train[list_of_cols]).toarray()
+        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols))
+        self.x_train = drop_replace_columns(
+            self.x_train, list_of_cols, enc_df, keep_col
         )
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+
+        if self.x_test is not None:
+            enc_self.x_test = enc.transform(self.x_test[list_of_cols]).toarray()
+            enc_test_df = pd.DataFrame(
+                enc_test_df, columns=enc.get_feature_names(list_of_cols)
+            )
+            self.x_test = drop_replace_columns(
+                self.x_test, list_of_cols, enc_test_df, keep_col
+            )
 
         return self.copy()
 
@@ -214,21 +235,23 @@ class Feature(object):
         >>> data.tfidf('col1', 'col2', 'col3', lowercase=False, smoothidf=False)
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["tfidf"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = text.feature_tfidf(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            keep_col=keep_col,
-            **tfidf_kwargs,
-        )
+        enc = TfidfVectorizer(**tfidf_kwargs)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
+        for col in list_of_cols:
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
+            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
+
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
+                enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names())
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
+                )
 
         return self.copy()
 
@@ -342,21 +365,23 @@ class Feature(object):
         >>> data.bag_of_words('col1', 'col2', 'col3', binary=True)
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["bow"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.feature_bag_of_words(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            keep_col=keep_col,
-            **bow_kwargs,
-        )
+        enc = CountVectorizer(**bow_kwargs)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
+        for col in list_of_cols:
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
+            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
+
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
+                enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names())
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
+                )
 
         return self.copy()
 
@@ -409,21 +434,23 @@ class Feature(object):
         >>> data.text_hash('col1', 'col2', 'col3', n_features=50)
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["hash"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.feature_hash_vectorizer(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            keep_col=keep_col,
-            **hash_kwargs,
-        )
+        enc = HashingVectorizer(**hash_kwargs)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
+        for col in list_of_cols:
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
+            enc_df = pd.DataFrame(enc_data)
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
+
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
+                enc_test_df = pd.DataFrame(enc_test)
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
+                )
 
         return self.copy()
 
@@ -456,19 +483,15 @@ class Feature(object):
         >>> data.postag_nltk('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["nltk_postag"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.nltk_feature_postag(
+        (self.x_train, self.x_test,) = text.textblob_features(
             x_train=self.x_train,
             x_test=self.x_test,
+            feature="tags",
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
         )
-
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
 
         return self.copy()
 
@@ -501,8 +524,6 @@ class Feature(object):
         >>> data.postag_spacy('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["spacy_postag"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (self.x_train, self.x_test,) = text.spacy_feature_postag(
@@ -512,9 +533,6 @@ class Feature(object):
             new_col_name=new_col_name,
             method="s",
         )
-
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -549,8 +567,6 @@ class Feature(object):
         >>> data.postag_spacy_detailed('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["spacy_postag"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (self.x_train, self.x_test,) = text.spacy_feature_postag(
@@ -560,9 +576,6 @@ class Feature(object):
             new_col_name=new_col_name,
             method="d",
         )
-
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -593,19 +606,15 @@ class Feature(object):
         >>> data.nounphrases_nltk('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["nltk_np"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.nltk_feature_noun_phrases(
+        (self.x_train, self.x_test,) = text.textblob_features(
             x_train=self.x_train,
             x_test=self.x_test,
+            feature="noun_phrases",
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
         )
-
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -636,19 +645,34 @@ class Feature(object):
         >>> data.nounphrases_spacy('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["spacy_np"]
+        import spacy
 
         list_of_cols = _input_columns(list_args, list_of_cols)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        (self.x_train, self.x_test,) = text.spacy_feature_noun_phrases(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            new_col_name=new_col_name,
-        )
+        nlp = spacy.load("en")
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        for col in list_of_cols:
+
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
+
+            transformed_text = list(map(nlp, self.x_train[col]))
+            self.x_train[new_col_name] = pd.Series(
+                map(
+                    lambda x: [str(phrase) for phrase in x.noun_chunks],
+                    transformed_text,
+                )
+            )
+
+            if self.x_test is not None:
+                transformed_text = map(nlp, self.x_test[col])
+                self.x_test[new_col_name] = pd.Series(
+                    map(
+                        lambda x: [str(phrase) for phrase in x.noun_chunks],
+                        transformed_text,
+                    )
+                )
 
         return self.copy()
 
@@ -685,20 +709,22 @@ class Feature(object):
         >>> data.polynomial_features('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["numeric"]["poly"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = num.polynomial_features(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            **poly_kwargs,
-        )
+        poly = PolynomialFeatures(**poly_kwargs)
+        list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        scaled_data = poly.fit_transform(self.x_train[list_of_cols])
+        scaled_df = pd.DataFrame(scaled_data, columns=poly.get_feature_names())
+        self.x_train = drop_replace_columns(self.x_train, list_of_cols, scaled_df)
+
+        if self.x_test is not None:
+            scaled_test = poly.transform(self.x_test)
+            scaled_test_df = pd.DataFrame(scaled_test, columns=poly.get_feature_names())
+            self.x_test = drop_replace_columns(
+                self.x_test, list_of_cols, scaled_test_df
+            )
 
         return self.copy()
 
@@ -736,12 +762,16 @@ class Feature(object):
             2     1     0     1     1
         """
 
-        self.x_train, self.x_test = util.apply(
-            x_train=self.x_train, func=func, output_col=output_col, x_test=self.x_test,
+        import swifter
+
+        self.x_train.loc[:, output_col] = self.x_train.swifter.progress_bar().apply(
+            func, axis=1
         )
 
-        if self.report is not None:
-            self.report.log(f"Added feature {output_col}. {description}")
+        if self.x_test is not None:
+            self.x_test.loc[:, output_col] = self.x_test.swifter.progress_bar().apply(
+                func, axis=1
+            )
 
         return self.copy()
 
@@ -771,16 +801,11 @@ class Feature(object):
         >>> data.encode_labels('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["preprocess"]["categorical"]["label_encode"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self.x_train, self.x_test, _ = label_encoder(
             x_train=self.x_train, x_test=self.x_test, list_of_cols=list_of_cols,
         )
-
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -843,12 +868,7 @@ class Feature(object):
         >>> data.pca(n_components=2)
         """
 
-        report_info = technique_reason_repo["feature"]["general"]["pca"]
-
         self._run_sklearn_dim_reduction("pca", n_components=n_components, **pca_kwargs)
-
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
 
         return self.copy()
 
@@ -893,12 +913,7 @@ class Feature(object):
         >>> data.truncated_svd(n_components=2)
         """
 
-        report_info = technique_reason_repo["feature"]["general"]["tsvd"]
-
         self._run_sklearn_dim_reduction("tsvd", n_components=n_components, **svd_kwargs)
-
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
 
         return self.copy()
 
@@ -921,17 +936,14 @@ class Feature(object):
         >>> data.drop_correlated_features(threshold=0.9)
         """
 
-        report_info = technique_reason_repo["clean"]["numeric"]["corr"]
-        orig_cols = set(self.x_train.columns)
+        corr = self.x_train.corr().abs()
+        upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
+        drop_cols = [col for col in upper.columns if any(upper[col] > threshold)]
 
-        (self.x_train, self.x_test,) = num.drop_correlated_features(
-            x_train=self.x_train, x_test=self.x_test, threshold=threshold,
-        )
+        self.x_train.drop(drop_cols, axis=1, inplace=True)
 
-        if self.report is not None:
-            self.report.report_technique(
-                report_info, list(orig_cols.difference(self.x_train.columns))
-            )
+        if self.x_test is not None:
+            self.x_test.drop(drop_cols, axis=1, inplace=True)
 
         return self.copy()
 
@@ -961,24 +973,32 @@ class Feature(object):
         >>> data.chi2_feature_selection(k=10)
         """
 
-        report_info = technique_reason_repo["feature"]["numeric"]["chi2"]
-
         y_train = self.y_train
         y_test = self.y_test
-        x_train = self.x_train.drop(self.target, axis=1)
-        x_test = None if self.x_test is None else self.x_test.drop(self.target, axis=1)
-
-        (self.x_train, self.x_test,) = num.kbest_chi2(
-            x_train, self.y_train, x_test, k, verbose=verbose
+        self.x_train = self.x_train.drop(self.target, axis=1)
+        self.x_test = (
+            None if self.x_test is None else self.x_test.drop(self.target, axis=1)
         )
+
+        chi2_best = SelectKBest(chi2, k=k).fit(self.x_train, y_train)
+
+        column_indices = chi2_best.get_support()
+
+        if verbose:
+            for col, p in zip(
+                self.x_train.columns[column_indices], chi2_best.pvalues_[column_indices]
+            ):
+                print(f"{col} p-value: {p}")
+
+        self.x_train = self.x_train[self.x_train.columns[column_indices]]
+
+        if self.x_test is not None:
+            self.x_test = self.x_test[self.x_test.columns[column_indices]]
 
         # Re add the target field back to the dataset.
         self.x_train[self.target] = y_train
         if self.x_test is not None:
             self.x_test[self.target] = y_test
-
-        if self.report is not None:
-            self.report.report_technique(report_info)
 
         return self.copy()
 
@@ -997,19 +1017,19 @@ class Feature(object):
             test_target_data = (
                 self.x_test[self.target] if self.x_test is not None else None
             )
-            x_train = self.x_train.drop(self.target, axis=1)
-            x_test = (
+            self.x_train = self.x_train.drop(self.target, axis=1)
+            self.x_test = (
                 self.x_test.drop(self.target, axis=1)
                 if self.x_test is not None
                 else None
             )
         else:
-            x_train = self.x_train
-            x_test = self.x_test
+            self.x_train = self.x_train
+            self.x_test = self.x_test
 
         self.x_train, self.x_test = util.sklearn_dim_reduction(
-            x_train=x_train,
-            x_test=x_test,
+            x_train=self.x_train,
+            x_test=self.x_test,
             algo=algo,
             n_components=n_components,
             **kwargs,
