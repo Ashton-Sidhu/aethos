@@ -9,9 +9,8 @@ from nltk.stem import WordNetLemmatizer
 from nltk.stem.snowball import PorterStemmer, SnowballStemmer
 from nltk.tokenize import RegexpTokenizer, word_tokenize
 
-from aethos.preprocessing import categorical as cat
-from aethos.preprocessing import numeric as num
-from aethos.preprocessing import text
+from aethos.preprocessing import numeric, text
+
 from aethos.util import (
     _input_columns,
     _numeric_input_conditions,
@@ -60,7 +59,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = num.scale(
+        self.x_train, self.x_test = numeric.scale(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -123,7 +122,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = num.scale(
+        self.x_train, self.x_test = numeric.scale(
             x_train=self.x_train,
             x_test=self.x_test,
             list_of_cols=list_of_cols,
@@ -620,7 +619,7 @@ class Preprocess(object):
                 new_col_name = col + new_col_name
 
             self.x_train[new_col_name] = [
-                self._process_text(
+                text.process_text(
                     txt,
                     lower=lower,
                     punctuation=punctuation,
@@ -633,7 +632,7 @@ class Preprocess(object):
 
             if self.x_test is not None:
                 self.x_test[new_col_name] = [
-                    self._process_text(
+                    text.process_text(
                         txt,
                         lower=lower,
                         punctuation=punctuation,
@@ -645,81 +644,6 @@ class Preprocess(object):
                 ]
 
         return self.copy()
-
-    def _process_text(
-        self,
-        corpus,
-        lower=True,
-        punctuation=True,
-        stopwords=True,
-        stemmer=True,
-        numbers=True,
-    ):
-        """
-        Function that takes text and does the following:
-
-        - Casts it to lowercase
-        - Removes punctuation
-        - Removes stopwords
-        - Stems the text
-        - Removes any numerical values
-        
-        Parameters
-        ----------
-        corpus : str
-            Text
-        
-        lower : bool, optional
-            True to cast all text to lowercase, by default True
-        
-        punctuation : bool, optional
-            True to remove punctuation, by default True
-        
-        stopwords : bool, optional
-            True to remove stop words, by default True
-        
-        stemmer : bool, optional
-            True to stem the data, by default True
-
-        numbers : bool, optional
-            True to remove any numbers, by default True
-        
-        Returns
-        -------
-        str
-            Normalized text
-        """
-
-        import nltk
-
-        transformed_corpus = ""
-
-        if lower:
-            corpus = corpus.lower()
-
-        for token in word_tokenize(corpus):
-
-            if punctuation:
-                if token in string.punctuation:
-                    continue
-
-                token = token.translate(str.maketrans("", "", string.punctuation))
-
-            if numbers:
-                token = token.translate(str.maketrans("", "", "0123456789"))
-
-            if stopwords:
-                stop_words = nltk.corpus.stopwords.words("english")
-                if token in stop_words:
-                    continue
-
-            if stemmer:
-                stem = SnowballStemmer("english")
-                token = stem.stem(token)
-
-            transformed_corpus += token + " "
-
-        return transformed_corpus.strip()
 
     def _apply_text_method(self, text_data, transformer=None):
         """

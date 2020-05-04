@@ -11,10 +11,6 @@ from sklearn.datasets import make_blobs
 
 
 class Test_TestBase(unittest.TestCase):
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
-
     def test_histogram_1(self):
 
         data = sns.load_dataset("iris")
