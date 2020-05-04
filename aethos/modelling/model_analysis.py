@@ -37,7 +37,6 @@ class ModelBase(Visualizations, Stats):
         self.model_name = model_name
         self.x_train = model_object.x_train
         self.x_test = model_object.x_test
-        self.report = model_object.report
 
         shap_values = kwargs.pop("shap_values", None)
 
@@ -107,10 +106,6 @@ class ModelBase(Visualizations, Stats):
 
             print(report_string.strip())
 
-        if self.report:
-            self.report.log("Features ranked from most to least important:\n")
-            self.report.write_contents("\n".join(report_strings))
-
         return sorted_features
 
     def summary_plot(self, output_file="", **summaryplot_kwargs):
@@ -172,9 +167,6 @@ class ModelBase(Visualizations, Stats):
             )
 
         self.shap.summary_plot(output_file=output_file, **summaryplot_kwargs)
-
-        if output_file and self.report:
-            self.report.write_image(output_file)
 
         if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
@@ -324,9 +316,6 @@ class ModelBase(Visualizations, Stats):
             num_samples, sample_no, output_file=output_file, **decisionplot_kwargs
         )
 
-        if output_file and self.report:
-            self.report.write_image(output_file)
-
         if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
@@ -380,9 +369,6 @@ class ModelBase(Visualizations, Stats):
         fp = self.shap.force_plot(
             sample_no, output_file=output_file, **forceplot_kwargs
         )
-
-        if output_file and self.report:
-            self.report.write_image(output_file)
 
         if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
@@ -449,9 +435,6 @@ class ModelBase(Visualizations, Stats):
         dp = self.shap.dependence_plot(
             feature, interaction, output_file=output_file, **dependenceplot_kwargs
         )
-
-        if output_file and self.report:
-            self.report.write_image(output_file)
 
         if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
@@ -1104,9 +1087,6 @@ class ClassificationModel(ModelBase):
             else model_object.x_test_results[predictions_col]
         )
 
-        if self.report:
-            self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
-
         if self.target_mapping is None:
             self.classes = [
                 str(item) for item in np.unique(list(self.y_train) + list(self.y_test))
@@ -1592,9 +1572,6 @@ class ClassificationModel(ModelBase):
         else:
             filt_metrics = list(metrics) if metrics else metric_table.index
 
-        if self.report:
-            self.report.write_metrics(metric_table.loc[filt_metrics, :].round(3))
-
         return metric_table.loc[filt_metrics, :].round(3)
 
     def confusion_matrix(
@@ -1728,11 +1705,6 @@ class ClassificationModel(ModelBase):
                 os.path.join(IMAGE_DIR, self.model_name, output_file)
             )
 
-            if self.report:
-                self.report.write_image(
-                    os.path.join(IMAGE_DIR, self.model_name, output_file)
-                )
-
         if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
@@ -1777,11 +1749,6 @@ class ClassificationModel(ModelBase):
                 os.path.join(IMAGE_DIR, self.model_name, output_file)
             )
 
-            if self.report:
-                self.report.write_image(
-                    os.path.join(IMAGE_DIR, self.model_name, output_file)
-                )
-
         if _global_config["track_experiments"]:  # pragma: no cover
             track_artifacts(self.run_id, self.model_name)
 
@@ -1813,9 +1780,6 @@ class ClassificationModel(ModelBase):
             self.y_test, self.y_pred, target_names=self.classes, digits=2
         )
 
-        if self.report:
-            self.report.report_classification_report(classification_report)
-
         print(classification_report)
 
 
@@ -1846,14 +1810,11 @@ class RegressionModel(ModelBase):
             else model_object.x_test_results[predictions_col]
         )
 
-        if self.report:
-            self.report.write_header(f"Analyzing Model {self.model_name.upper()}: ")
-
         self.features = self.x_test.columns
         self.pool = pool
         self.run_id = run_id
         self.predictions_col = predictions_col
-        self.train_labels = model_object.target_field
+        self.train_labels = model_object.target
 
     # def plot_predicted_actual(self, output_file="", **scatterplot_kwargs):
     #     """
@@ -2136,8 +2097,5 @@ class RegressionModel(ModelBase):
             filt_metrics = _global_config["project_metrics"]
         else:
             filt_metrics = list(metrics) if metrics else metric_table.index
-
-        if self.report:
-            self.report.write_metrics(metric_table.loc[filt_metrics, :].round(3))
 
         return metric_table.loc[filt_metrics, :].round(3)
