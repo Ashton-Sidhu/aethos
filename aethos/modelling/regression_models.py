@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .model import Model
+from .model import ModelBase
 from aethos.config import shell
 from aethos.modelling.model_analysis import RegressionModel
 from aethos.analysis import Analysis
@@ -12,7 +12,7 @@ from aethos.stats.stats import Stats
 from aethos.modelling.util import add_to_queue
 
 
-class RegressionModel(
+class Regression(
     ModelBase, Analysis, Clean, Preprocess, Feature, Visualizations, Stats
 ):
     def __init__(

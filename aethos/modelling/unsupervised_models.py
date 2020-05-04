@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .model import Model
+from .model import ModelBase
 from aethos.config import shell
 from aethos.modelling.model_analysis import UnsupervisedModel
 from aethos.analysis import Analysis
