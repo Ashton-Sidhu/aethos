@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 import pandas as pd
 import scipy as sc
-from aethos.config import technique_reason_repo
+
 from scipy.stats.stats import ks_2samp
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.metrics import classification_report
@@ -37,8 +37,6 @@ class Stats(object):
             raise ValueError(
                 "Test data or target field must be set. They can be set by assigning values to the `target` or the `x_test` variable."
             )
-
-        report_info = technique_reason_repo["stats"]["dist_compare"]["predict"]
 
         x_train = self.x_train.drop(self.target, axis=1)
         x_test = self.x_test.drop(self.target, axis=1)
@@ -92,8 +90,6 @@ class Stats(object):
             raise ValueError(
                 "Data must be split into train and test set. Please set the `x_test` variable."
             )
-
-        report_info = technique_reason_repo["stats"]["dist_compare"]["ks"]
 
         diff_data = []
         diff_df = None
@@ -155,9 +151,6 @@ class Stats(object):
 
                 plt.tight_layout()
                 plt.show()
-
-            if self.report is not None:
-                self.report.report_technique(report_info, [])
 
         return diff_df
 

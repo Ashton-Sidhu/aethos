@@ -233,12 +233,10 @@ class Analysis(Visualizations, Stats):
 
         return copy.deepcopy(self)
 
-    def log(self, msg: str):
-        """
-        Logs notes to the report file
-        """
-
-        self.report.log(msg)
+    # def log(self, msg: str):
+    #     """
+    #     Logs notes to the report file
+    #     """
 
     def standardize_column_names(self):
         """

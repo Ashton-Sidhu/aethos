@@ -152,9 +152,6 @@ class Visualizations(object):
             y, x, self.train_data, output_file=output_file, **params
         )
 
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
-
         return fig
 
     def barplot(
@@ -286,9 +283,6 @@ class Visualizations(object):
             **barplot_kwargs,
         )
 
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
-
         return fig
 
     def scatterplot(
@@ -357,9 +351,6 @@ class Visualizations(object):
             output_file=output_file,
             **scatterplot_kwargs,
         )
-
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
 
         return fig
 
@@ -481,9 +472,6 @@ class Visualizations(object):
             **lineplot_kwargs,
         )
 
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
-
         return fig
 
     def correlation_matrix(
@@ -518,9 +506,6 @@ class Visualizations(object):
             output_file=output_file,
             **kwargs,
         )
-
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
 
         return fig
 
@@ -590,9 +575,6 @@ class Visualizations(object):
             **kwargs,
         )
 
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
-
         return fig
 
     def jointplot(self, x: str, y: str, kind="scatter", output_file="", **kwargs):
@@ -646,9 +628,6 @@ class Visualizations(object):
         fig = self._viz.jointplot(
             x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs
         )
-
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
 
         return fig
 
@@ -712,9 +691,6 @@ class Visualizations(object):
             **kwargs,
         )
 
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
-
     def plot_dim_reduction(
         self, category: str, dim=2, algo="tsne", output_file="", **kwargs
     ):
@@ -764,9 +740,6 @@ class Visualizations(object):
             output_file=output_file,
             **kwargs,
         )
-
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
 
         return fig
 
@@ -833,9 +806,6 @@ class Visualizations(object):
             output_file=output_file,
             **kwargs,
         )
-
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
 
         return fig
 
@@ -908,9 +878,6 @@ class Visualizations(object):
             output_file=output_file,
             **kwargs,
         )
-
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
 
         return fig
 
@@ -1021,8 +988,5 @@ class Visualizations(object):
             output_file=output_file,
             **pieplot_kwargs,
         )
-
-        if output_file and self.report:  # pragma: no cover
-            self.report.write_image(output_file)
 
         return fig
