@@ -117,8 +117,6 @@ class Feature(object):
         For more information see: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
 
         If a list of columns is provided use the list, otherwise use arguments.
-
-        This function exists in `feature-extraction/text.py`
         
         Parameters
         ----------
@@ -264,8 +262,6 @@ class Feature(object):
         For more information see: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
 
         If a list of columns is provided use the list, otherwise use arguments.
-
-        This function exists in `feature-extraction/text.py`
         
         Parameters
         ----------
@@ -402,8 +398,6 @@ class Feature(object):
         For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.HashingVectorizer.html
 
         If a list of columns is provided use the list, otherwise use arguments.
-
-        This function exists in `feature-extraction/text.py`
         
         Parameters
         ----------

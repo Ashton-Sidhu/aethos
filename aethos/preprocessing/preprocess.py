@@ -1,4 +1,14 @@
-from aethos.config import technique_reason_repo
+import string
+import pandas as pd
+import numpy as np
+
+from functools import partial
+from nltk import sent_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.snowball import PorterStemmer, SnowballStemmer
+from nltk.tokenize import RegexpTokenizer, word_tokenize
+
 from aethos.preprocessing import categorical as cat
 from aethos.preprocessing import numeric as num
 from aethos.preprocessing import text
@@ -6,6 +16,10 @@ from aethos.util import (
     _input_columns,
     _numeric_input_conditions,
 )
+
+NLTK_STEMMERS = {"porter": PorterStemmer(), "snowball": SnowballStemmer("english")}
+
+NLTK_LEMMATIZERS = {"wordnet": WordNetLemmatizer()}
 
 
 class Preprocess(object):
@@ -18,8 +32,6 @@ class Preprocess(object):
         If a list of columns is provided use the list, otherwise use arguments.
 
         For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html#sklearn.preprocessing.MinMaxScaler 
-
-        This function can be found in `preprocess/numeric.py`     
         
         Parameters
         ----------
@@ -46,8 +58,6 @@ class Preprocess(object):
         >>> data.normalize_numeric(['col1', 'col2'])
         """
 
-        report_info = technique_reason_repo["preprocess"]["numeric"]["standardize"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self.x_train, self.x_test = num.scale(
@@ -57,13 +67,6 @@ class Preprocess(object):
             method="minmax",
             **normalize_params,
         )
-
-        if self.report is not None:
-            if list_of_cols:
-                self.report.report_technique(report_info, list_of_cols)
-            else:
-                list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
-                self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -84,8 +87,6 @@ class Preprocess(object):
         If a list of columns is provided use the list, otherwise use arguments.
 
         For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html#sklearn.preprocessing.RobustScaler
-
-        This function can be found in `preprocess/numeric.py`     
         
         Parameters
         ----------
@@ -120,8 +121,6 @@ class Preprocess(object):
         >>> data.normalize_quantile_range(['col1', 'col2'])
         """
 
-        report_info = technique_reason_repo["preprocess"]["numeric"]["robust"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self.x_train, self.x_test = num.scale(
@@ -131,13 +130,6 @@ class Preprocess(object):
             method="robust",
             **robust_params,
         )
-
-        if self.report is not None:
-            if list_of_cols:
-                self.report.report_technique(report_info, list_of_cols)
-            else:
-                list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
-                self.report.report_technique(report_info, list_of_cols)
 
         return self.copy()
 
@@ -169,23 +161,24 @@ class Preprocess(object):
         >>> data.normalize_log(['col1', 'col2'], base=10)
         """
 
-        report_info = technique_reason_repo["preprocess"]["numeric"]["log"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = num.log_scale(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            base=base,
-        )
+        list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            if list_of_cols:
-                self.report.report_technique(report_info, list_of_cols)
-            else:
-                list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
-                self.report.report_technique(report_info, list_of_cols)
+        if not base:
+            log = np.log
+        elif base == 2:
+            log = np.log2
+        elif base == 10:
+            log = np.log10
+        else:
+            log = np.log
+
+        for col in list_of_cols:
+            self.x_train[col] = log(self.x_train[col])
+
+            if self.x_test is not None:
+                self.x_test[col] = log(self.x_test[col])
 
         return self.copy()
 
@@ -217,19 +210,19 @@ class Preprocess(object):
         >>> data.split_sentences(['col1', 'col2'])
         """
 
-        report_info = technique_reason_repo["preprocess"]["text"]["split_sentence"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = text.split_sentences(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            new_col_name=new_col_name,
-        )
+        for col in list_of_cols:
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+            self.x_train[new_col_name] = pd.Series(
+                map(sent_tokenize, self.x_train[col])
+            )
+            if self.x_test is not None:
+                self.x_test[new_col_name] = pd.Series(
+                    map(sent_tokenize, self.x_test[col])
+                )
 
         return self.copy()
 
@@ -274,20 +267,20 @@ class Preprocess(object):
         >>> data.stem_nltk(['col1', 'col2'], stemmer='snowball')
         """
 
-        report_info = technique_reason_repo["preprocess"]["text"]["stem"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = text.nltk_stem(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            stemmer=stemmer,
-            new_col_name=new_col_name,
-        )
+        stem = NLTK_STEMMERS[stemmer]
+        # Create partial for speed purposes
+        func = partial(_apply_text_method, transformer=stem.stem)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        for col in list_of_cols:
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
+
+            self.x_train[new_col_name] = pd.Series(map(func, self.x_train[col]))
+
+            if self.x_test is not None:
+                self.x_test[new_col_name] = pd.Series(map(func, self.x_test[col]))
 
         return self.copy()
 
@@ -324,20 +317,32 @@ class Preprocess(object):
         >>> data.split_words_nltk(['col1', 'col2'])
         """
 
-        report_info = technique_reason_repo["preprocess"]["text"]["split_words"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.nltk_word_tokenizer(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            regexp=regexp,
-            new_col_name=new_col_name,
-        )
+        tokenizer = RegexpTokenizer(regexp)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        for col in list_of_cols:
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
+
+            if not regexp:
+                self.x_train[new_col_name] = pd.Series(
+                    map(word_tokenize, self.x_train[col])
+                )
+
+                if self.x_test is not None:
+                    self.x_test[new_col_name] = pd.Series(
+                        map(word_tokenize, self.x_test[col])
+                    )
+            else:
+                self.x_train[new_col_name] = pd.Series(
+                    map(tokenizer.tokenize, self.x_train[col])
+                )
+
+                if self.x_test is not None:
+                    self.x_test[new_col_name] = pd.Series(
+                        map(tokenizer.tokenize, self.x_test[col])
+                    )
 
         return self.copy()
 
@@ -376,20 +381,42 @@ class Preprocess(object):
         >>> data.remove_stopwords_nltk(['col1', 'col2'])
         """
 
-        report_info = technique_reason_repo["preprocess"]["text"]["remove_stopwords"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.nltk_remove_stopwords(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            custom_stopwords=custom_stopwords,
-            new_col_name=new_col_name,
-        )
+        stop_words = stopwords.words("english")
+        stop_words.extend(custom_stopwords)
+        stop_list = set(stop_words)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        for col in list_of_cols:
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
+
+            self.x_train[new_col_name] = list(
+                map(
+                    lambda x: " ".join(
+                        [
+                            word
+                            for word in word_tokenize(x.lower())
+                            if word not in stop_list
+                        ]
+                    ),
+                    self.x_train[col],
+                )
+            )
+
+            if self.x_test is not None:
+                self.x_test[new_col_name] = list(
+                    map(
+                        lambda x: " ".join(
+                            [
+                                word
+                                for word in word_tokenize(x.lower())
+                                if word not in stop_list
+                            ]
+                        ),
+                        self.x_test[col],
+                    )
+                )
 
         return self.copy()
 
@@ -440,21 +467,43 @@ class Preprocess(object):
         >>> data.remove_punctuation('col1', regexp=r'(\w+\.)|(\w+)') # Include all words and words with periods after.
         """
 
-        report_info = technique_reason_repo["preprocess"]["text"]["remove_punctuation"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.remove_punctuation(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            regexp=regexp,
-            exceptions=exceptions,
-            new_col_name=new_col_name,
-        )
+        delete_punct = set(string.punctuation) - set(exceptions)
+        tokenizer = RegexpTokenizer(regexp)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        for col in list_of_cols:
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
+
+            if not regexp:
+                self.x_train[new_col_name] = list(
+                    map(
+                        lambda x: "".join(
+                            [letter for letter in x if letter not in delete_punct]
+                        ),
+                        self.x_train[col],
+                    )
+                )
+
+                if self.x_test is not None:
+                    self.x_test[new_col_name] = list(
+                        map(
+                            lambda x: "".join(
+                                [letter for letter in x if letter not in delete_punct]
+                            ),
+                            self.x_test[col],
+                        )
+                    )
+            else:
+                self.x_train[new_col_name] = list(
+                    map(lambda x: " ".join(tokenizer.tokenize(x)), self.x_train[col])
+                )
+
+                if self.x_test is not None:
+                    self.x_test[new_col_name] = list(
+                        map(lambda x: " ".join(tokenizer.tokenize(x)), self.x_test[col])
+                    )
 
         return self.copy()
 
@@ -483,19 +532,26 @@ class Preprocess(object):
         >>> data.remove_numbers('col1', new_col_name="text_wo_num)
         """
 
-        report_info = technique_reason_repo["preprocess"]["text"]["remove_numbers"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.remove_numbers(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            new_col_name=new_col_name,
-        )
+        for col in list_of_cols:
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+            self.x_train[new_col_name] = pd.Series(
+                map(
+                    lambda x: str.translate(x, str.maketrans("", "", "0123456789")),
+                    self.x_train[col],
+                )
+            )
+
+            if self.x_test is not None:
+                self.x_test[new_col_name] = pd.Series(
+                    map(
+                        lambda x: str.translate(x, str.maketrans("", "", "0123456789")),
+                        self.x_test[col],
+                    )
+                )
 
         return self.copy()
 
@@ -557,8 +613,6 @@ class Preprocess(object):
         >>> data.clean_text(lower=False, stopwords=False, stemmer=False)
         """
 
-        report_info = technique_reason_repo["preprocess"]["text"]["clean_text"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
@@ -566,7 +620,7 @@ class Preprocess(object):
                 new_col_name = col + new_col_name
 
             self.x_train[new_col_name] = [
-                text.process_text(
+                self._process_text(
                     txt,
                     lower=lower,
                     punctuation=punctuation,
@@ -579,7 +633,7 @@ class Preprocess(object):
 
             if self.x_test is not None:
                 self.x_test[new_col_name] = [
-                    text.process_text(
+                    self._process_text(
                         txt,
                         lower=lower,
                         punctuation=punctuation,
@@ -590,7 +644,106 @@ class Preprocess(object):
                     for txt in self.x_test[col]
                 ]
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
-
         return self.copy()
+
+    def _process_text(
+        self,
+        corpus,
+        lower=True,
+        punctuation=True,
+        stopwords=True,
+        stemmer=True,
+        numbers=True,
+    ):
+        """
+        Function that takes text and does the following:
+
+        - Casts it to lowercase
+        - Removes punctuation
+        - Removes stopwords
+        - Stems the text
+        - Removes any numerical values
+        
+        Parameters
+        ----------
+        corpus : str
+            Text
+        
+        lower : bool, optional
+            True to cast all text to lowercase, by default True
+        
+        punctuation : bool, optional
+            True to remove punctuation, by default True
+        
+        stopwords : bool, optional
+            True to remove stop words, by default True
+        
+        stemmer : bool, optional
+            True to stem the data, by default True
+
+        numbers : bool, optional
+            True to remove any numbers, by default True
+        
+        Returns
+        -------
+        str
+            Normalized text
+        """
+
+        import nltk
+
+        transformed_corpus = ""
+
+        if lower:
+            corpus = corpus.lower()
+
+        for token in word_tokenize(corpus):
+
+            if punctuation:
+                if token in string.punctuation:
+                    continue
+
+                token = token.translate(str.maketrans("", "", string.punctuation))
+
+            if numbers:
+                token = token.translate(str.maketrans("", "", "0123456789"))
+
+            if stopwords:
+                stop_words = nltk.corpus.stopwords.words("english")
+                if token in stop_words:
+                    continue
+
+            if stemmer:
+                stem = SnowballStemmer("english")
+                token = stem.stem(token)
+
+            transformed_corpus += token + " "
+
+        return transformed_corpus.strip()
+
+    def _apply_text_method(self, text_data, transformer=None):
+        """
+        Applies a text based method to the given data, for example
+        a Lemmatizer, Stemmer, etc.
+
+        Parameters
+        ----------
+        text_data : str
+            Text data to transform
+            
+        transformer : Transformation object, optional
+            trasnformer applied on the data, for example
+            lemmatizer, stemmer, etc. , by default None
+
+        Returns
+        -------
+        str
+            Transformed data
+        """
+
+        transformed_text_data = ""
+
+        for word in text_data.split():
+            transformed_text_data += f"{transformer(word)} "
+
+        return transformed_text_data.strip()
