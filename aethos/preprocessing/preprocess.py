@@ -270,7 +270,7 @@ class Preprocess(object):
 
         stem = NLTK_STEMMERS[stemmer]
         # Create partial for speed purposes
-        func = partial(_apply_text_method, transformer=stem.stem)
+        func = partial(self._apply_text_method, transformer=stem.stem)
 
         for col in list_of_cols:
             if new_col_name.startswith("_"):

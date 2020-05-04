@@ -143,7 +143,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Unsupervised(x_train=data.copy(), x_test=data.copy())
         feature.encode_labels("col1", "col2")
 
         self.assertTrue(True)

@@ -1,10 +1,12 @@
 import os
 import warnings
-from pathlib import Path
 import pandas as pd
 import sklearn
 import numpy as np
+import copy
 
+
+from pathlib import Path
 from IPython.display import display
 from ipywidgets import widgets
 from ipywidgets.widgets.widget_layout import Layout
@@ -123,8 +125,8 @@ class ModelBase(object):
             self.x_train = x_train
             self.x_test = x_test
             self.target = target
-            self.target_mapping = None
             self.test_split_percentage = test_split_percentage
+            self.target_mapping = None
 
             if self.x_test is None:
                 # Generate train set and test set.
@@ -183,6 +185,23 @@ class ModelBase(object):
 
         return self.x_train._repr_html_()
 
+    def __deepcopy__(self, memo):
+
+        new_inst = type(self)(
+            x_train=self.x_train,
+            target=self.target,
+            x_test=self.x_test,
+            test_split_percentage=self.test_split_percentage,
+            exp_name=self.exp_name,
+        )
+
+        new_inst.target_mapping = self.target_mapping
+        new_inst._predicted_cols = self._predicted_cols
+        new_inst._models = self._models
+        new_inst._queued_models = self._queued_models
+
+        return new_inst
+
     @property
     def features(self):
         """Features for modelling"""
@@ -210,6 +229,18 @@ class ModelBase(object):
         """
 
         return self.x_train.columns.tolist()
+
+    def copy(self):
+        """
+        Returns deep copy of object.
+        
+        Returns
+        -------
+        Object
+            Deep copy of object
+        """
+
+        return copy.deepcopy(self)
 
     def help_debug(self):
         """
@@ -1321,14 +1352,6 @@ class ModelBase(object):
             self.x_test[new_col_name] = model.predict(self.test_data)
 
         self._predicted_cols.append(new_col_name)
-
-        # ############################################################
-        # ####################### Reporting ##########################
-        # ############################################################
-
-        # # Report the results
-
-        #     if gridsearch:
 
         #############################################################
         ############### Initialize Model Analysis ###################

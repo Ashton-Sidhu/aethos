@@ -97,9 +97,9 @@ class Feature(object):
         )
 
         if self.x_test is not None:
-            enc_self.x_test = enc.transform(self.x_test[list_of_cols]).toarray()
+            enc_test = enc.transform(self.x_test[list_of_cols]).toarray()
             enc_test_df = pd.DataFrame(
-                enc_test_df, columns=enc.get_feature_names(list_of_cols)
+                enc_test, columns=enc.get_feature_names(list_of_cols)
             )
             self.x_test = drop_replace_columns(
                 self.x_test, list_of_cols, enc_test_df, keep_col

@@ -27,9 +27,9 @@ class Regression(
         super().__init__(
             x_train,
             target,
-            x_test=None,
-            test_split_percentage=0.2,
-            exp_name="my-experiment",
+            x_test=x_test,
+            test_split_percentage=test_split_percentage,
+            exp_name=exp_name,
         )
 
     @add_to_queue

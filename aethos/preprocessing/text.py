@@ -1,11 +1,5 @@
 def process_text(
-    self,
-    corpus,
-    lower=True,
-    punctuation=True,
-    stopwords=True,
-    stemmer=True,
-    numbers=True,
+    corpus, lower=True, punctuation=True, stopwords=True, stemmer=True, numbers=True,
 ):
     """
     Function that takes text and does the following:

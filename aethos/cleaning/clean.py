@@ -436,7 +436,7 @@ class Clean(object):
         >>> data.drop_duplicate_rows()
         """
 
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         self.x_train = self.x_train.drop_duplicates(list_of_cols)
@@ -579,8 +579,8 @@ class Clean(object):
             )
             test_knn_transformed = knn.fit_transform(self.x_test.values)
 
-        self.x_train = (pd.DataFrame(data=train_knn_transformed, columns=columns),)
-        self.x_test = (pd.DataFrame(data=test_knn_transformed, columns=columns),)
+        self.x_train = pd.DataFrame(data=train_knn_transformed, columns=columns)
+        self.x_test = pd.DataFrame(data=test_knn_transformed, columns=columns)
 
         return self.copy()
 

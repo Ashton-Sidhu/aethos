@@ -232,11 +232,6 @@ class Analysis(Visualizations, Stats):
 
         return copy.deepcopy(self)
 
-    # def log(self, msg: str):
-    #     """
-    #     Logs notes to the report file
-    #     """
-
     def standardize_column_names(self):
         """
         Utility function that standardizes all column names to lowercase and underscores for spaces.
