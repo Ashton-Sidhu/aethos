@@ -54,6 +54,9 @@ class ModelBase(object):
 
     target: str
         For supervised learning problems, the name of the column you're trying to predict.
+
+    exp_name: str
+        Name of the experiment if you're tracking it in MLFlow.
     """
 
     # def __init__(
@@ -120,6 +123,10 @@ class ModelBase(object):
     ):
 
         step = x_train
+        self._predicted_cols = []
+        self._models = {}
+        self._queued_models = {}
+        self.exp_name = exp_name
 
         if isinstance(x_train, pd.DataFrame):
             self.x_train = x_train
@@ -128,7 +135,7 @@ class ModelBase(object):
             self.test_split_percentage = test_split_percentage
             self.target_mapping = None
 
-            if self.x_test is None:
+            if self.x_test is None and not type(self).__name__ == "Unsupervised":
                 # Generate train set and test set.
                 self.x_train, self.x_test = split_data(
                     self.x_train, test_split_percentage, self.target
@@ -141,11 +148,6 @@ class ModelBase(object):
             self.test_split_percentage = step.test_split_percentage
             self.target = step.target
             self.target_mapping = step.target_mapping
-
-        self._predicted_cols = []
-        self._models = {}
-        self._queued_models = {}
-        self.exp_name = exp_name
 
     def __getitem__(self, key):
 
@@ -162,13 +164,13 @@ class ModelBase(object):
 
         return _get_attr_(self, key)
 
-    # def __setattr__(self, key, value):
+    def __setattr__(self, key, value):
 
-    #     if key not in self.__dict__ or hasattr(self, key):
-    #         # any normal attributes are handled normally
-    #         dict.__setattr__(self, key, value)
-    #     else:
-    #         self.__setitem__(key, value)
+        if key not in self.__dict__ or hasattr(self, key):
+            # any normal attributes are handled normally
+            dict.__setattr__(self, key, value)
+        else:
+            self.__setitem__(key, value)
 
     def __setitem__(self, key, value):
 
@@ -206,7 +208,9 @@ class ModelBase(object):
     def features(self):
         """Features for modelling"""
 
-        return self.x_train.columns.tolist() - [self.target] - self.predicted_cols
+        return list(
+            set(self.x_train.columns) - set(self.target) - set(self.predicted_cols)
+        )
 
     @property
     def train_data(self):
@@ -221,6 +225,34 @@ class ModelBase(object):
         return (
             self.x_test[self.features] if self.x_test else "Test data does not exist."
         )
+
+    @property
+    def y_test(self):
+        """
+        Property function for the testing predictor variable
+        """
+
+        if self.x_test is not None:
+            if self.target:
+                return self.x_test[self.target]
+            else:
+                return None
+        else:
+            return None
+
+    @y_test.setter
+    def y_test(self, value):
+        """
+        Setter function for the testing predictor variable
+        """
+
+        if self.x_test is not None:
+            if self.target:
+                self.x_test[self.target] = value
+            else:
+                self.target = "label"
+                self.x_test["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
 
     @property
     def columns(self):
@@ -1403,18 +1435,8 @@ class ModelBase(object):
 
         return self._models[model_name]
 
-    # TODO: Consider whether gridsearch/cv is necessary
     def _run_unsupervised_model(
-        self,
-        model,
-        model_name,
-        new_col_name,
-        cv=None,
-        gridsearch=None,
-        score="accuracy",
-        run=True,
-        verbose=2,
-        **kwargs,
+        self, model, model_name, new_col_name, run=True, verbose=2, **kwargs,
     ):
         """
         Helper function that generalizes model orchestration.
@@ -1433,8 +1455,6 @@ class ModelBase(object):
         ):
             random_state = 42
 
-        cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
-
         _make_img_project_dir(model_name)
 
         #############################################################
@@ -1447,70 +1467,18 @@ class ModelBase(object):
             model = model(**kwargs)
 
         #############################################################
-        ################ Gridsearch + Train Model ###################
+        ###################### Train Model ##########################
         #############################################################
 
-        if gridsearch:
-            if not self.target:
-                raise ValueError(
-                    "Target field (.target) must be set to evaluate best model against a scoring metric."
-                )
+        model.fit(self.train_data)
 
-            grid_cv = cv if cv else 5
-            model = run_gridsearch(model, gridsearch, grid_cv, score, verbose=verbose)
-
-            model.fit(self.train_data, self.y_train)
-
-            self.x_train[new_col_name] = model.predict(self.train_data)
-
-        else:
-            if hasattr(model, "predict"):
-                model.fit(self.train_data)
-
-                self.x_train[new_col_name] = model.predict(self.train_data)
-            else:
-                self.x_train[new_col_name] = model.fit_predict(self.train_data)
-
-        if self.x_test is not None:
-            if hasattr(model, "predict"):
-                self.x_test[new_col_name] = model.predict(self.test_data)
-            else:
-                warnings.warn(
-                    "Model does not have a predict function, unable to predict on the test data set. Consider combining your datasets into 1 and set `model.x_test = None`"
-                )
+        self.x_train[new_col_name] = model.predict(self.train_data)
 
         self._predicted_cols.append(new_col_name)
 
         #############################################################
-        #################### Cross Validation #######################
-        #############################################################
-
-        if cv:
-            cv_scores = run_crossvalidation(
-                model,
-                self.train_data,
-                self.y_train,
-                cv=cv,
-                scoring=score,
-                model_name=model_name,
-            )
-
-            # NOTE: Not satisified with this implementation.
-            if not run:
-                return
-
-        # ############################################################
-        # ####################### Reporting ##########################
-        # ############################################################
-
-        #     if gridsearch:
-
-        #############################################################
         ############### Initialize Model Analysis ###################
         #############################################################
-
-        if gridsearch:
-            model = model.best_estimator_
 
         self._models[model_name] = UnsupervisedModel(
             self, model_name, model, new_col_name

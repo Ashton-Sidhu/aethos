@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .model import ModelBase
+from aethos.modelling.model import ModelBase
 from aethos.config import shell
 from aethos.modelling.model_analysis import UnsupervisedModel
 from aethos.analysis import Analysis
@@ -16,28 +16,16 @@ class Unsupervised(
     ModelBase, Analysis, Clean, Preprocess, Feature, Visualizations, Stats
 ):
     def __init__(
-        self,
-        x_train,
-        target="",
-        x_test=None,
-        test_split_percentage=0.2,
-        exp_name="my-experiment",
+        self, x_train, exp_name="my-experiment",
     ):
 
         super().__init__(
-            x_train,
-            target,
-            x_test=x_test,
-            test_split_percentage=test_split_percentage,
-            exp_name=exp_name,
+            x_train, "", x_test=None, test_split_percentage=0.2, exp_name=exp_name,
         )
 
     @add_to_queue
     def KMeans(
         self,
-        cv=None,
-        gridsearch=None,
-        score="homogeneity_score",
         model_name="km",
         new_col_name="kmeans_clusters",
         run=True,
@@ -161,9 +149,6 @@ class Unsupervised(
             model,
             model_name,
             new_col_name,
-            cv=cv,
-            gridsearch=gridsearch,
-            score=score,
             run=run,
             verbose=verbose,
             n_clusters=n_clusters,
@@ -175,9 +160,6 @@ class Unsupervised(
     @add_to_queue
     def DBScan(
         self,
-        cv=None,
-        gridsearch=None,
-        score="homogeneity_score",
         model_name="dbs",
         new_col_name="dbscan_clusters",
         run=True,
@@ -273,15 +255,7 @@ class Unsupervised(
         model = DBSCAN
 
         model = self._run_unsupervised_model(
-            model,
-            model_name,
-            new_col_name,
-            cv=cv,
-            gridsearch=gridsearch,
-            score=score,
-            run=run,
-            verbose=verbose,
-            **kwargs,
+            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model
@@ -289,9 +263,6 @@ class Unsupervised(
     @add_to_queue
     def IsolationForest(
         self,
-        cv=None,
-        gridsearch=None,
-        score="homogeneity_score",
         model_name="iso_forest",
         new_col_name="iso_predictions",
         run=True,
@@ -392,15 +363,7 @@ class Unsupervised(
         model = IsolationForest
 
         model = self._run_unsupervised_model(
-            model,
-            model_name,
-            new_col_name,
-            cv=cv,
-            gridsearch=gridsearch,
-            score=score,
-            run=run,
-            verbose=verbose,
-            **kwargs,
+            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model
@@ -408,9 +371,6 @@ class Unsupervised(
     @add_to_queue
     def OneClassSVM(
         self,
-        cv=None,
-        gridsearch=None,
-        score="homogeneity_score",
         model_name="ocsvm",
         new_col_name="ocsvm_predictions",
         run=True,
@@ -514,15 +474,7 @@ class Unsupervised(
         model = OneClassSVM
 
         model = self._run_unsupervised_model(
-            model,
-            model_name,
-            new_col_name,
-            cv=cv,
-            gridsearch=gridsearch,
-            score=score,
-            run=run,
-            verbose=verbose,
-            **kwargs,
+            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model
@@ -530,9 +482,6 @@ class Unsupervised(
     @add_to_queue
     def AgglomerativeClustering(
         self,
-        cv=None,
-        gridsearch=None,
-        score="homogeneity_score",
         model_name="agglom",
         new_col_name="agglom_clusters",
         run=True,
@@ -643,15 +592,7 @@ class Unsupervised(
         model = AgglomerativeClustering
 
         model = self._run_unsupervised_model(
-            model,
-            model_name,
-            new_col_name,
-            cv=cv,
-            gridsearch=gridsearch,
-            score=score,
-            run=run,
-            verbose=verbose,
-            **kwargs,
+            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model
@@ -659,9 +600,6 @@ class Unsupervised(
     @add_to_queue
     def MeanShift(
         self,
-        cv=None,
-        gridsearch=None,
-        score="homogeneity_score",
         model_name="mshift",
         new_col_name="mshift_clusters",
         run=True,
@@ -759,15 +697,7 @@ class Unsupervised(
         model = MeanShift
 
         model = self._run_unsupervised_model(
-            model,
-            model_name,
-            new_col_name,
-            cv=cv,
-            gridsearch=gridsearch,
-            score=score,
-            run=run,
-            verbose=verbose,
-            **kwargs,
+            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model
@@ -775,9 +705,6 @@ class Unsupervised(
     @add_to_queue
     def GaussianMixtureClustering(
         self,
-        cv=None,
-        gridsearch=None,
-        score="homogeneity_score",
         model_name="gm_cluster",
         new_col_name="gm_clusters",
         run=True,
@@ -914,15 +841,7 @@ class Unsupervised(
         model = GaussianMixture
 
         model = self._run_unsupervised_model(
-            model,
-            model_name,
-            new_col_name,
-            cv=cv,
-            gridsearch=gridsearch,
-            score=score,
-            run=run,
-            verbose=verbose,
-            **kwargs,
+            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model

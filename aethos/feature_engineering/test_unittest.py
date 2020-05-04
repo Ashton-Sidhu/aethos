@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import shutil
 from pathlib import Path
-from aethos import Unsupervised
+from aethos import Classification
 
 
 class TestFeatureExtraction(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.bag_of_words(keep_col=False)
         validate = feature.x_train.values.tolist()
 
@@ -28,7 +28,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.bag_of_words(keep_col=True)
         validate = feature.x_train.values.tolist()
 
@@ -43,7 +43,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.tfidf(keep_col=False, lowercase=False, stop_words="english")
         validate = feature.x_train.shape[1]
 
@@ -55,7 +55,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.tfidf("text", keep_col=False, lowercase=False, stop_words="english")
         validate = feature.x_train.shape[1]
 
@@ -67,7 +67,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.tfidf(keep_col=True, lowercase=False, stop_words="english")
         validate = feature.x_train.shape[1]
 
@@ -84,7 +84,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.onehot_encode(list_of_cols=["col1", "col3"], keep_col=False)
         validate = feature.x_train.values.tolist()
 
@@ -97,13 +97,13 @@ class TestFeatureExtraction(unittest.TestCase):
 
         normal_data = [
             "hi welcome to aethos.",
-            "This application automates common Unsupervised Science/ML Unsupervised tasks.",
+            "This application automates common Classification Science/ML Classification tasks.",
         ]
 
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.postag_nltk()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -116,7 +116,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.apply(lambda x: x["col1"] > 0, "new_col")
         validate = "new_col" in feature.x_train.columns
 
@@ -129,7 +129,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.apply(lambda x: x["col1"], "new_col")
         validate = (
             "new_col" in feature.x_train.columns and "new_col" in feature.x_test.columns
@@ -143,7 +143,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        feature = Unsupervised(x_train=data.copy(), x_test=data.copy())
+        feature = Classification(x_train=data.copy(), target="", x_test=data.copy())
         feature.encode_labels("col1", "col2")
 
         self.assertTrue(True)
@@ -154,7 +154,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.polynomial_features()
 
         validate = feature.x_train.shape[1] == 6 and feature.x_test.shape[1] == 6
@@ -165,13 +165,13 @@ class TestFeatureExtraction(unittest.TestCase):
 
         normal_data = [
             "hi welcome to aethos.",
-            "This application automates common Unsupervised Science/ML Unsupervised tasks.",
+            "This application automates common Classification Science/ML Classification tasks.",
         ]
 
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.postag_spacy()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -181,13 +181,13 @@ class TestFeatureExtraction(unittest.TestCase):
 
         normal_data = [
             "hi welcome to aethos.",
-            "This application automates common Unsupervised Science/ML Unsupervised tasks.",
+            "This application automates common Classification Science/ML Classification tasks.",
         ]
 
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.postag_spacy_detailed()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -197,13 +197,13 @@ class TestFeatureExtraction(unittest.TestCase):
 
         normal_data = [
             "hi welcome to aethos.",
-            "This application automates common Unsupervised Science/ML Unsupervised tasks.",
+            "This application automates common Classification Science/ML Classification tasks.",
         ]
 
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.nounphrases_spacy()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -213,13 +213,13 @@ class TestFeatureExtraction(unittest.TestCase):
 
         normal_data = [
             "hi welcome to aethos.",
-            "This application automates common Unsupervised Science/ML Unsupervised tasks.",
+            "This application automates common Classification Science/ML Classification tasks.",
         ]
 
         columns = ["text"]
         data = pd.DataFrame(normal_data, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.nounphrases_nltk()
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
 
@@ -232,7 +232,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["text"]
         data = pd.DataFrame(list_of_sentences, columns=columns)
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.text_hash(keep_col=True, n_features=5)
 
         self.assertTrue(True)
@@ -243,7 +243,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.pca(n_components=2)
 
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
@@ -256,7 +256,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        feature = Unsupervised(x_train=data, x_test=data)
+        feature = Classification(x_train=data, target="", x_test=data)
         feature.truncated_svd(n_components=2)
 
         validate = feature.x_train.shape[1] == 2 and feature.x_test.shape[1] == 2
@@ -269,7 +269,7 @@ class TestFeatureExtraction(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        feature = Unsupervised(x_train=data, x_test=data, target="col3",)
+        feature = Classification(x_train=data, target="col3", x_test=data)
         feature.pca(n_components=2)
 
         validate = feature.col3 is not None and feature.x_train.shape[1] == 3
@@ -290,7 +290,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        feat = Unsupervised(x_train=data, x_test=data)
+        feat = Classification(x_train=data, target="", x_test=data)
         feat.drop_correlated_features()
 
         self.assertTrue(True)
@@ -309,7 +309,7 @@ class TestFeatureExtraction(unittest.TestCase):
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        feat = Unsupervised(x_train=data, x_test=data, target="col4",)
+        feat = Classification(x_train=data, target="col4", x_test=data)
         feat.chi2_feature_selection(k=2, verbose=True)
 
         validate = feat.x_train.shape[1] == 3

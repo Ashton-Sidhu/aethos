@@ -490,18 +490,6 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
-    # def test_ytrain_split(self):
-
-    #     data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-    #     columns = ["col1", "col2", "col3"]
-    #     data = pd.DataFrame(data, columns=columns)
-
-    #     base = Analysis(x_train=data, x_test=None, target="col3",)
-
-    #     validate = len(base.y_train) == 2
-
-    #     self.assertTrue(validate)
-
     def test_ytrain_nosplit(self):
 
         data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
@@ -529,36 +517,6 @@ class Test_TestBase(unittest.TestCase):
             1,
             1,
         ] and base.y_train.tolist() == [1, 1, 1, 1]
-
-        self.assertTrue(validate)
-
-    def test_ytest_split(self):
-
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-        columns = ["col1", "col2", "col3"]
-        train_data = pd.DataFrame(data, columns=columns)
-        test_data = pd.DataFrame(data, columns=columns)
-
-        base = Analysis(x_train=data, x_test=test_data, target="col3",)
-
-        validate = len(base.y_test) == 4
-
-        self.assertTrue(validate)
-
-    def test_ytest_dne(self):
-
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-        columns = ["col1", "col2", "col3"]
-        train_data = pd.DataFrame(data, columns=columns)
-        test_data = pd.DataFrame(data, columns=columns)
-
-        base = Analysis(x_train=data, x_test=test_data,)
-
-        base.y_test = [1, 1, 1, 1]
-
-        validate = base.y_test.tolist() == [1, 1, 1, 1] and base.x_test[
-            "label"
-        ].tolist() == [1, 1, 1, 1,]
 
         self.assertTrue(validate)
 

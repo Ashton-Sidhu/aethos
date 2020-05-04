@@ -45,7 +45,6 @@ class Analysis(Visualizations, Stats):
 
     test_split_percentage: float
         Percentage of data to split train data into a train and test set.
-        Only used if `split=True`
 
     target: str
         For supervised learning problems, the name of the column you're trying to predict.
@@ -114,48 +113,6 @@ class Analysis(Visualizations, Stats):
             self.target = "label"
             self.x_train["label"] = value
             print('Added a target (predictor) field (column) named "label".')
-
-    @property
-    def y_test(self):
-        """
-        Property function for the testing predictor variable
-        """
-
-        if self.x_test is not None:
-            if self.target:
-                return self.x_test[self.target]
-            else:
-                return None
-        else:
-            return None
-
-    @y_test.setter
-    def y_test(self, value):
-        """
-        Setter function for the testing predictor variable
-        """
-
-        if self.x_test is not None:
-            if self.target:
-                self.x_test[self.target] = value
-            else:
-                self.target = "label"
-                self.x_test["label"] = value
-                print('Added a target (predictor) field (column) named "label".')
-
-    @y_test.setter
-    def y_test(self, value):
-        """
-        Setter function for the testing predictor variable
-        """
-
-        if self.x_test is not None:
-            if self.target:
-                self.x_test[self.target] = value
-            else:
-                self.target = "label"
-                self.x_test["label"] = value
-                print('Added a target (predictor) field (column) named "label".')
 
     @property
     def columns(self):

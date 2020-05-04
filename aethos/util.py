@@ -195,7 +195,9 @@ def split_data(df, split_percentage: float, target: str):
 
     target = target if target else None
 
-    x_train, x_test = train_test_split(df, test_size=split_percentage, stratify=target)
+    x_train, x_test = train_test_split(
+        df, test_size=split_percentage, stratify=df[target]
+    )
 
     return x_train, x_test
 
