@@ -25,6 +25,26 @@ class Classification(
         test_split_percentage=0.2,
         exp_name="my-experiment",
     ):
+        """
+        Class to run analysis, transform your data and run Classification algorithms.
+
+        Parameters
+        -----------
+        x_train: pd.DataFrame
+            Training data or aethos data object
+
+        target: str
+            For supervised learning problems, the name of the column you're trying to predict.
+
+        x_test: pd.DataFrame
+            Test data, by default None
+
+        test_split_percentage: float
+            Percentage of data to split train data into a train and test set, by default 0.2.
+
+        exp_name : str
+            Experiment name to be tracked in MLFlow.
+        """
 
         super().__init__(
             x_train,

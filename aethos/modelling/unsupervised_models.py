@@ -18,6 +18,17 @@ class Unsupervised(
     def __init__(
         self, x_train, exp_name="my-experiment",
     ):
+        """
+        Class to run analysis, transform your data and run Unsupervised algorithms.
+
+        Parameters
+        -----------
+        x_train: pd.DataFrame
+            Training data or aethos data object
+
+        exp_name : str
+            Experiment name to be tracked in MLFlow.
+        """
 
         super().__init__(
             x_train, "", x_test=None, test_split_percentage=0.2, exp_name=exp_name,

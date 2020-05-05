@@ -15,6 +15,9 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
     def __init__(
         self, model, x_train, x_test, target, model_name, cat_features=None,
     ):
+        """
+
+        """
 
         self.y_train = x_train[target]
 

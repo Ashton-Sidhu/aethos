@@ -33,82 +33,6 @@ warnings.simplefilter("ignore", FutureWarning)
 
 
 class ModelBase(object):
-    """
-    Modelling class that runs models, performs cross validation and gridsearch.
-
-    Parameters
-    -----------
-    x_train: aethos.Data or pd.DataFrame
-        Training data or aethos data object
-
-    x_test: pd.DataFrame
-        Test data, by default None
-
-    test_split_percentage: float
-        Percentage of data to split train data into a train and test set.
-        Only used if `split=True`
-
-    target: str
-        For supervised learning problems, the name of the column you're trying to predict.
-
-    exp_name: str
-        Name of the experiment if you're tracking it in MLFlow.
-    """
-
-    # def __init__(
-    #     self,
-    #     x_train,
-    #     x_test=None,
-    #     split=True,
-    #     test_split_percentage=0.2,
-    #     target="",
-    #     report_name=None,
-    #     exp_name="my-experiment",
-    # ):
-    #     step = x_train
-
-    #     if isinstance(x_train, pd.DataFrame):
-    #         self.x_train = x_train
-    #         self.x_test = x_test
-    #         self.split = split
-    #         self.target = target
-    #         self.target_mapping = None
-
-    #         self.test_split_percentage = test_split_percentage
-    #     else:
-    #         self.x_train = step.x_train
-    #         self.x_test = step.x_test
-    #         self.test_split_percentage = step.test_split_percentage
-    #         self.split = step.split
-    #         self.target = step.target
-    #         self.target_mapping = step.target_mapping
-
-    #     if self.split and self.x_test is None:
-    #         # Generate train set and test set.
-    #         self.x_train, self.x_test = split_data(self.x_train, test_split_percentage, self.target)
-    #         self.x_train.reset_index(drop=True, inplace=True)
-    #         self.x_test.reset_index(drop=True, inplace=True)
-
-    #     if report_name is not None:
-
-    #     else:
-
-    #     # Create a master dataset that houses training data + results
-    #     self.x_train = self.x_train.copy()
-    #     self.x_test = self.x_test.copy() if self.x_test is not None else None
-
-    #     # For supervised learning approaches, drop the target column
-    #     if self.target:
-    #         if split:
-    #             self.x_train = self.x_train.drop([self.target], axis=1)
-    #             self.x_test = self.x_test.drop([self.target], axis=1)
-    #         else:
-    #             self.x_train = self.x_train.drop([self.target], axis=1)
-
-    #     self._models = {}
-    #     self._queued_models = {}
-    #     self.exp_name = exp_name
-
     def __init__(
         self,
         x_train,
@@ -118,7 +42,6 @@ class ModelBase(object):
         exp_name="my-experiment",
     ):
 
-        self._predicted_cols = []
         self._models = {}
         self._queued_models = {}
         self.exp_name = exp_name
@@ -196,7 +119,6 @@ class ModelBase(object):
         )
 
         new_inst.target_mapping = self.target_mapping
-        new_inst._predicted_cols = self._predicted_cols
         new_inst._models = self._models
         new_inst._queued_models = self._queued_models
 
@@ -206,9 +128,7 @@ class ModelBase(object):
     def features(self):
         """Features for modelling"""
 
-        return list(
-            set(self.x_train.columns) - set([self.target]) - set(self._predicted_cols)
-        )
+        return list(set(self.x_train.columns) - set([self.target]))
 
     @property
     def train_data(self):
@@ -538,8 +458,6 @@ class ModelBase(object):
             **summarizer_kwargs,
         )
 
-        self._predicted_cols.append(col + new_col_name for col in list_of_cols)
-
         self._models[model_name] = TextModelAnalysis(None, self.x_train, model_name)
 
         return self._models[model_name]
@@ -616,8 +534,6 @@ class ModelBase(object):
             new_col_name=new_col_name,
             **keyword_kwargs,
         )
-
-        self._predicted_cols.append(col + new_col_name for col in list_of_cols)
 
         self._models[model_name] = TextModelAnalysis(None, self.x_train, model_name)
 
@@ -751,8 +667,6 @@ class ModelBase(object):
             col_name=col_name,
             **kwargs,
         )
-
-        self._predicted_cols.append(col_name)
 
         self._models[model_name] = TextModelAnalysis(
             w2v_model, self.x_train, model_name
@@ -1120,8 +1034,6 @@ class ModelBase(object):
         if self.x_test is not None:
             self.x_test[new_col_name] = pd.Series(map(nlp, self.x_test[col].tolist()))
 
-        self._predicted_cols.append(new_col_name)
-
         return nlp.model
 
     def pretrained_question_answer(
@@ -1262,8 +1174,6 @@ class ModelBase(object):
                     )
                 ]
             )
-
-        self._predicted_cols.append(new_col_name)
 
         return nlp.model
 
