@@ -180,7 +180,7 @@ def _run(model):
     return model()
 
 
-def _get_cv_type(cv_type, random_state, **kwargs):
+def _get_cv_type(cv_type, n_splits, shuffle, **kwargs):
     """
     Takes in cv type from the user and initiates the cross validation generator.
     
@@ -189,8 +189,7 @@ def _get_cv_type(cv_type, random_state, **kwargs):
     cv_type : int, str or None
         Crossvalidation type
 
-    random_state : int
-        Random seed
+    
     
     Returns
     -------
@@ -198,27 +197,19 @@ def _get_cv_type(cv_type, random_state, **kwargs):
         CV Generator
     """
 
-    if not cv_type:
-        return None, kwargs
+    n_splits = n_splits
+    shuffle = shuffle
 
-    if isinstance(cv_type, int):
-        cv_type = cv_type
-    elif cv_type == "kfold":
-        n_splits = kwargs.pop("n_splits", 5)
-        shuffle = kwargs.pop("shuffle", False)
-
-        cv_type = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+    if cv_type == "kfold":
+        cv_type = KFold(n_splits=n_splits, shuffle=shuffle, random_state=42, **kwargs)
     elif cv_type == "strat-kfold":
-        n_splits = kwargs.pop("n_splits", 5)
-        shuffle = kwargs.pop("shuffle", False)
-
         cv_type = StratifiedKFold(
-            n_splits=n_splits, shuffle=shuffle, random_state=random_state
+            n_splits=n_splits, shuffle=shuffle, random_state=42, **kwargs
         )
     else:
         raise ValueError("Cross Validation type is invalid.")
 
-    return cv_type, kwargs
+    return cv_type
 
 
 def to_pickle(model, name, project=False, project_name=None):

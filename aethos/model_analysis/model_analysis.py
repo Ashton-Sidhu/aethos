@@ -15,7 +15,12 @@ from IPython.display import HTML, SVG, display
 from aethos.config.config import _global_config
 from aethos.feature_engineering.util import sklearn_dim_reduction
 from aethos.model_analysis.model_explanation import MSFTInterpret, Shap
-from aethos.modelling.util import to_pickle, track_artifacts
+from aethos.modelling.util import (
+    to_pickle,
+    track_artifacts,
+    _get_cv_type,
+    run_crossvalidation,
+)
 from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.visualizations.visualizations import Visualizations
 from aethos.stats.stats import Stats
@@ -789,3 +794,34 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
             raise NotImplementedError(
                 f"Model {str(self.model)} cannot be viewed as a tree"
             )
+
+    def _cross_validate(self, cv_type, score, n_splits, shuffle, **kwargs):
+
+        # # Use native CatBoost cross validation
+        # if isinstance(model, cb.CatBoost):
+        #     if isinstance(cv, int):
+        #         folds = None
+        #         fold_count = cv
+        #     else:
+        #         folds = cv
+        #         fold_count = None
+
+        #     cv_dataset = cb.Pool(
+        #         self.train_data, self.y_train, cat_features=cat_features,
+        #     )
+
+        #     cv_scores = cb.cv(
+        #         cv_dataset, kwargs, folds=folds, fold_count=fold_count, plot="True",
+        #     )
+
+        # else:
+        cv = _get_cv_type(cv_type, n_splits, shuffle, **kwargs)
+
+        cv_scores = run_crossvalidation(
+            self.model,
+            self.x_train,
+            self.y_train,
+            cv=cv,
+            scoring=score,
+            model_name=self.model_name,
+        )

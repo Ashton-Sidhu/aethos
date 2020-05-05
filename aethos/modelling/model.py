@@ -1212,8 +1212,7 @@ class ModelBase(object):
             random_state = 42
 
         cat_features = kwargs.pop("cat_features", None)
-        cv, kwargs = _get_cv_type(cv, random_state, **kwargs)
-        shap_values = None
+        # cv, kwargs = _get_cv_type(cv, **kwargs)
         pool = None
         run_id = None
 
@@ -1246,38 +1245,6 @@ class ModelBase(object):
         #############################################################
         #################### Cross Validation #######################
         #############################################################
-
-        if cv:
-            # Use native CatBoost cross validation
-            if isinstance(model, cb.CatBoost):
-                if isinstance(cv, int):
-                    folds = None
-                    fold_count = cv
-                else:
-                    folds = cv
-                    fold_count = None
-
-                cv_dataset = cb.Pool(
-                    self.train_data, self.y_train, cat_features=cat_features,
-                )
-
-                cv_scores = cb.cv(
-                    cv_dataset, kwargs, folds=folds, fold_count=fold_count, plot="True",
-                )
-
-            else:
-                cv_scores = run_crossvalidation(
-                    model,
-                    self.train_data,
-                    self.y_train,
-                    cv=cv,
-                    scoring=score,
-                    model_name=model_name,
-                )
-
-            # NOTE: Not satisified with this implementation, which is why this whole process needs a rework but is satisfactory... for a v1.
-            if not run:
-                return
 
         #############################################################
         ###################### Train Model ##########################

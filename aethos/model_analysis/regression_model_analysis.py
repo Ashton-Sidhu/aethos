@@ -332,3 +332,14 @@ class RegressionModelAnalysis(SupervisedModelAnalysis):
             filt_metrics = list(metrics) if metrics else metric_table.index
 
         return metric_table.loc[filt_metrics, :].round(3)
+
+    def cross_validate(
+        self,
+        cv_type="kfold",
+        score="neg_root_mean_squared_error",
+        n_splits=5,
+        shuffle=False,
+        **kwargs
+    ):
+
+        super()._cross_validate(cv_type, score, n_splits, shuffle, **kwargs)
