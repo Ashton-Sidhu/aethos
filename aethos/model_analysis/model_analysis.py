@@ -776,6 +776,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
             )
 
     def _cross_validate(self, cv_type, score, n_splits, shuffle, **kwargs):
+        """Runs crossvalidation on a model"""
 
         cv = _get_cv_type(cv_type, n_splits, shuffle, **kwargs)
 

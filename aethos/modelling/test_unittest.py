@@ -681,8 +681,8 @@ class TestModelling(unittest.TestCase):
         data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-        model = Classification(x_train=data, target="col3", test_split_percentage=0.2)
-        m = model.LogisticRegression(random_state=2)
+        model = Regression(x_train=data, target="col3", test_split_percentage=0.2)
+        m = model.LinearRegression()
         m.cross_validate()
 
         self.assertTrue(True)

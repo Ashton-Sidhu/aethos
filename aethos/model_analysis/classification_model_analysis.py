@@ -738,5 +738,42 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
     def cross_validate(
         self, cv_type="kfold", score="accuracy", n_splits=5, shuffle=False, **kwargs
     ):
+        """
+        Runs cross validation on a Classification model.
+
+        Scoring Metrics:
+            - ‘accuracy’ 	
+            - ‘balanced_accuracy’ 	
+            - ‘average_precision’ 	
+            - ‘brier_score_loss’ 	
+            - ‘f1’ 	
+            - ‘f1_micro’ 	
+            - ‘f1_macro’ 	
+            - ‘f1_weighted’ 	
+            - ‘f1_samples’ 	
+            - ‘neg_log_loss’ 	
+            - ‘precision’	
+            - ‘recall’ 	
+            - ‘jaccard’ 	
+            - ‘roc_auc’'
+            - ‘roc_auc_ovr’
+            - ‘roc_auc_ovo’
+            - ‘roc_auc_ovr_weighted’
+            - ‘roc_auc_ovo_weighted’
+        
+        Parameters
+        ----------
+        cv_type : {kfold, strat-kfold}, optional
+            Crossvalidation type, by default "kfold"
+
+        score : str, optional
+            Scoring metric, by default "accuracy"
+
+        n_splits : int, optional
+            Number of times to split the data, by default 5
+
+        shuffle : bool, optional
+            True to shuffle the data, by default False
+        """
 
         super()._cross_validate(cv_type, score, n_splits, shuffle, **kwargs)
