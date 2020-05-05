@@ -13,12 +13,8 @@ from ipywidgets.widgets.widget_layout import Layout
 
 from aethos.config import shell
 from aethos.config.config import _global_config
-from aethos.modelling.model_analysis import (
-    ClassificationModel,
-    RegressionModel,
-    UnsupervisedModel,
-    TextModel,
-)
+from aethos.model_analysis.unsupervised_model_analysis import UnsupervisedModelAnalysis
+from aethos.model_analysis.text_model_analysis import TextModelAnalysis
 from aethos.modelling import text
 from aethos.modelling.util import (
     _get_cv_type,
@@ -122,11 +118,13 @@ class ModelBase(object):
         exp_name="my-experiment",
     ):
 
-        step = x_train
         self._predicted_cols = []
         self._models = {}
         self._queued_models = {}
         self.exp_name = exp_name
+
+        step = x_train
+        problem = "c" if type(self).__name__ == "Classification" else "r"
 
         if isinstance(x_train, pd.DataFrame):
             self.x_train = x_train
@@ -138,7 +136,7 @@ class ModelBase(object):
             if self.x_test is None and not type(self).__name__ == "Unsupervised":
                 # Generate train set and test set.
                 self.x_train, self.x_test = split_data(
-                    self.x_train, test_split_percentage, self.target
+                    self.x_train, test_split_percentage, self.target, problem
                 )
                 self.x_train = self.x_train.reset_index(drop=True)
                 self.x_test = self.x_test.reset_index(drop=True)
@@ -209,7 +207,7 @@ class ModelBase(object):
         """Features for modelling"""
 
         return list(
-            set(self.x_train.columns) - set(self.target) - set(self.predicted_cols)
+            set(self.x_train.columns) - set([self.target]) - set(self._predicted_cols)
         )
 
     @property
@@ -285,7 +283,7 @@ class ModelBase(object):
         >>> model.help_debug()
         """
 
-        from aethos.modelling.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
+        from aethos.model_analysis.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 
         overfit_labels = []
         underfit_labels = []
@@ -520,7 +518,7 @@ class ModelBase(object):
 
         Returns
         -------
-        TextModel
+        TextModelAnalysis
             Resulting model
 
         Examples
@@ -542,7 +540,7 @@ class ModelBase(object):
 
         self._predicted_cols.append(col + new_col_name for col in list_of_cols)
 
-        self._models[model_name] = TextModel(self, None, model_name)
+        self._models[model_name] = TextModelAnalysis(None, self.x_train, model_name)
 
         return self._models[model_name]
 
@@ -599,7 +597,7 @@ class ModelBase(object):
         
         Returns
         -------
-        TextModel
+        TextModelAnalysis
             Resulting model
         
         Examples
@@ -621,7 +619,7 @@ class ModelBase(object):
 
         self._predicted_cols.append(col + new_col_name for col in list_of_cols)
 
-        self._models[model_name] = TextModel(self, None, model_name)
+        self._models[model_name] = TextModelAnalysis(None, self.x_train, model_name)
 
         return self._models[model_name]
 
@@ -736,7 +734,7 @@ class ModelBase(object):
 
         Returns
         -------
-        TextModel
+        TextModelAnalysis
             Resulting model
 
         Examples
@@ -756,7 +754,9 @@ class ModelBase(object):
 
         self._predicted_cols.append(col_name)
 
-        self._models[model_name] = TextModel(self, w2v_model, model_name)
+        self._models[model_name] = TextModelAnalysis(
+            w2v_model, self.x_train, model_name
+        )
 
         return self._models[model_name]
 
@@ -866,7 +866,7 @@ class ModelBase(object):
 
         Returns
         -------
-        TextModel
+        TextModelAnalysis
             Resulting model
         
         Examples
@@ -884,7 +884,9 @@ class ModelBase(object):
             **kwargs,
         )
 
-        self._models[model_name] = TextModel(self, d2v_model, model_name)
+        self._models[model_name] = TextModelAnalysis(
+            d2v_model, self.x_train, model_name
+        )
 
         return self._models[model_name]
 
@@ -976,7 +978,7 @@ class ModelBase(object):
         
         Returns
         -------
-        TextModel
+        TextModelAnalysis
             Resulting model
 
         Examples
@@ -994,8 +996,8 @@ class ModelBase(object):
             **kwargs,
         )
 
-        self._models[model_name] = TextModel(
-            self, lda_model, model_name, corpus=corpus, id2word=id2word
+        self._models[model_name] = TextModelAnalysis(
+            lda_model, self.x_train, model_name, corpus=corpus, id2word=id2word
         )
 
         return self._models[model_name]
@@ -1378,13 +1380,6 @@ class ModelBase(object):
         else:
             model.fit(self.train_data, self.y_train)
 
-        self.x_train[new_col_name] = model.predict(self.train_data)
-
-        if self.x_test is not None:
-            self.x_test[new_col_name] = model.predict(self.test_data)
-
-        self._predicted_cols.append(new_col_name)
-
         #############################################################
         ############### Initialize Model Analysis ###################
         #############################################################
@@ -1392,26 +1387,13 @@ class ModelBase(object):
         if gridsearch and not isinstance(model, cb.CatBoost):
             model = model.best_estimator_
 
-        if isinstance(model, cb.CatBoost):
-            data = self.train_data if self.x_test is None else self.test_data
-            label = self.y_train if self.x_test is None else self.y_test
-            pool = cb.Pool(
-                data,
-                label=label,
-                cat_features=cat_features,
-                feature_names=self.features,
-            )
-
-            shap_values = model.get_feature_importance(pool, type="ShapValues")
-
         self._models[model_name] = model_type(
-            self,
-            model_name,
             model,
-            new_col_name,
-            shap_values=shap_values,
-            pool=pool,
-            run_id=run_id,
+            self.x_train,
+            self.x_test,
+            self.target,
+            model_name,
+            cat_features=cat_features,
         )
 
         #############################################################
@@ -1472,16 +1454,12 @@ class ModelBase(object):
 
         model.fit(self.train_data)
 
-        self.x_train[new_col_name] = model.predict(self.train_data)
-
-        self._predicted_cols.append(new_col_name)
-
         #############################################################
         ############### Initialize Model Analysis ###################
         #############################################################
 
-        self._models[model_name] = UnsupervisedModel(
-            self, model_name, model, new_col_name
+        self._models[model_name] = UnsupervisedModelAnalysis(
+            model, self.x_train, model_name
         )
 
         #############################################################

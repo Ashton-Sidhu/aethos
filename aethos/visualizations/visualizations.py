@@ -1,5 +1,6 @@
 from aethos.visualizations.visualize import VizCreator
 import numpy as np
+import pandas as pd
 
 
 class Visualizations(object):
@@ -148,9 +149,7 @@ class Visualizations(object):
         if y is None:
             y = self.target
 
-        fig = self._viz.raincloud(
-            y, x, self.train_data, output_file=output_file, **params
-        )
+        fig = self._viz.raincloud(y, x, self.x_train, output_file=output_file, **params)
 
         return fig
 
@@ -275,7 +274,7 @@ class Visualizations(object):
         fig = self._viz.barplot(
             x,
             y,
-            self.train_data,
+            self.x_train,
             method=method,
             output_file=output_file,
             orientation=orient,
@@ -345,7 +344,7 @@ class Visualizations(object):
             x,
             y,
             z=z,
-            data=self.train_data,
+            data=self.x_train,
             title=title,
             category=category,
             output_file=output_file,
@@ -465,7 +464,7 @@ class Visualizations(object):
             x,
             y,
             z,
-            self.train_data,
+            self.x_train,
             category=category,
             title=title,
             output_file=output_file,
@@ -500,7 +499,7 @@ class Visualizations(object):
         """
 
         fig = self._viz.correlation_matrix(
-            self.train_data,
+            self.x_train,
             data_labels=data_labels,
             hide_mirror=hide_mirror,
             output_file=output_file,
@@ -562,7 +561,7 @@ class Visualizations(object):
         >>> data.pairplot(kind='kde', output_file='pair.png')
         """
 
-        data = self.train_data if not cols else self.train_data[cols]
+        data = self.x_train if not cols else self.x_train[cols]
 
         fig = self._viz.pairplot(
             data,
@@ -626,7 +625,7 @@ class Visualizations(object):
         """
 
         fig = self._viz.jointplot(
-            x=x, y=y, df=self.train_data, kind=kind, output_file=output_file, **kwargs
+            x=x, y=y, df=self.x_train, kind=kind, output_file=output_file, **kwargs
         )
 
         return fig
@@ -680,12 +679,12 @@ class Visualizations(object):
         columns = (
             list(x)
             if x
-            else list(self.train_data.select_dtypes(include=[np.number]).columns)
+            else list(self.x_train.select_dtypes(include=[np.number]).columns)
         )
 
         self._viz.histogram(
             columns,
-            x_train=self.train_data,
+            x_train=self.x_train,
             x_test=x_test,
             output_file=output_file,
             **kwargs,
@@ -732,14 +731,46 @@ class Visualizations(object):
         >>> data.plot_dim_reduction('cluster_labels', dim=3)
         """
 
-        fig = self._viz.viz_clusters(
-            self.train_data,
-            algo=algo,
-            category=category,
-            dim=dim,
-            output_file=output_file,
-            **kwargs,
+        from sklearn.manifold import LocallyLinearEmbedding, TSNE
+        from sklearn.decomposition import PCA, TruncatedSVD
+
+        if dim != 2 and dim != 3:
+            raise ValueError("Dimension must be either 2d (2) or 3d (3)")
+
+        algorithms = {
+            "tsne": TSNE(n_components=dim, random_state=42,),
+            "lle": LocallyLinearEmbedding(n_components=dim, random_state=42,),
+            "pca": PCA(n_components=dim, random_state=42,),
+            "tsvd": TruncatedSVD(n_components=dim, random_state=42,),
+        }
+
+        reducer = algorithms[algo]
+        reduced_df = pd.DataFrame(
+            reducer.fit_transform(self.x_train.drop(category, axis=1))
         )
+        reduced_df.columns = map(str, reduced_df.columns)
+        reduced_df[category] = self.x_train[category]
+        reduced_df[category] = reduced_df[category].astype(str)
+
+        if dim == 2:
+            fig = self._viz.scatterplot(
+                "0",
+                "1",
+                data=reduced_df,
+                category=category,
+                output_file=output_file,
+                **kwargs,
+            )
+        else:
+            fig = self._viz.scatterplot(
+                "0",
+                "1",
+                "2",
+                data=reduced_df,
+                category=category,
+                output_file=output_file,
+                **kwargs,
+            )
 
         return fig
 
@@ -800,7 +831,7 @@ class Visualizations(object):
         fig = self._viz.boxplot(
             x=x,
             y=y,
-            data=self.train_data,
+            data=self.x_train,
             color=color,
             title=title,
             output_file=output_file,
@@ -872,7 +903,7 @@ class Visualizations(object):
         fig = self._viz.violinplot(
             x=x,
             y=y,
-            data=self.train_data,
+            data=self.x_train,
             color=color,
             title=title,
             output_file=output_file,
@@ -981,7 +1012,7 @@ class Visualizations(object):
         fig = self._viz.pieplot(
             values,
             names,
-            data=self.train_data,
+            data=self.x_train,
             textposition=textposition,
             textinfo=textinfo,
             title=title,

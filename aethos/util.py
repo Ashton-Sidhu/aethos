@@ -171,7 +171,7 @@ def drop_replace_columns(df, drop_cols, new_data, keep_col=False):
     return df
 
 
-def split_data(df, split_percentage: float, target: str):
+def split_data(df, split_percentage: float, target: str, problem: str):
     """
     Function that splits the data into a training and testing set. Split percentage is passed in through
     the split_percentage variable.
@@ -186,6 +186,9 @@ def split_data(df, split_percentage: float, target: str):
 
     target : str 
         Target variable to stratify to ensure class balance.
+
+    problem : str
+        Type of problem, either classification or regression
     
     Returns
     -------
@@ -193,11 +196,9 @@ def split_data(df, split_percentage: float, target: str):
         Train data and test data.
     """
 
-    target = target if target else None
+    target = df[target] if target and problem == "c" else None
 
-    x_train, x_test = train_test_split(
-        df, test_size=split_percentage, stratify=df[target]
-    )
+    x_train, x_test = train_test_split(df, test_size=split_percentage, stratify=target)
 
     return x_train, x_test
 

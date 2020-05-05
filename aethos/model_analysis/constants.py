@@ -128,7 +128,7 @@ DEBUG_OVERFIT = [
     "Feature selection to decrease number/type of input features.",
     "Modify input features based on insights from error analysis​ - add more features.",
     "Modify model architecture",
-    "Reduce the noise in the training data (e.g. fix data errors and remove outliers)."
+    "Reduce the noise in the training data (e.g. fix data errors and remove outliers).",
 ]
 
 DEBUG_UNDERFIT = [

@@ -2,7 +2,7 @@ import pandas as pd
 
 from .model import ModelBase
 from aethos.config import shell
-from aethos.modelling.model_analysis import RegressionModel
+from aethos.model_analysis.regression_model_analysis import RegressionModelAnalysis
 from aethos.analysis import Analysis
 from aethos.cleaning.clean import Clean
 from aethos.preprocessing.preprocess import Preprocess
@@ -98,8 +98,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -118,7 +118,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -216,8 +216,8 @@ class Regression(
             
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -236,7 +236,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -346,8 +346,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -366,7 +366,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -471,8 +471,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -491,7 +491,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -582,8 +582,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -602,7 +602,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -766,8 +766,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -786,7 +786,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -875,8 +875,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -895,7 +895,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -996,8 +996,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1016,7 +1016,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1171,8 +1171,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1191,7 +1191,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1327,8 +1327,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
         
         Examples
         --------
@@ -1347,7 +1347,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1488,8 +1488,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1508,7 +1508,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1612,8 +1612,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1632,7 +1632,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1742,8 +1742,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1762,7 +1762,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1913,8 +1913,8 @@ class Regression(
 
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1933,7 +1933,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -2070,8 +2070,8 @@ class Regression(
             
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -2090,7 +2090,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -2182,8 +2182,8 @@ class Regression(
             
         Returns
         -------
-        RegressionModel
-            RegressionModel object to view results and analyze results
+        RegressionModelAnalysis
+            RegressionModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -2202,7 +2202,7 @@ class Regression(
         model = self._run_supervised_model(
             model,
             model_name,
-            RegressionModel,
+            RegressionModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,

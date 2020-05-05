@@ -2,7 +2,7 @@ import pandas as pd
 
 from aethos.modelling.model import ModelBase
 from aethos.config import shell
-from aethos.modelling.model_analysis import UnsupervisedModel
+from aethos.model_analysis.unsupervised_model_analysis import UnsupervisedModelAnalysis
 from aethos.analysis import Analysis
 from aethos.cleaning.clean import Clean
 from aethos.preprocessing.preprocess import Preprocess
@@ -111,8 +111,8 @@ class Unsupervised(
                     
         Returns
         -------
-        UnsupervisedModel
-            UnsupervisedModel object to view results and further analysis
+        UnsupervisedModelAnalysis
+            UnsupervisedModelAnalysis object to view results and further analysis
 
         Examples
         --------
@@ -239,8 +239,8 @@ class Unsupervised(
         
         Returns
         -------
-        UnsupervisedModel
-            UnsupervisedModel object to view results and further analysis
+        UnsupervisedModelAnalysis
+            UnsupervisedModelAnalysis object to view results and further analysis
 
         Examples
         --------
@@ -347,8 +347,8 @@ class Unsupervised(
 
         Returns
         -------
-        UnsupervisedModel
-            UnsupervisedModel object to view results and analyze results
+        UnsupervisedModelAnalysis
+            UnsupervisedModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -458,8 +458,8 @@ class Unsupervised(
 
         Returns
         -------
-        UnsupervisedModel
-            UnsupervisedModel object to view results and analyze results
+        UnsupervisedModelAnalysis
+            UnsupervisedModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -576,8 +576,8 @@ class Unsupervised(
                     
         Returns
         -------
-        UnsupervisedModel
-            UnsupervisedModel object to view results and further analysis
+        UnsupervisedModelAnalysis
+            UnsupervisedModelAnalysis object to view results and further analysis
 
         Examples
         --------
@@ -681,8 +681,8 @@ class Unsupervised(
                     
         Returns
         -------
-        UnsupervisedModel
-            UnsupervisedModel object to view results and further analysis
+        UnsupervisedModelAnalysis
+            UnsupervisedModelAnalysis object to view results and further analysis
 
         Examples
         --------
@@ -825,8 +825,8 @@ class Unsupervised(
             
         Returns
         -------
-        UnsupervisedModel
-            UnsupervisedModel object to view results and further analysis
+        UnsupervisedModelAnalysis
+            UnsupervisedModelAnalysis object to view results and further analysis
 
         Examples
         --------

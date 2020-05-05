@@ -2,7 +2,9 @@ import pandas as pd
 
 from .model import ModelBase
 from aethos.config import shell
-from aethos.modelling.model_analysis import ClassificationModel
+from aethos.model_analysis.classification_model_analysis import (
+    ClassificationModelAnalysis,
+)
 from aethos.analysis import Analysis
 from aethos.cleaning.clean import Clean
 from aethos.preprocessing.preprocess import Preprocess
@@ -113,8 +115,8 @@ class Classification(
         
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -135,7 +137,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -234,8 +236,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -254,7 +256,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -411,8 +413,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
         
         Examples
         --------
@@ -431,7 +433,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -524,8 +526,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -544,7 +546,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -652,8 +654,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -672,7 +674,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -827,8 +829,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -847,7 +849,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1001,8 +1003,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1021,7 +1023,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1114,8 +1116,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1134,7 +1136,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1217,8 +1219,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1237,7 +1239,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1327,8 +1329,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1347,7 +1349,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1506,8 +1508,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1526,7 +1528,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1650,8 +1652,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1670,7 +1672,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1798,8 +1800,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -1818,7 +1820,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -1976,8 +1978,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -2001,7 +2003,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -2146,8 +2148,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -2170,7 +2172,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,
@@ -2272,8 +2274,8 @@ class Classification(
 
         Returns
         -------
-        ClassificationModel
-            ClassificationModel object to view results and analyze results
+        ClassificationModelAnalysis
+            ClassificationModelAnalysis object to view results and analyze results
 
         Examples
         --------
@@ -2296,7 +2298,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModel,
+            ClassificationModelAnalysis,
             new_col_name,
             cv=cv,
             gridsearch=gridsearch,

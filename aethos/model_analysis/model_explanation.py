@@ -254,7 +254,7 @@ class MSFTInterpret(object):
         """
 
         import interpret
-        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+        from aethos.model_analysis.constants import INTERPRET_EXPLAINERS
 
         if predictions == "probability":
             predict_fn = self.model.predict_proba
@@ -322,7 +322,7 @@ class MSFTInterpret(object):
         """
 
         import interpret
-        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+        from aethos.model_analysis.constants import INTERPRET_EXPLAINERS
 
         if predictions == "probability":
             predict_fn = self.model.predict_proba
@@ -404,7 +404,7 @@ class MSFTInterpret(object):
         """
 
         import interpret
-        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+        from aethos.model_analysis.constants import INTERPRET_EXPLAINERS
 
         if predictions == "probability":
             predict_fn = self.model.predict_proba

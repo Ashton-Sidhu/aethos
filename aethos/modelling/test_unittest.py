@@ -7,25 +7,25 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets import make_blobs
 
-from aethos import Data, Model
+from aethos import Classification, Regression, Unsupervised, Analysis
 
 
 class TestModelling(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
 
-        reports_path = str(Path.home()) + "/.aethos/reports/"
         models_path = str(Path.home()) + "/.aethos/models/"
         projects_path = str(Path.home()) + "/.aethos/projects/"
-
-        if os.path.exists(reports_path):
-            shutil.rmtree(reports_path)
 
         if os.path.exists(models_path):
             shutil.rmtree(models_path)
 
         if os.path.exists(projects_path):
             shutil.rmtree(projects_path)
+
+        if os.path.exists("catboost_info"):
+            shutil.rmtree("catboost_info")
+            shutil.os.remove("cb_model.json")
 
     def test_text_gensim_summarize(self):
 
@@ -36,9 +36,9 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         model.summarize_gensim("data", ratio=0.5, run=True)
-        validate = model.data_summarized is not None
+        validate = model["data_summarized"] is not None
 
         self.assertTrue(validate)
 
@@ -51,7 +51,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         m = model.summarize_gensim("data", ratio=0.5, run=True)
         m.view("data", "data_summarized")
 
@@ -66,7 +66,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         model.extract_keywords_gensim("data", ratio=0.5, run=True)
         validate = model.data_extracted_keywords is not None
 
@@ -81,7 +81,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         model.Word2Vec("data", prep=True, run=True, min_count=1)
         validate = model.w2v is not None
 
@@ -97,7 +97,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=["data"])
         data["prep"] = pd.Series([text.split() for text in text_data])
 
-        model = Model(x_train=data, test_split_percentage=0.5)
+        model = Unsupervised(x_train=data)
         model.LDA("prep")
         validate = model.lda is not None
 
@@ -112,7 +112,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        model = Model(x_train=data, test_split_percentage=0.5)
+        model = Unsupervised(x_train=data)
         model.LDA("data", prep=True)
         validate = model.lda is not None
 
@@ -128,7 +128,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=["data"])
         data["prep"] = pd.Series([text.split() for text in text_data])
 
-        model = Model(x_train=data, test_split_percentage=0.5)
+        model = Unsupervised(x_train=data)
         l = model.LDA("prep")
         l.view_topics()
         l.view_topic(1)
@@ -145,7 +145,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=["data"])
         data["prep"] = pd.Series([text.split() for text in text_data])
 
-        model = Model(x_train=data, test_split_percentage=0.5)
+        model = Unsupervised(x_train=data)
         l = model.LDA("prep")
         l.model_perplexity()
 
@@ -161,26 +161,9 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=["data"])
         data["prep"] = pd.Series([text.split() for text in text_data])
 
-        model = Model(x_train=data, test_split_percentage=0.5)
+        model = Unsupervised(x_train=data)
         l = model.LDA("prep")
         l.coherence_score("prep")
-
-        self.assertTrue(True)
-
-    def test_text_view_topics(self):
-
-        text_data = [
-            "Hi my name is aethos. Please split me.",
-            "This function is going to split by sentence. Automation is great.",
-        ]
-
-        data = pd.DataFrame(data=text_data, columns=["data"])
-        data["prep"] = pd.Series([text.split() for text in text_data])
-
-        model = Model(x_train=data, test_split_percentage=0.5)
-        l = model.LDA("prep")
-        l.view_topics()
-        l.view_topic(1)
 
         self.assertTrue(True)
 
@@ -194,7 +177,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=["data"])
         data["prep"] = pd.Series([text.split() for text in text_data])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         model.Word2Vec("prep", run=True, min_count=1)
         validate = model.w2v is not None
 
@@ -209,7 +192,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         model.Doc2Vec("data", prep=True, run=True, min_count=1)
         validate = model.d2v is not None
 
@@ -225,7 +208,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=text_data, columns=["data"])
         data["prep"] = pd.Series([text.split() for text in text_data])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         model.Doc2Vec("prep", run=True, min_count=1)
         validate = model.d2v is not None
 
@@ -240,7 +223,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         model.extract_keywords_gensim("data", ratio=0.5, model_name="model1", run=True)
         validate = model.model1 is not None
 
@@ -255,7 +238,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=text_data, columns=["data"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data)
         model.extract_keywords_gensim("data", ratio=0.5, model_name="model1", run=False)
         model.summarize_gensim("data", ratio=0.5, run=False)
         validate = len(model._queued_models)
@@ -267,9 +250,9 @@ class TestModelling(unittest.TestCase):
         data, _ = make_blobs(n_samples=1000, n_features=12, centers=8, random_state=42)
         data = pd.DataFrame(data=data)
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model.KMeans(n_clusters=3, random_state=0, run=True)
-        validate = model.kmeans_clusters is not None
+        validate = model.predicted is not None
 
         self.assertTrue(validate)
 
@@ -278,24 +261,9 @@ class TestModelling(unittest.TestCase):
         data, _ = make_blobs(n_samples=1000, n_features=12, centers=8, random_state=42)
         data = pd.DataFrame(data=data)
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model.KMeans(random_state=0, run=True)
-        validate = model.kmeans_clusters is not None
-
-        self.assertTrue(validate)
-
-    def test_model_kmeans_split(self):
-
-        data = [[1, 2], [2, 2], [2, 3], [8, 7], [8, 8], [25, 80]]
-
-        data = pd.DataFrame(data=data, columns=["col1", "col2"])
-
-        model = Model(x_train=data)
-        model.KMeans(n_clusters=3, random_state=0, run=True)
-        validate = (
-            model.x_train_results.kmeans_clusters is not None
-            and model.x_test_results.kmeans_clusters is not None
-        )
+        validate = model.predicted is not None
 
         self.assertTrue(validate)
 
@@ -305,9 +273,9 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model.DBScan(eps=3, min_samples=2, run=True)
-        validate = model.dbscan_clusters is not None
+        validate = model.predicted is not None
 
         self.assertTrue(validate)
 
@@ -317,25 +285,12 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model = model.DBScan(eps=3, min_samples=2, run=True)
         filtered = model.filter_cluster(0)
-        validate = all(filtered.dbscan_clusters == 0)
+        validate = all(filtered.predicted == 0)
 
         self.assertTrue(validate)
-
-    def test_model_unsupervised_defaultgridsearch(self):
-
-        data, _ = make_blobs(n_samples=1000, n_features=12, centers=8, random_state=42)
-
-        data = pd.DataFrame(data=data)
-
-        model = Model(x_train=data, target_field=5, report_name="gridsearch_test")
-
-        gridsearch_params = {"max_iter": [300, 200]}
-        model.KMeans(gridsearch=gridsearch_params, cv=2, run=True)
-
-        self.assertTrue(True)
 
     def test_model_defaultgridsearch(self):
 
@@ -353,7 +308,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", report_name="gridsearch_test")
+        model = Classification(x_train=data, target="col3",)
 
         gridsearch_params = {"C": [0.2, 1]}
         model.LogisticRegression(gridsearch=gridsearch_params, cv=2, run=True)
@@ -362,26 +317,23 @@ class TestModelling(unittest.TestCase):
 
     def test_model_logisticregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
-        validate = (
-            model.x_train_results.log_predictions is not None
-            and model.x_test_results.log_predictions is not None
-        )
+        validate = model.log_reg.y_pred is not None
 
         self.assertTrue(validate)
 
     def test_model_confusionmatrix(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", report_name="confusion_report")
+        model = Classification(x_train=data, target="col3",)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.confusion_matrix()
 
@@ -389,11 +341,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_all_score_metrics(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", report_name="metric_report")
+        model = Classification(x_train=data, target="col3",)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.metrics()
 
@@ -401,13 +353,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_report_classificationreport(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data, target_field="col3", report_name="classification_report"
-        )
+        model = Classification(x_train=data, target="col3",)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.classification_report()
 
@@ -415,11 +365,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_report_modelweights(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", report_name="modelweights")
+        model = Classification(x_train=data, target="col3",)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.model_weights()
 
@@ -427,16 +377,11 @@ class TestModelling(unittest.TestCase):
 
     def test_plot_roccurve(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-            report_name="modelweights",
-        )
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.roc_curve()
 
@@ -444,11 +389,11 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.decision_plot()
 
@@ -456,11 +401,11 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_all(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.decision_plot(num_samples="all")
 
@@ -468,11 +413,11 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_sameaxis(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         r = model.log_reg.decision_plot(sample_no=1)
         model.log_reg.decision_plot(
@@ -483,11 +428,11 @@ class TestModelling(unittest.TestCase):
 
     def test_decision_plot_misclassified(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.decision_plot(0.75, highlight_misclassified=True)
 
@@ -495,11 +440,11 @@ class TestModelling(unittest.TestCase):
 
     def test_force_plot(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.force_plot()
 
@@ -507,11 +452,11 @@ class TestModelling(unittest.TestCase):
 
     def test_force_plot_misclassified(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.6)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.6)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.force_plot(misclassified=True)
 
@@ -519,11 +464,11 @@ class TestModelling(unittest.TestCase):
 
     def test_get_misclassified(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.shap_get_misclassified_index()
 
@@ -531,11 +476,11 @@ class TestModelling(unittest.TestCase):
 
     def test_summaryplot(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.summary_plot()
 
@@ -543,11 +488,11 @@ class TestModelling(unittest.TestCase):
 
     def test_dependence_plot(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5)
         model.LogisticRegression(random_state=2, penalty="l2", run=True)
         model.log_reg.dependence_plot("col1")
 
@@ -555,16 +500,11 @@ class TestModelling(unittest.TestCase):
 
     def test_local_multiprocessing(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-            report_name="modelweights",
-        )
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
         model.LogisticRegression(
             random_state=2, penalty="l2", model_name="l1", run=False
         )
@@ -585,16 +525,11 @@ class TestModelling(unittest.TestCase):
 
     def test_local_seriesprocessing(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-            report_name="modelweights",
-        )
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
         model.LogisticRegression(
             random_state=2, penalty="l2", model_name="l1", run=True
         )
@@ -617,7 +552,7 @@ class TestModelling(unittest.TestCase):
         data = pd.DataFrame(data=train_data, columns=["col1", "col2"])
         data["col3"] = label_data
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.2)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.2)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.interpret_model_behavior(show=False)
 
@@ -625,10 +560,10 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_behaviour_dependence(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.4)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.4)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.interpret_model_behavior(method="dependence", show=False)
 
@@ -636,11 +571,11 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_predictions_all(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.6)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.6)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.interpret_model_predictions(show=False)
 
@@ -648,11 +583,11 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_predictions_lime(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.6)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.6)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.interpret_model_predictions(method="lime", show=False)
 
@@ -660,11 +595,11 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_performance_all(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.6)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.6)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.interpret_model_performance(show=False)
 
@@ -672,11 +607,11 @@ class TestModelling(unittest.TestCase):
 
     def test_interpretmodel_performance_roc(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.6)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.6)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.interpret_model_performance(method="ROC", show=False)
 
@@ -684,11 +619,11 @@ class TestModelling(unittest.TestCase):
 
     def test_interpret_model(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.4)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.4)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.interpret_model(show=False)
 
@@ -696,11 +631,11 @@ class TestModelling(unittest.TestCase):
 
     def test_interpret_model_prerun(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.4)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.4)
         model.LogisticRegression(random_state=2, run=True)
         model.log_reg.interpret_model_performance(method="ROC", show=False)
         model.log_reg.interpret_model(show=False)
@@ -709,16 +644,11 @@ class TestModelling(unittest.TestCase):
 
     def test_compareclsmodels(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-            report_name="modelweights",
-        )
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
         model.LogisticRegression(
             random_state=2, penalty="l2", model_name="l1", run=True
         )
@@ -736,16 +666,11 @@ class TestModelling(unittest.TestCase):
 
     def test_compareregmodels(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-            report_name="modelweights",
-        )
+        model = Regression(x_train=data, target="col3", test_split_percentage=0.5,)
         model.LinearRegression(model_name="l1", run=True)
         model.LinearRegression(model_name="l2", run=True)
         model.LinearRegression(model_name="l3", run=True)
@@ -757,40 +682,30 @@ class TestModelling(unittest.TestCase):
 
     def test_cv(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.2)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.2)
         model.LogisticRegression(cv=2, random_state=2)
-
-        self.assertTrue(True)
-
-    def test_unsupervisedcv(self):
-
-        data, _ = make_blobs(n_samples=1000, n_features=12, centers=8, random_state=42)
-
-        data = pd.DataFrame(data=data)
-        model = Model(x_train=data, target_field=6, test_split_percentage=0.2)
-        model.KMeans(cv=2, random_state=2)
 
         self.assertTrue(True)
 
     def test_stratified_cv(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.2)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.2)
         cv_values = model.LogisticRegression(cv="strat-kfold", n_splits=10, run=True)
 
         self.assertTrue(True)
 
     def test_del_model(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.2)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.2)
         model.LogisticRegression(random_state=2, run=True)
         model.delete_model("log_reg")
 
@@ -798,11 +713,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_ridgeclassifier(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.RidgeClassification(random_state=2, run=True)
         validate = model.ridge_cls is not None
 
@@ -810,11 +725,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_sgdclassifier(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.SGDClassification(random_state=2, run=True)
         validate = model.sgd_cls is not None
 
@@ -822,11 +737,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_adaclassifier(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.ADABoostClassification(random_state=2, run=True)
         validate = model.ada_cls is not None
 
@@ -834,11 +749,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_bagclassifier(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.BaggingClassification(random_state=2, run=True)
         validate = model.bag_cls is not None
 
@@ -846,11 +761,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_boostingclassifier(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.GradientBoostingClassification(random_state=2, run=True)
         validate = model.grad_cls is not None
 
@@ -858,11 +773,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_isoforest(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data)
+        model = Unsupervised(x_train=data)
         model.IsolationForest(random_state=2, run=True)
         validate = model.iso_forest is not None
 
@@ -870,11 +785,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_oneclasssvm(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data)
+        model = Unsupervised(x_train=data)
         model.OneClassSVM(run=True)
         validate = model.ocsvm is not None
 
@@ -882,11 +797,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_rfclassifier(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.RandomForestClassification(random_state=2, run=True)
         validate = model.rf_cls is not None
 
@@ -894,11 +809,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_view_rfclassifier(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.RandomForestClassification(random_state=2, run=True)
         validate = model.rf_cls.view_tree()
 
@@ -906,11 +821,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_bernoulli(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.BernoulliClassification(run=True)
         validate = model.bern is not None
 
@@ -918,11 +833,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_gaussian(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.GaussianClassification(run=True)
         validate = model.gauss is not None
 
@@ -930,11 +845,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_multinomial(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.MultinomialClassification(run=True)
 
         validate = model.multi is not None
@@ -943,11 +858,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_dtclassifier(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.DecisionTreeClassification(random_state=2, run=True)
         validate = model.dt_cls is not None
 
@@ -955,11 +870,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_linearsvc(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.LinearSVC(random_state=2, run=True)
         validate = model.linsvc is not None
 
@@ -967,11 +882,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_svc(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.SVC(random_state=2, run=True)
         validate = model.svc_cls is not None
 
@@ -979,11 +894,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_bayesianridge(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.BayesianRidgeRegression(run=True)
         validate = model.bayridge_reg is not None
 
@@ -991,11 +906,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_elasticnet(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.ElasticnetRegression(random_state=2, run=True)
         validate = model.elastic is not None
 
@@ -1003,11 +918,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_lasso(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.LassoRegression(random_state=2, run=True)
         validate = model.lasso is not None
 
@@ -1015,11 +930,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_linreg(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.LinearRegression()
         validate = model.lin_reg is not None
 
@@ -1027,11 +942,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_ridgeregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.RidgeRegression(random_state=2, run=True)
         validate = model.ridge_reg is not None
 
@@ -1039,11 +954,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_sgdregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.SGDRegression(random_state=2, run=True)
         validate = model.sgd_reg is not None
 
@@ -1051,11 +966,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_adaregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.ADABoostRegression(random_state=2, run=True)
         validate = model.ada_reg is not None
 
@@ -1063,11 +978,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_bgregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.BaggingRegression(random_state=2, run=True)
         validate = model.bag_reg is not None
 
@@ -1075,11 +990,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_gbregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.GradientBoostingRegression(random_state=2, run=True)
         validate = model.grad_reg is not None
 
@@ -1087,11 +1002,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_rfregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.RandomForestRegression(random_state=2, run=True)
         validate = model.rf_reg is not None
 
@@ -1099,11 +1014,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_dtregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.DecisionTreeRegression(random_state=2, run=True)
         validate = model.dt_reg is not None
 
@@ -1111,11 +1026,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_view_dtregression(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.DecisionTreeRegression(random_state=2, run=True)
         validate = model.dt_reg.view_tree()
 
@@ -1123,11 +1038,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_linearsvr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.rand(500, 3)
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.LinearSVR(random_state=2, run=True)
         validate = model.linsvr is not None
 
@@ -1135,22 +1050,22 @@ class TestModelling(unittest.TestCase):
 
     def test_model_view_linearsvr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.LinearSVR(random_state=2, run=True)
 
         self.assertRaises(NotImplementedError, model.linsvr.view_tree)
 
     def test_model_svr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.SVR(run=True)
         validate = model.svr_reg is not None
 
@@ -1158,11 +1073,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_xgbc(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.XGBoostClassification(run=True)
         validate = model.xgb_cls is not None
 
@@ -1170,23 +1085,30 @@ class TestModelling(unittest.TestCase):
 
     def test_model_view_xgbc(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
-        model.XGBoostRegression(run=True)
-        validate = model.xgb_reg.view_tree()
+        model = Classification(x_train=data, target="col3")
+        model.XGBoostClassification(run=True)
+        validate = model.xgb_cls.view_tree()
 
         self.assertTrue(True)
 
     def test_model_xgbr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = [
+            [1, 2, 0.5],
+            [3, 10, 0.2],
+            [2, 5, 0.1],
+            [5, 6, 1.2],
+            [7, 2, 1.5],
+            [10, 5, 1.2],
+        ]
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.XGBoostRegression(run=True)
         validate = model.xgb_reg is not None
 
@@ -1194,11 +1116,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_lgbc(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.LightGBMClassification(run=True)
         validate = model.lgbm_cls is not None
 
@@ -1206,11 +1128,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_lgbr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.LightGBMRegression(run=True)
         validate = model.lgbm_reg is not None
 
@@ -1218,11 +1140,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_view_lgbr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.LightGBMRegression(run=True)
         model.lgbm_reg.view_tree()
 
@@ -1230,11 +1152,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_cbc(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.CatBoostClassification(iterations=10, run=True)
         validate = model.cb_cls is not None
 
@@ -1242,11 +1164,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_cbr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.CatBoostRegression(iterations=10, run=True)
         validate = model.cb_reg is not None
 
@@ -1254,11 +1176,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_cbr_gridsearch(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.CatBoostRegression(
             cv="kfold", gridsearch={"learning_rate": [0.03, 0.1]}, iterations=10
         )
@@ -1268,11 +1190,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_cbr_cv(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.CatBoostRegression(cv="kfold", iterations=10)
         validate = model.cb_reg is not None
 
@@ -1280,11 +1202,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_view_cbr(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.CatBoostClassification(run=True, iterations=10)
         model.cb_cls.view_tree()
 
@@ -1296,7 +1218,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model.AgglomerativeClustering(n_clusters=2, run=True)
         validate = model.agglom is not None
 
@@ -1308,7 +1230,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model.MeanShift(run=True)
         validate = model.mshift is not None
 
@@ -1320,7 +1242,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model.GaussianMixtureClustering(run=True)
         validate = model.gm_cluster is not None
 
@@ -1332,7 +1254,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model.KMeans(n_clusters=3, random_state=0, run=True)
         model.km.plot_clusters()
 
@@ -1344,7 +1266,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, split=False)
+        model = Unsupervised(x_train=data,)
         model.KMeans(n_clusters=3, random_state=0, run=True)
         model.km.plot_clusters(dim=3)
 
@@ -1352,123 +1274,59 @@ class TestModelling(unittest.TestCase):
 
     def test_ytrain_split(self):
 
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        data = [
+            [1, 0, 0],
+            [0, 2, 3],
+            [0, 3, 4],
+            [1, 2, 3],
+            [1, 0, 0],
+            [0, 2, 3],
+            [0, 3, 4],
+            [1, 2, 3],
+        ]
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="col3",
-            report_name=None,
-            test_split_percentage=0.5,
-        )
+        base = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
 
         validate = (
-            base.x_train_results[base.target_field].tolist() == base.y_train.tolist()
-            and len(base.y_train) == 2
-        )
-
-        self.assertTrue(validate)
-
-    def test_ytrain_nosplit(self):
-
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-        columns = ["col1", "col2", "col3"]
-        data = pd.DataFrame(data, columns=columns)
-
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=False,
-            target_field="col3",
-            report_name=None,
-            test_split_percentage=0.5,
-        )
-
-        validate = (
-            base.x_train_results[base.target_field].tolist() == base.y_train.tolist()
+            base.x_train[base.target].tolist() == base.y_train.tolist()
             and len(base.y_train) == 4
         )
 
         self.assertTrue(validate)
 
-    def test_ytrain_dne(self):
-
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-        columns = ["col1", "col2", "col3"]
-        data = pd.DataFrame(data, columns=columns)
-
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="",
-            report_name=None,
-            test_split_percentage=0.5,
-        )
-
-        base.y_train = [1, 1]
-        validate = base.x_train_results["label"].tolist() == [
-            1,
-            1,
-        ] and base.y_train.tolist() == [1, 1]
-
-        self.assertTrue(validate)
-
     def test_ytest_split(self):
 
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        data = [
+            [1, 0, 0],
+            [0, 2, 3],
+            [0, 3, 4],
+            [1, 2, 3],
+            [1, 0, 0],
+            [0, 2, 3],
+            [0, 3, 4],
+            [1, 2, 3],
+        ]
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(data, columns=columns)
 
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="col3",
-            report_name=None,
-            test_split_percentage=0.5,
-        )
+        base = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
 
         validate = (
-            base.x_test_results[base.target_field].tolist() == base.y_test.tolist()
-            and len(base.y_test) == 2
+            base.x_test[base.target].tolist() == base.y_test.tolist()
+            and len(base.y_test) == 4
         )
-
-        self.assertTrue(validate)
-
-    def test_ytest_dne(self):
-
-        data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-        columns = ["col1", "col2", "col3"]
-        data = pd.DataFrame(data, columns=columns)
-
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="",
-            report_name=None,
-            test_split_percentage=0.5,
-        )
-
-        base.y_test = [1, 1]
-
-        validate = base.y_test.tolist() == [1, 1] and base.x_test_results[
-            "label"
-        ].tolist() == [1, 1]
 
         self.assertTrue(validate)
 
     def test_pickle_model(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.ADABoostRegression(random_state=2, run=True)
 
         model.ada_reg.to_pickle()
@@ -1479,11 +1337,11 @@ class TestModelling(unittest.TestCase):
 
     def test_pickle_model_analysis(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Regression(x_train=data, target="col3")
         model.ADABoostRegression(random_state=2, run=True)
 
         model.to_pickle("ada_reg")
@@ -1494,11 +1352,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_create_service(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         model.LogisticRegression(random_state=2, run=True)
 
         model.to_service("log_reg", "test")
@@ -1507,11 +1365,11 @@ class TestModelling(unittest.TestCase):
 
     def test_model_analysis_create_service(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3")
+        model = Classification(x_train=data, target="col3")
         m = model.LogisticRegression(random_state=2)
 
         m.to_service("test1")
@@ -1520,107 +1378,92 @@ class TestModelling(unittest.TestCase):
 
     def test_setattr_new(self):
 
-        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        int_missing_data = [
+            [1, 0, 0, 1],
+            [0, 2, 3, 1],
+            [0, 3, 4, 1],
+            [1, 2, 3, 1],
+            [1, 0, 0, 0],
+            [0, 2, 3, 0],
+            [0, 3, 4, 0],
+            [1, 2, 3, 0],
+        ]
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
+        base = Classification(x_train=data, target="col4", test_split_percentage=0.5,)
         base["col5"] = 4
 
-        self.assertListEqual(base.col5.tolist(), [4, 4])
+        self.assertListEqual(base.col5.tolist(), [4, 4, 4, 4])
 
     def test_setattr_testset(self):
 
-        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        int_missing_data = [
+            [1, 0, 0, 1],
+            [0, 2, 3, 1],
+            [0, 3, 4, 1],
+            [1, 2, 3, 1],
+            [1, 0, 0, 0],
+            [0, 2, 3, 0],
+            [0, 3, 4, 0],
+            [1, 2, 3, 0],
+        ]
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="",
-            report_name="test",
-            test_split_percentage=0.25,
-        )
-        base["col5"] = [4]
+        base = Classification(x_train=data, target="col4", test_split_percentage=0.25,)
+        base["col5"] = [4, 4]
 
-        self.assertListEqual(base.x_test_results["col5"].tolist(), [4])
+        self.assertListEqual(base.x_test["col5"].tolist(), [4, 4])
 
     def test_setattr_trainset(self):
 
-        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        int_missing_data = [
+            [1, 0, 0, 1],
+            [0, 2, 3, 1],
+            [0, 3, 4, 1],
+            [1, 2, 3, 1],
+            [1, 0, 0, 0],
+            [0, 2, 3, 0],
+            [0, 3, 4, 0],
+            [1, 2, 3, 0],
+        ]
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="",
-            report_name="test",
-            test_split_percentage=0.75,
-        )
-        base["col5"] = [4]
+        base = Classification(x_train=data, target="col4", test_split_percentage=0.75,)
+        base["col5"] = [4, 4]
 
-        self.assertListEqual(base["col5"].tolist(), [4])
+        self.assertListEqual(base["col5"].tolist(), [4, 4])
 
     def test_setattr_bothset(self):
 
-        int_missing_data = [[1, 0, 0, 1], [0, 2, 3, 1], [0, 3, 4, 1], [1, 2, 3, 1]]
+        int_missing_data = [
+            [1, 0, 0, 1],
+            [0, 2, 3, 1],
+            [0, 3, 4, 1],
+            [1, 2, 3, 1],
+            [1, 0, 0, 0],
+            [0, 2, 3, 0],
+            [0, 3, 4, 0],
+            [1, 2, 3, 0],
+        ]
         columns = ["col1", "col2", "col3", "col4"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="",
-            report_name="test",
-            test_split_percentage=0.75,
-        )
-        base["col5"] = ([4], [4, 4, 4])
+        base = Classification(x_train=data, target="col4", test_split_percentage=0.75,)
+        base["col5"] = ([4, 4], [4, 4, 4, 4, 4, 4])
 
-        self.assertListEqual(base["col5"].tolist(), [4])
-        self.assertListEqual(base.x_test_results["col5"].tolist(), [4, 4, 4])
-
-    def test_setattr_old(self):
-
-        int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
-        columns = ["col1", "col2", "col3"]
-        data = pd.DataFrame(int_missing_data, columns=columns)
-
-        base = Model(
-            x_train=data,
-            x_test=None,
-            split=True,
-            target_field="",
-            report_name="test",
-            test_split_percentage=0.5,
-        )
-        base.target_field = "col3"
-
-        self.assertEqual("col3", base.target_field)
+        self.assertListEqual(base["col5"].tolist(), [4, 4])
+        self.assertListEqual(base.x_test["col5"].tolist(), [4, 4, 4, 4, 4, 4])
 
     def test_list_models_empty(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-            report_name="modelweights",
-        )
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
 
         model.list_models()
 
@@ -1628,16 +1471,11 @@ class TestModelling(unittest.TestCase):
 
     def test_list_models(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-            report_name="modelweights",
-        )
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
         model.LogisticRegression(
             random_state=2, penalty="l2", model_name="l1", run=False
         )
@@ -1651,11 +1489,11 @@ class TestModelling(unittest.TestCase):
 
     def test_incorrect_model_name(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(x_train=data, target_field="col3", test_split_percentage=0.5,)
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
 
         self.assertRaises(
             AttributeError,
@@ -1668,36 +1506,15 @@ class TestModelling(unittest.TestCase):
 
     def test_model_debug(self):
 
-        data = np.random.randint(0, 2, size=(1000, 3))
+        data = np.random.randint(0, 2, size=(500, 3))
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
-        model = Model(
-            x_train=data,
-            target_field="col3",
-            test_split_percentage=0.5,
-            report_name="modelweights",
-        )
+        model = Classification(x_train=data, target="col3", test_split_percentage=0.5,)
 
         model.help_debug()
 
         self.assertTrue(True)
-
-    def test_model_transition(self):
-
-        data = np.random.randint(0, 2, size=(1000, 3))
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-        df = Data(data, target_field="col3")
-        m = Model(df)
-
-        self.assertListEqual(
-            m.x_train.values.tolist(), df.x_train.drop("col3", axis=1).values.tolist()
-        )
-        self.assertListEqual(
-            m.x_test.values.tolist(), df.x_test.drop("col3", axis=1).values.tolist()
-        )
-        self.assertListEqual(m.y_train.values.tolist(), df.y_train.values.tolist())
-        self.assertListEqual(m.y_test.values.tolist(), df.y_test.values.tolist())
 
     def test_pretrained_sent(self):
 
@@ -1709,7 +1526,7 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data, columns=["text"])
 
-        df = Model(data, test_split_percentage=0.33, report_name="test")
+        df = Unsupervised(data)
         df.pretrained_sentiment_analysis("text")
 
         validate = df["sent_score"][0][0]
@@ -1728,12 +1545,12 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data)
 
-        df = Model(data, test_split_percentage=0.5, report_name="test")
+        df = Unsupervised(data)
         df.pretrained_question_answer("context", "question")
 
-        # validate = df['qa'][0]
+        validate = df["qa"][0]
 
-        # self.assertIsInstance(validate, dict)
+        self.assertIsInstance(validate, dict)
 
 
 if __name__ == "__main__":

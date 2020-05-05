@@ -32,6 +32,12 @@ from aethos.config.config import (
 
 from aethos.analysis import Analysis
 from aethos.modelling import Classification, Regression, Unsupervised
+from aethos.model_analysis import (
+    ClassificationModelAnalysis,
+    RegressionModelAnalysis,
+    UnsupervisedModelAnalysis,
+    TextModelAnalysis,
+)
 
 pd.options.mode.chained_assignment = None
 pio.templates.default = "plotly_white"
