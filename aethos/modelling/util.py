@@ -6,7 +6,6 @@ import warnings
 from functools import partial, wraps
 from pathlib import Path
 
-import catboost as cb
 import lightgbm as lgb
 import matplotlib.pyplot as plt
 

@@ -1196,8 +1196,6 @@ class ModelBase(object):
         Helper function that generalizes model orchestration.
         """
 
-        import catboost as cb
-
         #############################################################
         ################## Initialize Variables #####################
         #############################################################
@@ -1211,9 +1209,7 @@ class ModelBase(object):
         ):
             random_state = 42
 
-        cat_features = kwargs.pop("cat_features", None)
         # cv, kwargs = _get_cv_type(cv, **kwargs)
-        pool = None
         run_id = None
 
         _make_img_project_dir(model_name)
@@ -1234,43 +1230,21 @@ class ModelBase(object):
         if gridsearch:
             grid_cv = cv if cv else 5
 
-            if isinstance(model, cb.CatBoost):
-                model.grid_search(
-                    gridsearch, self.train_data, self.y_train, cv=grid_cv, plot=True
-                )
-
-            else:
-                model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
-
-        #############################################################
-        #################### Cross Validation #######################
-        #############################################################
+            model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
 
         #############################################################
         ###################### Train Model ##########################
         #############################################################
 
         # Train a model and predict on the test test.
-        if isinstance(model, cb.CatBoost):
-            if not gridsearch:
-                model.fit(self.train_data, self.y_train, plot=True)
-        else:
-            model.fit(self.train_data, self.y_train)
+        model.fit(self.train_data, self.y_train)
 
         #############################################################
         ############### Initialize Model Analysis ###################
         #############################################################
 
-        if gridsearch and not isinstance(model, cb.CatBoost):
-            model = model.best_estimator_
-
         self._models[model_name] = model_type(
-            model,
-            self.x_train,
-            self.x_test,
-            self.target,
-            model_name,
-            cat_features=cat_features,
+            model, self.x_train, self.x_test, self.target, model_name,
         )
 
         #############################################################

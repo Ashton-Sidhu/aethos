@@ -23,10 +23,6 @@ class TestModelling(unittest.TestCase):
         if os.path.exists(projects_path):
             shutil.rmtree(projects_path)
 
-        if os.path.exists("catboost_info"):
-            shutil.rmtree("catboost_info")
-            shutil.os.remove("cb_model.json")
-
     def test_text_gensim_summarize(self):
 
         text_data = [
@@ -686,7 +682,8 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
         model = Classification(x_train=data, target="col3", test_split_percentage=0.2)
-        model.LogisticRegression(cv=2, random_state=2)
+        m = model.LogisticRegression(random_state=2)
+        m.cross_validate()
 
         self.assertTrue(True)
 
@@ -696,7 +693,8 @@ class TestModelling(unittest.TestCase):
 
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
         model = Classification(x_train=data, target="col3", test_split_percentage=0.2)
-        cv_values = model.LogisticRegression(cv="strat-kfold", n_splits=10, run=True)
+        cv_values = model.LogisticRegression(run=True)
+        cv_values.cross_validate(cv_type="strat-kfold", n_splits=10)
 
         self.assertTrue(True)
 
@@ -1147,68 +1145,6 @@ class TestModelling(unittest.TestCase):
         model = Regression(x_train=data, target="col3")
         model.LightGBMRegression(run=True)
         model.lgbm_reg.view_tree()
-
-        self.assertTrue(True)
-
-    def test_model_cbc(self):
-
-        data = np.random.randint(0, 2, size=(500, 3))
-
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-
-        model = Classification(x_train=data, target="col3")
-        model.CatBoostClassification(iterations=10, run=True)
-        validate = model.cb_cls is not None
-
-        self.assertTrue(validate)
-
-    def test_model_cbr(self):
-
-        data = np.random.randint(0, 2, size=(500, 3))
-
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-
-        model = Regression(x_train=data, target="col3")
-        model.CatBoostRegression(iterations=10, run=True)
-        validate = model.cb_reg is not None
-
-        self.assertTrue(True)
-
-    def test_model_cbr_gridsearch(self):
-
-        data = np.random.randint(0, 2, size=(500, 3))
-
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-
-        model = Regression(x_train=data, target="col3")
-        model.CatBoostRegression(
-            cv="kfold", gridsearch={"learning_rate": [0.03, 0.1]}, iterations=10
-        )
-        validate = model.cb_reg is not None
-
-        self.assertTrue(True)
-
-    def test_model_cbr_cv(self):
-
-        data = np.random.randint(0, 2, size=(500, 3))
-
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-
-        model = Regression(x_train=data, target="col3")
-        model.CatBoostRegression(cv="kfold", iterations=10)
-        validate = model.cb_reg is not None
-
-        self.assertTrue(True)
-
-    def test_model_view_cbr(self):
-
-        data = np.random.randint(0, 2, size=(500, 3))
-
-        data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
-
-        model = Classification(x_train=data, target="col3")
-        model.CatBoostClassification(run=True, iterations=10)
-        model.cb_cls.view_tree()
 
         self.assertTrue(True)
 

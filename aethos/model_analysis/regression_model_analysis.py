@@ -10,7 +10,7 @@ from .model_analysis import SupervisedModelAnalysis
 
 class RegressionModelAnalysis(SupervisedModelAnalysis):
     def __init__(
-        self, model, x_train, x_test, target, model_name, cat_features=None,
+        self, model, x_train, x_test, target, model_name,
     ):
         """
         Class to analyze Regression models through metrics, global/local interpretation and visualizations.
@@ -18,7 +18,7 @@ class RegressionModelAnalysis(SupervisedModelAnalysis):
         Parameters
         ----------
         model : str or Model Object
-            Sklearn, XGBoost, LightGBM, Catboost Model object or .pkl file of the objects.
+            Sklearn, XGBoost, LightGBM Model object or .pkl file of the objects.
 
         x_train : pd.DataFrame
             Training Data used for the model.
@@ -31,9 +31,6 @@ class RegressionModelAnalysis(SupervisedModelAnalysis):
 
         model_name : str
             Name of the model for saving images and model tracking purposes
-
-        cat_features : list, optional
-            List of categorical feature names in the dataframe. NOTE: Only used for CatBoost model.
         """
 
         self.y_train = x_train[target]
@@ -46,7 +43,6 @@ class RegressionModelAnalysis(SupervisedModelAnalysis):
             x_test.drop([target], axis=1),
             x_test[target],
             model_name,
-            cat_features=cat_features,
         )
 
     # def plot_predicted_actual(self, output_file="", **scatterplot_kwargs):

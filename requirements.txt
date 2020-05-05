@@ -33,7 +33,6 @@ graphviz
 pyldavis
 swifter
 lightgbm
-catboost==0.20.1
 mlflow
 transformers
 tensorflow

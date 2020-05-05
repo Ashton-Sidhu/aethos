@@ -13,7 +13,7 @@ from aethos.modelling.util import track_artifacts
 
 class ClassificationModelAnalysis(SupervisedModelAnalysis):
     def __init__(
-        self, model, x_train, x_test, target, model_name, cat_features=None,
+        self, model, x_train, x_test, target, model_name,
     ):
         """
         Class to analyze Classification models through metrics, global/local interpretation and visualizations.
@@ -21,7 +21,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         Parameters
         ----------
         model : str or Model Object
-            Sklearn, XGBoost, LightGBM, Catboost Model object or .pkl file of the objects.
+            Sklearn, XGBoost, LightGBM Model object or .pkl file of the objects.
 
         x_train : pd.DataFrame
             Training Data used for the model.
@@ -34,9 +34,6 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
 
         model_name : str
             Name of the model for saving images and model tracking purposes
-
-        cat_features : list, optional
-            List of categorical feature names in the dataframe. NOTE: Only used for CatBoost model.
         """
 
         self.y_train = x_train[target]
@@ -49,7 +46,6 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
             x_test.drop(target, axis=1),
             x_test[target],
             model_name,
-            cat_features=cat_features,
         )
 
         self.multiclass = len(np.unique(list(self.y_train) + list(self.y_test))) > 2

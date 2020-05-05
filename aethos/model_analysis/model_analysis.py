@@ -6,7 +6,6 @@ from collections import OrderedDict
 from itertools import compress
 
 import xgboost as xgb
-import catboost as cb
 import numpy as np
 import pandas as pd
 import sklearn
@@ -73,7 +72,8 @@ class ModelAnalysisBase(Visualizations, Stats):
 
 
 class SupervisedModelAnalysis(ModelAnalysisBase):
-    def __init__(self, model, x_train, x_test, y_test, model_name, **kwargs):
+    def __init__(self, model, x_train, x_test, y_test, model_name):
+
         self.model = model
         self.model_name = model_name
         self.x_train = x_train
@@ -87,21 +87,6 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         if hasattr(model, "predict_proba"):
             self.probabilities = self.model.predict_proba(self.x_test[self.features])
 
-        shap_values = None
-
-        if isinstance(model, cb.CatBoost):
-
-            cat_features = kwargs.pop("cat_features", None)
-
-            self.pool = cb.Pool(
-                self.x_test,
-                label=self.y_test,
-                cat_features=cat_features,
-                feature_names=self.features.tolist(),
-            )
-
-            shap_values = model.get_feature_importance(self.pool, type="ShapValues")
-
         self.shap = Shap(
             self.model,
             self.model_name,
@@ -109,7 +94,6 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
             self.x_test,
             self.y_test,
             SHAP_LEARNERS[type(self.model)],
-            shap_values,
         )
         self.interpret = MSFTInterpret(
             self.model,
@@ -741,7 +725,6 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         >>> m.view_tree(2)
         """
 
-        import catboost as cb
         import lightgbm as lgb
         from graphviz import Source
 
@@ -771,9 +754,6 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         elif isinstance(self.model, lgb.sklearn.LGBMModel):
             return lgb.plot_tree(self.model)
 
-        elif isinstance(self.model, cb.CatBoost):
-            return self.model.plot_tree(tree_idx=tree_num, pool=self.pool)
-
         elif isinstance(self.model, sklearn.ensemble.BaseEnsemble):
             estimator = self.model.estimators_[tree_num]
 
@@ -797,24 +777,6 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
 
     def _cross_validate(self, cv_type, score, n_splits, shuffle, **kwargs):
 
-        # # Use native CatBoost cross validation
-        # if isinstance(model, cb.CatBoost):
-        #     if isinstance(cv, int):
-        #         folds = None
-        #         fold_count = cv
-        #     else:
-        #         folds = cv
-        #         fold_count = None
-
-        #     cv_dataset = cb.Pool(
-        #         self.train_data, self.y_train, cat_features=cat_features,
-        #     )
-
-        #     cv_scores = cb.cv(
-        #         cv_dataset, kwargs, folds=folds, fold_count=fold_count, plot="True",
-        #     )
-
-        # else:
         cv = _get_cv_type(cv_type, n_splits, shuffle, **kwargs)
 
         cv_scores = run_crossvalidation(

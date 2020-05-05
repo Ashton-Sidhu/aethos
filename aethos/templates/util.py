@@ -26,6 +26,7 @@ def _create_dir():
 
     return dep_dir
 
+
 def _create_project_dir(project_dir: str, name: str):
     """
     Creates the projects directory.
@@ -45,28 +46,24 @@ def _create_project_dir(project_dir: str, name: str):
 
     return project_dir
 
+
 def _get_model_type_kwarg(model):
     """
     Helper function to determine what model to import in requirements.txt service file.
     """
 
     import xgboost as xgb
-    import catboost as cb
     import lightgbm as lgb
 
     kwargs = {
-        'xgboost': False,
-        'catboost': False,
-        'lgbm': False,
+        "xgboost": False,
+        "lgbm": False,
     }
 
     if isinstance(model, xgb.XGBModel):
-        kwargs['xgboost'] = True
-    
-    if isinstance(model, cb.CatBoost):
-        kwargs['catboost'] = True
+        kwargs["xgboost"] = True
 
     if isinstance(model, lgb.LGBMModel):
-        kwargs['lgbm'] = True
+        kwargs["lgbm"] = True
 
     return kwargs

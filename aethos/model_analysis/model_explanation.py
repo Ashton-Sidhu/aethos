@@ -11,9 +11,7 @@ warnings.simplefilter("ignore", UserWarning)
 
 
 class Shap(object):
-    def __init__(
-        self, model, model_name, x_train, x_test, y_test, learner: str, shap_values
-    ):
+    def __init__(self, model, model_name, x_train, x_test, y_test, learner: str):
 
         import lightgbm as lgb
         import shap
@@ -40,14 +38,10 @@ class Shap(object):
         else:
             raise ValueError(f"Learner: {learner} is not supported yet.")
 
-        if shap_values is None:
-            self.expected_value = self.explainer.expected_value
-            self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(
-                float
-            )
-        else:
-            self.expected_value = shap_values[0, -1]
-            self.shap_values = shap_values[:, :-1]
+        self.expected_value = self.explainer.expected_value
+        self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(
+            float
+        )
 
         if isinstance(self.model, lgb.sklearn.LGBMClassifier) and isinstance(
             self.expected_value, np.float

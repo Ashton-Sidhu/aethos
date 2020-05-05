@@ -6,8 +6,6 @@ uvicorn
 xgboost
 {% elif lgbm %}
 lightgbm
-{% elif catboost %}
-catboost
 {% else %}
 sklearn
 {% endif %}
