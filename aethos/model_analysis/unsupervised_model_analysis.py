@@ -25,12 +25,14 @@ class UnsupervisedModelAnalysis(ModelAnalysisBase):
         self.model = model
         self.x_train = data
         self.model_name = model_name
+        self.cluster_col = "predicted"
 
         if hasattr(self.model, "predict"):
-            self.x_train["predicted"] = self.model.predict(self.x_train)
+            self.y_pred = self.model.predict(self.x_train)
         else:
-            self.x_train["predicted"] = self.model.fit_predict(self.x_train)
-        self.cluster_col = "predicted"
+            self.y_pred = self.model.fit_predict(self.x_train)
+            
+        self.x_train[self.cluster_col] = self.y_pred
 
     def filter_cluster(self, cluster_no: int):
         """

@@ -33,6 +33,35 @@ class ModelAnalysisBase(Visualizations, Stats):
 
     # TODO: Add more SHAP use cases
 
+    def _repr_html(self):
+
+        if hasattr(self, "x_test"):
+            data = self.test_results
+        else:
+            data = self.train_results
+
+        return data
+
+    @property
+    def train_results(self):
+
+        data = self.x_train
+        data["actual"] = self.y_train
+
+        data["predicted"] = self.y_pred
+
+        return data
+
+    @property
+    def test_results(self):
+        
+        data = self.x_test
+        data["actual"] = self.y_test
+        
+        data["predicted"] = self.y_pred
+
+        return data
+
     def to_pickle(self):
         """
         Writes model to a pickle file.
@@ -84,6 +113,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
             self.x_test[self.features]
         )  # Specifying columns for XGBoost
         self.run_id = None
+
         if hasattr(model, "predict_proba"):
             self.probabilities = self.model.predict_proba(self.x_test[self.features])
 

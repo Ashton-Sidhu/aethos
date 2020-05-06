@@ -125,6 +125,32 @@ class ModelBase(object):
         return new_inst
 
     @property
+    def x_train(self):
+        """x_train variable"""
+
+        if not type(self).__name__ == "Unsupervised":
+            cols = list(self.x_train.columns) - set([self.target])
+            cols.append(self.target)
+            data = self.x_train[cols]
+        else:
+            data = self.x_train
+
+        return data
+
+    @property
+    def x_test(self):
+        """x_test variable"""
+
+        if not type(self).__name__ == "Unsupervised":
+            cols = list(self.x_train.columns) - set([self.target])
+            cols.append(self.target)
+            data = self.x_train[cols]
+        else:
+            data = "Test set does not exist for Unsupervised problems."
+
+        return data
+
+    @property
     def features(self):
         """Features for modelling"""
 
