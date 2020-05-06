@@ -151,7 +151,7 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModelAnalysis, 
+            ClassificationModelAnalysis,
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -170,7 +170,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="ridge_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -266,7 +265,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -284,7 +282,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="sgd_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -455,7 +452,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="ada_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -545,7 +541,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -563,7 +558,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="bag_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -668,7 +662,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -686,7 +679,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="grad_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -838,7 +830,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -856,7 +847,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="rf_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1007,7 +997,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1025,7 +1014,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="bern",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1115,7 +1103,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1133,7 +1120,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="gauss",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1213,7 +1199,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1231,7 +1216,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="multi",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1318,7 +1302,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1336,7 +1319,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="dt_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1492,7 +1474,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1510,7 +1491,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="linsvc",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1631,7 +1611,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1649,7 +1628,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="svc_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1774,7 +1752,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1792,7 +1769,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="xgb_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1952,7 +1928,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1971,7 +1946,6 @@ class Classification(
         gridsearch=None,
         score="accuracy",
         model_name="lgbm_cls",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -2116,7 +2090,6 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,

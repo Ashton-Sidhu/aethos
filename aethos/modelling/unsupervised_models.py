@@ -36,12 +36,7 @@ class Unsupervised(
 
     @add_to_queue
     def KMeans(
-        self,
-        model_name="km",
-        
-        run=True,
-        verbose=1,
-        **kwargs,
+        self, model_name="km", run=True, verbose=1, **kwargs,
     ):
         # region
         """
@@ -132,7 +127,6 @@ class Unsupervised(
         model = self._run_unsupervised_model(
             model,
             model_name,
-            
             run=run,
             verbose=verbose,
             n_clusters=n_clusters,
@@ -143,12 +137,7 @@ class Unsupervised(
 
     @add_to_queue
     def DBScan(
-        self,
-        model_name="dbs",
-        
-        run=True,
-        verbose=1,
-        **kwargs,
+        self, model_name="dbs", run=True, verbose=1, **kwargs,
     ):
         # region
         """
@@ -208,20 +197,13 @@ class Unsupervised(
 
         model = DBSCAN
 
-        model = self._run_unsupervised_model(
-            model, model_name, run=run, **kwargs,
-        )
+        model = self._run_unsupervised_model(model, model_name, run=run, **kwargs,)
 
         return model
 
     @add_to_queue
     def IsolationForest(
-        self,
-        model_name="iso_forest",
-        
-        run=True,
-        verbose=1,
-        **kwargs,
+        self, model_name="iso_forest", run=True, verbose=1, **kwargs,
     ):
         # region
         """
@@ -289,19 +271,14 @@ class Unsupervised(
         model = IsolationForest
 
         model = self._run_unsupervised_model(
-            model, model_name,  run=run, verbose=verbose, **kwargs,
+            model, model_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model
 
     @add_to_queue
     def OneClassSVM(
-        self,
-        model_name="ocsvm",
-        
-        run=True,
-        verbose=1,
-        **kwargs,
+        self, model_name="ocsvm", run=True, verbose=1, **kwargs,
     ):
         # region
         """
@@ -372,18 +349,14 @@ class Unsupervised(
         model = OneClassSVM
 
         model = self._run_unsupervised_model(
-            model, model_name,  run=run, verbose=verbose, **kwargs,
+            model, model_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model
 
     @add_to_queue
     def AgglomerativeClustering(
-        self,
-        model_name="agglom",
-        
-        run=True,
-        **kwargs,
+        self, model_name="agglom", run=True, **kwargs,
     ):
         # region
         """
@@ -457,19 +430,13 @@ class Unsupervised(
 
         model = AgglomerativeClustering
 
-        model = self._run_unsupervised_model(
-            model, model_name,  run=run, **kwargs,
-        )
+        model = self._run_unsupervised_model(model, model_name, run=run, **kwargs,)
 
         return model
 
     @add_to_queue
     def MeanShift(
-        self,
-        model_name="mshift",
-        
-        run=True,
-        **kwargs,
+        self, model_name="mshift", run=True, **kwargs,
     ):
         # region
         """
@@ -530,20 +497,13 @@ class Unsupervised(
 
         model = MeanShift
 
-        model = self._run_unsupervised_model(
-            model, model_name,  run=run, **kwargs,
-        )
+        model = self._run_unsupervised_model(model, model_name, run=run, **kwargs,)
 
         return model
 
     @add_to_queue
     def GaussianMixtureClustering(
-        self,
-        model_name="gm_cluster",
-        
-        run=True,
-        verbose=1,
-        **kwargs,
+        self, model_name="gm_cluster", run=True, verbose=1, **kwargs,
     ):
         # region
         """
@@ -647,7 +607,7 @@ class Unsupervised(
         model = GaussianMixture
 
         model = self._run_unsupervised_model(
-            model, model_name,  run=run, verbose=verbose, **kwargs,
+            model, model_name, run=run, verbose=verbose, **kwargs,
         )
 
         return model

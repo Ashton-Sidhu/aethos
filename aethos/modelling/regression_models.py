@@ -59,7 +59,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="lin_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -134,7 +133,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -152,7 +150,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="bayridge_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -250,7 +247,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -268,7 +264,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="elastic",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -375,7 +370,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -393,7 +387,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="lasso",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -495,7 +488,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -513,7 +505,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="ridge_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -601,7 +592,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -619,7 +609,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="sgd_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -780,7 +769,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -798,7 +786,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="ada_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -884,7 +871,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -902,7 +888,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="bag_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1000,7 +985,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1018,7 +1002,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="grad_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1170,7 +1153,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1188,7 +1170,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="rf_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1321,7 +1302,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1339,7 +1319,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="dt_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1477,7 +1456,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1495,7 +1473,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="linsvr",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1596,7 +1573,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1614,7 +1590,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="svr_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1721,7 +1696,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1739,7 +1713,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="xgb_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -1887,7 +1860,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
@@ -1905,7 +1877,6 @@ class Regression(
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="lgbm_reg",
-        
         run=True,
         verbose=1,
         **kwargs,
@@ -2039,7 +2010,6 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            
             cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,

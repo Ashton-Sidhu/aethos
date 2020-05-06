@@ -4,8 +4,11 @@ from pathlib import Path
 
 from jinja2 import Environment, PackageLoader
 
-from aethos.templates.util import (_create_dir, _create_project_dir,
-                                   _get_model_type_kwarg)
+from aethos.templates.util import (
+    _create_dir,
+    _create_project_dir,
+    _get_model_type_kwarg,
+)
 
 
 class TemplateGenerator(object):
