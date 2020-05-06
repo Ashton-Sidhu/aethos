@@ -1184,12 +1184,11 @@ class ModelBase(object):
         model,
         model_name,
         model_type,
-        new_col_name,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         """
@@ -1209,7 +1208,6 @@ class ModelBase(object):
         ):
             random_state = 42
 
-        # cv, kwargs = _get_cv_type(cv, **kwargs)
         run_id = None
 
         _make_img_project_dir(model_name)
@@ -1228,9 +1226,9 @@ class ModelBase(object):
         #############################################################
 
         if gridsearch:
-            grid_cv = cv if cv else 5
+            grid_cv = _get_cv_type(cv_type, 5, False) if cv_type is not None else 5
 
-            model = run_gridsearch(model, gridsearch, cv, score, verbose=verbose)
+            model = run_gridsearch(model, gridsearch, grid_cv, score, verbose=verbose)
 
         #############################################################
         ###################### Train Model ##########################
@@ -1242,6 +1240,9 @@ class ModelBase(object):
         #############################################################
         ############### Initialize Model Analysis ###################
         #############################################################
+
+        if gridsearch:
+            model = model.best_estimator_
 
         self._models[model_name] = model_type(
             model, self.x_train, self.x_test, self.target, model_name,
@@ -1269,7 +1270,7 @@ class ModelBase(object):
         return self._models[model_name]
 
     def _run_unsupervised_model(
-        self, model, model_name, new_col_name, run=True, verbose=2, **kwargs,
+        self, model, model_name, run=True, **kwargs,
     ):
         """
         Helper function that generalizes model orchestration.

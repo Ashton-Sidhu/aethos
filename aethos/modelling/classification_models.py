@@ -58,13 +58,12 @@ class Classification(
     @add_to_queue
     def LogisticRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="log_reg",
-        new_col_name="log_predictions",
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -73,11 +72,9 @@ class Classification(
 
         For more Logistic Regression info, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
 
-        If running cross-validation, the implemented cross validators are:
+        If running grid search, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -97,7 +94,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
+        cv_type : {kfold, strat-kfold}, Crossvalidation Generator, optional
             Cross validation method, by default None
 
         gridsearch : dict, optional
@@ -109,14 +106,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "log_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "log_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         penalty : str, ‘l1’, ‘l2’, ‘elasticnet’ or ‘none’, optional (default=’l2’)
             Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties. 
@@ -141,9 +135,9 @@ class Classification(
         Examples
         --------
         >>> model.LogisticRegression()
-        >>> model.LogisticRegression(model_name='lg_1, C=0.001)
-        >>> model.LogisticRegression(cv=10)
-        >>> model.LogisticRegression(gridsearch={'C':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LogisticRegression(model_name='lg_1', C=0.001)
+        >>> model.LogisticRegression(cv_type='kfold')
+        >>> model.LogisticRegression(gridsearch={'C':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.LogisticRegression(run=False) # Add model to the queue
         """
         # endregion
@@ -157,13 +151,13 @@ class Classification(
         model = self._run_supervised_model(
             model,
             model_name,
-            ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            ClassificationModelAnalysis, 
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
             verbose=verbose,
+            solver=solver,
             **kwargs,
         )
 
@@ -172,13 +166,13 @@ class Classification(
     @add_to_queue
     def RidgeClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="ridge_cls",
-        new_col_name="ridge_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -187,11 +181,9 @@ class Classification(
 
         For more Ridge Regression parameters, you can view them here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html#sklearn.linear_model.RidgeClassifier        
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -211,7 +203,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
+        cv_type : {kfold, strat-kfold}, Crossvalidation Generator, optional
             Cross validation method, by default None
 
         gridsearch : dict, optional
@@ -223,14 +215,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "ridge_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "ridge_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         alpha : float
             Regularization strength; must be a positive float.
@@ -263,8 +252,8 @@ class Classification(
         --------
         >>> model.RidgeClassification()
         >>> model.RidgeClassification(model_name='rc_1, tol=0.001)
-        >>> model.RidgeClassification(cv=10)
-        >>> model.RidgeClassification(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.RidgeClassification(cv_type='kfold')
+        >>> model.RidgeClassification(gridsearch={'alpha':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.RidgeClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -277,8 +266,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -291,13 +280,13 @@ class Classification(
     @add_to_queue
     def SGDClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="sgd_cls",
-        new_col_name="sgd_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -306,11 +295,9 @@ class Classification(
 
         For more info please view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeClassifier.html#sklearn.linear_model.RidgeClassifier
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -330,7 +317,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
+        cv_type : {kfold, strat-kfold}, Crossvalidation Generator, optional
             Cross validation method, by default None
 
         gridsearch : dict, optional
@@ -342,14 +329,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "sgd_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "sgd_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
         
         loss : str, default: ‘hinge’
             The loss function to be used. Defaults to ‘hinge’, which gives a linear SVM.
@@ -440,8 +424,8 @@ class Classification(
         --------
         >>> model.SGDClassification()
         >>> model.SGDClassification(model_name='rc_1, tol=0.001)
-        >>> model.SGDClassification(cv=10)
-        >>> model.SGDClassification(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.SGDClassification(cv_type='kfold')
+        >>> model.SGDClassification(gridsearch={'alpha':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.SGDClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -454,8 +438,7 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -468,13 +451,13 @@ class Classification(
     @add_to_queue
     def ADABoostClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="ada_cls",
-        new_col_name="ada_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -486,11 +469,9 @@ class Classification(
 
         For more AdaBoost info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html#sklearn.ensemble.AdaBoostClassifier
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -510,7 +491,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
+        cv_type : {kfold, strat-kfold}, Crossvalidation Generator, optional
             Cross validation method, by default None
 
         gridsearch : dict, optional
@@ -522,14 +503,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "ada_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "ada_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         base_estimator : object, optional (default=None)
             The base estimator from which the boosted ensemble is built.
@@ -553,8 +531,8 @@ class Classification(
         --------
         >>> model.AdaBoostClassification()
         >>> model.AdaBoostClassification(model_name='rc_1, learning_rate=0.001)
-        >>> model.AdaBoostClassification(cv=10)
-        >>> model.AdaBoostClassification(gridsearch={'n_estimators': [50, 100]}, cv='strat-kfold')
+        >>> model.AdaBoostClassification(cv_type='kfold')
+        >>> model.AdaBoostClassification(gridsearch={'n_estimators': [50, 100]}, cv_type='strat-kfold')
         >>> model.AdaBoostClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -567,8 +545,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -581,13 +559,13 @@ class Classification(
     @add_to_queue
     def BaggingClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="bag_cls",
-        new_col_name="bag_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -599,11 +577,9 @@ class Classification(
 
         For more Bagging Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingClassifier.html#sklearn.ensemble.BaggingClassifier
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -623,7 +599,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
+        cv_type : {kfold, strat-kfold}, Crossvalidation Generator, optional
             Cross validation method, by default None
 
         gridsearch : dict, optional
@@ -635,14 +611,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "bag_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "bag_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         base_estimator : object or None, optional (default=None)
             The base estimator to fit on random subsets of the dataset.
@@ -681,8 +654,8 @@ class Classification(
         --------
         >>> model.BaggingClassification()
         >>> model.BaggingClassification(model_name='m1', n_estimators=100)
-        >>> model.BaggingClassification(cv=10)
-        >>> model.BaggingClassification(gridsearch={'n_estimators':[100, 200]}, cv='strat-kfold')
+        >>> model.BaggingClassification(cv_type='kfold')
+        >>> model.BaggingClassification(gridsearch={'n_estimators':[100, 200]}, cv_type='strat-kfold')
         >>> model.BaggingClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -695,8 +668,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -709,13 +682,13 @@ class Classification(
     @add_to_queue
     def GradientBoostingClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="grad_cls",
-        new_col_name="grad_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -728,11 +701,9 @@ class Classification(
 
         For more Gradient Boosting Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html#sklearn.ensemble.GradientBoostingClassifier   
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -752,7 +723,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default None.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -764,14 +735,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "grad_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "grad_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         loss : {‘deviance’, ‘exponential’}, optional (default=’deviance’)
             loss function to be optimized. ‘deviance’ refers to deviance (= logistic regression) for classification with probabilistic outputs. 
@@ -856,8 +824,8 @@ class Classification(
         --------
         >>> model.GradientBoostingClassification()
         >>> model.GradientBoostingClassification(model_name='m1', n_estimators=100)
-        >>> model.GradientBoostingClassification(cv=10)
-        >>> model.GradientBoostingClassification(gridsearch={'n_estimators':[100, 200]}, cv='strat-kfold')
+        >>> model.GradientBoostingClassification(cv_type='kfold')
+        >>> model.GradientBoostingClassification(gridsearch={'n_estimators':[100, 200]}, cv_type='strat-kfold')
         >>> model.GradientBoostingClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -870,8 +838,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -884,13 +852,13 @@ class Classification(
     @add_to_queue
     def RandomForestClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="rf_cls",
-        new_col_name="rf_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -902,11 +870,9 @@ class Classification(
 
         For more Random Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -926,7 +892,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default None.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -938,14 +904,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "rf_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "rf_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
         
         n_estimators : integer, optional (default=10)
             The number of trees in the forest.
@@ -1030,8 +993,8 @@ class Classification(
         --------
         >>> model.RandomForestClassification()
         >>> model.RandomForestClassification(model_name='m1', n_estimators=100)
-        >>> model.RandomForestClassification(cv=10)
-        >>> model.RandomForestClassification(gridsearch={'n_estimators':[100, 200]}, cv='strat-kfold')
+        >>> model.RandomForestClassification(cv_type='kfold')
+        >>> model.RandomForestClassification(gridsearch={'n_estimators':[100, 200]}, cv_type='strat-kfold')
         >>> model.RandomForestClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -1044,8 +1007,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1058,13 +1021,13 @@ class Classification(
     @add_to_queue
     def BernoulliClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="bern",
-        new_col_name="bern_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1077,11 +1040,9 @@ class Classification(
         For more Bernoulli Naive Bayes info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html#sklearn.naive_bayes.BernoulliNB
         and https://scikit-learn.org/stable/modules/naive_bayes.html#gaussian-naive-bayes 
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1101,7 +1062,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default False.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -1113,14 +1074,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "bern"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "bern_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
         
         alpha : float, optional (default=1.0)
             Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).
@@ -1143,8 +1101,8 @@ class Classification(
         --------
         >>> model.BernoulliClassification()
         >>> model.BernoulliClassification(model_name='m1', binarize=0.5)
-        >>> model.BernoulliClassification(cv=10)
-        >>> model.BernoulliClassification(gridsearch={'fit_prior':[True, False]}, cv='strat-kfold')
+        >>> model.BernoulliClassification(cv_type='kfold')
+        >>> model.BernoulliClassification(gridsearch={'fit_prior':[True, False]}, cv_type='strat-kfold')
         >>> model.BernoulliClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -1157,8 +1115,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1171,13 +1129,13 @@ class Classification(
     @add_to_queue
     def GaussianClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="gauss",
-        new_col_name="gauss_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1186,11 +1144,9 @@ class Classification(
 
         For more Gaussian Naive Bayes info, you can view it here: https://scikit-learn.org/stable/modules/naive_bayes.html#gaussian-naive-bayes
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1210,7 +1166,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default False.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -1222,14 +1178,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "gauss"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "gauss_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         priors : array-like, shape (n_classes,)
             Prior probabilities of the classes. If specified the priors are not adjusted according to the data.
@@ -1246,8 +1199,8 @@ class Classification(
         --------
         >>> model.GaussianClassification()
         >>> model.GaussianClassification(model_name='m1', var_smooting=0.0003)
-        >>> model.GaussianClassification(cv=10)
-        >>> model.GaussianClassification(gridsearch={'var_smoothing':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.GaussianClassification(cv_type='kfold')
+        >>> model.GaussianClassification(gridsearch={'var_smoothing':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.GaussianClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -1260,8 +1213,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1274,13 +1227,13 @@ class Classification(
     @add_to_queue
     def MultinomialClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="multi",
-        new_col_name="multi_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1293,11 +1246,9 @@ class Classification(
         For more Multinomial Naive Bayes info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html#sklearn.naive_bayes.MultinomialNB
         and https://scikit-learn.org/stable/modules/naive_bayes.html#multinomial-naive-bayes 
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1317,7 +1268,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default False.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -1329,14 +1280,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "multi"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "multi_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         alpha : float, optional (default=1.0)
             Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).
@@ -1356,8 +1304,8 @@ class Classification(
         --------
         >>> model.MultinomialClassification()
         >>> model.MultinomialClassification(model_name='m1', alpha=0.0003)
-        >>> model.MultinomialClassification(cv=10)
-        >>> model.MultinomialClassification(gridsearch={'alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.MultinomialClassification(cv_type='kfold')
+        >>> model.MultinomialClassification(gridsearch={'alpha':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.MultinomialClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -1370,8 +1318,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1384,13 +1332,13 @@ class Classification(
     @add_to_queue
     def DecisionTreeClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="dt_cls",
-        new_col_name="dt_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1399,11 +1347,9 @@ class Classification(
 
         For more Decision Tree info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html#sklearn.tree.DecisionTreeClassifier
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1423,7 +1369,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default None.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -1435,14 +1381,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "dt_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "dt_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False   
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1   
         	
         criterion : string, optional (default=”gini”)
             The function to measure the quality of a split.
@@ -1535,8 +1478,8 @@ class Classification(
         --------
         >>> model.DecisionTreeClassification()
         >>> model.DecisionTreeClassification(model_name='m1', min_impurity_split=0.0003)
-        >>> model.DecisionTreeClassification(cv=10)
-        >>> model.DecisionTreeClassification(gridsearch={'min_impurity_split':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.DecisionTreeClassification(cv_type='kfold')
+        >>> model.DecisionTreeClassification(gridsearch={'min_impurity_split':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.DecisionTreeClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -1549,8 +1492,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1563,13 +1506,13 @@ class Classification(
     @add_to_queue
     def LinearSVC(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="linsvc",
-        new_col_name="linsvc_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1583,11 +1526,9 @@ class Classification(
 
         For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html#sklearn.svm.LinearSVC
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1607,7 +1548,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default None.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -1619,14 +1560,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "linsvc"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "linsvc_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         penalty : string, ‘l1’ or ‘l2’ (default=’l2’)
             Specifies the norm used in the penalization.
@@ -1679,8 +1617,8 @@ class Classification(
         --------
         >>> model.LinearSVC()
         >>> model.LinearSVC(model_name='m1', C=0.0003)
-        >>> model.LinearSVC(cv=10)
-        >>> model.LinearSVC(gridsearch={'C':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LinearSVC(cv_type='kfold')
+        >>> model.LinearSVC(gridsearch={'C':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.LinearSVC(run=False) # Add model to the queue
         """
         # endregion
@@ -1693,8 +1631,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1707,13 +1645,13 @@ class Classification(
     @add_to_queue
     def SVC(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="svc_cls",
-        new_col_name="svc_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1729,11 +1667,9 @@ class Classification(
 
         For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html#sklearn.svm.SVC
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1753,7 +1689,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default None.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -1765,14 +1701,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "linsvc_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "linsvc_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         C : float, optional (default=1.0)
             Penalty parameter C of the error term.
@@ -1827,8 +1760,8 @@ class Classification(
         --------
         >>> model.SVC()
         >>> model.SVC(model_name='m1', C=0.0003)
-        >>> model.SVC(cv=10)
-        >>> model.SVC(gridsearch={'C':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.SVC(cv_type='kfold')
+        >>> model.SVC(gridsearch={'C':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.SVC(run=False) # Add model to the queue
         """
         # endregion
@@ -1841,8 +1774,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1855,13 +1788,13 @@ class Classification(
     @add_to_queue
     def XGBoostClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="xgb_cls",
-        new_col_name="xgb_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1876,11 +1809,9 @@ class Classification(
         For more XGBoost info, you can view it here: https://xgboost.readthedocs.io/en/latest/ and
         https://github.com/dmlc/xgboost/blob/master/doc/parameter.rst. 
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -1900,7 +1831,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default None.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -1912,14 +1843,11 @@ class Classification(
         model_name : str, optional
             Name for this model, by default "xgb_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "xgb_cls_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         max_depth : int
             Maximum tree depth for base learners. By default 3
@@ -2005,8 +1933,8 @@ class Classification(
         --------
         >>> model.XGBoostClassification()
         >>> model.XGBoostClassification(model_name='m1', reg_alpha=0.0003)
-        >>> model.XGBoostClassification(cv=10)
-        >>> model.XGBoostClassification(gridsearch={'reg_alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.XGBoostClassification(cv_type='kfold')
+        >>> model.XGBoostClassification(gridsearch={'reg_alpha':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.XGBoostClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -2024,8 +1952,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -2039,13 +1967,13 @@ class Classification(
     @add_to_queue
     def LightGBMClassification(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="accuracy",
         model_name="lgbm_cls",
-        new_col_name="lgbm_cls_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -2061,11 +1989,9 @@ class Classification(
         For more LightGBM info, you can view it here: https://github.com/microsoft/LightGBM and
         https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMClassifier.html#lightgbm.LGBMClassifier
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘accuracy’ 	
@@ -2085,7 +2011,7 @@ class Classification(
         
         Parameters
         ----------
-        cv : bool, optional
+        cv_type : bool, optional
             If True run crossvalidation on the model, by default None.
 
         gridsearch : int, Crossvalidation Generator, optional
@@ -2095,16 +2021,13 @@ class Classification(
             Scoring metric to evaluate models, by default 'accuracy'
 
         model_name : str, optional
-            Name for this model, by default "lgbm_cls"
-
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "lgbm_cls_predictions"
+            Name for this model, by default "lgbm_cls"   
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         boosting_type (string, optional (default='gbdt'))
             ‘gbdt’, traditional Gradient Boosting Decision Tree. ‘dart’, Dropouts meet Multiple Additive Regression Trees. ‘goss’, Gradient-based One-Side Sampling. ‘rf’, Random Forest.
@@ -2175,8 +2098,8 @@ class Classification(
         --------
         >>> model.LightGBMClassification()
         >>> model.LightGBMClassification(model_name='m1', reg_alpha=0.0003)
-        >>> model.LightGBMClassification(cv=10)
-        >>> model.LightGBMClassification(gridsearch={'reg_alpha':[0.01, 0.02]}, cv='strat-kfold')
+        >>> model.LightGBMClassification(cv_type='kfold')
+        >>> model.LightGBMClassification(gridsearch={'reg_alpha':[0.01, 0.02]}, cv_type='strat-kfold')
         >>> model.LightGBMClassification(run=False) # Add model to the queue
         """
         # endregion
@@ -2193,8 +2116,8 @@ class Classification(
             model,
             model_name,
             ClassificationModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,

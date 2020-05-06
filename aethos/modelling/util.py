@@ -180,21 +180,7 @@ def _run(model):
 
 
 def _get_cv_type(cv_type, n_splits, shuffle, **kwargs):
-    """
-    Takes in cv type from the user and initiates the cross validation generator.
-    
-    Parameters
-    ----------
-    cv_type : int, str or None
-        Crossvalidation type
-
-    
-    
-    Returns
-    -------
-    Cross Validation Generator
-        CV Generator
-    """
+    """Takes in cv type from the user and initiates the cross validation generator."""
 
     n_splits = n_splits
     shuffle = shuffle

@@ -307,7 +307,7 @@ class TestModelling(unittest.TestCase):
         model = Classification(x_train=data, target="col3",)
 
         gridsearch_params = {"C": [0.2, 1]}
-        model.LogisticRegression(gridsearch=gridsearch_params, cv=2, run=True)
+        model.LogisticRegression(gridsearch=gridsearch_params, cv_type="kfold", run=True)
 
         self.assertTrue(True)
 

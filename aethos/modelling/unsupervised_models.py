@@ -38,9 +38,9 @@ class Unsupervised(
     def KMeans(
         self,
         model_name="km",
-        new_col_name="kmeans_clusters",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -57,44 +57,17 @@ class Unsupervised(
 
         For a list of all possible options for K Means clustering please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
 
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-        
-        Possible scoring metrics:
-            - ‘adjusted_mutual_info_score’ 	
-            - ‘adjusted_rand_score’ 	 
-            - ‘completeness_score’ 	 
-            - ‘fowlkes_mallows_score’ 	 
-            - ‘homogeneity_score’ 	 
-            - ‘mutual_info_score’ 	 
-            - ‘normalized_mutual_info_score’ 	 
-            - ‘v_measure_score’
-
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        gridsearch : dict, optional
-            Parameters to gridsearch, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'homogenity_score'
 
         model_name : str, optional
             Name for this model, by default "kmeans"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "kmeans_clusters"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         n_clusters : int, optional, default: 8
             The number of clusters to form as well as the number of centroids to generate.
@@ -159,7 +132,7 @@ class Unsupervised(
         model = self._run_unsupervised_model(
             model,
             model_name,
-            new_col_name,
+            
             run=run,
             verbose=verbose,
             n_clusters=n_clusters,
@@ -172,9 +145,9 @@ class Unsupervised(
     def DBScan(
         self,
         model_name="dbs",
-        new_col_name="dbscan_clusters",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -187,41 +160,11 @@ class Unsupervised(
         
         For a list of all possible options for DBSCAN please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html
 
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        Possible scoring metrics:
-            - ‘adjusted_mutual_info_score’ 	
-            - ‘adjusted_rand_score’ 	 
-            - ‘completeness_score’ 	 
-            - ‘fowlkes_mallows_score’ 	 
-            - ‘homogeneity_score’ 	 
-            - ‘mutual_info_score’ 	 
-            - ‘normalized_mutual_info_score’ 	 
-            - ‘v_measure_score’
-
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        gridsearch : dict, optional
-            Parameters to gridsearch, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'homogenity_score'
 
         model_name : str, optional
             Name for this model, by default "dbscan"
-
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "dbscan_clusters"
-
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
@@ -266,7 +209,7 @@ class Unsupervised(
         model = DBSCAN
 
         model = self._run_unsupervised_model(
-            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
+            model, model_name, run=run, **kwargs,
         )
 
         return model
@@ -275,9 +218,9 @@ class Unsupervised(
     def IsolationForest(
         self,
         model_name="iso_forest",
-        new_col_name="iso_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -289,45 +232,17 @@ class Unsupervised(
         The IsolationForest ‘isolates’ observations by randomly selecting a feature and then randomly selecting a split value between the maximum and minimum values of the selected feature.
 
         For more Isolation Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html#sklearn.ensemble.IsolationForest
-
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        Possible scoring metrics:
-            - ‘adjusted_mutual_info_score’ 	
-            - ‘adjusted_rand_score’ 	 
-            - ‘completeness_score’ 	 
-            - ‘fowlkes_mallows_score’ 	 
-            - ‘homogeneity_score’ 	 
-            - ‘mutual_info_score’ 	 
-            - ‘normalized_mutual_info_score’ 	 
-            - ‘v_measure_score’
         
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        gridsearch : dict, optional
-            Parameters to gridsearch, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
-
         model_name : str, optional
             Name for this model, by default "iso_forest"
-
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "iso_predictions"
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         n_estimators : int, optional (default=100)
             The number of base estimators in the ensemble.
@@ -374,7 +289,7 @@ class Unsupervised(
         model = IsolationForest
 
         model = self._run_unsupervised_model(
-            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
+            model, model_name,  run=run, verbose=verbose, **kwargs,
         )
 
         return model
@@ -383,9 +298,9 @@ class Unsupervised(
     def OneClassSVM(
         self,
         model_name="ocsvm",
-        new_col_name="ocsvm_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -395,45 +310,17 @@ class Unsupervised(
         Unsupervised Outlier Detection.
 
         For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html#sklearn.svm.OneClassSVM
-
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-
-        Possible scoring metrics:
-            - ‘adjusted_mutual_info_score’ 	
-            - ‘adjusted_rand_score’ 	 
-            - ‘completeness_score’ 	 
-            - ‘fowlkes_mallows_score’ 	 
-            - ‘homogeneity_score’ 	 
-            - ‘mutual_info_score’ 	 
-            - ‘normalized_mutual_info_score’ 	 
-            - ‘v_measure_score’
         
         Parameters
         ----------
-        cv : bool, optional
-            If True run crossvalidation on the model, by default None.
-
-        gridsearch : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'accuracy'
-
         model_name : str, optional
-            Name for this model, by default "ocsvm"
-
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "ocsvm_predictions"
+            Name for this model, by default "ocsvm"     
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         kernel : string, optional (default=’rbf’)
             Specifies the kernel type to be used in the algorithm.
@@ -485,7 +372,7 @@ class Unsupervised(
         model = OneClassSVM
 
         model = self._run_unsupervised_model(
-            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
+            model, model_name,  run=run, verbose=verbose, **kwargs,
         )
 
         return model
@@ -494,9 +381,8 @@ class Unsupervised(
     def AgglomerativeClustering(
         self,
         model_name="agglom",
-        new_col_name="agglom_clusters",
+        
         run=True,
-        verbose=2,
         **kwargs,
     ):
         # region
@@ -517,44 +403,13 @@ class Unsupervised(
 
         For a list of all possible options for Agglomerative clustering please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html#sklearn.cluster.AgglomerativeClustering
 
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-        
-        Possible scoring metrics:
-            - ‘adjusted_mutual_info_score’ 	
-            - ‘adjusted_rand_score’ 	 
-            - ‘completeness_score’ 	 
-            - ‘fowlkes_mallows_score’ 	 
-            - ‘homogeneity_score’ 	 
-            - ‘mutual_info_score’ 	 
-            - ‘normalized_mutual_info_score’ 	 
-            - ‘v_measure_score’
-
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        gridsearch : dict, optional
-            Parameters to gridsearch, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'homogenity_score'
-
         model_name : str, optional
-            Name for this model, by default "agglom"
-
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "agglom_clusters"
+            Name for this model, by default "agglom" 
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
-
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
 
         n_clusters : int or None, optional (default=2)
             The number of clusters to find.
@@ -603,7 +458,7 @@ class Unsupervised(
         model = AgglomerativeClustering
 
         model = self._run_unsupervised_model(
-            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
+            model, model_name,  run=run, **kwargs,
         )
 
         return model
@@ -612,9 +467,8 @@ class Unsupervised(
     def MeanShift(
         self,
         model_name="mshift",
-        new_col_name="mshift_clusters",
+        
         run=True,
-        verbose=2,
         **kwargs,
     ):
         # region
@@ -629,44 +483,13 @@ class Unsupervised(
 
         For more info on Mean Shift clustering please visit: https://scikit-learn.org/stable/modules/generated/sklearn.cluster.MeanShift.html#sklearn.cluster.MeanShift
 
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-        
-        Possible scoring metrics:
-            - ‘adjusted_mutual_info_score’ 	
-            - ‘adjusted_rand_score’ 	 
-            - ‘completeness_score’ 	 
-            - ‘fowlkes_mallows_score’ 	 
-            - ‘homogeneity_score’ 	 
-            - ‘mutual_info_score’ 	 
-            - ‘normalized_mutual_info_score’ 	 
-            - ‘v_measure_score’
-
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        gridsearch : dict, optional
-            Parameters to gridsearch, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'homogenity_score'
-
         model_name : str, optional
             Name for this model, by default "mshift"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "mshift_clusters"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
-
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
 
         bandwidth : float, optional
             Bandwidth used in the RBF kernel.
@@ -708,7 +531,7 @@ class Unsupervised(
         model = MeanShift
 
         model = self._run_unsupervised_model(
-            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
+            model, model_name,  run=run, **kwargs,
         )
 
         return model
@@ -717,9 +540,9 @@ class Unsupervised(
     def GaussianMixtureClustering(
         self,
         model_name="gm_cluster",
-        new_col_name="gm_clusters",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -740,44 +563,16 @@ class Unsupervised(
 
         For more information on Gaussian Mixture algorithms please visit: https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html#sklearn.mixture.GaussianMixture
 
-        If running cross-validation, the implemented cross validators are:
-            - 'kfold' for KFold
-            - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-        
-        Possible scoring metrics:
-            - ‘adjusted_mutual_info_score’ 	
-            - ‘adjusted_rand_score’ 	 
-            - ‘completeness_score’ 	 
-            - ‘fowlkes_mallows_score’ 	 
-            - ‘homogeneity_score’ 	 
-            - ‘mutual_info_score’ 	 
-            - ‘normalized_mutual_info_score’ 	 
-            - ‘v_measure_score’
-
         Parameters
         ----------
-        cv : int, Crossvalidation Generator, optional
-            Cross validation method, by default None
-
-        gridsearch : dict, optional
-            Parameters to gridsearch, by default None
-
-        score : str, optional
-            Scoring metric to evaluate models, by default 'homogenity_score'
-
         model_name : str, optional
             Name for this model, by default "gm_cluster"
-
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "gm_clusters"
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         n_components : int, defaults to 1.
             The number of mixture components/ number of unique y_train values.
@@ -852,7 +647,7 @@ class Unsupervised(
         model = GaussianMixture
 
         model = self._run_unsupervised_model(
-            model, model_name, new_col_name, run=run, verbose=verbose, **kwargs,
+            model, model_name,  run=run, verbose=verbose, **kwargs,
         )
 
         return model

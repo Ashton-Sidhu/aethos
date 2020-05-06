@@ -55,13 +55,13 @@ class Regression(
     @add_to_queue
     def LinearRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="lin_reg",
-        new_col_name="linreg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -70,11 +70,9 @@ class Regression(
 
         For more Linear Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html#sklearn.linear_model.LinearRegression
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -99,14 +97,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "lin_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "linreg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False        	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1        	
 
         fit_intercept : boolean, optional, default True
             whether to calculate the intercept for this model.
@@ -139,8 +134,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -153,13 +148,13 @@ class Regression(
     @add_to_queue
     def BayesianRidgeRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="bayridge_reg",
-        new_col_name="bayridge_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -169,11 +164,9 @@ class Regression(
         For more Linear Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.BayesianRidge.html#sklearn.linear_model.BayesianRidge
         and https://scikit-learn.org/stable/modules/linear_model.html#bayesian-regression 
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -198,14 +191,14 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "bayridge_reg"
 
-        new_col_name : str, optional
+        
             Name of column for labels that are generated, by default "bayridge_reg_predictions"
 
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
         
         n_iter : int, optional
             Maximum number of iterations. Default is 300. Should be greater than or equal to 1.
@@ -257,8 +250,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -271,13 +264,13 @@ class Regression(
     @add_to_queue
     def ElasticnetRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="elastic",
-        new_col_name="elastic_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -286,12 +279,10 @@ class Regression(
         
         For more Linear Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html#sklearn.linear_model.ElasticNet 
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-        
+ 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
@@ -315,14 +306,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "elastic"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "elastic_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False   
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1   
         
         alpha : float, optional
             Constant that multiplies the penalty terms.
@@ -387,8 +375,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -401,13 +389,13 @@ class Regression(
     @add_to_queue
     def LassoRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="lasso",
-        new_col_name="lasso_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -418,11 +406,9 @@ class Regression(
 
         For more Lasso Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html#sklearn.linear_model.Lasso
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -447,14 +433,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "lasso"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "lasso_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False        
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1        
         
         alpha : float, optional
             Constant that multiplies the L1 term.
@@ -512,8 +495,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -526,13 +509,13 @@ class Regression(
     @add_to_queue
     def RidgeRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="ridge_reg",
-        new_col_name="ridge_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -541,11 +524,9 @@ class Regression(
 
         For more Ridge Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html#sklearn.linear_model.Ridge
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -570,14 +551,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "ridge"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "ridge_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False        
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1        
         
         alpha : {float, array-like}, shape (n_targets)
             Regularization strength; must be a positive float.
@@ -623,8 +601,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -637,13 +615,13 @@ class Regression(
     @add_to_queue
     def SGDRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="sgd_reg",
-        new_col_name="sgd_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -659,11 +637,9 @@ class Regression(
 
         For more SGD Regression info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html#sklearn.linear_model.SGDRegressor
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -688,14 +664,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "sgd_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "sgd_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False        
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1        
         
         loss : str, default: ‘squared_loss’
             The loss function to be used.
@@ -807,8 +780,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -821,13 +794,13 @@ class Regression(
     @add_to_queue
     def ADABoostRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="ada_reg",
-        new_col_name="ada_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -839,11 +812,9 @@ class Regression(
 
         For more AdaBoost info, you can view it here:https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html#sklearn.ensemble.AdaBoostRegressor
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -868,14 +839,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "ada_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "ada_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         base_estimator : object, optional (default=None)
             The base estimator from which the boosted ensemble is built.
@@ -916,8 +884,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -930,13 +898,13 @@ class Regression(
     @add_to_queue
     def BaggingRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="bag_reg",
-        new_col_name="bag_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -948,11 +916,9 @@ class Regression(
 
         For more Bagging Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.BaggingRegressor.html#sklearn.ensemble.BaggingRegressor
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -977,14 +943,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "bag_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "bag_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         base_estimator : object or None, optional (default=None)
             The base estimator to fit on random subsets of the dataset.
@@ -1037,8 +1000,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1051,13 +1014,13 @@ class Regression(
     @add_to_queue
     def GradientBoostingRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="grad_reg",
-        new_col_name="grad_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1069,11 +1032,9 @@ class Regression(
 
         For more Gradient Boosting Classifier info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html#sklearn.ensemble.GradientBoostingRegressor
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -1098,14 +1059,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "grad_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "grad_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
 
         loss : {‘ls’, ‘lad’, ‘huber’, ‘quantile’}, optional (default=’ls’)
             loss function to be optimized.
@@ -1212,8 +1170,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1226,13 +1184,13 @@ class Regression(
     @add_to_queue
     def RandomForestRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="rf_reg",
-        new_col_name="rf_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1244,12 +1202,10 @@ class Regression(
 
         For more Random Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html#sklearn.ensemble.RandomForestRegressor
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-        
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
@@ -1273,14 +1229,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "rf_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "rf_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1
         
         n_estimators : integer, optional (default=10)
             The number of trees in the forest.
@@ -1368,8 +1321,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1382,13 +1335,13 @@ class Regression(
     @add_to_queue
     def DecisionTreeRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="dt_reg",
-        new_col_name="dt_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1397,11 +1350,9 @@ class Regression(
 
         For more Decision Tree info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html#sklearn.tree.DecisionTreeRegressor
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -1426,14 +1377,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "dt_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "dt_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False       	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1       	
 
         criterion : string, optional (default=”mse”)
             The function to measure the quality of a split.
@@ -1529,8 +1477,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1543,13 +1491,13 @@ class Regression(
     @add_to_queue
     def LinearSVR(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="linsvr",
-        new_col_name="linsvr_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1561,12 +1509,10 @@ class Regression(
 
         For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVR.html#sklearn.svm.LinearSVR
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
 
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
-        
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
             - ‘max_error’ 	 
@@ -1590,14 +1536,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "linsvr_cls"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "linsvr_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         epsilon : float, optional (default=0.0)
             Epsilon parameter in the epsilon-insensitive loss function.
@@ -1653,8 +1596,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1667,13 +1610,13 @@ class Regression(
     @add_to_queue
     def SVR(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="svr_reg",
-        new_col_name="svr_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1687,11 +1630,9 @@ class Regression(
 
         For more Support Vector info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html#sklearn.svm.SVR
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -1716,14 +1657,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "linsvr"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "linsvr_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         kernel : string, optional (default=’rbf’)
             Specifies the kernel type to be used in the algorithm.
@@ -1783,8 +1721,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1797,13 +1735,13 @@ class Regression(
     @add_to_queue
     def XGBoostRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="xgb_reg",
-        new_col_name="xgb_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1818,11 +1756,9 @@ class Regression(
         For more XGBoost info, you can view it here: https://xgboost.readthedocs.io/en/latest/ and
         https://github.com/dmlc/xgboost/blob/master/doc/parameter.rst. 
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -1847,14 +1783,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "xgb_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "xgb_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         max_depth : int
             Maximum tree depth for base learners. By default 3
@@ -1954,8 +1887,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
@@ -1968,13 +1901,13 @@ class Regression(
     @add_to_queue
     def LightGBMRegression(
         self,
-        cv=None,
+        cv_type=None,
         gridsearch=None,
         score="neg_mean_squared_error",
         model_name="lgbm_reg",
-        new_col_name="lgbm_reg_predictions",
+        
         run=True,
-        verbose=2,
+        verbose=1,
         **kwargs,
     ):
         # region
@@ -1990,11 +1923,9 @@ class Regression(
         For more LightGBM info, you can view it here: https://github.com/microsoft/LightGBM and
         https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMRegressor.html#lightgbm.LGBMRegressor
 
-        If running cross-validation, the implemented cross validators are:
+        If running gridsearch, the implemented cross validators are:
             - 'kfold' for KFold
             - 'strat-kfold' for StratifiedKfold
-
-        For more information regarding the cross validation methods, you can view them here: https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection 
 
         Possible scoring metrics: 
             - ‘explained_variance’ 	 
@@ -2019,14 +1950,11 @@ class Regression(
         model_name : str, optional
             Name for this model, by default "lgbm_reg"
 
-        new_col_name : str, optional
-            Name of column for labels that are generated, by default "lgbm_reg_predictions"
-
         run : bool, optional
             Whether to train the model or just initialize it with parameters (useful when wanting to test multiple models at once) , by default False
 
-        verbose : bool, optional
-            True if you want to print out detailed info about the model training, by default False    	
+        verbose : int, optional
+            Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
         boosting_type (string, optional (default='gbdt'))
             ‘gbdt’, traditional Gradient Boosting Decision Tree. ‘dart’, Dropouts meet Multiple Additive Regression Trees. ‘goss’, Gradient-based One-Side Sampling. ‘rf’, Random Forest.
@@ -2111,8 +2039,8 @@ class Regression(
             model,
             model_name,
             RegressionModelAnalysis,
-            new_col_name,
-            cv=cv,
+            
+            cv_type=cv_type,
             gridsearch=gridsearch,
             score=score,
             run=run,
