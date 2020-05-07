@@ -518,6 +518,43 @@ class Analysis(Visualizations, Stats):
         else:
             pps.matrix(self.x_train)
 
+    def autoviz(self, max_rows=150000, max_cols=30, verbose=0):  # pragma: no cover
+        """
+        Auto visualizes and analyzes your data to help explore your data.
+
+        Credits go to AutoViMl - https://github.com/AutoViML/AutoViz
+
+        Parameters
+        ----------
+        max_rows : int, optional
+            Max rows to analyze, by default 150000
+
+        max_cols : int, optional
+            Max columns to analyze, by default 30
+
+        verbose : {0, 1, 2}, optional
+            0 - it does not print any messages and goes into silent mode
+            1 - print messages on the terminal and also display
+                charts on terminal
+            2 - it will print messages but will not display charts,
+                it will simply save them.
+        """
+
+        from autoviz.AutoViz_Class import AutoViz_Class
+
+        target = self.target if self.target else ""
+
+        AV = AutoViz_Class()
+
+        dft = AV.AutoViz(
+            "",
+            dfte=self.x_train,
+            depVar=target,
+            max_cols_analyzed=max_cols,
+            max_rows_analyzed=max_rows,
+            verbose=verbose,
+        )
+
     def interpret_data(self):
         """
         Interpret your data using MSFT Interpret dashboard.
