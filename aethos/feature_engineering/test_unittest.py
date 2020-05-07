@@ -144,7 +144,7 @@ class TestFeatureExtraction(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         feature = Classification(x_train=data.copy(), target="", x_test=data.copy())
-        feature.encode_labels("col1", "col2")
+        feature.ordinal_encode_labels("col1")
 
         self.assertTrue(True)
 

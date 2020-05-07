@@ -6,7 +6,7 @@ from sklearn.feature_extraction.text import (
     HashingVectorizer,
     TfidfVectorizer,
 )
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.preprocessing import PolynomialFeatures
 
@@ -15,7 +15,6 @@ from aethos.feature_engineering import util
 from aethos.util import (
     _input_columns,
     _get_columns,
-    label_encoder,
     drop_replace_columns,
     _numeric_input_conditions,
 )
@@ -766,21 +765,22 @@ class Feature(object):
 
         return self.copy()
 
-    def encode_labels(self, *list_args, list_of_cols=[]):
+    def ordinal_encode_labels(self, col: str, ordered_cat=[]):
         """
         Encode categorical values with value between 0 and n_classes-1.
 
         Running this function will automatically set the corresponding mapping for the target variable mapping number to the original value.
 
-        Note that this will not work if your test data will have labels that your train data does not.        
+        Note: that this will not work if your test data will have labels that your train data does not.
+        Note: 
 
         Parameters
         ----------
-        list_args : str(s), optional
-            Specific columns to apply this technique to.
+        col : str, optional
+            Columnm in the data to ordinally encode.
 
-        list_of_cols : list, optional
-            A list of specific columns to apply this technique to., by default []
+        ordered_cat : list, optional
+            A list of ordered categories for the Ordinal encoder. Should be sorted.
         
         Returns
         -------
@@ -789,14 +789,19 @@ class Feature(object):
 
         Examples
         --------
-        >>> data.encode_labels('col1', 'col2', 'col3')
+        >>> data.encode_labels('col1')
+        >>> data.encode_labels('col1', ordered_cat=["Low", "Medium", "High"])
         """
 
-        list_of_cols = _input_columns(list_args, list_of_cols)
+        categories = ordered_cat if ordered_cat else "auto"
 
-        self._x_train, self._x_test, _ = label_encoder(
-            x_train=self._x_train, x_test=self._x_test, list_of_cols=list_of_cols,
-        )
+        enc = OrdinalEncoder(categories=categories)
+
+        
+        self._x_train[col] = enc.fit_transform(self._x_train[col].values.reshape(-1, 1))
+
+        if self._x_test is not None:
+            self._x_test[col] = enc.transform(self._x_test[col].values.reshape(-1, 1))
 
         return self.copy()
 

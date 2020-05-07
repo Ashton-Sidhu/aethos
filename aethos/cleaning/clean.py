@@ -60,11 +60,14 @@ class Clean(object):
         """
 
         # If the number of unique values is not 0(all missing) or 1(constant or constant + missing)
-        keep_columns = list(
-            filter(
-                lambda x: self.train_data.nunique()[x] not in [0, 1], self.train_data.columns
-            )
-        )
+        keep_columns = []
+
+        for col in self.train_data.columns:
+            try:
+                if self.train_data.nunique()[col] not in [0, 1]:
+                    keep_columns.append(col)
+            except Exception as e:
+                print(f"Column {col} could not be processed.")
 
         self.train_data = self.train_data[keep_columns]
 
