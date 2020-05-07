@@ -9,6 +9,7 @@ import pandas as pd
 import seaborn as sns
 
 from aethos import Analysis
+from aethos import groupby_analysis
 
 
 class Test_TestBase(unittest.TestCase):
@@ -288,75 +289,9 @@ class Test_TestBase(unittest.TestCase):
             }
         )
 
-        base = Analysis(x_train=data, x_test=None,)
+        df = groupby_analysis(data, ["A"])
 
-        base.groupby_analysis(["A"])
-
-        self.assertTrue(True)
-
-    def test_groupby(self):
-
-        data = pd.DataFrame(
-            {
-                "A": [1, 1, 2, 2],
-                "B": [1, 2, 3, 4],
-                "C": np.random.randn(4),
-                "D": ["A", "A", "B", "B"],
-            }
-        )
-
-        clean = Analysis(x_train=data, x_test=None,)
-
-        clean.groupby("A", replace=True)
-
-        self.assertTrue(True)
-
-    def test_search(self):
-
-        data = pd.DataFrame(
-            {
-                "A": [1, 1, 2, 2],
-                "B": [1, 2, 3, 4],
-                "C": np.random.randn(4),
-                "D": ["A", "A", "B", "B"],
-            }
-        )
-
-        clean = Analysis(x_train=data, x_test=None,)
-        clean.search("A", replace=True)
-
-        self.assertTrue(True)
-
-    def test_search_notequal(self):
-
-        data = pd.DataFrame(
-            {
-                "A": [1, 1, 2, 2],
-                "B": [1, 2, 3, 4],
-                "C": np.random.randn(4),
-                "D": ["A", "A", "B", "B"],
-            }
-        )
-
-        clean = Analysis(x_train=data, x_test=None,)
-        clean.search("A", not_equal=True, replace=True)
-
-        self.assertTrue(True)
-
-    def test_gettargetmapping(self):
-
-        data = pd.DataFrame(
-            {
-                "A": [1, 1, 2, 2],
-                "B": [1, 2, 3, 4],
-                "C": np.random.randn(4),
-                "D": ["A", "A", "B", "B"],
-            }
-        )
-
-        clean = Analysis(x_train=data, x_test=None,)
-
-        self.assertIsNone(clean.target_mapping)
+        self.assertIsInstance(df, Analysis)
 
     def test_settargetmapping(self):
 

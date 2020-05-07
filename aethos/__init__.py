@@ -30,6 +30,8 @@ from aethos.config.config import (
     set_option,
 )
 
+from aethos.helpers import groupby_analysis
+
 from aethos.analysis import Analysis
 from aethos.modelling import Classification, Regression, Unsupervised
 from aethos.model_analysis import (

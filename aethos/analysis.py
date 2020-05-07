@@ -6,11 +6,7 @@ import ipywidgets as widgets
 import numpy as np
 import pandas as pd
 
-# from aethos.cleaning.clean import Clean
 from aethos.config import shell
-
-# from aethos.feature_engineering.feature import Feature
-# from aethos.preprocessing.preprocess import Preprocess
 from aethos.stats.stats import Stats
 from aethos.util import (
     CLEANING_CHECKLIST,
@@ -240,130 +236,6 @@ class Analysis(Visualizations, Stats):
             self.x_test = pd.concat([self.x_test, df], axis=1)
 
         return self.copy()
-
-    def groupby(self, *groupby, replace=False):
-        """
-        Groups data by the provided columns.
-        
-        Parameters
-        ----------
-        groupby : str(s)
-            Columns to group the data by.
-
-        replace : bool, optional
-            Whether to permanently transform your data, by default False
-        
-        Returns
-        -------
-        Data:
-            Returns a deep copy of the Data object.
-
-        Examples
-        --------
-        >>> data.groupby('col1', 'col2')
-        """
-
-        if not groupby:
-            return ValueError("Please provided columns to groupby.")
-
-        if replace:
-            self.x_train = self.x_train.groupby(list(groupby))
-
-            if self.x_test is not None:
-                self.x_test = self.x_test.groupby(list(groupby))
-
-            return self.copy()
-        else:
-            data = self.x_train.copy()
-
-            return data.groupby(list(groupby))
-
-    def groupby_analysis(self, groupby: list, *cols, data_filter=None):
-        """
-        TODO: Refactor this to a class method.
-
-        Groups your data and then provides descriptive statistics for the other columns on the grouped data.
-
-        For numeric data, the descriptive statistics are:
-
-            - count
-            - min
-            - max
-            - mean
-            - standard deviation
-            - variance
-            - median
-            - most common
-            - sum
-            - Median absolute deviation
-            - number of unique values
-
-        For other types of data:
-
-            - count
-            - most common
-            - number of unique values
-        
-        Parameters
-        ----------
-        groupby : list
-            List of columns to groupby.
-
-        cols : str(s)
-            Columns you want statistics on, if none are provided, it will provide statistics for every column.
-
-        data_filter : Dataframe, optional
-            Filtered dataframe, by default None
-        
-        Returns
-        -------
-        Dataframe
-            Dataframe of grouped columns and statistics for each column.
-
-        Examples
-        --------
-        >>> data.groupby_analysis()
-        >>> data.groupby_analysis('col1', 'col2')
-        """
-
-        analysis = {}
-        numeric_analysis = [
-            "count",
-            "min",
-            "max",
-            "mean",
-            "std",
-            "var",
-            "median",
-            ("most_common", lambda x: pd.Series.mode(x)[0]),
-            "sum",
-            "mad",
-            "nunique",
-        ]
-        other_analysis = [
-            "count",
-            ("most_common", lambda x: pd.Series.mode(x)[0]),
-            "nunique",
-        ]
-
-        list_of_cols = _get_columns(list(cols), self.x_train)
-
-        if isinstance(data_filter, pd.DataFrame):
-            data = data_filter
-        else:
-            data = self.x_train.copy()
-
-        for col in list_of_cols:
-            if col not in groupby:
-                # biufc - bool, int, unsigned, float, complex
-                if data[col].dtype.kind in "biufc":
-                    analysis[col] = numeric_analysis
-                else:
-                    analysis[col] = other_analysis
-
-        analyzed_data = data.groupby(groupby).agg(analysis)
-
-        return analyzed_data
 
     def data_report(self, title="Profile Report", output_file="", suppress=False):
         """
