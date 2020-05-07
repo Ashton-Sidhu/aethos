@@ -777,3 +777,41 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         """
 
         super()._cross_validate(cv_type, score, n_splits, shuffle, **kwargs)
+
+    def decision_boundary(self, x=None, y=None, title="Decisioun Boundary"):
+        """
+        Plots a decision boundary for a given model.
+
+        If no x or y columns are provided, it defaults to the first 2 columns of your data.
+
+        Parameters
+        ----------
+        x : str, optional
+            Column in the dataframe to plot, Feature one, by default None
+
+        y : str, optional
+            Column in the dataframe to plot, Feature two, by default None
+
+        title : str, optional
+            Title of the decision boundary plot, by default "Decisioun Boundary"
+        """
+
+        from yellowbrick.contrib.classifier import DecisionViz
+
+        assert ((not x or not y) or (x or y)), "Both x and y (feature 1 and 2) must be provided"
+
+        if not x:
+            features = [self.train_results.columns[0], self.train_results.columns[1]]
+        else:
+            features = [x, y]
+
+        viz = DecisionViz(
+            self.model,
+            title=title,
+            features=features,
+            classes = self.classes
+        )
+
+        viz.fit(self.x_train[features].values, self.y_train.values)
+        viz.draw(self.x_test[features].values, self.y_test.values)
+        viz.show()
