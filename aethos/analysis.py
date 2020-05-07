@@ -43,9 +43,6 @@ class Analysis(Visualizations, Stats):
     x_test: pd.DataFrame
         Test data, by default None
 
-    test_split_percentage: float
-        Percentage of data to split train data into a train and test set.
-
     target: str
         For supervised learning problems, the name of the column you're trying to predict.
     """
@@ -243,63 +240,6 @@ class Analysis(Visualizations, Stats):
             self.x_test = pd.concat([self.x_test, df], axis=1)
 
         return self.copy()
-
-    def search(self, *values, not_equal=False, replace=False):
-        """
-        Searches the entire dataset for specified value(s) and returns rows that contain the values.
-        
-        Parameters
-        ----------
-        values : Any
-            Value to search for in dataframe
-
-        not_equal : bool, optional
-            True if you want filter by values in the dataframe that are not equal to the value provided, by default False
-
-        replace : bool, optional
-            Whether to permanently transform your data, by default False
-
-        Returns
-        -------
-        Data or DataFrame:
-            Returns a deep copy of the Data object or a DataFrame if replace is False.
-
-        Examples
-        --------
-        >>> data.search('aethos')
-        """
-
-        # TODO: Refactor this to take in boolean expressions
-
-        if not values:
-            return ValueError("Please provide value to search.")
-
-        if replace:
-            if not_equal:
-                self.x_train = self.x_train[self.x_train.isin(list(values)).any(axis=1)]
-
-                if self.x_test is not None:
-                    self.x_test = self.x_test[
-                        self.x_test.isin(list(values)).any(axis=1)
-                    ]
-            else:
-                self.x_train = self.x_train[self.x_train.isin(list(values)).any(axis=1)]
-
-                if self.x_test is not None:
-                    self.x_test = self.x_test[
-                        self.x_test.isin(list(values)).any(axis=1)
-                    ]
-
-            return self.copy()
-        else:
-            data = self.x_train.copy()
-
-            if not not_equal:
-                data = data[data.isin(list(values))].dropna(how="all")
-            else:
-                data = data[~data.isin(list(values))].dropna(how="all")
-
-            return data
 
     def groupby(self, *groupby, replace=False):
         """
@@ -683,6 +623,27 @@ class Analysis(Visualizations, Stats):
             self.x_test = self.x_test.drop(drop_columns, axis=1)
 
         return self.copy()
+
+    def predictive_power(self, col=None):
+        """
+        Calculated the Predictive Power Score of each feature.
+
+        If a column is provided, it will calculate it in regards to the target variable.
+
+        Credits go to Florian Wetschorek - https://towardsdatascience.com/rip-correlation-introducing-the-predictive-power-score-3d90808b9598
+
+        Parameters
+        ----------
+        col : str
+            Column in the dataframe
+        """
+
+        import ppscore as pps
+
+        if col:
+            pps.score(self.x_train, col, self.target)
+        else:
+            pps.matrix(self.x_train)
 
     def encode_target(self):
         """

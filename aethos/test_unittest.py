@@ -12,9 +12,6 @@ from aethos import Analysis
 
 
 class Test_TestBase(unittest.TestCase):
-    # @classmethod
-    # def tearDownClass(cls):
-    #     shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
 
     def test_setitem_constant(self):
 
@@ -590,6 +587,31 @@ class Test_TestBase(unittest.TestCase):
         self.assertListEqual(
             base.x_test.columns.tolist(), ["col1", "foo", "bar", "baz_foo", "baz_x"]
         )
+
+    def test_pps_all(self):
+
+        int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        clean = Analysis(x_train=data, x_test=data)
+        clean.predictive_power()
+
+        self.assertTrue(True)
+
+
+    def test_pps_col(self):
+
+        int_missing_data = [[1, 0, 0], [0, 2, 1], [0, 3, 0], [1, 2, 0], [1, 0, 0], [0, 2, 1], [0, 3, 0], [1, 2, 0]]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        clean = Analysis(x_train=data, target="col3", x_test=data)
+        clean.predictive_power("col1")
+
+        self.assertTrue(True)
+
+
 
 
 if __name__ == "__main__":

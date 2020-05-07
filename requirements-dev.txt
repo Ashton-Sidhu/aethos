@@ -42,3 +42,4 @@ pre-commit
 transformers
 tensorflow
 statsmodels
+ppscore

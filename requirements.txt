@@ -37,3 +37,4 @@ mlflow
 transformers
 tensorflow
 statsmodels
+ppscore
