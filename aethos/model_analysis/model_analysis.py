@@ -45,19 +45,18 @@ class ModelAnalysisBase(Visualizations, Stats):
     @property
     def train_results(self):
 
-        data = self.x_train
+        data = self.x_train.copy()
+        data["predicted"] = self.model.predict(data)
         data["actual"] = self.y_train
-
-        data["predicted"] = self.y_pred
 
         return data
 
     @property
     def test_results(self):
-        
+
         data = self.x_test
         data["actual"] = self.y_test
-        
+
         data["predicted"] = self.y_pred
 
         return data
@@ -101,12 +100,13 @@ class ModelAnalysisBase(Visualizations, Stats):
 
 
 class SupervisedModelAnalysis(ModelAnalysisBase):
-    def __init__(self, model, x_train, x_test, y_test, model_name):
+    def __init__(self, model, x_train, x_test, y_train, y_test, model_name):
 
         self.model = model
         self.model_name = model_name
         self.x_train = x_train
         self.x_test = x_test
+        self.y_train = y_train
         self.y_test = y_test
         self.features = x_test.columns
         self.y_pred = self.model.predict(
@@ -129,6 +129,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
             self.model,
             self.x_train,
             self.x_test,
+            self.y_train,
             self.y_test,
             PROBLEM_TYPE[type(self.model)],
         )

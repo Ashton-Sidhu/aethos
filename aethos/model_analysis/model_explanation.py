@@ -213,11 +213,12 @@ class Shap(object):
 
 
 class MSFTInterpret(object):
-    def __init__(self, model, x_train, x_test, y_test, problem):
+    def __init__(self, model, x_train, x_test, y_train, y_test, problem):
 
         self.model = model
         self.x_train = x_train.apply(pd.to_numeric)
         self.x_test = x_test.apply(pd.to_numeric)
+        self.y_train = y_train
         self.y_test = y_test
         self.problem = problem
         self.trained_blackbox_explainers = {}
@@ -432,9 +433,10 @@ class MSFTInterpret(object):
         """
 
         import interpret
-        from aethos.modelling.constants import INTERPRET_EXPLAINERS
+        from aethos.model_analysis.constants import INTERPRET_EXPLAINERS
+        from aethos.util import _interpret_data
 
-        dashboard_plots = []
+        dashboard_plots = [_interpret_data(self.x_train, self.y_train, show=False)]
 
         for explainer_type in INTERPRET_EXPLAINERS:
 

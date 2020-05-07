@@ -128,7 +128,7 @@ class ModelBase(object):
     def x_train(self):
         """x_train variable"""
 
-        return self._x_train
+        return self._x_train[self._org_columns]
 
     @x_train.setter
     def x_train(self, val):
@@ -140,7 +140,7 @@ class ModelBase(object):
     def x_test(self):
         """x_test variable"""
 
-        return self._x_test
+        return self._x_test[self._org_columns]
 
     @x_test.setter
     def x_test(self, val):
@@ -153,8 +153,10 @@ class ModelBase(object):
         """Features for modelling"""
 
         cols = self._x_train.columns.tolist()
-        cols.remove(self.target)
-        
+
+        if self.target:
+            cols.remove(self.target)
+
         return cols
 
     @property
@@ -174,9 +176,7 @@ class ModelBase(object):
     def test_data(self):
         """Testing data used to evaluate models"""
 
-        return (
-            self._x_test[self.features] if self._x_test is not None else None
-        )
+        return self._x_test[self.features] if self._x_test is not None else None
 
     @test_data.setter
     def test_data(self, val):
@@ -220,6 +220,15 @@ class ModelBase(object):
         """
 
         return self.x_train.columns.tolist()
+
+    @property
+    def _org_columns(self):
+        """Helper to organize columns"""
+
+        if self.target:
+            return self.features + [self.target]
+        else:
+            return self.features
 
     def copy(self):
         """

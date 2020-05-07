@@ -33,14 +33,13 @@ class RegressionModelAnalysis(SupervisedModelAnalysis):
             Name of the model for saving images and model tracking purposes
         """
 
-        self.y_train = x_train[target]
-
         # TODO: Add check for pickle file
 
         super().__init__(
             model,
             x_train.drop([target], axis=1),
             x_test.drop([target], axis=1),
+            x_train[target],
             x_test[target],
             model_name,
         )

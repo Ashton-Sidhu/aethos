@@ -36,14 +36,13 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
             Name of the model for saving images and model tracking purposes
         """
 
-        self.y_train = x_train[target]
-
         # TODO: Add check for pickle file
 
         super().__init__(
             model,
             x_train.drop(target, axis=1),
             x_test.drop(target, axis=1),
+            x_train[target],
             x_test[target],
             model_name,
         )
@@ -798,7 +797,9 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
 
         from yellowbrick.contrib.classifier import DecisionViz
 
-        assert ((not x or not y) or (x or y)), "Both x and y (feature 1 and 2) must be provided"
+        assert (not x or not y) or (
+            x or y
+        ), "Both x and y (feature 1 and 2) must be provided"
 
         if not x:
             features = [self.train_results.columns[0], self.train_results.columns[1]]
@@ -806,10 +807,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
             features = [x, y]
 
         viz = DecisionViz(
-            self.model,
-            title=title,
-            features=features,
-            classes = self.classes
+            self.model, title=title, features=features, classes=self.classes
         )
 
         viz.fit(self.x_train[features].values, self.y_train.values)

@@ -13,7 +13,6 @@ from aethos import groupby_analysis
 
 
 class Test_TestBase(unittest.TestCase):
-
     def test_setitem_constant(self):
 
         int_missing_data = [[1, 0, 0], [0, 2, 3], [0, 3, 4], [1, 2, 3]]
@@ -534,10 +533,18 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
-
     def test_pps_col(self):
 
-        int_missing_data = [[1, 0, 0], [0, 2, 1], [0, 3, 0], [1, 2, 0], [1, 0, 0], [0, 2, 1], [0, 3, 0], [1, 2, 0]]
+        int_missing_data = [
+            [1, 0, 0],
+            [0, 2, 1],
+            [0, 3, 0],
+            [1, 2, 0],
+            [1, 0, 0],
+            [0, 2, 1],
+            [0, 3, 0],
+            [1, 2, 0],
+        ]
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(int_missing_data, columns=columns)
 
@@ -546,7 +553,25 @@ class Test_TestBase(unittest.TestCase):
 
         self.assertTrue(True)
 
+    def test_interpret_data(self):
 
+        int_missing_data = [
+            [1, 0, 0],
+            [0, 2, 1],
+            [0, 3, 0],
+            [1, 2, 0],
+            [1, 0, 0],
+            [0, 2, 1],
+            [0, 3, 0],
+            [1, 2, 0],
+        ]
+        columns = ["col1", "col2", "col3"]
+        data = pd.DataFrame(int_missing_data, columns=columns)
+
+        clean = Analysis(x_train=data, target="col3", x_test=data)
+        clean.interpret_data()
+
+        self.assertTrue(True)
 
 
 if __name__ == "__main__":

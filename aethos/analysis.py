@@ -19,6 +19,7 @@ from aethos.util import (
     _get_attr_,
     _get_item_,
     _set_item_,
+    _interpret_data,
     label_encoder,
 )
 from aethos.visualizations.visualizations import Visualizations
@@ -516,6 +517,18 @@ class Analysis(Visualizations, Stats):
             pps.score(self.x_train, col, self.target)
         else:
             pps.matrix(self.x_train)
+
+    def interpret_data(self):
+        """
+        Interpret your data using MSFT Interpret dashboard.
+        """
+
+        if self.target:
+            _interpret_data(
+                self.x_train.drop(self.target, axis=1), self.y_train, show=True
+            )
+        else:
+            return "Unsupported without a target variable."
 
     def encode_target(self):
         """

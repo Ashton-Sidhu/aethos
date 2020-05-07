@@ -203,6 +203,20 @@ def split_data(df, split_percentage: float, target: str, problem: str):
     return x_train, x_test
 
 
+def _interpret_data(x_train, y_train, show=False):
+    """Helper function to interpret data using MSFT interpret"""
+
+    from interpret.data import Marginal
+    import interpret
+
+    marginal = Marginal().explain_data(x_train, y_train, name="Train Data")
+
+    if show:
+        interpret.show(marginal)
+
+    return marginal
+
+
 def _numeric_input_conditions(list_of_cols: list, x_train) -> list:
     """
     Helper function to help set variable values of numeric cleaning method functions.
