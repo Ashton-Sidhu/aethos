@@ -50,13 +50,13 @@ class ModelBase(object):
         problem = "c" if type(self).__name__ == "Classification" else "r"
 
         if isinstance(x_train, pd.DataFrame):
-            self.x_train = x_train
-            self.x_test = x_test
+            self._x_train = x_train
+            self._x_test = x_test
             self.target = target
             self.test_split_percentage = test_split_percentage
             self.target_mapping = None
 
-            if self.x_test is None and not type(self).__name__ == "Unsupervised":
+            if self._x_test is None and not type(self).__name__ == "Unsupervised":
                 # Generate train set and test set.
                 self.x_train, self.x_test = split_data(
                     self.x_train, test_split_percentage, self.target, problem
@@ -64,8 +64,8 @@ class ModelBase(object):
                 self.x_train = self.x_train.reset_index(drop=True)
                 self.x_test = self.x_test.reset_index(drop=True)
         else:
-            self.x_train = step.x_train
-            self.x_test = step.x_test
+            self._x_train = step.x_train
+            self._x_test = step.x_test
             self.test_split_percentage = step.test_split_percentage
             self.target = step.target
             self.target_mapping = step.target_mapping
@@ -111,9 +111,9 @@ class ModelBase(object):
     def __deepcopy__(self, memo):
 
         new_inst = type(self)(
-            x_train=self.x_train,
+            x_train=self._x_train,
             target=self.target,
-            x_test=self.x_test,
+            x_test=self._x_test,
             test_split_percentage=self.test_split_percentage,
             exp_name=self.exp_name,
         )
@@ -128,47 +128,62 @@ class ModelBase(object):
     def x_train(self):
         """x_train variable"""
 
-        if not type(self).__name__ == "Unsupervised":
-            cols = list(self.x_train.columns) - set([self.target])
-            cols.append(self.target)
-            data = self.x_train[cols]
-        else:
-            data = self.x_train
+        return self._x_train
 
-        return data
+    @x_train.setter
+    def x_train(self, val):
+        """x_train setter"""
+
+        self._x_train = val
 
     @property
     def x_test(self):
         """x_test variable"""
 
-        if not type(self).__name__ == "Unsupervised":
-            cols = list(self.x_train.columns) - set([self.target])
-            cols.append(self.target)
-            data = self.x_train[cols]
-        else:
-            data = "Test set does not exist for Unsupervised problems."
+        return self._x_test
 
-        return data
+    @x_test.setter
+    def x_test(self, val):
+        """x_test setter"""
+
+        self._x_test = val
 
     @property
     def features(self):
         """Features for modelling"""
 
-        return list(set(self.x_train.columns) - set([self.target]))
+        cols = self._x_train.columns.tolist()
+        cols.remove(self.target)
+        
+        return cols
 
     @property
     def train_data(self):
         """Training data used for modelling"""
 
-        return self.x_train[self.features]
+        return self._x_train[self.features]
+
+    @train_data.setter
+    def train_data(self, val):
+        """Setting for train_data"""
+
+        val[self.target] = self.y_train
+        self._x_train = val
 
     @property
     def test_data(self):
         """Testing data used to evaluate models"""
 
         return (
-            self.x_test[self.features] if self.x_test else "Test data does not exist."
+            self._x_test[self.features] if self._x_test is not None else None
         )
+
+    @test_data.setter
+    def test_data(self, val):
+        """Test data setter"""
+
+        val[self.target] = self.y_test
+        self._x_test = val
 
     @property
     def y_test(self):

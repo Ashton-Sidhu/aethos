@@ -74,15 +74,6 @@ class Analysis(Visualizations, Stats):
     def __getattr__(self, key):
         return _get_attr_(self, key)
 
-    # def __setattr__(self, item, value):
-
-    #     if item not in self.__dict__ or hasattr(
-    #         self, item
-    #     ):  # any normal attributes are handled normally
-    #         dict.__setattr__(self, item, value)
-    #     else:
-    #         self.__setitem__(item, value)
-
     def __deepcopy__(self, memo):
 
         new_inst = type(self)(

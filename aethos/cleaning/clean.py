@@ -34,14 +34,14 @@ class Clean(object):
         if threshold > 1 or threshold < 0:
             raise ValueError("Threshold cannot be greater than 1 or less than 0.")
 
-        criteria_meeting_columns = self.x_train.columns[
-            self.x_train.isnull().mean() < threshold
+        criteria_meeting_columns = self.train_data.columns[
+            self.train_data.isnull().mean() < threshold
         ]
 
-        self.x_train = self.x_train[criteria_meeting_columns]
+        self.train_data = self.train_data[criteria_meeting_columns]
 
-        if self.x_test is not None:
-            self.x_test[criteria_meeting_columns]
+        if self.test_data is not None:
+            self.test_data = self.test_data[criteria_meeting_columns]
 
         return self.copy()
 
@@ -62,14 +62,14 @@ class Clean(object):
         # If the number of unique values is not 0(all missing) or 1(constant or constant + missing)
         keep_columns = list(
             filter(
-                lambda x: self.x_train.nunique()[x] not in [0, 1], self.x_train.columns
+                lambda x: self.train_data.nunique()[x] not in [0, 1], self.train_data.columns
             )
         )
 
-        self.x_train = self.x_train[keep_columns]
+        self.train_data = self.train_data[keep_columns]
 
-        if self.x_test is not None:
-            self.x_test = self.x_test[keep_columns]
+        if self.test_data is not None:
+            self.test_data = self.test_data[keep_columns]
 
         return self.copy()
 
@@ -90,15 +90,15 @@ class Clean(object):
         # If the number of unique values is not 0(all missing) or 1(constant or constant + missing)
         keep_columns = list(
             filter(
-                lambda x: self.x_train.nunique()[x] != self.x_train.shape[0],
-                self.x_train.columns,
+                lambda x: self.train_data.nunique()[x] != self.train_data.shape[0],
+                self.train_data.columns,
             )
         )
 
-        self.x_train = self.x_train[keep_columns]
+        self.train_data = self.train_data[keep_columns]
 
-        if self.x_test is not None:
-            self.x_test = self.x_test[keep_columns]
+        if self.test_data is not None:
+            self.test_data = self.test_data[keep_columns]
 
         return self.copy()
 
@@ -125,13 +125,13 @@ class Clean(object):
         if threshold > 1 or threshold < 0:
             raise ValueError("Threshold cannot be greater than 1 or less than 0.")
 
-        self.x_train = self.x_train.dropna(
-            thresh=round(self.x_train.shape[1] * threshold), axis=0
+        self.train_data = self.train_data.dropna(
+            thresh=round(self.train_data.shape[1] * threshold), axis=0
         )
 
-        if self.x_test is not None:
-            self.x_test = self.x_test.dropna(
-                thresh=round(self.x_test.shape[1] * threshold), axis=0
+        if self.test_data is not None:
+            self.test_data = self.test_data.dropna(
+                thresh=round(self.test_data.shape[1] * threshold), axis=0
             )
 
         return self.copy()
@@ -168,9 +168,9 @@ class Clean(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = num.replace_missing_mean_median_mode(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        (self.train_data, self.test_data,) = num.replace_missing_mean_median_mode(
+            x_train=self.train_data,
+            x_test=self.test_data,
             list_of_cols=list_of_cols,
             strategy="mean",
         )
@@ -209,9 +209,9 @@ class Clean(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = num.replace_missing_mean_median_mode(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        (self.train_data, self.test_data,) = num.replace_missing_mean_median_mode(
+            x_train=self.train_data,
+            x_test=self.test_data,
             list_of_cols=list_of_cols,
             strategy="median",
         )
@@ -248,9 +248,9 @@ class Clean(object):
         ## If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = num.replace_missing_mean_median_mode(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        (self.train_data, self.test_data,) = num.replace_missing_mean_median_mode(
+            x_train=self.train_data,
+            x_test=self.test_data,
             list_of_cols=list_of_cols,
             strategy="most_frequent",
         )
@@ -300,21 +300,21 @@ class Clean(object):
             col_to_constant = _input_columns(list_args, list_of_cols)
 
         if isinstance(col_to_constant, dict):
-            self.x_train, self.x_test = cat.replace_missing_new_category(
-                x_train=self.x_train,
-                x_test=self.x_test,
+            self._x_train, self._x_test = cat.replace_missing_new_category(
+                x_train=self._x_train,
+                x_test=self._x_test,
                 col_to_category=col_to_constant,
             )
         elif isinstance(col_to_constant, list):
-            self.x_train, self.x_test = cat.replace_missing_new_category(
-                x_train=self.x_train,
-                x_test=self.x_test,
+            self._x_train, self._x_test = cat.replace_missing_new_category(
+                x_train=self._x_train,
+                x_test=self._x_test,
                 col_to_category=col_to_constant,
                 constant=constant,
             )
         else:
-            self.x_train, self.x_test = cat.replace_missing_new_category(
-                x_train=self.x_train, x_test=self.x_test, constant=constant,
+            self._x_train, self._x_test = cat.replace_missing_new_category(
+                x_train=self._x_train, x_test=self._x_test, constant=constant,
             )
 
         return self.copy()
@@ -364,9 +364,9 @@ class Clean(object):
             # If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_category = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = cat.replace_missing_new_category(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        self._x_train, self._x_test = cat.replace_missing_new_category(
+            x_train=self._x_train,
+            x_test=self._x_test,
             col_to_category=col_to_category,
             constant=new_category,
         )
@@ -401,10 +401,10 @@ class Clean(object):
         # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train = self.x_train.dropna(axis=0, subset=list_of_cols)
+        self._x_train = self._x_train.dropna(axis=0, subset=list_of_cols)
 
-        if self.x_test is not None:
-            self.x_test = self.x_test.dropna(axis=0, subset=list_of_cols)
+        if self._x_test is not None:
+            self._x_test = self._x_test.dropna(axis=0, subset=list_of_cols)
 
         return self.copy()
 
@@ -439,10 +439,10 @@ class Clean(object):
         # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train = self.x_train.drop_duplicates(list_of_cols)
+        self._x_train = self._x_train.drop_duplicates(list_of_cols)
 
-        if self.x_test is not None:
-            self.x_test = self.x_test.drop_duplicates(list_of_cols)
+        if self._x_test is not None:
+            self.test_data = self.test_data.drop_duplicates(list_of_cols)
 
         return self.copy()
 
@@ -460,10 +460,10 @@ class Clean(object):
         >>> data.drop_duplicate_columns()
         """
 
-        self.x_train = self.x_train.T.drop_duplicates().T
+        self.train_data = self.train_data.T.drop_duplicates().T
 
-        if self.x_test is not None:
-            self.x_test = self.x_test.T.drop_duplicates().T
+        if self.test_data is not None:
+            self.test_data = self.test_data.T.drop_duplicates().T
 
         return self.copy()
 
@@ -500,21 +500,21 @@ class Clean(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
-            probabilities = self.x_train[col].value_counts(normalize=True)
+            probabilities = self._x_train[col].value_counts(normalize=True)
 
-            missing_data = self.x_train[col].isnull()
-            self.x_train.loc[missing_data, col] = np.random.choice(
+            missing_data = self._x_train[col].isnull()
+            self._x_train.loc[missing_data, col] = np.random.choice(
                 probabilities.index,
-                size=len(self.x_train[missing_data]),
+                size=len(self._x_train[missing_data]),
                 replace=True,
                 p=probabilities.values,
             )
 
-            if self.x_test is not None:
-                missing_data = self.x_test[col].isnull()
-                self.x_test.loc[missing_data, col] = np.random.choice(
+            if self._x_test is not None:
+                missing_data = self._x_test[col].isnull()
+                self._x_test.loc[missing_data, col] = np.random.choice(
                     probabilities.index,
-                    size=len(self.x_test[missing_data]),
+                    size=len(self._x_test[missing_data]),
                     replace=True,
                     p=probabilities.values,
                 )
@@ -568,19 +568,19 @@ class Clean(object):
         """
 
         neighbors = knn_kwargs.pop("n_neighbors", 5)
-        columns = self.x_train.columns
+        columns = self.train_data.columns
         knn = KNNImputer(n_neighbors=neighbors, **knn_kwargs)
 
-        train_knn_transformed = knn.fit_transform(self.x_train.values)
+        train_knn_transformed = knn.fit_transform(self.train_data.values)
 
-        if self.x_test is not None:
+        if self.test_data is not None:
             warnings.warn(
                 "If your test data does not come from the same distribution of the training data, it may lead to erroneous results."
             )
-            test_knn_transformed = knn.fit_transform(self.x_test.values)
+            test_knn_transformed = knn.fit_transform(self.test_data.values)
 
-        self.x_train = pd.DataFrame(data=train_knn_transformed, columns=columns)
-        self.x_test = pd.DataFrame(data=test_knn_transformed, columns=columns)
+        self.train_data = pd.DataFrame(data=train_knn_transformed, columns=columns)
+        self.test_data = pd.DataFrame(data=test_knn_transformed, columns=columns)
 
         return self.copy()
 
@@ -640,15 +640,15 @@ class Clean(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
-            self.x_train[col] = self.x_train[col].interpolate(
+            self._x_train[col] = self._x_train[col].interpolate(
                 method=method, **inter_kwargs
             )
 
-            if self.x_test is not None:
+            if self._x_test is not None:
                 warnings.warn(
                     "If test data does not come from the same distribution of the training data, it may lead to erroneous results."
                 )
-                self.x_test[col] = self.x_test[col].interpolate(
+                self._x_test[col] = self._x_test[col].interpolate(
                     method=method, **inter_kwargs
                 )
 
@@ -683,9 +683,9 @@ class Clean(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = util.replace_missing_fill(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        (self._x_train, self._x_test,) = util.replace_missing_fill(
+            x_train=self._x_train,
+            x_test=self._x_test,
             list_of_cols=list_of_cols,
             method="bfill",
             **extra_kwargs
@@ -722,9 +722,9 @@ class Clean(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = util.replace_missing_fill(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        (self._x_train, self._x_test,) = util.replace_missing_fill(
+            x_train=self._x_train,
+            x_test=self._x_test,
             list_of_cols=list_of_cols,
             method="ffill",
             **extra_kwargs
@@ -777,21 +777,21 @@ class Clean(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
-            self.x_train[col + "_missing"] = [
+            self._x_train[col + "_missing"] = [
                 missing_indicator if x else valid_indicator
-                for x in self.x_train[col].isnull()
+                for x in self._x_train[col].isnull()
             ]
 
             if not keep_col:
-                self.x_train = self.x_train.drop([col], axis=1)
+                self._x_train = self._x_train.drop([col], axis=1)
 
-            if self.x_test is not None:
-                self.x_test[col + "_missing"] = [
+            if self._x_test is not None:
+                self._x_test[col + "_missing"] = [
                     missing_indicator if x else valid_indicator
-                    for x in self.x_test[col].isnull()
+                    for x in self._x_test[col].isnull()
                 ]
 
                 if not keep_col:
-                    self.x_test = self.x_test.drop([col], axis=1)
+                    self._x_test = self._x_test.drop([col], axis=1)
 
         return self.copy()
