@@ -38,3 +38,4 @@ transformers
 tensorflow
 statsmodels
 ppscore
+autoviz
