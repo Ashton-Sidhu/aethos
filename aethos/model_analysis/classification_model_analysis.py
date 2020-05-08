@@ -735,7 +735,12 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         print(classification_report)
 
     def cross_validate(
-        self, cv_type="kfold", score="accuracy", n_splits=5, shuffle=False, **kwargs
+        self,
+        cv_type="strat-kfold",
+        score="accuracy",
+        n_splits=5,
+        shuffle=False,
+        **kwargs
     ):
         """
         Runs cross validation on a Classification model.

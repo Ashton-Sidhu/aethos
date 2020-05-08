@@ -31,7 +31,6 @@ Aethos is a library/platform that automates your data science and analytical tas
 Aethos provides:
 
   - Automated data science cleaning, preprocessing, feature engineering and modelling techniques through one line of code
-  - Automated reporting - as you perform your analysis, a report is created along side with it
   - Automated visualizations through one line of code
   - Reusable code - no more copying code from notebook to notebook
   - Automated dependency and corpus management
@@ -85,12 +84,34 @@ Currently the following options are:
   - `interactive_table`: Interactive grid with Itable - comes with built in client side searching
   - `project_metrics`: Setting project metrics
     - Project metrics is a metric or set of metrics to evaluate models.
-  - `word_report`: Writes report to a word document as well as the .txt file
   - `track_experiments`: Uses MLFlow to track models and experiments.
 
-User options such as changing the directory where images, reports, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
+User options such as changing the directory where images, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
 
-This location is also the default location of where any images, reports and projects are stored.
+This location is also the default location of where any images, and projects are stored.
+
+***New in 2.0***
+
+The Data and Model objects no longer exist but instead there a multiple objects you can use with more of a purpose.
+
+Analysis - Used to analyze, visualize and run statistical models (t-tests, anovas, etc.)
+
+Classification - Used to analyze, visualize, run statistical models and train classification models.
+
+Regression - Used to analyze, visualize, run statistical models and train regression models.
+
+Unsupervised - Used to analyze, visualize, run statistical models and train unsupervised models.
+
+ClassificationModelAnalysis - Used to analyze, interpret and visualize results of a Classification model.
+
+RegressionModelAnalysis - Used to analyze, interpret and visualize results of a Regression model.
+
+UnsupervisedModelAnalysis - Used to analyze, interpret and visualize results of a Unsupervised model.
+
+TextModelAnalysis - Used to analyze, interpret and visualize results of a Text model.
+
+Now all modelling and anlysis can be achieved via one object.
+
 
 ### Analysis
 
@@ -102,9 +123,9 @@ x_train = pd.read_csv('data/train.csv') # load data into pandas
 
 # Initialize Data object with training data
 # By default, if no test data (x_test) is provided, then the data is split with 20% going to the test set
+# 
 # Specify predictor field as 'Survived'
-# Specify report name
-df = at.Data(x_train, target_field='Survived', report_name='Titanic')
+df = at.Classification(x_train, target='Survived')
 
 df.x_train # View your training data
 df.x_test # View your testing data
@@ -129,6 +150,10 @@ df.mean() # Run pandas functions on the aethos objects
 df.missing_data # View your missing data at anytime
 
 df.correlation_matrix() # Generate a correlation matrix for your training data
+
+df.predictive_power() # Calculates the predictive power of each variable
+
+df.autoviz() # Runs autoviz on the data and runs EDA on your data
 
 df.pairplot() # Generate pairplots for your training data features at any time
 
@@ -155,17 +180,16 @@ As you've started to notice, alot of tasks to df the data and to explore the dat
 
 ```python
 # Create a barplot of the mean surivial rate grouped by age.
-df.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') 
+df.barplot(x='Age', y='Survived', method='mean')
+
+# Plots a scatter plot of Age vs. Fare and colours the dots based off the Survived column.
+df.scatterplot(x='Age', y='Fare', category='Survived')
 
 # One hot encode the `Person` and `Embarked` columns and then drop the original columns
 df.onehot_encode('Person', 'Embarked', drop_col=True) 
 ```
 
 ### Modelling
-
-```python
-model = at.Model(df)
-```
 
 #### Running a Single Model
 
@@ -174,19 +198,21 @@ Models can be trained one at a time or multiple at a time. They can also be trai
 After a model has been ran, it comes with use cases such as plotting RoC curves, calculating performance metrics, confusion matrices, SHAP plots, decision tree plots and other local and global model interpretability use cases.
 
 ```python
-lr_model = model.LogisticRegression(random_state=42) # Train a logistic regression model
+lr_model = df.LogisticRegression(random_state=42) # Train a logistic regression model
 
 # Train a logistic regression model with gridsearch
-lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42)
+lr_model = df.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42)
 
-# Crossvalidatea a logistic regression model, displays the scores and the learning curve and builds the model
-lr_model = model.LogisticRegression(cv=5, n_splits=10)
+# Crossvalidate a a logistic regression model, displays the scores and the learning curve and builds the model
+lr_model = df.LogisticRegression()
+lr_model.cross_validate(cv_type="strat-kfold", n_splits=10) # default is strat-kfold for classification  problems
 
 # Build a Logistic Regression model with Gridsearch and then cross validates the best model using stratified K-Fold cross validation.
-lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv='strat-kfold', n_splits=10) 
+lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv_type="strat-kfold") 
 
 lr_model.metrics() # Views all metrics for the model
 lr_model.confusion_matrix()
+lr_model.decision_boundary()
 lr_model.roc_curve()
 ```
 
@@ -194,20 +220,20 @@ lr_model.roc_curve()
 
 ```python
 # Add a Logistic Regression, Random Forest Classification and a XGBoost Classification model to the queue.
-model.LogisticRegression(random_state=42, model_name='log_reg', run=False)
-model.RandomForestClassification(run=False)
-model.XGBoostClassification(run=False)
+lr = df.LogisticRegression(random_state=42, model_name='log_reg', run=False)
+rf = df.RandomForestClassification(run=False)
+xgbc = df.XGBoostClassification(run=False)
 
-model.run_models() # This will run all queued models in parallel
-model.run_models(method='series') # Run each model one after the other
+df.run_models() # This will run all queued models in parallel
+df.run_models(method='series') # Run each model one after the other
 
-model.compare_models() # This will display each model evaluated against every metric
+df.compare_models() # This will display each model evaluated against every metric
 
 # Every model is accessed by a unique name that is assiged when you run the model.
 # Default model names can be seen in the function header of each model.
 
-model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
-model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
+df.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
+df.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
 ```
 
 #### Using Pretrained Models
@@ -215,10 +241,10 @@ model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random for
 Currently you can use pretrained models such as BERT, XLNet, AlBERT, etc. to calculate sentiment and answer questions.
 
 ```python
-model.pretrained_sentiment_analysis(`text_column`)
+df.pretrained_sentiment_analysis(`text_column`)
 
 # To answer questions, context for the question has to be supplied
-model.pretrained_question_answer(`context_column`, `question_column`)
+df.pretrained_question_answer(`context_column`, `question_column`)
 ```
 
 ### Model Interpretability
