@@ -386,27 +386,6 @@ Community credits go to:
 
 ## For Developers
 
-### Contributing data analysis techniques
-
-  1. The code for the transformation belongs in the `numeric`, `categorical`, etc. file for the stage it belongs.
-  2. In the stage.py (`clean.py`, `preprocess.py`, etc. ) file, call the analytical method as well as add the reporting code
-  3. Add a description for the technique in the `aethos/config/technique_reasons.yml` file.
-  4. Write the unit test in the `test_unittest.py` file in the stage folder.
-
-### Contributing models
-
-  1. Define the model as its own function in `model.py`
-  2. The import statements happen within the function.
-  3. Call the approriate `_run_` function (supervised or unsupervised)
-      - Text models go in text.py and call them from model.py
-  4. Add the model type to the dictionaries `SHAP_LEARNER` AND `PROBLEM_TYPE` dict in `model/constants.py`
-  5. Write the unittest in `test_unittest.py`
-
-### Contributing model analysis use cases
-
-  1. Generic model analysis goes in `model_analysis.py`
-  2. Model interpretability goes in `model_explanation.py`
-
 To install packages `pip3 install -r requirements-dev.txt`
 
 To run tests `python3 -m unittest discover aethos/`
