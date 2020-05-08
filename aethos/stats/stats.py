@@ -56,7 +56,7 @@ class Stats(object):
 
         print(classification_report(data["label"].tolist(), predictions))
 
-        return self.copy()
+        return self
 
     def ks_feature_distribution(self, threshold=0.1, show_plots=True):
         """

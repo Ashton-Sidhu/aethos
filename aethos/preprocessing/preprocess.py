@@ -67,7 +67,7 @@ class Preprocess(object):
             **normalize_params,
         )
 
-        return self.copy()
+        return self
 
     def normalize_quantile_range(self, *list_args, list_of_cols=[], **robust_params):
         """
@@ -130,7 +130,7 @@ class Preprocess(object):
             **robust_params,
         )
 
-        return self.copy()
+        return self
 
     def normalize_log(self, *list_args, list_of_cols=[], base=1):
         """
@@ -179,7 +179,7 @@ class Preprocess(object):
             if self.x_test is not None:
                 self.x_test[col] = log(self.x_test[col])
 
-        return self.copy()
+        return self
 
     def split_sentences(self, *list_args, list_of_cols=[], new_col_name="_sentences"):
         """
@@ -223,7 +223,7 @@ class Preprocess(object):
                     map(sent_tokenize, self.x_test[col])
                 )
 
-        return self.copy()
+        return self
 
     def stem_nltk(
         self, *list_args, list_of_cols=[], stemmer="porter", new_col_name="_stemmed"
@@ -281,7 +281,7 @@ class Preprocess(object):
             if self.x_test is not None:
                 self.x_test[new_col_name] = pd.Series(map(func, self.x_test[col]))
 
-        return self.copy()
+        return self
 
     def split_words_nltk(
         self, *list_args, list_of_cols=[], regexp="", new_col_name="_tokenized"
@@ -343,7 +343,7 @@ class Preprocess(object):
                         map(tokenizer.tokenize, self.x_test[col])
                     )
 
-        return self.copy()
+        return self
 
     def remove_stopwords_nltk(
         self, *list_args, list_of_cols=[], custom_stopwords=[], new_col_name="_rem_stop"
@@ -417,7 +417,7 @@ class Preprocess(object):
                     )
                 )
 
-        return self.copy()
+        return self
 
     def remove_punctuation(
         self,
@@ -504,7 +504,7 @@ class Preprocess(object):
                         map(lambda x: " ".join(tokenizer.tokenize(x)), self.x_test[col])
                     )
 
-        return self.copy()
+        return self
 
     def remove_numbers(self, *list_args, list_of_cols=[], new_col_name="_rem_num"):
         """
@@ -552,7 +552,7 @@ class Preprocess(object):
                     )
                 )
 
-        return self.copy()
+        return self
 
     def clean_text(
         self,
@@ -643,7 +643,7 @@ class Preprocess(object):
                     for txt in self.x_test[col]
                 ]
 
-        return self.copy()
+        return self
 
     def _apply_text_method(self, text_data, transformer=None):
         """

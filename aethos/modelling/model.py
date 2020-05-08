@@ -113,10 +113,12 @@ class ModelBase(object):
 
     def __deepcopy__(self, memo):
 
+        x_test = self.x_test.copy() if self.x_test is not None else None
+
         new_inst = type(self)(
-            x_train=self.x_train,
+            x_train=self.x_train.copy(),
             target=self.target,
-            x_test=self.x_test,
+            x_test=x_test,
             test_split_percentage=self.test_split_percentage,
             exp_name=self.exp_name,
         )

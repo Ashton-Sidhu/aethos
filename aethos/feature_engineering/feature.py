@@ -104,7 +104,7 @@ class Feature(object):
                 self.x_test, list_of_cols, enc_test_df, keep_col
             )
 
-        return self.copy()
+        return self
 
     def tfidf(self, *list_args, list_of_cols=[], keep_col=True, **tfidf_kwargs):
         """
@@ -250,7 +250,7 @@ class Feature(object):
                     self.x_test, col, enc_test_df, keep_col
                 )
 
-        return self.copy()
+        return self
 
     def bag_of_words(self, *list_args, list_of_cols=[], keep_col=True, **bow_kwargs):
         """
@@ -378,7 +378,7 @@ class Feature(object):
                     self.x_test, col, enc_test_df, keep_col
                 )
 
-        return self.copy()
+        return self
 
     def text_hash(self, *list_args, list_of_cols=[], keep_col=True, **hash_kwargs):
         """
@@ -445,7 +445,7 @@ class Feature(object):
                     self.x_test, col, enc_test_df, keep_col
                 )
 
-        return self.copy()
+        return self
 
     def postag_nltk(self, *list_args, list_of_cols=[], new_col_name="_postagged"):
         """
@@ -486,7 +486,7 @@ class Feature(object):
             new_col_name=new_col_name,
         )
 
-        return self.copy()
+        return self
 
     def postag_spacy(self, *list_args, list_of_cols=[], new_col_name="_postagged"):
         """
@@ -527,7 +527,7 @@ class Feature(object):
             method="s",
         )
 
-        return self.copy()
+        return self
 
     def postag_spacy_detailed(
         self, *list_args, list_of_cols=[], new_col_name="_postagged"
@@ -570,7 +570,7 @@ class Feature(object):
             method="d",
         )
 
-        return self.copy()
+        return self
 
     def nounphrases_nltk(self, *list_args, list_of_cols=[], new_col_name="_phrases"):
         """
@@ -609,7 +609,7 @@ class Feature(object):
             new_col_name=new_col_name,
         )
 
-        return self.copy()
+        return self
 
     def nounphrases_spacy(self, *list_args, list_of_cols=[], new_col_name="_phrases"):
         """
@@ -667,7 +667,7 @@ class Feature(object):
                     )
                 )
 
-        return self.copy()
+        return self
 
     def polynomial_features(self, *list_args, list_of_cols=[], **poly_kwargs):
         """
@@ -719,7 +719,7 @@ class Feature(object):
                 self.x_test, list_of_cols, scaled_test_df
             )
 
-        return self.copy()
+        return self
 
     def apply(self, func, output_col: str):
         """
@@ -763,7 +763,7 @@ class Feature(object):
                 func, axis=1
             )
 
-        return self.copy()
+        return self
 
     def ordinal_encode_labels(self, col: str, ordered_cat=[]):
         """
@@ -802,7 +802,7 @@ class Feature(object):
         if self.x_test is not None:
             self.x_test[col] = enc.transform(self.x_test[col].values.reshape(-1, 1))
 
-        return self.copy()
+        return self
 
     def pca(self, n_components=10, **pca_kwargs):
         """
@@ -865,7 +865,7 @@ class Feature(object):
 
         self._run_sklearn_dim_reduction("pca", n_components=n_components, **pca_kwargs)
 
-        return self.copy()
+        return self
 
     def truncated_svd(self, n_components=50, **svd_kwargs):
         """
@@ -910,7 +910,7 @@ class Feature(object):
 
         self._run_sklearn_dim_reduction("tsvd", n_components=n_components, **svd_kwargs)
 
-        return self.copy()
+        return self
 
     def drop_correlated_features(self, threshold=0.95):
         """
@@ -940,7 +940,7 @@ class Feature(object):
         if self.x_test is not None:
             self.x_test.drop(drop_cols, axis=1, inplace=True)
 
-        return self.copy()
+        return self
 
     def chi2_feature_selection(self, k: int, verbose=False):
         """
@@ -995,7 +995,7 @@ class Feature(object):
         if self.x_test is not None:
             self.x_test[self.target] = y_test
 
-        return self.copy()
+        return self
 
     def _run_sklearn_dim_reduction(self, algo: str, n_components, **kwargs):
         """

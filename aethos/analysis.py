@@ -72,8 +72,10 @@ class Analysis(Visualizations, Stats):
 
     def __deepcopy__(self, memo):
 
+        x_test = self.x_test.copy() if self.x_test is not None else None
+
         new_inst = type(self)(
-            x_train=self.x_train, x_test=self.x_test, target=self.target,
+            x_train=self.x_train.copy(), x_test=x_test, target=self.target,
         )
 
         new_inst.target_mapping = self.target_mapping
@@ -245,7 +247,7 @@ class Analysis(Visualizations, Stats):
         if self.x_test is not None:
             self.x_test.rename(columns=new_column_names, inplace=True)
 
-        return self.copy()
+        return self
 
     def expand_json_column(self, col):
         """
@@ -277,7 +279,7 @@ class Analysis(Visualizations, Stats):
             self.x_test.drop(col, axis=1, inplace=True)
             self.x_test = pd.concat([self.x_test, df], axis=1)
 
-        return self.copy()
+        return self
 
     def data_report(self, title="Profile Report", output_file="", suppress=False):
         """
@@ -536,7 +538,7 @@ class Analysis(Visualizations, Stats):
         if self.x_test is not None:
             self.x_test = self.x_test.drop(drop_columns, axis=1)
 
-        return self.copy()
+        return self
 
     def predictive_power(self, col=None):
         """
@@ -639,7 +641,7 @@ class Analysis(Visualizations, Stats):
         for k, v in self.target_mapping.items():
             print(f"{k}: {v}")
 
-        return self.copy()
+        return self
 
     def to_csv(self, name: str, index=False, **kwargs):
         """

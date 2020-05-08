@@ -43,7 +43,7 @@ class Clean(object):
         if self.test_data is not None:
             self.test_data = self.test_data[criteria_meeting_columns]
 
-        return self.copy()
+        return self
 
     def drop_constant_columns(self):
         """
@@ -74,7 +74,7 @@ class Clean(object):
         if self.test_data is not None:
             self.test_data = self.test_data[keep_columns]
 
-        return self.copy()
+        return self
 
     def drop_unique_columns(self):
         """
@@ -103,7 +103,7 @@ class Clean(object):
         if self.test_data is not None:
             self.test_data = self.test_data[keep_columns]
 
-        return self.copy()
+        return self
 
     def drop_rows_missing_threshold(self, threshold: float):
         """
@@ -137,7 +137,7 @@ class Clean(object):
                 thresh=round(self.test_data.shape[1] * threshold), axis=0
             )
 
-        return self.copy()
+        return self
 
     def replace_missing_mean(self, *list_args, list_of_cols=[]):
         """
@@ -178,7 +178,7 @@ class Clean(object):
             strategy="mean",
         )
 
-        return self.copy()
+        return self
 
     def replace_missing_median(self, *list_args, list_of_cols=[]):
         """
@@ -219,7 +219,7 @@ class Clean(object):
             strategy="median",
         )
 
-        return self.copy()
+        return self
 
     def replace_missing_mostcommon(self, *list_args, list_of_cols=[]):
         """
@@ -258,7 +258,7 @@ class Clean(object):
             strategy="most_frequent",
         )
 
-        return self.copy()
+        return self
 
     def replace_missing_constant(
         self, *list_args, list_of_cols=[], constant=0, col_mapping=None
@@ -320,7 +320,7 @@ class Clean(object):
                 x_train=self.x_train, x_test=self.x_test, constant=constant,
             )
 
-        return self.copy()
+        return self
 
     def replace_missing_new_category(
         self, *list_args, list_of_cols=[], new_category=None, col_mapping=None
@@ -374,7 +374,7 @@ class Clean(object):
             constant=new_category,
         )
 
-        return self.copy()
+        return self
 
     def replace_missing_remove_row(self, *list_args, list_of_cols=[]):
         """
@@ -409,7 +409,7 @@ class Clean(object):
         if self.x_test is not None:
             self.x_test = self.x_test.dropna(axis=0, subset=list_of_cols)
 
-        return self.copy()
+        return self
 
     def drop_duplicate_rows(self, *list_args, list_of_cols=[]):
         """
@@ -447,7 +447,7 @@ class Clean(object):
         if self.x_test is not None:
             self.test_data = self.test_data.drop_duplicates(list_of_cols)
 
-        return self.copy()
+        return self
 
     def drop_duplicate_columns(self):
         """
@@ -468,7 +468,7 @@ class Clean(object):
         if self.test_data is not None:
             self.test_data = self.test_data.T.drop_duplicates().T
 
-        return self.copy()
+        return self
 
     def replace_missing_random_discrete(self, *list_args, list_of_cols=[]):
         """
@@ -522,7 +522,7 @@ class Clean(object):
                     p=probabilities.values,
                 )
 
-        return self.copy()
+        return self
 
     def replace_missing_knn(self, k=5, **knn_kwargs):
         """
@@ -585,7 +585,7 @@ class Clean(object):
         self.train_data = pd.DataFrame(data=train_knn_transformed, columns=columns)
         self.test_data = pd.DataFrame(data=test_knn_transformed, columns=columns)
 
-        return self.copy()
+        return self
 
     def replace_missing_interpolate(
         self, *list_args, list_of_cols=[], method="linear", **inter_kwargs
@@ -655,7 +655,7 @@ class Clean(object):
                     method=method, **inter_kwargs
                 )
 
-        return self.copy()
+        return self
 
     def replace_missing_backfill(self, *list_args, list_of_cols=[], **extra_kwargs):
         """
@@ -694,7 +694,7 @@ class Clean(object):
             **extra_kwargs,
         )
 
-        return self.copy()
+        return self
 
     def replace_missing_forwardfill(self, *list_args, list_of_cols=[], **extra_kwargs):
         """
@@ -733,7 +733,7 @@ class Clean(object):
             **extra_kwargs,
         )
 
-        return self.copy()
+        return self
 
     def replace_missing_indicator(
         self,
@@ -797,4 +797,4 @@ class Clean(object):
                 if not keep_col:
                     self.x_test = self.x_test.drop([col], axis=1)
 
-        return self.copy()
+        return self
