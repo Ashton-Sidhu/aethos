@@ -46,29 +46,21 @@ class ModelBase(object):
         self._queued_models = {}
         self.exp_name = exp_name
 
-        step = x_train
         problem = "c" if type(self).__name__ == "Classification" else "r"
 
-        if isinstance(x_train, pd.DataFrame):
-            self.x_train = x_train
-            self.x_test = x_test
-            self.target = target
-            self.test_split_percentage = test_split_percentage
-            self.target_mapping = None
+        self.x_train = x_train
+        self.x_test = x_test
+        self.target = target
+        self.test_split_percentage = test_split_percentage
+        self.target_mapping = None
 
-            if self.x_test is None and not type(self).__name__ == "Unsupervised":
-                # Generate train set and test set.
-                self.x_train, self.x_test = split_data(
-                    self.x_train, test_split_percentage, self.target, problem
-                )
-                self.x_train = self.x_train.reset_index(drop=True)
-                self.x_test = self.x_test.reset_index(drop=True)
-        else:
-            self.x_train = step.x_train
-            self.x_test = step.x_test
-            self.test_split_percentage = step.test_split_percentage
-            self.target = step.target
-            self.target_mapping = step.target_mapping
+        if self.x_test is None and not type(self).__name__ == "Unsupervised":
+            # Generate train set and test set.
+            self.x_train, self.x_test = split_data(
+                self.x_train, test_split_percentage, self.target, problem
+            )
+            self.x_train = self.x_train.reset_index(drop=True)
+            self.x_test = self.x_test.reset_index(drop=True)
 
     def __getitem__(self, key):
 
