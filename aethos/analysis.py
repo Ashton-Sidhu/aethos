@@ -18,7 +18,6 @@ from aethos.util import (
     _get_columns,
     _get_attr_,
     _get_item_,
-    _set_item_,
     _interpret_data,
     label_encoder,
 )
@@ -56,14 +55,17 @@ class Analysis(Visualizations, Stats):
     def __repr__(self):
         return self.x_train.to_string()
 
-    def _repr_html_(self):
-        return self.x_train._repr_html_()  # pragma: no cover
+    def _repr_html_(self):  # pragma: no cover
+
+        if self.target:
+            cols = self.features + [self.target]
+        else:
+            cols = self.features
+
+        return self.x_train[cols]._repr_html_()
 
     def __getitem__(self, column):
         return _get_item_(self, column)
-
-    def __setitem__(self, column, value):
-        _set_item_(self, column, value)
 
     def __getattr__(self, key):
         return _get_attr_(self, key)
@@ -77,6 +79,45 @@ class Analysis(Visualizations, Stats):
         new_inst.target_mapping = self.target_mapping
 
         return new_inst
+
+    @property
+    def features(self):
+        """Features for modelling"""
+
+        cols = self.x_train.columns.tolist()
+
+        if self.target:
+            cols.remove(self.target)
+
+        return cols
+
+    @property
+    def y_test(self):
+        """
+        Property function for the testing predictor variable
+        """
+
+        if self.x_test is not None:
+            if self.target:
+                return self.x_test[self.target]
+            else:
+                return None
+        else:
+            return None
+
+    @y_test.setter
+    def y_test(self, value):
+        """
+        Setter function for the testing predictor variable
+        """
+
+        if self.x_test is not None:
+            if self.target:
+                self.x_test[self.target] = value
+            else:
+                self.target = "label"
+                self.x_test["label"] = value
+                print('Added a target (predictor) field (column) named "label".')
 
     @property
     def y_train(self):

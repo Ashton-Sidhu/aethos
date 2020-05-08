@@ -87,21 +87,21 @@ class Feature(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         enc = OneHotEncoder(handle_unknown="ignore", **onehot_kwargs)
-        list_of_cols = _get_columns(list_of_cols, self._x_train)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        enc_data = enc.fit_transform(self._x_train[list_of_cols]).toarray()
+        enc_data = enc.fit_transform(self.x_train[list_of_cols]).toarray()
         enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols))
-        self._x_train = drop_replace_columns(
-            self._x_train, list_of_cols, enc_df, keep_col
+        self.x_train = drop_replace_columns(
+            self.x_train, list_of_cols, enc_df, keep_col
         )
 
-        if self._x_test is not None:
-            enc_test = enc.transform(self._x_test[list_of_cols]).toarray()
+        if self.x_test is not None:
+            enc_test = enc.transform(self.x_test[list_of_cols]).toarray()
             enc_test_df = pd.DataFrame(
                 enc_test, columns=enc.get_feature_names(list_of_cols)
             )
-            self._x_test = drop_replace_columns(
-                self._x_test, list_of_cols, enc_test_df, keep_col
+            self.x_test = drop_replace_columns(
+                self.x_test, list_of_cols, enc_test_df, keep_col
             )
 
         return self.copy()
@@ -236,18 +236,18 @@ class Feature(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         enc = TfidfVectorizer(**tfidf_kwargs)
-        list_of_cols = _get_columns(list_of_cols, self._x_train)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
         for col in list_of_cols:
-            enc_data = enc.fit_transform(self._x_train[col]).toarray()
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
             enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
-            self._x_train = drop_replace_columns(self._x_train, col, enc_df, keep_col)
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
 
-            if self._x_test is not None:
-                enc_test = enc.transform(self._x_test[col]).toarray()
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
                 enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names())
-                self._x_test = drop_replace_columns(
-                    self._x_test, col, enc_test_df, keep_col
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
                 )
 
         return self.copy()
@@ -364,18 +364,18 @@ class Feature(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         enc = CountVectorizer(**bow_kwargs)
-        list_of_cols = _get_columns(list_of_cols, self._x_train)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
         for col in list_of_cols:
-            enc_data = enc.fit_transform(self._x_train[col]).toarray()
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
             enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
-            self._x_train = drop_replace_columns(self._x_train, col, enc_df, keep_col)
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
 
-            if self._x_test is not None:
-                enc_test = enc.transform(self._x_test[col]).toarray()
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
                 enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names())
-                self._x_test = drop_replace_columns(
-                    self._x_test, col, enc_test_df, keep_col
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
                 )
 
         return self.copy()
@@ -431,18 +431,18 @@ class Feature(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         enc = HashingVectorizer(**hash_kwargs)
-        list_of_cols = _get_columns(list_of_cols, self._x_train)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
         for col in list_of_cols:
-            enc_data = enc.fit_transform(self._x_train[col]).toarray()
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
             enc_df = pd.DataFrame(enc_data)
-            self._x_train = drop_replace_columns(self._x_train, col, enc_df, keep_col)
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
 
-            if self._x_test is not None:
-                enc_test = enc.transform(self._x_test[col]).toarray()
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
                 enc_test_df = pd.DataFrame(enc_test)
-                self._x_test = drop_replace_columns(
-                    self._x_test, col, enc_test_df, keep_col
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
                 )
 
         return self.copy()
@@ -478,9 +478,9 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self._x_train, self._x_test,) = text.textblob_features(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        (self.x_train, self.x_test,) = text.textblob_features(
+            x_train=self.x_train,
+            x_test=self.x_test,
             feature="tags",
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
@@ -519,9 +519,9 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self._x_train, self._x_test,) = text.spacy_feature_postag(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        (self.x_train, self.x_test,) = text.spacy_feature_postag(
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
             method="s",
@@ -562,9 +562,9 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self._x_train, self._x_test,) = text.spacy_feature_postag(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        (self.x_train, self.x_test,) = text.spacy_feature_postag(
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
             method="d",
@@ -601,9 +601,9 @@ class Feature(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self._x_train, self._x_test,) = text.textblob_features(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        (self.x_train, self.x_test,) = text.textblob_features(
+            x_train=self.x_train,
+            x_test=self.x_test,
             feature="noun_phrases",
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
@@ -641,7 +641,7 @@ class Feature(object):
         import spacy
 
         list_of_cols = _input_columns(list_args, list_of_cols)
-        list_of_cols = _get_columns(list_of_cols, self._x_train)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
         nlp = spacy.load("en")
 
@@ -650,17 +650,17 @@ class Feature(object):
             if new_col_name.startswith("_"):
                 new_col_name = col + new_col_name
 
-            transformed_text = list(map(nlp, self._x_train[col]))
-            self._x_train[new_col_name] = pd.Series(
+            transformed_text = list(map(nlp, self.x_train[col]))
+            self.x_train[new_col_name] = pd.Series(
                 map(
                     lambda x: [str(phrase) for phrase in x.noun_chunks],
                     transformed_text,
                 )
             )
 
-            if self._x_test is not None:
-                transformed_text = map(nlp, self._x_test[col])
-                self._x_test[new_col_name] = pd.Series(
+            if self.x_test is not None:
+                transformed_text = map(nlp, self.x_test[col])
+                self.x_test[new_col_name] = pd.Series(
                     map(
                         lambda x: [str(phrase) for phrase in x.noun_chunks],
                         transformed_text,
@@ -706,17 +706,17 @@ class Feature(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         poly = PolynomialFeatures(**poly_kwargs)
-        list_of_cols = _numeric_input_conditions(list_of_cols, self._x_train)
+        list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
 
-        scaled_data = poly.fit_transform(self._x_train[list_of_cols])
+        scaled_data = poly.fit_transform(self.x_train[list_of_cols])
         scaled_df = pd.DataFrame(scaled_data, columns=poly.get_feature_names())
-        self._x_train = drop_replace_columns(self._x_train, list_of_cols, scaled_df)
+        self.x_train = drop_replace_columns(self.x_train, list_of_cols, scaled_df)
 
-        if self._x_test is not None:
-            scaled_test = poly.transform(self._x_test)
+        if self.x_test is not None:
+            scaled_test = poly.transform(self.x_test)
             scaled_test_df = pd.DataFrame(scaled_test, columns=poly.get_feature_names())
-            self._x_test = drop_replace_columns(
-                self._x_test, list_of_cols, scaled_test_df
+            self.x_test = drop_replace_columns(
+                self.x_test, list_of_cols, scaled_test_df
             )
 
         return self.copy()
@@ -754,12 +754,12 @@ class Feature(object):
 
         import swifter
 
-        self._x_train.loc[:, output_col] = self._x_train.swifter.progress_bar().apply(
+        self.x_train.loc[:, output_col] = self.x_train.swifter.progress_bar().apply(
             func, axis=1
         )
 
-        if self._x_test is not None:
-            self._x_test.loc[:, output_col] = self._x_test.swifter.progress_bar().apply(
+        if self.x_test is not None:
+            self.x_test.loc[:, output_col] = self.x_test.swifter.progress_bar().apply(
                 func, axis=1
             )
 
@@ -797,11 +797,10 @@ class Feature(object):
 
         enc = OrdinalEncoder(categories=categories)
 
-        
-        self._x_train[col] = enc.fit_transform(self._x_train[col].values.reshape(-1, 1))
+        self.x_train[col] = enc.fit_transform(self.x_train[col].values.reshape(-1, 1))
 
-        if self._x_test is not None:
-            self._x_test[col] = enc.transform(self._x_test[col].values.reshape(-1, 1))
+        if self.x_test is not None:
+            self.x_test[col] = enc.transform(self.x_test[col].values.reshape(-1, 1))
 
         return self.copy()
 
@@ -932,14 +931,14 @@ class Feature(object):
         >>> data.drop_correlated_features(threshold=0.9)
         """
 
-        corr = self._x_train.corr().abs()
+        corr = self.x_train.corr().abs()
         upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
         drop_cols = [col for col in upper.columns if any(upper[col] > threshold)]
 
-        self._x_train.drop(drop_cols, axis=1, inplace=True)
+        self.x_train.drop(drop_cols, axis=1, inplace=True)
 
-        if self._x_test is not None:
-            self._x_test.drop(drop_cols, axis=1, inplace=True)
+        if self.x_test is not None:
+            self.x_test.drop(drop_cols, axis=1, inplace=True)
 
         return self.copy()
 
@@ -971,30 +970,30 @@ class Feature(object):
 
         y_train = self.y_train
         y_test = self.y_test
-        self._x_train = self._x_train.drop(self.target, axis=1)
-        self._x_test = (
-            None if self._x_test is None else self._x_test.drop(self.target, axis=1)
+        self.x_train = self.x_train.drop(self.target, axis=1)
+        self.x_test = (
+            None if self.x_test is None else self.x_test.drop(self.target, axis=1)
         )
 
-        chi2_best = SelectKBest(chi2, k=k).fit(self._x_train, y_train)
+        chi2_best = SelectKBest(chi2, k=k).fit(self.x_train, y_train)
 
         column_indices = chi2_best.get_support()
 
         if verbose:
             for col, p in zip(
-                self._x_train.columns[column_indices], chi2_best.pvalues_[column_indices]
+                self.x_train.columns[column_indices], chi2_best.pvalues_[column_indices]
             ):
                 print(f"{col} p-value: {p}")
 
-        self._x_train = self._x_train[self._x_train.columns[column_indices]]
+        self.x_train = self.x_train[self.x_train.columns[column_indices]]
 
-        if self._x_test is not None:
-            self._x_test = self._x_test[self._x_test.columns[column_indices]]
+        if self.x_test is not None:
+            self.x_test = self.x_test[self.x_test.columns[column_indices]]
 
         # Re add the target field back to the dataset.
-        self._x_train[self.target] = y_train
-        if self._x_test is not None:
-            self._x_test[self.target] = y_test
+        self.x_train[self.target] = y_train
+        if self.x_test is not None:
+            self.x_test[self.target] = y_test
 
         return self.copy()
 
@@ -1009,30 +1008,30 @@ class Feature(object):
         """
 
         if self.target:
-            train_target_data = self._x_train[self.target]
+            train_target_data = self.x_train[self.target]
             test_target_data = (
-                self._x_test[self.target] if self._x_test is not None else None
+                self.x_test[self.target] if self.x_test is not None else None
             )
-            self._x_train = self._x_train.drop(self.target, axis=1)
-            self._x_test = (
-                self._x_test.drop(self.target, axis=1)
-                if self._x_test is not None
+            self.x_train = self.x_train.drop(self.target, axis=1)
+            self.x_test = (
+                self.x_test.drop(self.target, axis=1)
+                if self.x_test is not None
                 else None
             )
         else:
-            self._x_train = self._x_train
-            self._x_test = self._x_test
+            self.x_train = self.x_train
+            self.x_test = self.x_test
 
-        self._x_train, self._x_test = util.sklearn_dim_reduction(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        self.x_train, self.x_test = util.sklearn_dim_reduction(
+            x_train=self.x_train,
+            x_test=self.x_test,
             algo=algo,
             n_components=n_components,
             **kwargs,
         )
 
         if self.target:
-            self._x_train[self.target] = train_target_data
-            self._x_test[self.target] = (
+            self.x_train[self.target] = train_target_data
+            self.x_test[self.target] = (
                 test_target_data if test_target_data is not None else None
             )

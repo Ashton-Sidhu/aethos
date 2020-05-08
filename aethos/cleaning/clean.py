@@ -303,21 +303,21 @@ class Clean(object):
             col_to_constant = _input_columns(list_args, list_of_cols)
 
         if isinstance(col_to_constant, dict):
-            self._x_train, self._x_test = cat.replace_missing_new_category(
-                x_train=self._x_train,
-                x_test=self._x_test,
+            self.x_train, self.x_test = cat.replace_missing_new_category(
+                x_train=self.x_train,
+                x_test=self.x_test,
                 col_to_category=col_to_constant,
             )
         elif isinstance(col_to_constant, list):
-            self._x_train, self._x_test = cat.replace_missing_new_category(
-                x_train=self._x_train,
-                x_test=self._x_test,
+            self.x_train, self.x_test = cat.replace_missing_new_category(
+                x_train=self.x_train,
+                x_test=self.x_test,
                 col_to_category=col_to_constant,
                 constant=constant,
             )
         else:
-            self._x_train, self._x_test = cat.replace_missing_new_category(
-                x_train=self._x_train, x_test=self._x_test, constant=constant,
+            self.x_train, self.x_test = cat.replace_missing_new_category(
+                x_train=self.x_train, x_test=self.x_test, constant=constant,
             )
 
         return self.copy()
@@ -367,9 +367,9 @@ class Clean(object):
             # If a list of columns is provided use the list, otherwise use arguemnts.
             col_to_category = _input_columns(list_args, list_of_cols)
 
-        self._x_train, self._x_test = cat.replace_missing_new_category(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        self.x_train, self.x_test = cat.replace_missing_new_category(
+            x_train=self.x_train,
+            x_test=self.x_test,
             col_to_category=col_to_category,
             constant=new_category,
         )
@@ -404,10 +404,10 @@ class Clean(object):
         # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._x_train = self._x_train.dropna(axis=0, subset=list_of_cols)
+        self.x_train = self.x_train.dropna(axis=0, subset=list_of_cols)
 
-        if self._x_test is not None:
-            self._x_test = self._x_test.dropna(axis=0, subset=list_of_cols)
+        if self.x_test is not None:
+            self.x_test = self.x_test.dropna(axis=0, subset=list_of_cols)
 
         return self.copy()
 
@@ -442,9 +442,9 @@ class Clean(object):
         # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._x_train = self._x_train.drop_duplicates(list_of_cols)
+        self.x_train = self.x_train.drop_duplicates(list_of_cols)
 
-        if self._x_test is not None:
+        if self.x_test is not None:
             self.test_data = self.test_data.drop_duplicates(list_of_cols)
 
         return self.copy()
@@ -503,21 +503,21 @@ class Clean(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
-            probabilities = self._x_train[col].value_counts(normalize=True)
+            probabilities = self.x_train[col].value_counts(normalize=True)
 
-            missing_data = self._x_train[col].isnull()
-            self._x_train.loc[missing_data, col] = np.random.choice(
+            missing_data = self.x_train[col].isnull()
+            self.x_train.loc[missing_data, col] = np.random.choice(
                 probabilities.index,
-                size=len(self._x_train[missing_data]),
+                size=len(self.x_train[missing_data]),
                 replace=True,
                 p=probabilities.values,
             )
 
-            if self._x_test is not None:
-                missing_data = self._x_test[col].isnull()
-                self._x_test.loc[missing_data, col] = np.random.choice(
+            if self.x_test is not None:
+                missing_data = self.x_test[col].isnull()
+                self.x_test.loc[missing_data, col] = np.random.choice(
                     probabilities.index,
-                    size=len(self._x_test[missing_data]),
+                    size=len(self.x_test[missing_data]),
                     replace=True,
                     p=probabilities.values,
                 )
@@ -643,15 +643,15 @@ class Clean(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
-            self._x_train[col] = self._x_train[col].interpolate(
+            self.x_train[col] = self.x_train[col].interpolate(
                 method=method, **inter_kwargs
             )
 
-            if self._x_test is not None:
+            if self.x_test is not None:
                 warnings.warn(
                     "If test data does not come from the same distribution of the training data, it may lead to erroneous results."
                 )
-                self._x_test[col] = self._x_test[col].interpolate(
+                self.x_test[col] = self.x_test[col].interpolate(
                     method=method, **inter_kwargs
                 )
 
@@ -686,12 +686,12 @@ class Clean(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self._x_train, self._x_test,) = util.replace_missing_fill(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        (self.x_train, self.x_test,) = util.replace_missing_fill(
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             method="bfill",
-            **extra_kwargs
+            **extra_kwargs,
         )
 
         return self.copy()
@@ -725,12 +725,12 @@ class Clean(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self._x_train, self._x_test,) = util.replace_missing_fill(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        (self.x_train, self.x_test,) = util.replace_missing_fill(
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             method="ffill",
-            **extra_kwargs
+            **extra_kwargs,
         )
 
         return self.copy()
@@ -741,7 +741,7 @@ class Clean(object):
         list_of_cols=[],
         missing_indicator=1,
         valid_indicator=0,
-        keep_col=True
+        keep_col=True,
     ):
         """
         Adds a new column describing whether data is missing for each record in a column.
@@ -780,21 +780,21 @@ class Clean(object):
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         for col in list_of_cols:
-            self._x_train[col + "_missing"] = [
+            self.x_train[col + "_missing"] = [
                 missing_indicator if x else valid_indicator
-                for x in self._x_train[col].isnull()
+                for x in self.x_train[col].isnull()
             ]
 
             if not keep_col:
-                self._x_train = self._x_train.drop([col], axis=1)
+                self.x_train = self.x_train.drop([col], axis=1)
 
-            if self._x_test is not None:
-                self._x_test[col + "_missing"] = [
+            if self.x_test is not None:
+                self.x_test[col + "_missing"] = [
                     missing_indicator if x else valid_indicator
-                    for x in self._x_test[col].isnull()
+                    for x in self.x_test[col].isnull()
                 ]
 
                 if not keep_col:
-                    self._x_test = self._x_test.drop([col], axis=1)
+                    self.x_test = self.x_test.drop([col], axis=1)
 
         return self.copy()

@@ -30,20 +30,6 @@ class Visualizations(object):
 
         IFrame("https://seaborn.pydata.org/tutorial/color_palettes.html")
 
-    @property
-    def train_data(self):  # pragma: no cover
-        if hasattr(self, "_train_result_data"):
-            return self._train_result_data
-        else:
-            return self.x_train
-
-    @property
-    def test_data(self):  # pragma: no cover
-        if hasattr(self, "_test_result_data"):
-            return self._test_result_data
-        else:
-            return self.x_test
-
     def raincloud(self, x=None, y=None, output_file="", **params):
         """
         Combines the box plot, scatter plot and split violin plot into one data visualization.

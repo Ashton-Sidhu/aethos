@@ -32,7 +32,8 @@ class Test_TestBase(unittest.TestCase):
         data = pd.DataFrame(data=data, columns=["col1", "col2", "col3"])
 
         df = Analysis(x_train=data, x_test=data, target="col3")
-        df["col4"] = np.random.normal(1, 2, size=(1, 1000))[0]
+        df.x_train["col4"] = np.random.normal(1, 2, size=(1, 1000))[0]
+        df.x_test["col4"] = np.random.normal(1, 2, size=(1, 1000))[0]
         df.ks_feature_distribution()
 
         self.assertTrue(True)

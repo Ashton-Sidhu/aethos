@@ -162,7 +162,7 @@ class Preprocess(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        list_of_cols = _numeric_input_conditions(list_of_cols, self._x_train)
+        list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
 
         if not base:
             log = np.log
@@ -174,10 +174,10 @@ class Preprocess(object):
             log = np.log
 
         for col in list_of_cols:
-            self._x_train[col] = log(self._x_train[col])
+            self.x_train[col] = log(self.x_train[col])
 
-            if self._x_test is not None:
-                self._x_test[col] = log(self._x_test[col])
+            if self.x_test is not None:
+                self.x_test[col] = log(self.x_test[col])
 
         return self.copy()
 
@@ -215,12 +215,12 @@ class Preprocess(object):
             if new_col_name.startswith("_"):
                 new_col_name = col + new_col_name
 
-            self._x_train[new_col_name] = pd.Series(
-                map(sent_tokenize, self._x_train[col])
+            self.x_train[new_col_name] = pd.Series(
+                map(sent_tokenize, self.x_train[col])
             )
-            if self._x_test is not None:
-                self._x_test[new_col_name] = pd.Series(
-                    map(sent_tokenize, self._x_test[col])
+            if self.x_test is not None:
+                self.x_test[new_col_name] = pd.Series(
+                    map(sent_tokenize, self.x_test[col])
                 )
 
         return self.copy()
@@ -276,10 +276,10 @@ class Preprocess(object):
             if new_col_name.startswith("_"):
                 new_col_name = col + new_col_name
 
-            self._x_train[new_col_name] = pd.Series(map(func, self._x_train[col]))
+            self.x_train[new_col_name] = pd.Series(map(func, self.x_train[col]))
 
-            if self._x_test is not None:
-                self._x_test[new_col_name] = pd.Series(map(func, self._x_test[col]))
+            if self.x_test is not None:
+                self.x_test[new_col_name] = pd.Series(map(func, self.x_test[col]))
 
         return self.copy()
 
@@ -325,22 +325,22 @@ class Preprocess(object):
                 new_col_name = col + new_col_name
 
             if not regexp:
-                self._x_train[new_col_name] = pd.Series(
-                    map(word_tokenize, self._x_train[col])
+                self.x_train[new_col_name] = pd.Series(
+                    map(word_tokenize, self.x_train[col])
                 )
 
-                if self._x_test is not None:
-                    self._x_test[new_col_name] = pd.Series(
-                        map(word_tokenize, self._x_test[col])
+                if self.x_test is not None:
+                    self.x_test[new_col_name] = pd.Series(
+                        map(word_tokenize, self.x_test[col])
                     )
             else:
-                self._x_train[new_col_name] = pd.Series(
-                    map(tokenizer.tokenize, self._x_train[col])
+                self.x_train[new_col_name] = pd.Series(
+                    map(tokenizer.tokenize, self.x_train[col])
                 )
 
-                if self._x_test is not None:
-                    self._x_test[new_col_name] = pd.Series(
-                        map(tokenizer.tokenize, self._x_test[col])
+                if self.x_test is not None:
+                    self.x_test[new_col_name] = pd.Series(
+                        map(tokenizer.tokenize, self.x_test[col])
                     )
 
         return self.copy()
@@ -390,7 +390,7 @@ class Preprocess(object):
             if new_col_name.startswith("_"):
                 new_col_name = col + new_col_name
 
-            self._x_train[new_col_name] = list(
+            self.x_train[new_col_name] = list(
                 map(
                     lambda x: " ".join(
                         [
@@ -399,12 +399,12 @@ class Preprocess(object):
                             if word not in stop_list
                         ]
                     ),
-                    self._x_train[col],
+                    self.x_train[col],
                 )
             )
 
-            if self._x_test is not None:
-                self._x_test[new_col_name] = list(
+            if self.x_test is not None:
+                self.x_test[new_col_name] = list(
                     map(
                         lambda x: " ".join(
                             [
@@ -413,7 +413,7 @@ class Preprocess(object):
                                 if word not in stop_list
                             ]
                         ),
-                        self._x_test[col],
+                        self.x_test[col],
                     )
                 )
 
@@ -476,32 +476,32 @@ class Preprocess(object):
                 new_col_name = col + new_col_name
 
             if not regexp:
-                self._x_train[new_col_name] = list(
+                self.x_train[new_col_name] = list(
                     map(
                         lambda x: "".join(
                             [letter for letter in x if letter not in delete_punct]
                         ),
-                        self._x_train[col],
+                        self.x_train[col],
                     )
                 )
 
-                if self._x_test is not None:
-                    self._x_test[new_col_name] = list(
+                if self.x_test is not None:
+                    self.x_test[new_col_name] = list(
                         map(
                             lambda x: "".join(
                                 [letter for letter in x if letter not in delete_punct]
                             ),
-                            self._x_test[col],
+                            self.x_test[col],
                         )
                     )
             else:
-                self._x_train[new_col_name] = list(
-                    map(lambda x: " ".join(tokenizer.tokenize(x)), self._x_train[col])
+                self.x_train[new_col_name] = list(
+                    map(lambda x: " ".join(tokenizer.tokenize(x)), self.x_train[col])
                 )
 
-                if self._x_test is not None:
-                    self._x_test[new_col_name] = list(
-                        map(lambda x: " ".join(tokenizer.tokenize(x)), self._x_test[col])
+                if self.x_test is not None:
+                    self.x_test[new_col_name] = list(
+                        map(lambda x: " ".join(tokenizer.tokenize(x)), self.x_test[col])
                     )
 
         return self.copy()
@@ -537,18 +537,18 @@ class Preprocess(object):
             if new_col_name.startswith("_"):
                 new_col_name = col + new_col_name
 
-            self._x_train[new_col_name] = pd.Series(
+            self.x_train[new_col_name] = pd.Series(
                 map(
                     lambda x: str.translate(x, str.maketrans("", "", "0123456789")),
-                    self._x_train[col],
+                    self.x_train[col],
                 )
             )
 
-            if self._x_test is not None:
-                self._x_test[new_col_name] = pd.Series(
+            if self.x_test is not None:
+                self.x_test[new_col_name] = pd.Series(
                     map(
                         lambda x: str.translate(x, str.maketrans("", "", "0123456789")),
-                        self._x_test[col],
+                        self.x_test[col],
                     )
                 )
 
@@ -618,7 +618,7 @@ class Preprocess(object):
             if new_col_name.startswith("_"):
                 new_col_name = col + new_col_name
 
-            self._x_train[new_col_name] = [
+            self.x_train[new_col_name] = [
                 text.process_text(
                     txt,
                     lower=lower,
@@ -627,11 +627,11 @@ class Preprocess(object):
                     stemmer=stemmer,
                     numbers=numbers,
                 )
-                for txt in self._x_train[col]
+                for txt in self.x_train[col]
             ]
 
-            if self._x_test is not None:
-                self._x_test[new_col_name] = [
+            if self.x_test is not None:
+                self.x_test[new_col_name] = [
                     text.process_text(
                         txt,
                         lower=lower,
@@ -640,7 +640,7 @@ class Preprocess(object):
                         stemmer=stemmer,
                         numbers=numbers,
                     )
-                    for txt in self._x_test[col]
+                    for txt in self.x_test[col]
                 ]
 
         return self.copy()

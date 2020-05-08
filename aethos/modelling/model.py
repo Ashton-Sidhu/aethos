@@ -27,7 +27,7 @@ from aethos.modelling.util import (
     track_model,
 )
 from aethos.templates.template_generator import TemplateGenerator as tg
-from aethos.util import _input_columns, split_data, _set_item_, _get_attr_, _get_item_
+from aethos.util import _input_columns, split_data, _get_attr_, _get_item_
 
 warnings.simplefilter("ignore", FutureWarning)
 
@@ -50,13 +50,13 @@ class ModelBase(object):
         problem = "c" if type(self).__name__ == "Classification" else "r"
 
         if isinstance(x_train, pd.DataFrame):
-            self._x_train = x_train
-            self._x_test = x_test
+            self.x_train = x_train
+            self.x_test = x_test
             self.target = target
             self.test_split_percentage = test_split_percentage
             self.target_mapping = None
 
-            if self._x_test is None and not type(self).__name__ == "Unsupervised":
+            if self.x_test is None and not type(self).__name__ == "Unsupervised":
                 # Generate train set and test set.
                 self.x_train, self.x_test = split_data(
                     self.x_train, test_split_percentage, self.target, problem
@@ -64,8 +64,8 @@ class ModelBase(object):
                 self.x_train = self.x_train.reset_index(drop=True)
                 self.x_test = self.x_test.reset_index(drop=True)
         else:
-            self._x_train = step.x_train
-            self._x_test = step.x_test
+            self.x_train = step.x_train
+            self.x_test = step.x_test
             self.test_split_percentage = step.test_split_percentage
             self.target = step.target
             self.target_mapping = step.target_mapping
@@ -97,8 +97,6 @@ class ModelBase(object):
 
         if key in self.__dict__:
             dict.__setitem__(self.__dict__, key, value)
-        else:
-            _set_item_(self, key, value)
 
     def __repr__(self):
 
@@ -106,14 +104,19 @@ class ModelBase(object):
 
     def _repr_html_(self):  # pragma: no cover
 
-        return self.x_train._repr_html_()
+        if self.target:
+            cols = self.features + [self.target]
+        else:
+            cols = self.features
+
+        return self.x_train[cols]._repr_html_()
 
     def __deepcopy__(self, memo):
 
         new_inst = type(self)(
-            x_train=self._x_train,
+            x_train=self.x_train,
             target=self.target,
-            x_test=self._x_test,
+            x_test=self.x_test,
             test_split_percentage=self.test_split_percentage,
             exp_name=self.exp_name,
         )
@@ -125,34 +128,10 @@ class ModelBase(object):
         return new_inst
 
     @property
-    def x_train(self):
-        """x_train variable"""
-
-        return self._x_train[self._org_columns]
-
-    @x_train.setter
-    def x_train(self, val):
-        """x_train setter"""
-
-        self._x_train = val
-
-    @property
-    def x_test(self):
-        """x_test variable"""
-
-        return self._x_test[self._org_columns]
-
-    @x_test.setter
-    def x_test(self, val):
-        """x_test setter"""
-
-        self._x_test = val
-
-    @property
     def features(self):
         """Features for modelling"""
 
-        cols = self._x_train.columns.tolist()
+        cols = self.x_train.columns.tolist()
 
         if self.target:
             cols.remove(self.target)
@@ -163,27 +142,27 @@ class ModelBase(object):
     def train_data(self):
         """Training data used for modelling"""
 
-        return self._x_train[self.features]
+        return self.x_train[self.features]
 
     @train_data.setter
     def train_data(self, val):
         """Setting for train_data"""
 
         val[self.target] = self.y_train
-        self._x_train = val
+        self.x_train = val
 
     @property
     def test_data(self):
         """Testing data used to evaluate models"""
 
-        return self._x_test[self.features] if self._x_test is not None else None
+        return self.x_test[self.features] if self.x_test is not None else None
 
     @test_data.setter
     def test_data(self, val):
         """Test data setter"""
 
         val[self.target] = self.y_test
-        self._x_test = val
+        self.x_test = val
 
     @property
     def y_test(self):
@@ -220,15 +199,6 @@ class ModelBase(object):
         """
 
         return self.x_train.columns.tolist()
-
-    @property
-    def _org_columns(self):
-        """Helper to organize columns"""
-
-        if self.target:
-            return self.features + [self.target]
-        else:
-            return self.features
 
     def copy(self):
         """
@@ -500,9 +470,9 @@ class ModelBase(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self._x_train, self._x_test,) = text.gensim_textrank_summarizer(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        (self.x_train, self.x_test,) = text.gensim_textrank_summarizer(
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
             **summarizer_kwargs,
@@ -577,9 +547,9 @@ class ModelBase(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self._x_train, self._x_test = text.gensim_textrank_keywords(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        self.x_train, self.x_test = text.gensim_textrank_keywords(
+            x_train=self.x_train,
+            x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
             **keyword_kwargs,
@@ -952,9 +922,9 @@ class ModelBase(object):
         """
         # endregion
 
-        (self._x_train, self._x_test, lda_model, corpus, id2word,) = text.gensim_lda(
-            x_train=self._x_train,
-            x_test=self._x_test,
+        (self.x_train, self.x_test, lda_model, corpus, id2word,) = text.gensim_lda(
+            x_train=self.x_train,
+            x_test=self.x_test,
             prep=prep,
             col_name=col_name,
             **kwargs,
@@ -1079,10 +1049,10 @@ class ModelBase(object):
 
         nlp = pipeline("sentiment-analysis", model=model_type)
 
-        self._x_train[new_col_name] = pd.Series(map(nlp, self._x_train[col].tolist()))
+        self.x_train[new_col_name] = pd.Series(map(nlp, self.x_train[col].tolist()))
 
-        if self._x_test is not None:
-            self._x_test[new_col_name] = pd.Series(map(nlp, self._x_test[col].tolist()))
+        if self.x_test is not None:
+            self.x_test[new_col_name] = pd.Series(map(nlp, self.x_test[col].tolist()))
 
         return nlp.model
 
@@ -1206,21 +1176,21 @@ class ModelBase(object):
         nlp = pipeline("question-answering", model=model_type)
         q_and_a = lambda c, q: nlp({"question": q, "context": c})
 
-        self._x_train[new_col_name] = pd.Series(
+        self.x_train[new_col_name] = pd.Series(
             [
                 q_and_a(context, question)
                 for context, question in zip(
-                    self._x_train[context_col], self._x_train[question_col],
+                    self.x_train[context_col], self.x_train[question_col],
                 )
             ]
         )
 
-        if self._x_test is not None:
-            self._x_test[new_col_name] = pd.Series(
+        if self.x_test is not None:
+            self.x_test[new_col_name] = pd.Series(
                 [
                     q_and_a(context, question)
                     for context, question in zip(
-                        self._x_test[context_col], self._x_test[question_col],
+                        self.x_test[context_col], self.x_test[question_col],
                     )
                 ]
             )
