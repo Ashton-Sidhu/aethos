@@ -569,7 +569,7 @@ class Test_TestBase(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Analysis(x_train=data, target="col3", x_test=data)
-        clean.interpret_data()
+        clean.interpret_data(show=False)
 
         self.assertTrue(True)
 

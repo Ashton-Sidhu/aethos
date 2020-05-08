@@ -332,13 +332,13 @@ def _set_item(
 def _set_item_(self, key, value):
     """Function for __setitem__ class methods"""
 
-    if self.x_test is None:
-        self.x_train[key] = value
+    if self._x_test is None:
+        self._x_train[key] = value
 
-        return self.x_train.head()
+        return self._x_train.head()
     else:
-        x_train_length = self.x_train.shape[0]
-        x_test_length = self.x_test.shape[0]
+        x_train_length = self._x_train.shape[0]
+        x_test_length = self._x_test.shape[0]
 
         if isinstance(value, (list, np.ndarray)):
             ## If the number of entries in the list does not match the number of rows in the training or testing
@@ -348,8 +348,8 @@ def _set_item_(self, key, value):
                     f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
                 )
 
-            self.x_train, self.x_test = _set_item(
-                self.x_train, self.x_test, key, value, x_train_length, x_test_length,
+            self._x_train, self._x_test = _set_item(
+                self._x_train, self._x_test, key, value, x_train_length, x_test_length,
             )
 
         elif isinstance(value, tuple):
@@ -359,22 +359,27 @@ def _set_item_(self, key, value):
                         f"Length of list: {str(len(value))} does not equal the number rows as the training set or test set."
                     )
 
-                (self.x_train, self.x_test,) = _set_item(
-                    self.x_train, self.x_test, key, data, x_train_length, x_test_length,
+                (self._x_train, self._x_test,) = _set_item(
+                    self._x_train,
+                    self._x_test,
+                    key,
+                    data,
+                    x_train_length,
+                    x_test_length,
                 )
 
         else:
-            self.x_train[key] = value
-            self.x_test[key] = value
+            self._x_train[key] = value
+            self._x_test[key] = value
 
-        return self.x_train.head()
+        return self._x_train.head()
 
 
 def _get_item_(self, key):
     """Function for __getitem__ class methods"""
 
     try:
-        return self.x_train[key]
+        return self._x_train[key]
 
     except Exception as e:
         raise AttributeError(e)
@@ -385,8 +390,8 @@ def _get_attr_(self, key):
 
     if key in self.__dict__:
         return getattr(self, key)
-    elif hasattr(self.x_train, key):
-        return getattr(self.x_train, key)
+    elif hasattr(self._x_train, key):
+        return getattr(self._x_train, key)
     else:
         raise AttributeError(f"{type(self)} object does not have attribute {key}.")
 

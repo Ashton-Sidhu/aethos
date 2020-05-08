@@ -248,7 +248,7 @@ class TestModelling(unittest.TestCase):
 
         model = Unsupervised(x_train=data,)
         model.KMeans(n_clusters=3, random_state=0, run=True)
-        validate = model.predicted is not None
+        validate = model.km is not None
 
         self.assertTrue(validate)
 
@@ -259,7 +259,7 @@ class TestModelling(unittest.TestCase):
 
         model = Unsupervised(x_train=data,)
         model.KMeans(random_state=0, run=True)
-        validate = model.predicted is not None
+        validate = model.km is not None
 
         self.assertTrue(validate)
 
@@ -271,7 +271,7 @@ class TestModelling(unittest.TestCase):
 
         model = Unsupervised(x_train=data,)
         model.DBScan(eps=3, min_samples=2, run=True)
-        validate = model.predicted is not None
+        validate = model.dbs is not None
 
         self.assertTrue(validate)
 

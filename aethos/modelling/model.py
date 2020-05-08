@@ -500,9 +500,9 @@ class ModelBase(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.gensim_textrank_summarizer(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        (self._x_train, self._x_test,) = text.gensim_textrank_summarizer(
+            x_train=self._x_train,
+            x_test=self._x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
             **summarizer_kwargs,
@@ -577,9 +577,9 @@ class ModelBase(object):
 
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = text.gensim_textrank_keywords(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        self._x_train, self._x_test = text.gensim_textrank_keywords(
+            x_train=self._x_train,
+            x_test=self._x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
             **keyword_kwargs,
@@ -952,9 +952,9 @@ class ModelBase(object):
         """
         # endregion
 
-        (self.x_train, self.x_test, lda_model, corpus, id2word,) = text.gensim_lda(
-            x_train=self.x_train,
-            x_test=self.x_test,
+        (self._x_train, self._x_test, lda_model, corpus, id2word,) = text.gensim_lda(
+            x_train=self._x_train,
+            x_test=self._x_test,
             prep=prep,
             col_name=col_name,
             **kwargs,
@@ -1079,10 +1079,10 @@ class ModelBase(object):
 
         nlp = pipeline("sentiment-analysis", model=model_type)
 
-        self.x_train[new_col_name] = pd.Series(map(nlp, self.x_train[col].tolist()))
+        self._x_train[new_col_name] = pd.Series(map(nlp, self._x_train[col].tolist()))
 
-        if self.x_test is not None:
-            self.x_test[new_col_name] = pd.Series(map(nlp, self.x_test[col].tolist()))
+        if self._x_test is not None:
+            self._x_test[new_col_name] = pd.Series(map(nlp, self._x_test[col].tolist()))
 
         return nlp.model
 
@@ -1206,21 +1206,21 @@ class ModelBase(object):
         nlp = pipeline("question-answering", model=model_type)
         q_and_a = lambda c, q: nlp({"question": q, "context": c})
 
-        self.x_train[new_col_name] = pd.Series(
+        self._x_train[new_col_name] = pd.Series(
             [
                 q_and_a(context, question)
                 for context, question in zip(
-                    self.x_train[context_col], self.x_train[question_col],
+                    self._x_train[context_col], self._x_train[question_col],
                 )
             ]
         )
 
-        if self.x_test is not None:
-            self.x_test[new_col_name] = pd.Series(
+        if self._x_test is not None:
+            self._x_test[new_col_name] = pd.Series(
                 [
                     q_and_a(context, question)
                     for context, question in zip(
-                        self.x_test[context_col], self.x_test[question_col],
+                        self._x_test[context_col], self._x_test[question_col],
                     )
                 ]
             )
