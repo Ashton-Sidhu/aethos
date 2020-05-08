@@ -384,6 +384,10 @@ Community credits go to:
 
 [@huggingface](https://github.com/huggingface/) for their automated pretrained model library [transformers](https://github.com/huggingface/transformers).
 
+[@AutoViML](https://github.com/AutoViML/) for their auto visualization library [autoviz](https://github.com/AutoViML/AutoViz).
+
+[@8080labs](https://github.com/8080labs/) for their predictive power score library [ppscore](https://github.com/8080labs/ppscore).
+
 ## For Developers
 
 To install packages `pip3 install -r requirements-dev.txt`
