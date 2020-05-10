@@ -87,6 +87,9 @@ class VizCreator(object):
             data_copy = data_copy.groupby(x, as_index=False)
             data_copy = getattr(data_copy, method)()
 
+            if not y:
+                y = data_copy.iloc[:, 1].name
+
         fig = px.bar(data_copy, x=x, y=y, **barplot_kwargs)
 
         if output_file:  # pragma: no cover

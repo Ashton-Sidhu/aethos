@@ -142,7 +142,7 @@ class Visualizations(object):
     def barplot(
         self,
         x: str,
-        y: str,
+        y=None,
         method=None,
         orient="v",
         title="",
@@ -166,7 +166,7 @@ class Visualizations(object):
         x : str
             Column name for the x axis.
 
-        y : str or list
+        y : str, optional
             Column(s) you would like to see plotted against the x_col
 
         method : str
@@ -253,7 +253,7 @@ class Visualizations(object):
         Examples
         --------
         >>> data.barplot(x='x', y='y')
-        >>> data.barplot(x='x', y='y', method='mean')
+        >>> data.barplot(x='x', method='mean')
         >>> data.barplot(x='x', y='y', method='max', orient='h')
         """
 

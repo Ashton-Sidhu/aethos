@@ -81,7 +81,7 @@ class Test_TestBase(unittest.TestCase):
             x="species", y="sepal_length", method="mean", orient="h", barmode="group",
         )
         base.barplot(
-            x="species", y="sepal_length", method="mean", barmode="group",
+            x="species", method="mean", barmode="group",
         )
 
         self.assertTrue(True)
