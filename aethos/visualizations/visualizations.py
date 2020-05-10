@@ -257,6 +257,9 @@ class Visualizations(object):
         >>> data.barplot(x='x', y='y', method='max', orient='h')
         """
 
+        if orient == "h":
+            x, y = y, x
+
         fig = self._viz.barplot(
             x,
             y,
