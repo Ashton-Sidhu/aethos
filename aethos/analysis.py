@@ -322,7 +322,7 @@ class Analysis(Visualizations, Stats):
 
         if shell == "ZMQInteractiveShell":  # pragma : no cover
             report = self.x_train.profile_report(
-                title=title, style={"full_width": True}
+                title=title, html={"style": {"full_width": True}}
             )
         else:
             report = self.x_train.profile_report(title=title)
