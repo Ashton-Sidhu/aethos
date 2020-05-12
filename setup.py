@@ -18,7 +18,7 @@ pkgs = [
     "nltk==3.5",
     "ipython==7.13.0",
     "gensim==3.8.2",
-    "pandas-profiling==2.6.0",
+    "pandas-profiling==2.8.0",
     "cookiecutter==1.6.0",
     "shap==0.35.0",
     "interpret==0.1.21",
