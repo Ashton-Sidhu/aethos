@@ -30,18 +30,36 @@ from aethos.config.config import (
     set_option,
 )
 
+from aethos.helpers import groupby_analysis
 
-from .core import Data
-from .modelling import Model
+from aethos.analysis import Analysis
+from aethos.modelling import Classification, Regression, Unsupervised
+from aethos.model_analysis import (
+    ClassificationModelAnalysis,
+    RegressionModelAnalysis,
+    UnsupervisedModelAnalysis,
+    TextModelAnalysis,
+)
 
 pd.options.mode.chained_assignment = None
 pio.templates.default = "plotly_white"
 
-__all__ = ["Data", "Model"]
+__all__ = [
+    "Analysis",
+    "Classification",
+    "Regression",
+    "Unsupervised",
+    "ClassificationModelAnalsysis",
+    "RegressionModelAnalysis",
+    "UnsupervisedModelAnalysis",
+    "TextModelAnalysis",
+]
 
 shell = get_ipython().__class__.__name__
 
 if shell == "ZMQInteractiveShell":
     import shap
+    from plotly.offline import init_notebook_mode
 
+    init_notebook_mode(connected=True)
     shap.initjs()

@@ -33,7 +33,6 @@ graphviz
 pyldavis
 swifter
 lightgbm
-catboost==0.20.1
 black
 sphinx
 doc8
@@ -43,3 +42,5 @@ pre-commit
 transformers
 tensorflow
 statsmodels
+ppscore
+autoviz

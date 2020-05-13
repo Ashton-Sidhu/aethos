@@ -1,10 +1,3 @@
-"""
-This file contains the following methods:
-
-replace_missing_new_category
-replace_missing_remove_row
-"""
-
 import numpy as np
 from aethos.util import _get_columns
 
@@ -93,37 +86,6 @@ def replace_missing_new_category(
                         x_train, col, str_missing_categories
                     )
                     x_test[col].fillna(new_category_name, inplace=True)
-
-    return x_train, x_test
-
-
-def replace_missing_remove_row(x_train, x_test=None, cols_to_remove=[]):
-    """
-    Remove rows where the value of a column for those rows is missing.
-        
-    Parameters
-    ----------
-    x_train : DataFrame
-        Dataset
-        
-    x_test : DataFrame
-        Testing Dataset, by default None
-
-    cols_to_remove : list
-        List of columns you want to check to see if they have missing values in a row
-
-    Returns
-    -------
-    Dataframe, *Dataframe:
-        Cleaned columns of the Dataframe(s) provides with the provided constant.
-        
-    Returns 2 Dataframes if x_test is provided.
-    """
-
-    x_train = x_train.dropna(axis=0, subset=cols_to_remove)
-
-    if x_test is not None:
-        x_test = x_test.dropna(axis=0, subset=cols_to_remove)
 
     return x_train, x_test
 

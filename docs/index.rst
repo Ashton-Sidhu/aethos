@@ -8,7 +8,6 @@ Aethos is a library/platform that automates your data science and analytical tas
 Aethos provides:
 
   - Automated data science cleaning, preprocessing, feature engineering and modelling techniques through one line of code
-  - Automated reporting - as you perform your analysis, a report is created along side with it
   - Automated visualizations through one line of code
   - Reusable code - no more copying code from notebook to notebook
   - Automated dependency and corpus management
@@ -21,14 +20,15 @@ Aethos provides:
   - Exporting trained models as a service (Generates the necessary code, files and folder structure)
   - Experiment tracking with MLFlow
   - Statistical tests - Anova, T-test, etc.
+  - Pre-trained models - BERT, GPT2, etc.
 
 Plus more coming soon such as:
 
   - Testing for model drift
   - Recommendation models
-  - Pre-trained models - BERT, GPT2, etc.
   - Parralelization through Dask and/or Spark
-  - Uniform API for deep learning models and automated code and file generation jupyter notebook development, python file of your data    pipeline.
+  - Uniform API for deep learning models and automated code and file generation jupyter notebook development, python file of your data pipeline.
+  - Automated code and file generation for jupyter notebook development and a python file of your data pipeline.
 
 Aethos makes it easy to PoC, experiment and compare different techniques and models from various libraries. From imputations, visualizations, scaling, dimensionality reduction, feature engineering to modelling, model results and model deployment - all done with a single, human readable, line of code!
 
@@ -68,12 +68,32 @@ Currently the following options are:
   - `interactive_table`: Interactive grid with Itable - comes with built in client side searching
   - `project_metrics`: Setting project metrics
     - Project metrics is a metric or set of metrics to evaluate models.
-  - `word_report`: Writes report to a word document as well as the .txt file
   - `track_experiments`: Uses MLFlow to track models and experiments.
 
-User options such as changing the directory where images, reports, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
+User options such as changing the directory where images and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
 
-This location is also the default location of where any images, reports and projects are stored.
+This location is also the default location of where any images and projects are stored.
+
+***New in 2.0***
+
+The Data and Model objects no longer exist but instead there a multiple objects you can use with more of a purpose.
+
+Analysis - Used to analyze, visualize and run statistical models (t-tests, anovas, etc.)
+
+Classification - Used to analyze, visualize, run statistical models and train classification models.
+
+Regression - Used to analyze, visualize, run statistical models and train regression models.
+
+Unsupervised - Used to analyze, visualize, run statistical models and train unsupervised models.
+
+ClassificationModelAnalysis - Used to analyze, interpret and visualize results of a Classification model.
+
+RegressionModelAnalysis - Used to analyze, interpret and visualize results of a Regression model.
+
+UnsupervisedModelAnalysis - Used to analyze, interpret and visualize results of a Unsupervised model.
+
+TextModelAnalysis - Used to analyze, interpret and visualize results of a Text model.
+
 
 Analysis
 --------
@@ -87,9 +107,9 @@ Analysis
 
     # Initialize Data object with training data
     # By default, if no test data (x_test) is provided, then the data is split with 20% going to the test set
+    # 
     # Specify predictor field as 'Survived'
-    # Specify report name
-    df = at.Data(x_train, target_field='Survived', report_name='Titanic')
+    df = at.Classification(x_train, target='Survived')
 
     df.x_train # View your training data
     df.x_test # View your testing data
@@ -97,8 +117,6 @@ Analysis
     df # Glance at your training data
 
     df[df.Age > 25] # Filter the data
-
-    df['new_col'] = [1, 2]  # Add a new column to the data, based off the length of the data provided, it will add it to the train or test set.
 
     df.x_train['new_col'] = [1,2] # This is the exact same as the either of code above
     df.x_test['new_col'] = [1,2]
@@ -115,6 +133,10 @@ Analysis
 
     df.correlation_matrix() # Generate a correlation matrix for your training data
 
+    df.predictive_power() # Calculates the predictive power of each variable
+
+    df.autoviz() # Runs autoviz on the data and runs EDA on your data
+
     df.pairplot() # Generate pairplots for your training data features at any time
 
     df.checklist() # Will provide an iteractive checklist to keep track of your cleaning tasks
@@ -123,11 +145,14 @@ Analysis
 
 .. code:: python
 
-    df.replace_missing_mostcommon('Fare', 'Embarked') # Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
+    # Replace missing values in the 'Fare' and 'Embarked' column with the most common values in each of the respective columns.
+    df.replace_missing_mostcommon('Fare', 'Embarked')
 
-    df.replace_missing_mostcommon('Fare', 'Embarked') # To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
+    # To create a "checkpoint" of your data (i.e. if you just want to test this analytical method), assign it to a variable
+    df.replace_missing_mostcommon('Fare', 'Embarked')
 
-    df.replace_missing_random_discrete('Age') # Replace missing values in the 'Age' column with a random value that follows the probability distribution of the 'Age' column in the training set. 
+    # Replace missing values in the 'Age' column with a random value that follows the probability distribution of the 'Age' column in the training set. 
+    df.replace_missing_random_discrete('Age')
 
     df.drop('Cabin') # Drop the cabin column
 
@@ -135,16 +160,17 @@ As you've started to notice, alot of tasks to df the data and to explore the dat
 
 .. code:: python
 
-    df.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') # Create a barblot of the mean surivial rate grouped by age.
+    # Create a barplot of the mean surivial rate grouped by age.
+    df.barplot(x='Age', y='Survived', method='mean')
 
-    df.onehot_encode('Person', 'Embarked', drop_col=True) # One hot encode the `Person` and `Embarked` columns and then drop the original columns
+    # Plots a scatter plot of Age vs. Fare and colours the dots based off the Survived column.
+    df.scatterplot(x='Age', y='Fare', color='Survived')
+
+    # One hot encode the `Person` and `Embarked` columns and then drop the original columns
+    df.onehot_encode('Person', 'Embarked', drop_col=True) 
 
 Modelling
 =========
-
-.. code:: python
-
-    model = at.Model(df)
 
 Running a Single Model
 ----------------------
@@ -155,13 +181,23 @@ After a model has been ran, it comes with use cases such as plotting RoC curves,
 
 .. code:: python
 
-    lr_model = model.LogisticRegression(random_state=42) # Train a logistic regression model
-    lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42) # Trains a logistic regression model with gridsearch
-    lr_model = model.LogisticRegression(cv=5, n_splits=10) # Crossvalidates a logistic regression model, displays the scores and the learning curve and builds the model
-    lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv='strat-kfold', n_splits=10) # Builds a Logistic Regression model with Gridsearch and then cross validates the best model using stratified K-Fold cross validation.
+    lr_model = df.LogisticRegression(random_state=42) # Train a logistic regression model
+
+    # Train a logistic regression model with gridsearch
+    lr_model = df.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42)
+
+    # Crossvalidate a a logistic regression model, displays the scores and the learning curve and builds the model
+    lr_model = df.LogisticRegression()
+    lr_model.cross_validate(cv_type="strat-kfold", n_splits=10) # default is strat-kfold for classification  problems
+
+    # Build a Logistic Regression model with Gridsearch and then cross validates the best model using stratified K-Fold cross validation.
+    lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv_type="strat-kfold") 
+
+    lr_model.help_debug() # Interface with items to check for to help debug your model.
 
     lr_model.metrics() # Views all metrics for the model
     lr_model.confusion_matrix()
+    lr_model.decision_boundary()
     lr_model.roc_curve()
 
 Running Multiple Models
@@ -169,20 +205,21 @@ Running Multiple Models
 
 .. code:: python
 
-    model.LogisticRegression(random_state=42, model_name='log_reg', run=False) # Adds a logistic regression model to the queue
-    model.RandomForestClassification(run=False) # Adds a random forest model to the queue
-    model.XGBoostClassification(run=False) # Adds an xgboost classification model to the queue
+    # Add a Logistic Regression, Random Forest Classification and a XGBoost Classification model to the queue.
+    lr = df.LogisticRegression(random_state=42, model_name='log_reg', run=False)
+    rf = df.RandomForestClassification(run=False)
+    xgbc = df.XGBoostClassification(run=False)
 
-    model.run_models() # This will run all queued models in parallel
-    model.run_models(method='series') # Run each model one after the other
+    df.run_models() # This will run all queued models in parallel
+    df.run_models(method='series') # Run each model one after the other
 
-    model.compare_models() # This will display each model evaluated against every metric
+    df.compare_models() # This will display each model evaluated against every metric
 
     # Every model is accessed by a unique name that is assiged when you run the model.
     # Default model names can be seen in the function header of each model.
 
-    model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
-    model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
+    df.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
+    df.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
 
 Using Pretrained Models
 ------------------------
@@ -191,10 +228,10 @@ Currently you can use pretrained models such as BERT, XLNet, AlBERT, etc. to cal
 
 .. code:: python
 
-    model.pretrained_sentiment_analysis(`text_column`)
+    df.pretrained_sentiment_analysis(`text_column`)
 
     # To answer questions, context for the question has to be supplied
-    model.pretrained_question_answer(`context_column`, `question_column`)
+    df.pretrained_question_answer(`context_column`, `question_column`)
 
 Model Interpretability
 ----------------------
@@ -337,10 +374,10 @@ To start the MLFlow UI in the directory your experiments are stored run:
 
 Note: This only works for local use of MLFlow, if you are running MLFlow on a remote server, start it on the server and enter in the address in the Aethos config file at `%HOME%/.aethos/config.yml`.
 
-Data API
+Analysis API
 ========
 
-.. automodule:: aethos.base
+.. automodule:: aethos.analysis
    :members:
    :undoc-members:
    :show-inheritance:
@@ -370,15 +407,53 @@ Data API
    :undoc-members:
    :show-inheritance:
 
-Modelling API
-=============
+Model API
+==========
 
-.. automodule:: aethos.modelling
+.. automodule:: aethos.modelling.model
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: aethos.modelling.model_analysis
+.. automodule:: aethos.modelling.classification_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.modelling.regression_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.modelling.unsupervised_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Model Analysis API
+===================
+
+.. automodule:: aethos.model_analysis.model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.model_analysis.classification_model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.model_analysis.regression_model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.model_analysis.unsupervised_model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.model_analysis.text_model_analysis
    :members:
    :undoc-members:
    :show-inheritance:

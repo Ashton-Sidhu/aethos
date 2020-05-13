@@ -171,7 +171,7 @@ def drop_replace_columns(df, drop_cols, new_data, keep_col=False):
     return df
 
 
-def split_data(df, split_percentage: float):
+def split_data(df, split_percentage: float, target: str, problem: str):
     """
     Function that splits the data into a training and testing set. Split percentage is passed in through
     the split_percentage variable.
@@ -183,6 +183,12 @@ def split_data(df, split_percentage: float):
 
     split_percentage : float
         The % of data that you want in your test set, split_percentage is the percentage of data in the traning set.
+
+    target : str 
+        Target variable to stratify to ensure class balance.
+
+    problem : str
+        Type of problem, either classification or regression
     
     Returns
     -------
@@ -190,9 +196,25 @@ def split_data(df, split_percentage: float):
         Train data and test data.
     """
 
-    x_train, x_test = train_test_split(df, test_size=split_percentage)
+    target = df[target] if target and problem == "c" else None
+
+    x_train, x_test = train_test_split(df, test_size=split_percentage, stratify=target)
 
     return x_train, x_test
+
+
+def _interpret_data(x_train, y_train, show=False):
+    """Helper function to interpret data using MSFT interpret"""
+
+    from interpret.data import Marginal
+    import interpret
+
+    marginal = Marginal().explain_data(x_train, y_train, name="Train Data")
+
+    if show:
+        interpret.show(marginal)
+
+    return marginal
 
 
 def _numeric_input_conditions(list_of_cols: list, x_train) -> list:
@@ -266,45 +288,25 @@ def _input_columns(list_args: list, list_of_cols: list):
     return column_list
 
 
-def _set_item(
-    x_train, x_test, column: str, value: list, train_length: int, test_length: int
-):
-    """
-    Utility function for __setitem__ for determining which input is for which dataset
-    and then sets the input to the new column for the correct dataset.
-    
-    Parameters
-    ----------
-    x_train : Dataframe
-        Training Data
+def _get_item_(self, key):
+    """Function for __getitem__ class methods"""
 
-    x_test : Dataframe
-        Testing Data
+    try:
+        return self.x_train[key]
 
-    column : str
-        New column name
+    except Exception as e:
+        raise AttributeError(e)
 
-    value : list
-        List of values for new column
 
-    train_length : int
-        Length of training data
-        
-    test_length : int
-        Length of training data
-    """
+def _get_attr_(self, key):
+    """Function for __getattr__ class methods"""
 
-    ## If the training data and testing data have the same number of rows, apply the value to both
-    ## train and test data set
-    if len(value) == train_length and len(value) == test_length:
-        x_train[column] = value
-        x_test[column] = value
-    elif len(value) == train_length:
-        x_train[column] = value
+    if key in self.__dict__:
+        return getattr(self, key)
+    elif hasattr(self.x_train, key):
+        return getattr(self.x_train, key)
     else:
-        x_test[column] = value
-
-    return x_train, x_test
+        raise AttributeError(f"{type(self)} object does not have attribute {key}.")
 
 
 def _make_dir(path: str):

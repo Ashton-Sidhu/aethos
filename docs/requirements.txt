@@ -26,6 +26,5 @@ python-docx
 graphviz
 swifter
 lightgbm
-catboost
 mlflow
 statsmodels

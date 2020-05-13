@@ -1,17 +1,10 @@
-from .model import Model
-from .model_analysis import (
-    ModelBase,
-    ClassificationModel,
-    RegressionModel,
-    TextModel,
-    UnsupervisedModel,
-)
+from .classification_models import Classification
+from .regression_models import Regression
+from .unsupervised_models import Unsupervised
+
 
 __all__ = [
-    "Model",
-    "ModelBase",
-    "ClassificationModel",
-    "RegressionModel",
-    "TextModel",
-    "UnsupervisedModel",
+    "Classification",
+    "Regression",
+    "Unsupervised",
 ]

@@ -41,11 +41,4 @@ def run_2sample_ttest(
     else:
         results = sc.stats.ttest_rel(data_group1, data_group2, nan_policy="omit",)
 
-    matrix = [
-        ["", "Test Statistic", "p-value"],
-        ["Sample Data", results[0], results[1]],
-    ]
-
-    viz.create_table(matrix, True, output_file)
-
     return results

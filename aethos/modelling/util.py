@@ -6,7 +6,6 @@ import warnings
 from functools import partial, wraps
 from pathlib import Path
 
-import catboost as cb
 import lightgbm as lgb
 import matplotlib.pyplot as plt
 
@@ -108,7 +107,7 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
 
 
 def run_crossvalidation(
-    model, x_train, y_train, cv=5, scoring="accuracy", report=None, model_name=None
+    model, x_train, y_train, cv=5, scoring="accuracy", model_name=None
 ):
     """
     Runs cross validation on a certain model.
@@ -143,7 +142,7 @@ def run_crossvalidation(
     visualizer_scores.show()
     visualizer_lcurve.show()
 
-    if report or _global_config["track_experiments"]:  # pragma: no cover
+    if _global_config["track_experiments"]:  # pragma: no cover
         fig.savefig(os.path.join(IMAGE_DIR, model_name, "cv.png"))
 
 
@@ -180,45 +179,22 @@ def _run(model):
     return model()
 
 
-def _get_cv_type(cv_type, random_state, **kwargs):
-    """
-    Takes in cv type from the user and initiates the cross validation generator.
-    
-    Parameters
-    ----------
-    cv_type : int, str or None
-        Crossvalidation type
+def _get_cv_type(cv_type, n_splits, shuffle, **kwargs):
+    """Takes in cv type from the user and initiates the cross validation generator."""
 
-    random_state : int
-        Random seed
-    
-    Returns
-    -------
-    Cross Validation Generator
-        CV Generator
-    """
+    n_splits = n_splits
+    shuffle = shuffle
 
-    if not cv_type:
-        return None, kwargs
-
-    if isinstance(cv_type, int):
-        cv_type = cv_type
-    elif cv_type == "kfold":
-        n_splits = kwargs.pop("n_splits", 5)
-        shuffle = kwargs.pop("shuffle", False)
-
-        cv_type = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+    if cv_type == "kfold":
+        cv_type = KFold(n_splits=n_splits, shuffle=shuffle, random_state=42, **kwargs)
     elif cv_type == "strat-kfold":
-        n_splits = kwargs.pop("n_splits", 5)
-        shuffle = kwargs.pop("shuffle", False)
-
         cv_type = StratifiedKFold(
-            n_splits=n_splits, shuffle=shuffle, random_state=random_state
+            n_splits=n_splits, shuffle=shuffle, random_state=42, **kwargs
         )
     else:
         raise ValueError("Cross Validation type is invalid.")
 
-    return cv_type, kwargs
+    return cv_type
 
 
 def to_pickle(model, name, project=False, project_name=None):

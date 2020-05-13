@@ -16,7 +16,7 @@ aethos package
 Data Module
 ------------
 
-.. automodule:: aethos.base
+.. automodule:: aethos.analysis
    :members:
    :undoc-members:
    :show-inheritance:
@@ -41,20 +41,58 @@ Data Module
    :undoc-members:
    :show-inheritance:
 
-Modelling Module
-----------------
-
-.. automodule:: aethos.modelling
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. automodule:: aethos.stats.stats
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: aethos.modelling.model_analysis
+Modelling Module
+----------------
+
+.. automodule:: aethos.modelling.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.modelling.classification_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.modelling.regression_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.modelling.unsupervised_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Model Analysis Module
+----------------------
+
+.. automodule:: aethos.model_analysis.model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.model_analysis.classification_model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.model_analysis.regression_model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.model_analysis.unsupervised_model_analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: aethos.model_analysis.text_model_analysis
    :members:
    :undoc-members:
    :show-inheritance:
