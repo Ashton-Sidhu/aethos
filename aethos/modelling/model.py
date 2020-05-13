@@ -101,7 +101,7 @@ class ModelBase(object):
         else:
             cols = self.features
 
-        return self.x_train[cols]._repr_html_()
+        return self.x_train[cols].head()._repr_html_()
 
     def __deepcopy__(self, memo):
 

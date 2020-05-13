@@ -384,7 +384,7 @@ class Test_TestBase(unittest.TestCase):
         data = pd.DataFrame(int_missing_data, columns=columns)
 
         clean = Analysis(x_train=data, x_test=data)
-        clean.predictive_power()
+        clean.predictive_power(data_labels=True)
 
         self.assertTrue(True)
 

@@ -78,11 +78,14 @@ class Test_TestBase(unittest.TestCase):
         base = Analysis(x_train=data, x_test=None, target="species",)
 
         base.barplot(
-            x="species", y="sepal_length", method="mean", orient="h", barmode="group",
+            x="species",
+            y="sepal_length",
+            method="mean",
+            orient="h",
+            barmode="group",
+            asc=True,
         )
-        base.barplot(
-            x="species", method="mean", barmode="group",
-        )
+        base.barplot(x="species", method="mean", barmode="group", asc=False)
 
         self.assertTrue(True)
 
@@ -133,14 +136,14 @@ class Test_TestBase(unittest.TestCase):
         np.random.seed(42)
         df = pd.DataFrame(
             {
-                "Google": np.random.randn(1000) + 0.2,
-                "Apple": np.random.randn(1000) + 0.17,
-                "date": pd.date_range("1/1/2000", periods=1000),
+                "Google": np.random.randn(100) + 0.2,
+                "Apple": np.random.randn(100) + 0.17,
+                "date": pd.date_range("1/1/2000", periods=100),
             }
         )
 
         clean = Analysis(x_train=df)
-        clean.lineplot(x="date", y="Google")
+        clean.lineplot(x="date", y="Google", color="Apple")
 
         self.assertTrue(True)
 

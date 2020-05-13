@@ -31,7 +31,7 @@ class UnsupervisedModelAnalysis(ModelAnalysisBase):
             self.y_pred = self.model.predict(self.x_train)
         else:
             self.y_pred = self.model.fit_predict(self.x_train)
-            
+
         self.x_train[self.cluster_col] = self.y_pred
 
     def filter_cluster(self, cluster_no: int):
@@ -94,7 +94,7 @@ class UnsupervisedModelAnalysis(ModelAnalysisBase):
         )
 
         self.plot_dim_reduction(
-            category=self.cluster_col,
+            self.cluster_col,
             dim=dim,
             algo=reduce,
             output_file=output_file_path,

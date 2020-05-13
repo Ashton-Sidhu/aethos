@@ -57,7 +57,14 @@ class VizCreator(object):
         return ax
 
     def barplot(
-        self, x, y, data, method=None, output_file="", **barplot_kwargs,
+        self,
+        x: str,
+        y: str,
+        data: pd.DataFrame,
+        method=None,
+        asc=None,
+        output_file="",
+        **barplot_kwargs,
     ):
         """
         Visualizes a bar plot.
@@ -77,20 +84,34 @@ class VizCreator(object):
             Method to aggregate groupy data
             Examples: min, max, mean, etc., optional
             by default None
+
+        asc : bool
+            To sort values in ascending order, False for descending
         """
 
         import plotly.express as px
 
-        data_copy = data.copy()
+        orient = barplot_kwargs.get("orientation", None)
 
         if method:
-            data_copy = data_copy.groupby(x, as_index=False)
-            data_copy = getattr(data_copy, method)()
+            if orient == "h":
+                data = data.groupby(y, as_index=False)
+            else:
+                data = data.groupby(x, as_index=False)
+
+            data = getattr(data, method)()
 
             if not y:
-                y = data_copy.iloc[:, 1].name
+                y = data.iloc[:, 1].name
 
-        fig = px.bar(data_copy, x=x, y=y, **barplot_kwargs)
+        if asc is not None:
+            data[x] = data[x].astype(str)
+            data = data.sort_values(y, ascending=asc)
+
+        fig = px.bar(data, x=x, y=y, **barplot_kwargs)
+
+        if asc is not None:
+            fig.update_layout(xaxis_type="category")
 
         if output_file:  # pragma: no cover
             fig.write_image(os.path.join(IMAGE_DIR, output_file))
@@ -103,7 +124,7 @@ class VizCreator(object):
         y: str,
         z=None,
         data=None,
-        category=None,
+        color=None,
         title="Scatter Plot",
         output_file="",
         **scatterplot_kwargs,
@@ -125,7 +146,7 @@ class VizCreator(object):
         data : Dataframe
             Dataframe
 
-        category : str, optional
+        color : str, optional
             Category to group your data, by default None
 
         title : str, optional
@@ -139,14 +160,17 @@ class VizCreator(object):
             If a name is provided save the plot to an html file, by default ''
         """
 
+        if color:
+            data[color] = data[color].astype(str)
+
         if z is None:
             fig = px.scatter(
-                data, x=x, y=y, color=category, title=title, **scatterplot_kwargs
+                data, x=x, y=y, color=color, title=title, **scatterplot_kwargs
             )
 
         else:
             fig = px.scatter_3d(
-                data, x=x, y=y, z=z, color=category, title=title, **scatterplot_kwargs
+                data, x=x, y=y, z=z, color=color, title=title, **scatterplot_kwargs
             )
 
         if output_file:  # pragma: no cover
@@ -160,7 +184,7 @@ class VizCreator(object):
         y: str,
         z: str,
         data,
-        category=None,
+        color=None,
         title="Line Plot",
         output_file="",
         **lineplot_kwargs,
@@ -182,8 +206,8 @@ class VizCreator(object):
         data : Dataframe
             Dataframe
 
-        category : str
-            Category column to draw multiple line plots of
+        color : str
+            Column to draw multiple line plots of
 
         title : str, optional
             Title of the plot, by default 'Line Plot'
@@ -192,16 +216,17 @@ class VizCreator(object):
             If a name is provided save the plot to an html file, by default ''
         """
 
+        if color:
+            data[color] = data[color].astype(str)
+
         if z is None:
-            fig = px.line(
-                data, x=x, y=y, color=category, title=title, **lineplot_kwargs
-            )
+            fig = px.line(data, x=x, y=y, color=color, title=title, **lineplot_kwargs)
 
             fig.data[0].update(mode="markers+lines")
 
         else:
             fig = px.line_3d(
-                data, x=x, y=y, z=z, color=category, title=title, **lineplot_kwargs
+                data, x=x, y=y, z=z, color=color, title=title, **lineplot_kwargs
             )
 
         if output_file:  # pragma: no cover
@@ -209,7 +234,7 @@ class VizCreator(object):
 
         return fig
 
-    def correlation_matrix(
+    def viz_correlation_matrix(
         self, df, data_labels=False, hide_mirror=False, output_file="", **kwargs
     ):
         """
@@ -230,12 +255,10 @@ class VizCreator(object):
             Output file name for the image including extension (.jpg, .png, etc.)
         """
 
-        corr = df.corr()
-
         fig, ax = plt.subplots(figsize=(11, 9))
 
         if hide_mirror:
-            mask = np.zeros_like(corr, dtype=np.bool)
+            mask = np.zeros_like(df, dtype=np.bool)
             mask[np.triu_indices_from(mask)] = True
         else:
             mask = None
@@ -243,7 +266,7 @@ class VizCreator(object):
         cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
         sns.heatmap(
-            corr,
+            df,
             cmap=cmap,
             vmax=0.3,
             center=0,
@@ -369,7 +392,13 @@ class VizCreator(object):
         return g
 
     def histogram(
-        self, x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwargs
+        self,
+        x: list,
+        x_train: pd.DataFrame,
+        x_test=None,
+        hue=None,
+        output_file="",
+        **kwargs,
     ):
         """
         Plots a histogram.
@@ -385,6 +414,9 @@ class VizCreator(object):
         x_test : pd.DataFrame
             Dataframe of the data.
 
+        hue : str, optional
+            Column to colour points by, by default None
+
         ouput_file : str
             Output file name for the image including extension (.jpg, .png, etc.)
         """
@@ -394,16 +426,37 @@ class VizCreator(object):
         sns.set(style="ticks", color_codes=True)
         sns.set_palette(sns.color_palette("pastel"))
 
+        if hue:
+            classes = np.unique(x_train[hue])
+
         # Make the single plot look pretty
         if len(x) == 1:
             data = x_train[~x_train[x[0]].isnull()]
-            g = sns.distplot(data[x], label="Train Data", **kwargs)
+
+            if hue:
+                for item in classes:
+                    g = sns.distplot(
+                        data[data[hue] == item][x],
+                        label=f"Train Data, {item}",
+                        **kwargs,
+                    )
+            else:
+                g = sns.distplot(data[x], label="Train Data", **kwargs)
 
             if x_test is not None:
                 data = x_test[~x_test[x[0]].isnull()]
-                g = sns.distplot(data[x], label="Test Data", **kwargs)
-                g.legend(loc="upper right")
 
+                if hue:
+                    for item in classes:
+                        g = sns.distplot(
+                            data[data[hue] == item][x],
+                            label=f"Test Data, {item}",
+                            **kwargs,
+                        )
+                else:
+                    g = sns.distplot(data[x], label="Test Data", **kwargs)
+
+            g.legend(loc="upper right")
             g.set_title(f"Histogram for {x[0].capitalize()}")
 
         else:
@@ -414,14 +467,34 @@ class VizCreator(object):
 
             for ax, col in zip(ax.flat, x):
                 g = None
-
                 data = x_train[~x_train[col].isnull()]
-                g = sns.distplot(data[col], ax=ax, label="Train Data", **kwargs)
+
+                if hue:
+                    for item in classes:
+                        g = sns.distplot(
+                            data[data[hue] == item][col],
+                            ax=ax,
+                            label=f"Train Data, {item}",
+                            **kwargs,
+                        )
+                else:
+                    g = sns.distplot(data[col], ax=ax, label="Train Data", **kwargs)
 
                 if x_test is not None:
                     data = x_test[~x_test[col].isnull()]
-                    g = sns.distplot(data[col], ax=ax, label="Test Data", **kwargs)
-                    ax.legend(loc="upper right")
+
+                    if hue:
+                        for item in classes:
+                            g = sns.distplot(
+                                data[data[hue] == item][col],
+                                ax=ax,
+                                label=f"Test Data, {item}",
+                                **kwargs,
+                            )
+                    else:
+                        g = sns.distplot(data[col], ax=ax, label="Test Data", **kwargs)
+
+                ax.legend(loc="upper right")
 
                 ax.set_title(f"Histogram for {col.capitalize()}", fontsize=20)
 

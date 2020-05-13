@@ -171,8 +171,6 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
 
             print(report_string.strip())
 
-        return sorted_features
-
     def summary_plot(self, output_file="", **summaryplot_kwargs):
         """
         Create a SHAP summary plot, colored by feature values when they are provided.

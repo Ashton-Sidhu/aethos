@@ -62,7 +62,7 @@ class Analysis(Visualizations, Stats):
         else:
             cols = self.features
 
-        return self.x_train[cols]._repr_html_()
+        return self.x_train[cols].head()._repr_html_()
 
     def __getitem__(self, column):
         return _get_item_(self, column)
@@ -540,7 +540,44 @@ class Analysis(Visualizations, Stats):
 
         return self
 
-    def predictive_power(self, col=None):
+    def correlation_matrix(
+        self, data_labels=False, hide_mirror=False, output_file="", **kwargs
+    ):
+        """
+        Plots a correlation matrix of all the numerical variables.
+
+        For more information on possible kwargs please see: https://seaborn.pydata.org/generated/seaborn.heatmap.html
+        
+        Parameters
+        ----------
+        data_labels : bool, optional
+            True to display the correlation values in the plot, by default False
+
+        hide_mirror : bool, optional
+            Whether to display the mirroring half of the correlation plot, by default False
+
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
+        Examples
+        --------
+        >>> data.correlation_matrix(data_labels=True)
+        >>> data.correlation_matrix(data_labels=True, output_file='corr.png')
+        """
+
+        fig = self._viz.viz_correlation_matrix(
+            self.x_train.corr(),
+            data_labels=data_labels,
+            hide_mirror=hide_mirror,
+            output_file=output_file,
+            **kwargs,
+        )
+
+        return fig
+
+    def predictive_power(
+        self, col=None, data_labels=False, hide_mirror=False, output_file="", **kwargs
+    ):
         """
         Calculated the Predictive Power Score of each feature.
 
@@ -552,14 +589,39 @@ class Analysis(Visualizations, Stats):
         ----------
         col : str
             Column in the dataframe
+
+        data_labels : bool, optional
+            True to display the correlation values in the plot, by default False
+
+        hide_mirror : bool, optional
+            Whether to display the mirroring half of the correlation plot, by default False
+
+        output_file : str, optional
+            Output file name for image with extension (i.e. jpeg, png, etc.)
+
+        Examples
+        --------
+        >>> data.predictive_power(data_labels=True)
+        >>> data.predictive_power(col='col1')
         """
 
         import ppscore as pps
+        import seaborn as sns
 
         if col:
-            pps.score(self.x_train, col, self.target)
+            return pps.score(self.x_train, col, self.target)
         else:
-            pps.matrix(self.x_train)
+            pp_df = pps.matrix(self.x_train)
+
+            fig = self._viz.viz_correlation_matrix(
+                pp_df,
+                data_labels=data_labels,
+                hide_mirror=hide_mirror,
+                output_file=output_file,
+                **kwargs,
+            )
+
+            return fig
 
     def autoviz(self, max_rows=150000, max_cols=30, verbose=0):  # pragma: no cover
         """

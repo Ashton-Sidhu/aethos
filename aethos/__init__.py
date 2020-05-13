@@ -59,5 +59,7 @@ shell = get_ipython().__class__.__name__
 
 if shell == "ZMQInteractiveShell":
     import shap
+    from plotly.offline import init_notebook_mode
 
+    init_notebook_mode(connected=True)
     shap.initjs()

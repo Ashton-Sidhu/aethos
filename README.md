@@ -183,7 +183,7 @@ As you've started to notice, alot of tasks to df the data and to explore the dat
 df.barplot(x='Age', y='Survived', method='mean')
 
 # Plots a scatter plot of Age vs. Fare and colours the dots based off the Survived column.
-df.scatterplot(x='Age', y='Fare', category='Survived')
+df.scatterplot(x='Age', y='Fare', color='Survived')
 
 # One hot encode the `Person` and `Embarked` columns and then drop the original columns
 df.onehot_encode('Person', 'Embarked', drop_col=True) 

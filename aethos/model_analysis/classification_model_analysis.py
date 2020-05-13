@@ -1,9 +1,10 @@
 import os
 import numpy as np
-import sklearn
 import warnings
 import pandas as pd
 import matplotlib.pyplot as plt
+
+from sklearn import metrics
 
 from aethos.config import IMAGE_DIR
 from aethos.config.config import _global_config
@@ -68,11 +69,12 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         >>> m.accuracy()
         """
 
-        return sklearn.metrics.accuracy_score(self.y_test, self.y_pred, **kwargs)
+        return metrics.accuracy_score(self.y_test, self.y_pred, **kwargs)
 
     def balanced_accuracy(self, **kwargs):
         """
-        The balanced accuracy in binary and multiclass classification problems to deal with imbalanced datasets. It is defined as the average of recall obtained on each class.
+        The balanced accuracy in binary and multiclass classification problems to deal with imbalanced datasets.
+        It is defined as the average of recall obtained on each class.
 
         The best value is 1 and the worst value is 0 when adjusted=False.
         
@@ -87,9 +89,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         >>> m.balanced_accuracy()
         """
 
-        return sklearn.metrics.balanced_accuracy_score(
-            self.y_test, self.y_pred, **kwargs
-        )
+        return metrics.balanced_accuracy_score(self.y_test, self.y_pred, **kwargs)
 
     def average_precision(self, **kwargs):
         """
@@ -108,7 +108,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         """
 
         if hasattr(self.model, "decision_function"):
-            return sklearn.metrics.average_precision_score(
+            return metrics.average_precision_score(
                 self.y_test, self.model.decision_function(self.x_test), **kwargs
             )
         else:
@@ -133,11 +133,16 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         multi_class = kwargs.pop("multi_class", "ovr")
 
         if self.multiclass:
-            roc_auc = sklearn.metrics.roc_auc_score(
+            roc_auc = metrics.roc_auc_score(
                 self.y_test, self.probabilities, multi_class=multi_class, **kwargs
             )
         else:
-            roc_auc = sklearn.metrics.roc_auc_score(self.y_test, self.y_pred, **kwargs)
+            if hasattr(self.model, "decision_function"):
+                roc_auc = metrics.roc_auc_score(
+                    self.y_test, self.model.decision_function(self.x_test), **kwargs
+                )
+            else:
+                roc_auc = np.nan
 
         return roc_auc
 
@@ -158,7 +163,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         >>> m.zero_one_loss()
         """
 
-        return sklearn.metrics.zero_one_loss(self.y_test, self.y_pred, **kwargs)
+        return metrics.zero_one_loss(self.y_test, self.y_pred, **kwargs)
 
     def recall(self, **kwargs):
         """
@@ -182,11 +187,9 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.recall_score(
-                self.y_test, self.y_pred, average=avg, **kwargs
-            )
+            return metrics.recall_score(self.y_test, self.y_pred, average=avg, **kwargs)
         else:
-            return sklearn.metrics.recall_score(self.y_test, self.y_pred, **kwargs)
+            return metrics.recall_score(self.y_test, self.y_pred, **kwargs)
 
     def precision(self, **kwargs):
         """
@@ -210,11 +213,11 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.precision_score(
+            return metrics.precision_score(
                 self.y_test, self.y_pred, average=avg, **kwargs
             )
         else:
-            return sklearn.metrics.precision_score(self.y_test, self.y_pred, **kwargs)
+            return metrics.precision_score(self.y_test, self.y_pred, **kwargs)
 
     def matthews_corr_coef(self, **kwargs):
         """
@@ -235,7 +238,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         >>> m.mathews_corr_coef()
         """
 
-        return sklearn.metrics.matthews_corrcoef(self.y_test, self.y_pred, **kwargs)
+        return metrics.matthews_corrcoef(self.y_test, self.y_pred, **kwargs)
 
     def log_loss(self, **kwargs):
         """
@@ -256,7 +259,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         """
 
         if self.probabilities is not None:
-            return sklearn.metrics.log_loss(self.y_test, self.probabilities, **kwargs)
+            return metrics.log_loss(self.y_test, self.probabilities, **kwargs)
         else:
             return np.nan
 
@@ -280,11 +283,11 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.jaccard_score(
+            return metrics.jaccard_score(
                 self.y_test, self.y_pred, average=avg, **kwargs
             )
         else:
-            return sklearn.metrics.jaccard_score(self.y_test, self.y_pred, **kwargs)
+            return metrics.jaccard_score(self.y_test, self.y_pred, **kwargs)
 
     def hinge_loss(self, **kwargs):
         """
@@ -302,7 +305,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         """
 
         if hasattr(self.model, "decision_function"):
-            return sklearn.metrics.hinge_loss(
+            return metrics.hinge_loss(
                 self.y_test, self.model.decision_function(self.x_test), **kwargs
             )
         else:
@@ -323,7 +326,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         >>> m.hamming_loss()
         """
 
-        return sklearn.metrics.hamming_loss(self.y_test, self.y_pred, **kwargs)
+        return metrics.hamming_loss(self.y_test, self.y_pred, **kwargs)
 
     def fbeta(self, beta=0.5, **kwargs):
         """
@@ -350,11 +353,11 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.fbeta_score(
+            return metrics.fbeta_score(
                 self.y_test, self.y_pred, beta, average=avg, **kwargs
             )
         else:
-            return sklearn.metrics.fbeta_score(self.y_test, self.y_pred, beta, **kwargs)
+            return metrics.fbeta_score(self.y_test, self.y_pred, beta, **kwargs)
 
     def f1(self, **kwargs):
         """
@@ -377,11 +380,9 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         avg = kwargs.pop("average", "macro")
 
         if self.multiclass:
-            return sklearn.metrics.f1_score(
-                self.y_test, self.y_pred, average=avg, **kwargs
-            )
+            return metrics.f1_score(self.y_test, self.y_pred, average=avg, **kwargs)
         else:
-            return sklearn.metrics.f1_score(self.y_test, self.y_pred, **kwargs)
+            return metrics.f1_score(self.y_test, self.y_pred, **kwargs)
 
     def cohen_kappa(self, **kwargs):
         """
@@ -403,7 +404,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         >>> m.cohen_kappa()
         """
 
-        return sklearn.metrics.cohen_kappa_score(self.y_test, self.y_pred, **kwargs)
+        return metrics.cohen_kappa_score(self.y_test, self.y_pred, **kwargs)
 
     def brier_loss(self, **kwargs):
         """
@@ -429,7 +430,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
             warnings.warn("Brier Loss can only be used for binary classification.")
             return -999
 
-        return sklearn.metrics.brier_score_loss(self.y_test, self.y_pred, **kwargs)
+        return metrics.brier_score_loss(self.y_test, self.y_pred, **kwargs)
 
     def metrics(self, *metrics):
         """
@@ -594,7 +595,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         if figsize:
             plt.figure(figsize=figsize)
 
-        confusion_matrix = sklearn.metrics.confusion_matrix(y_true, y_pred)
+        confusion_matrix = metrics.confusion_matrix(y_true, y_pred)
 
         if normalize:
             confusion_matrix = (
@@ -688,9 +689,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         else:
             roc_auc = self.roc_auc()
 
-            roc_plot = sklearn.metrics.plot_roc_curve(
-                self.model, self.x_test, self.y_test
-            )
+            roc_plot = metrics.plot_roc_curve(self.model, self.x_test, self.y_test)
             roc_plot.ax_.set_xlabel("False Positive Rate or (1 - Specifity)")
             roc_plot.ax_.set_ylabel("True Positive Rate or (Sensitivity)")
             if title:
@@ -728,7 +727,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         >>> m.classification_report()
         """
 
-        classification_report = sklearn.metrics.classification_report(
+        classification_report = metrics.classification_report(
             self.y_test, self.y_pred, target_names=self.classes, digits=2
         )
 
@@ -801,6 +800,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         """
 
         from yellowbrick.contrib.classifier import DecisionViz
+        from sklearn.base import clone
 
         assert (not x or not y) or (
             x or y
@@ -811,9 +811,8 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         else:
             features = [x, y]
 
-        viz = DecisionViz(
-            self.model, title=title, features=features, classes=self.classes
-        )
+        model = clone(self.model)
+        viz = DecisionViz(model, title=title, features=features, classes=self.classes)
 
         viz.fit(self.x_train[features].values, self.y_train.values)
         viz.draw(self.x_test[features].values, self.y_test.values)
