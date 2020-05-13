@@ -219,19 +219,16 @@ class ModelBase(object):
 
         from aethos.model_analysis.constants import DEBUG_OVERFIT, DEBUG_UNDERFIT
 
-        overfit_labels = []
-        underfit_labels = []
+        overfit_labels = [
+            widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            for item in DEBUG_OVERFIT
+        ]
+        underfit_labels = [
+            widgets.Checkbox(description=item, layout=Layout(width="100%"))
+            for item in DEBUG_UNDERFIT
+        ]
 
-        for item in DEBUG_OVERFIT:
-            overfit_labels.append(
-                widgets.Label(description=item, layout=Layout(width="100%"))
-            )
         overfit_box = widgets.VBox(overfit_labels)
-
-        for item in DEBUG_UNDERFIT:
-            underfit_labels.append(
-                widgets.Checkbox(description=item, layout=Layout(width="100%"))
-            )
         underfit_box = widgets.VBox(underfit_labels)
 
         tab_list = [overfit_box, underfit_box]

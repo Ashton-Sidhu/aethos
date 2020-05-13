@@ -118,8 +118,6 @@ Analysis
 
     df[df.Age > 25] # Filter the data
 
-    df['new_col'] = [1, 2]  # Add a new column to the data, based off the length of the data provided, it will add it to the train or test set.
-
     df.x_train['new_col'] = [1,2] # This is the exact same as the either of code above
     df.x_test['new_col'] = [1,2]
 
@@ -174,10 +172,6 @@ As you've started to notice, alot of tasks to df the data and to explore the dat
 Modelling
 =========
 
-.. code:: python
-
-    model = at.Model(df)
-
 Running a Single Model
 ----------------------
 
@@ -198,6 +192,8 @@ After a model has been ran, it comes with use cases such as plotting RoC curves,
 
     # Build a Logistic Regression model with Gridsearch and then cross validates the best model using stratified K-Fold cross validation.
     lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv_type="strat-kfold") 
+
+    lr_model.help_debug() # Interface with items to check for to help debug your model.
 
     lr_model.metrics() # Views all metrics for the model
     lr_model.confusion_matrix()
