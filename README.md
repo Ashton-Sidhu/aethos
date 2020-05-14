@@ -8,6 +8,8 @@
 
 To track development of the project, you can view the [Trello board](https://trello.com/b/EZVs9Hxz/automated-ds-ml).
 
+**What's new in Aethos 2.0?** For a summary of new features and changes to Aethos in v2.0 you can read this [blog post](https://towardsdatascience.com/aethos-2-0-an-improved-way-to-automate-your-data-science-work-flow-8bfb2ac3a29a#8542-d7c094f06e28). Alternatively, there is a Google Collab notebook available [here](https://ashton-sidhu.github.io/Blog/jupyter/aethos/datascience/2020/05/12/Aethos-2.0.html).
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
