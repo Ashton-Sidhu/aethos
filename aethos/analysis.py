@@ -53,7 +53,8 @@ class Analysis(Visualizations, Stats):
         self.target_mapping = None
 
     def __repr__(self):
-        return self.x_train.to_string()
+
+        return self.x_train.head().to_string()
 
     def _repr_html_(self):  # pragma: no cover
 
