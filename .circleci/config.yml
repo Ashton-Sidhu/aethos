@@ -51,7 +51,6 @@ jobs:
           command: |
             . venv/bin/activate
             coverage run -m unittest discover
-            codecov -F --required || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required) || (sleep 5 && codecov --required)
   test-python-install:
       parameters:
         version:
