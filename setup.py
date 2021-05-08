@@ -7,40 +7,10 @@ from setuptools.command.install import install
 
 VERSION = "2.0.1"
 
-pkgs = [
-    "numpy==1.18.2",
-    "pandas==1.0.3",
-    "scikit-learn>=0.22",
-    "textblob==0.15.3",
-    "matplotlib==3.2.1",
-    "pandas_summary",
-    "ptitprince==0.2.3",
-    "nltk==3.5",
-    "ipython==7.13.0",
-    "gensim==3.8.2",
-    "pandas-profiling==2.8.0",
-    "cookiecutter==1.6.0",
-    "shap==0.35.0",
-    "interpret==0.1.21",
-    "yellowbrick==1.1",
-    "spacy==2.2.4",
-    "xgboost==0.90",
-    "ipywidgets==7.5.1",
-    "qgrid==1.3.1",
-    "python-dateutil<2.8.1",
-    "itables==0.2.1",
-    "selenium==3.141.0",
-    "graphviz==0.13.2",
-    "pyldavis==2.1.2",
-    "swifter==0.302",
-    "lightgbm==2.3.1",
-    "mlflow==1.7.2",
-    "statsmodels==0.11.1",
-    "ppscore==0.0.2",
-    "autoviz==0.0.68",
-]
+pkgs = []
 
-extras = {"ptmodels": ["transformers==2.3.0", "tensorflow==2.1.0"]}
+# extras = {"ptmodels": ["transformers==2.3.0", "tensorflow==2.1.0"]}
+extras = {"spark": ["pyspark>=3.0.0"], "dask": [], "spark2": []}
 
 
 class VerifyVersionCommand(install):
@@ -80,6 +50,7 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Development Status :: 4 - Beta",
     ],
     cmdclass={"verify": VerifyVersionCommand},
