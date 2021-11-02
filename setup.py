@@ -15,7 +15,7 @@ pkgs = [
     "matplotlib==3.2.1",
     "pandas_summary",
     "ptitprince==0.2.3",
-    "nltk==3.5",
+    "nltk==3.6.5",
     "ipython==7.13.0",
     "gensim==3.8.2",
     "pandas-profiling==2.8.0",
