@@ -16,7 +16,7 @@ pkgs = [
     "pandas_summary",
     "ptitprince==0.2.3",
     "nltk==3.6.5",
-    "ipython==7.13.0",
+    "ipython==7.16.3",
     "gensim==3.8.2",
     "pandas-profiling==2.8.0",
     "cookiecutter==1.6.0",
