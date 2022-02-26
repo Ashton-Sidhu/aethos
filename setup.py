@@ -34,7 +34,7 @@ pkgs = [
     "pyldavis==2.1.2",
     "swifter==0.302",
     "lightgbm==2.3.1",
-    "mlflow==1.7.2",
+    "mlflow==1.23.1",
     "statsmodels==0.11.1",
     "ppscore==0.0.2",
     "autoviz==0.0.68",
