@@ -19,7 +19,7 @@ pkgs = [
     "ipython==7.16.3",
     "gensim==3.8.2",
     "pandas-profiling==2.8.0",
-    "cookiecutter==1.6.0",
+    "cookiecutter==2.1.1",
     "shap==0.35.0",
     "interpret==0.1.21",
     "yellowbrick==1.1",
