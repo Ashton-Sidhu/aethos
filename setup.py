@@ -8,7 +8,7 @@ from setuptools.command.install import install
 VERSION = "2.0.1"
 
 pkgs = [
-    "numpy==1.21.0",
+    "numpy==1.22.0",
     "pandas==1.0.3",
     "scikit-learn>=0.22",
     "textblob==0.15.3",
