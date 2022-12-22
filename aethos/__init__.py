@@ -38,7 +38,6 @@ from aethos.model_analysis import (
     ClassificationModelAnalysis,
     RegressionModelAnalysis,
     UnsupervisedModelAnalysis,
-    TextModelAnalysis,
 )
 
 pd.options.mode.chained_assignment = None
@@ -52,7 +51,6 @@ __all__ = [
     "ClassificationModelAnalsysis",
     "RegressionModelAnalysis",
     "UnsupervisedModelAnalysis",
-    "TextModelAnalysis",
 ]
 
 shell = get_ipython().__class__.__name__

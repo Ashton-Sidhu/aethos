@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import spacy
 
 from sklearn.feature_extraction.text import (
     CountVectorizer,
@@ -43,21 +44,21 @@ class Feature(object):
             A parameter to specify whether to drop the column being transformed, by default
             keep the column, True
 
-        categories : ‘auto’ or a list of array-like, default=’auto’
+        categories : 'auto' or a list of array-like, default='auto'
             Categories (unique values) per feature:
 
-                ‘auto’ : Determine categories automatically from the training data.
+                'auto' : Determine categories automatically from the training data.
 
                 list : categories[i] holds the categories expected in the ith column. The passed categories should not mix strings and numeric values within a single feature, and should be sorted in case of numeric values.
 
             The used categories can be found in the categories_ attribute.
 
-        drop : ‘first’ or a array-like of shape (n_features,), default=None
+        drop : 'first' or a array-like of shape (n_features,), default=None
             Specifies a methodology to use to drop one of the categories per feature. This is useful in situations where perfectly collinear features cause problems, such as when feeding the resulting data into a neural network or an unregularized regression.
 
                 None : retain all features (the default).
 
-                ‘first’ : drop the first category in each feature. If only one category is present, the feature will be dropped entirely.
+                'first' : drop the first category in each feature. If only one category is present, the feature will be dropped entirely.
 
                 array : drop[i] is the category in feature X[:, i] that should be dropped.
 
@@ -67,9 +68,9 @@ class Feature(object):
         dtype : number type, default=np.float
             Desired dtype of output.
 
-        handle_unknown: {‘error’, ‘ignore’}, default='ignore'
+        handle_unknown: {'error', 'ignore'}, default='ignore'
             Whether to raise an error or ignore if an unknown categorical feature is present during transform (default is to raise).
-            When this parameter is set to ‘ignore’ and an unknown category is encountered during transform, the resulting one-hot encoded columns for this feature will be all zeros.
+            When this parameter is set to 'ignore' and an unknown category is encountered during transform, the resulting one-hot encoded columns for this feature will be all zeros.
             In the inverse transform, an unknown category will be denoted as None.
 
         Returns
@@ -90,7 +91,7 @@ class Feature(object):
         list_of_cols = _get_columns(list_of_cols, self.x_train)
 
         enc_data = enc.fit_transform(self.x_train[list_of_cols]).toarray()
-        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names(list_of_cols))
+        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names_out(list_of_cols))
         self.x_train = drop_replace_columns(
             self.x_train, list_of_cols, enc_df, keep_col
         )
@@ -98,7 +99,7 @@ class Feature(object):
         if self.x_test is not None:
             enc_test = enc.transform(self.x_test[list_of_cols]).toarray()
             enc_test_df = pd.DataFrame(
-                enc_test, columns=enc.get_feature_names(list_of_cols)
+                enc_test, columns=enc.get_feature_names_out(list_of_cols)
             )
             self.x_test = drop_replace_columns(
                 self.x_test, list_of_cols, enc_test_df, keep_col
@@ -128,21 +129,21 @@ class Feature(object):
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
 
-        encoding: str, default=’utf-8’
+        encoding: str, default='utf-8'
             If bytes or files are given to analyze, this encoding is used to decode.
 
-        decode_error: {‘strict’, ‘ignore’, ‘replace’} (default=’strict’)
+        decode_error: {'strict', 'ignore', 'replace'} (default='strict')
             Instruction on what to do if a byte sequence is given to analyze that contains characters not of the given encoding.
-            By default, it is ‘strict’, meaning that a UnicodeDecodeError will be raised.
-            Other values are ‘ignore’ and ‘replace’.
+            By default, it is 'strict', meaning that a UnicodeDecodeError will be raised.
+            Other values are 'ignore' and 'replace'.
 
-        strip_accents: {‘ascii’, ‘unicode’, None} (default=None)
+        strip_accents: {'ascii', 'unicode', None} (default=None)
             Remove accents and perform other character normalization during the preprocessing step.\
-            ‘ascii’ is a fast method that only works on characters that have an direct ASCII mapping.
-            ‘unicode’ is a slightly slower method that works on any characters.
+            'ascii' is a fast method that only works on characters that have an direct ASCII mapping.
+            'unicode' is a slightly slower method that works on any characters.
             None (default) does nothing.
 
-            Both ‘ascii’ and ‘unicode’ use NFKD normalization from unicodedata.normalize.
+            Both 'ascii' and 'unicode' use NFKD normalization from unicodedata.normalize.
 
         lowercase: bool (default=True)
             Convert all characters to lowercase before tokenizing.
@@ -155,17 +156,17 @@ class Feature(object):
             Override the string tokenization step while preserving the preprocessing and n-grams generation steps.
             Only applies if analyzer == 'word'.
 
-        analyzer: str, {‘word’, ‘char’, ‘char_wb’} or callable
+        analyzer: str, {'word', 'char', 'char_wb'} or callable
             Whether the feature should be made of word or character n-grams
-            Option ‘char_wb’ creates character n-grams only from text inside word boundaries;
+            Option 'char_wb' creates character n-grams only from text inside word boundaries;
             n-grams at the edges of words are padded with space.
 
             If a callable is passed it is used to extract the sequence of features out of the raw, unprocessed input.
 
-        stop_words: str {‘english’}, list, or None (default=None)
+        stop_words: str {'english'}, list, or None (default=None)
             If a string, it is passed to _check_stop_list and the appropriate stop list is returned.
-            ‘english’ is currently the only supported string value.
-            There are several known issues with ‘english’ and you should consider an alternative (see Using stop words).
+            'english' is currently the only supported string value.
+            There are several known issues with 'english' and you should consider an alternative (see Using stop words).
 
             If a list, that list is assumed to contain stop words, all of which will be removed from the resulting tokens. Only applies if analyzer == 'word'.
 
@@ -207,9 +208,9 @@ class Feature(object):
         dtype: type, optional (default=float64)
             Type of the matrix returned by fit_transform() or transform().
 
-        norm: ‘l1’, ‘l2’ or None, optional (default=’l2’)
-            Each output row will have unit norm, either: * ‘l2’: Sum of squares of vector elements is 1.
-            The cosine similarity between two vectors is their dot product when l2 norm has been applied. * ‘l1’: Sum of absolute values of vector elements is 1.
+        norm: 'l1', 'l2' or None, optional (default='l2')
+            Each output row will have unit norm, either: * 'l2': Sum of squares of vector elements is 1.
+            The cosine similarity between two vectors is their dot product when l2 norm has been applied. * 'l1': Sum of absolute values of vector elements is 1.
 
         use_idf: bool (default=True)
             Enable inverse-document-frequency reweighting.
@@ -240,12 +241,12 @@ class Feature(object):
 
         for col in list_of_cols:
             enc_data = enc.fit_transform(self.x_train[col]).toarray()
-            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
+            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names_out())
             self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
 
             if self.x_test is not None:
                 enc_test = enc.transform(self.x_test[col]).toarray()
-                enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names())
+                enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names_out())
                 self.x_test = drop_replace_columns(
                     self.x_test, col, enc_test_df, keep_col
                 )
@@ -273,21 +274,21 @@ class Feature(object):
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
 
-        encoding: str, default=’utf-8’
+        encoding: str, default='utf-8'
             If bytes or files are given to analyze, this encoding is used to decode.
 
-        decode_error: {‘strict’, ‘ignore’, ‘replace’} (default=’strict’)
+        decode_error: {'strict', 'ignore', 'replace'} (default='strict')
             Instruction on what to do if a byte sequence is given to analyze that contains characters not of the given encoding.
-            By default, it is ‘strict’, meaning that a UnicodeDecodeError will be raised.
-            Other values are ‘ignore’ and ‘replace’.
+            By default, it is 'strict', meaning that a UnicodeDecodeError will be raised.
+            Other values are 'ignore' and 'replace'.
 
-        strip_accents: {‘ascii’, ‘unicode’, None} (default=None)
+        strip_accents: {'ascii', 'unicode', None} (default=None)
             Remove accents and perform other character normalization during the preprocessing step.\
-            ‘ascii’ is a fast method that only works on characters that have an direct ASCII mapping.
-            ‘unicode’ is a slightly slower method that works on any characters.
+            'ascii' is a fast method that only works on characters that have an direct ASCII mapping.
+            'unicode' is a slightly slower method that works on any characters.
             None (default) does nothing.
 
-            Both ‘ascii’ and ‘unicode’ use NFKD normalization from unicodedata.normalize.
+            Both 'ascii' and 'unicode' use NFKD normalization from unicodedata.normalize.
 
         lowercase: bool (default=True)
             Convert all characters to lowercase before tokenizing.
@@ -300,17 +301,17 @@ class Feature(object):
             Override the string tokenization step while preserving the preprocessing and n-grams generation steps.
             Only applies if analyzer == 'word'.
 
-        analyzer: str, {‘word’, ‘char’, ‘char_wb’} or callable
+        analyzer: str, {'word', 'char', 'char_wb'} or callable
             Whether the feature should be made of word or character n-grams
-            Option ‘char_wb’ creates character n-grams only from text inside word boundaries;
+            Option 'char_wb' creates character n-grams only from text inside word boundaries;
             n-grams at the edges of words are padded with space.
 
             If a callable is passed it is used to extract the sequence of features out of the raw, unprocessed input.
 
-        stop_words: str {‘english’}, list, or None (default=None)
+        stop_words: str {'english'}, list, or None (default=None)
             If a string, it is passed to _check_stop_list and the appropriate stop list is returned.
-            ‘english’ is currently the only supported string value.
-            There are several known issues with ‘english’ and you should consider an alternative (see Using stop words).
+            'english' is currently the only supported string value.
+            There are several known issues with 'english' and you should consider an alternative (see Using stop words).
 
             If a list, that list is assumed to contain stop words, all of which will be removed from the resulting tokens. Only applies if analyzer == 'word'.
 
@@ -368,12 +369,12 @@ class Feature(object):
 
         for col in list_of_cols:
             enc_data = enc.fit_transform(self.x_train[col]).toarray()
-            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names())
+            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names_out())
             self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
 
             if self.x_test is not None:
                 enc_test = enc.transform(self.x_test[col]).toarray()
-                enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names())
+                enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names_out())
                 self.x_test = drop_replace_columns(
                     self.x_test, col, enc_test_df, keep_col
                 )
@@ -382,7 +383,7 @@ class Feature(object):
 
     def text_hash(self, *list_args, list_of_cols=[], keep_col=True, **hash_kwargs):
         """
-        Creates a matrix of how many times a word appears in a document. It can possibly normalized as token frequencies if norm=’l1’ or projected on the euclidean unit sphere if norm=’l2’.
+        Creates a matrix of how many times a word appears in a document. It can possibly normalized as token frequencies if norm='l1' or projected on the euclidean unit sphere if norm='l2'.
 
         The premise is that the more times a word appears the more the word represents that document.
 
@@ -638,12 +639,10 @@ class Feature(object):
         >>> data.nounphrases_spacy('col1', 'col2', 'col3')
         """
 
-        import spacy
-
         list_of_cols = _input_columns(list_args, list_of_cols)
         list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        nlp = spacy.load("en")
+        nlp = spacy.load("en_core_web_sm")
 
         for col in list_of_cols:
 
@@ -709,12 +708,12 @@ class Feature(object):
         list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
 
         scaled_data = poly.fit_transform(self.x_train[list_of_cols])
-        scaled_df = pd.DataFrame(scaled_data, columns=poly.get_feature_names())
+        scaled_df = pd.DataFrame(scaled_data, columns=poly.get_feature_names_out())
         self.x_train = drop_replace_columns(self.x_train, list_of_cols, scaled_df)
 
         if self.x_test is not None:
             scaled_test = poly.transform(self.x_test)
-            scaled_test_df = pd.DataFrame(scaled_test, columns=poly.get_feature_names())
+            scaled_test_df = pd.DataFrame(scaled_test, columns=poly.get_feature_names_out())
             self.x_test = drop_replace_columns(
                 self.x_test, list_of_cols, scaled_test_df
             )
@@ -822,7 +821,7 @@ class Feature(object):
             Number of components to keep.
             
             If n_components is not set all components are kept.
-            If n_components == 'mle' and svd_solver == 'full', Minka’s MLE is used to guess the dimension.
+            If n_components == 'mle' and svd_solver == 'full', Minka's MLE is used to guess the dimension.
             Use of n_components == 'mle' will interpret svd_solver == 'auto' as svd_solver == 'full'
             If 0 < n_components < 1 and svd_solver == 'full', select the number of components such that the amount of variance that needs to be explained is greater than the percentage specified by n_components
             If svd_solver == 'arpack', the number of components must be strictly less than the minimum of n_features and n_samples
@@ -831,9 +830,9 @@ class Feature(object):
             When True (False by default) the components_ vectors are multiplied by the square root of n_samples and then divided by the singular values to ensure uncorrelated outputs with unit component-wise variances.
             Whitening will remove some information from the transformed signal (the relative variance scales of the components) but can sometime improve the predictive accuracy of the downstream estimators by making their data respect some hard-wired assumptions.
 
-        svd_solver : string {‘auto’, ‘full’, ‘arpack’, ‘randomized’}
+        svd_solver : string {'auto', 'full', 'arpack', 'randomized'}
             auto :
-                the solver is selected by a default policy based on X.shape and n_components: if the input data is larger than 500x500 and the number of components to extract is lower than 80% of the smallest dimension of the data, then the more efficient ‘randomized’ method is enabled. Otherwise the exact full SVD is computed and optionally truncated afterwards.
+                the solver is selected by a default policy based on X.shape and n_components: if the input data is larger than 500x500 and the number of components to extract is lower than 80% of the smallest dimension of the data, then the more efficient 'randomized' method is enabled. Otherwise the exact full SVD is computed and optionally truncated afterwards.
             full :
                 run exact full SVD calling the standard LAPACK solver via scipy.linalg.svd and select the components by postprocessing
             arpack :
@@ -842,16 +841,16 @@ class Feature(object):
                 run randomized SVD by the method of Halko et al.
 
         tol : float >= 0, optional (default .0)
-            Tolerance for singular values computed by svd_solver == ‘arpack’.
+            Tolerance for singular values computed by svd_solver == 'arpack'.
 
-        iterated_power : int >= 0, or ‘auto’, (default ‘auto’)
-            Number of iterations for the power method computed by svd_solver == ‘randomized’.
+        iterated_power : int >= 0, or 'auto', (default 'auto')
+            Number of iterations for the power method computed by svd_solver == 'randomized'.
 
         random_state : int, RandomState instance or None, optional (default None)
             If int, random_state is the seed used by the random number generator;
             If RandomState instance, random_state is the random number generator;
             If None, the random number generator is the RandomState instance used by np.random.
-            Used when svd_solver == ‘arpack’ or ‘randomized’.
+            Used when svd_solver == 'arpack' or 'randomized'.
         
         Returns
         -------

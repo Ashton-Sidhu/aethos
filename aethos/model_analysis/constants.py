@@ -1,4 +1,3 @@
-import lightgbm as lgb
 import sklearn
 import xgboost as xgb
 from interpret.blackbox import (
@@ -8,72 +7,32 @@ from interpret.blackbox import (
     ShapKernel,
 )
 from interpret.perf import PR, ROC, RegressionPerf
-from sklearn.naive_bayes import BernoulliNB, GaussianNB, MultinomialNB
 
 SHAP_LEARNERS = {
     sklearn.linear_model.LogisticRegression: "linear",
-    sklearn.linear_model.BayesianRidge: "linear",
     sklearn.linear_model.ElasticNet: "linear",
-    sklearn.linear_model.Lasso: "linear",
     sklearn.linear_model.LinearRegression: "linear",
-    sklearn.linear_model.Ridge: "linear",
-    sklearn.linear_model.RidgeClassifier: "linear",
-    sklearn.linear_model.SGDClassifier: "linear",
-    sklearn.linear_model.SGDRegressor: "linear",
-    sklearn.ensemble.AdaBoostClassifier: "kernel",
-    sklearn.ensemble.AdaBoostRegressor: "kernel",
-    sklearn.ensemble.BaggingClassifier: "kernel",
-    sklearn.ensemble.BaggingRegressor: "kernel",
     sklearn.ensemble.GradientBoostingClassifier: "tree",
     sklearn.ensemble.GradientBoostingRegressor: "tree",
     sklearn.ensemble.RandomForestClassifier: "tree",
     sklearn.ensemble.RandomForestRegressor: "tree",
-    BernoulliNB: "kernel",
-    GaussianNB: "kernel",
-    MultinomialNB: "kernel",
-    sklearn.tree.DecisionTreeClassifier: "tree",
     sklearn.tree.DecisionTreeRegressor: "tree",
-    sklearn.svm.LinearSVC: "kernel",
-    sklearn.svm.LinearSVR: "kernel",
-    sklearn.svm.SVC: "kernel",
-    sklearn.svm.SVR: "kernel",
     xgb.XGBClassifier: "tree",
     xgb.XGBRegressor: "tree",
-    lgb.sklearn.LGBMClassifier: "tree",
-    lgb.sklearn.LGBMRegressor: "tree",
 }
 
 PROBLEM_TYPE = {
     sklearn.linear_model.LogisticRegression: "classification",
-    sklearn.linear_model.BayesianRidge: "regression",
     sklearn.linear_model.ElasticNet: "regression",
-    sklearn.linear_model.Lasso: "regression",
     sklearn.linear_model.LinearRegression: "regression",
-    sklearn.linear_model.Ridge: "regression",
-    sklearn.linear_model.RidgeClassifier: "classification",
-    sklearn.linear_model.SGDClassifier: "classification",
-    sklearn.linear_model.SGDRegressor: "regression",
-    sklearn.ensemble.AdaBoostClassifier: "classification",
-    sklearn.ensemble.AdaBoostRegressor: "regression",
     sklearn.ensemble.BaggingClassifier: "classification",
     sklearn.ensemble.BaggingRegressor: "regression",
-    sklearn.ensemble.GradientBoostingClassifier: "classification",
     sklearn.ensemble.GradientBoostingRegressor: "regression",
     sklearn.ensemble.RandomForestClassifier: "classification",
     sklearn.ensemble.RandomForestRegressor: "regression",
-    sklearn.naive_bayes.BernoulliNB: "classification",
-    sklearn.naive_bayes.GaussianNB: "classification",
-    sklearn.naive_bayes.MultinomialNB: "classification",
-    sklearn.tree.DecisionTreeClassifier: "classification",
     sklearn.tree.DecisionTreeRegressor: "regression",
-    sklearn.svm.LinearSVC: "classification",
-    sklearn.svm.LinearSVR: "regression",
-    sklearn.svm.SVC: "classification",
-    sklearn.svm.SVR: "regression",
     xgb.XGBClassifier: "classification",
     xgb.XGBRegressor: "regression",
-    lgb.sklearn.LGBMClassifier: "classification",
-    lgb.sklearn.LGBMRegressor: "regression",
 }
 
 INTERPRET_EXPLAINERS = {
@@ -93,13 +52,13 @@ CLASS_METRICS_DESC = {
     "Zero One Loss": "Fraction of misclassifications.",
     "Precision": "It measures how many observations predicted as positive are positive. Good to use when False Positives are costly.",
     "Recall": "It measures how many observations out of all positive observations have we classified as positive. Good to use when catching call positive occurences, usually at the cost of false positive.",
-    "Matthews Correlation Coefficient": "It’s a correlation between predicted classes and ground truth.",
+    "Matthews Correlation Coefficient": "It's a correlation between predicted classes and ground truth.",
     "Log Loss": "Difference between ground truth and predicted score for every observation and average those errors over all observations.",
     "Jaccard": "Defined as the size of the intersection divided by the size of the union of two label sets, is used to compare set of predicted labels for a sample to the corresponding set of true labels.",
     "Hinge Loss": "Computes the average distance between the model and the data using hinge loss, a one-sided metric that considers only prediction errors.",
     "Hamming Loss": "The Hamming loss is the fraction of labels that are incorrectly predicted.",
-    "F-Beta": "It’s the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).",
-    "F1": "It’s the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).",
+    "F-Beta": "It's the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).",
+    "F1": "It's the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).",
     "Cohen Kappa": "Cohen Kappa tells you how much better is your model over the random classifier that predicts based on class frequencies. Works well for imbalanced problems.",
     "Brier Loss": "It is a measure of how far your predictions lie from the true values. Basically, it is a mean square error in the probability space.",
 }

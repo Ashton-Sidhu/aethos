@@ -37,7 +37,7 @@ project_metric_doc = """
         
         'Recall': 'It measures how many observations out of all positive observations have we classified as positive. Good to use when catching call positive occurences, usually at the cost of false positive.',
         
-        'Matthews Correlation Coefficient': 'It’s a correlation between predicted classes and ground truth.',
+        'Matthews Correlation Coefficient': 'It's a correlation between predicted classes and ground truth.',
         
         'Log Loss': 'Difference between ground truth and predicted score for every observation and average those errors over all observations.',
         
@@ -47,9 +47,9 @@ project_metric_doc = """
         
         'Hamming Loss': 'The Hamming loss is the fraction of labels that are incorrectly predicted.',
         
-        'F-Beta': 'It’s the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+        'F-Beta': 'It's the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
         
-        'F1': 'It’s the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+        'F1': 'It's the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
         
         'Cohen Kappa': 'Cohen Kappa tells you how much better is your model over the random classifier that predicts based on class frequencies. Works well for imbalanced problems.',
         

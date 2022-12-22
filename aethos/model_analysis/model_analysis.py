@@ -20,7 +20,6 @@ from aethos.modelling.util import (
     _get_cv_type,
     run_crossvalidation,
 )
-from aethos.templates.template_generator import TemplateGenerator as tg
 from aethos.visualizations.visualizations import Visualizations
 from aethos.stats.stats import Stats
 from aethos.model_analysis.constants import (
@@ -74,31 +73,6 @@ class ModelAnalysisBase(Visualizations, Stats):
 
         to_pickle(self.model, self.model_name)
 
-    def to_service(self, project_name: str):
-        """
-        Creates an app.py, requirements.txt and Dockerfile in `~/.aethos/projects` and the necessary folder structure
-        to run the model as a microservice.
-        
-        Parameters
-        ----------
-        project_name : str
-            Name of the project that you want to create.
-
-        Examples
-        --------
-        >>> m = Model(df)
-        >>> m_results = m.LogisticRegression()
-        >>> m_results.to_service('your_proj_name')
-        """
-
-        to_pickle(self.model, self.model_name, project=True, project_name=project_name)
-        tg.generate_service(project_name, f"{self.model_name}.pkl", self.model)
-
-        print("To run:")
-        print("\tdocker build -t `image_name` ./")
-        print("\tdocker run -d --name `container_name` -p `port_num`:80 `image_name`")
-
-
 class SupervisedModelAnalysis(ModelAnalysisBase):
     def __init__(self, model, x_train, x_test, y_train, y_test, model_name):
 
@@ -137,12 +111,12 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
     def model_weights(self):
         """
         Prints and logs all the features ranked by importance from most to least important.
-        
+
         Returns
         -------
         dict
             Dictionary of features and their corresponding weights
-        
+
         Raises
         ------
         AttributeError
@@ -184,32 +158,32 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
 
         max_display : int
             How many top features to include in the plot (default is 20, or 7 for interaction plots), by default None
-            
+
         plot_type : "dot" (default for single output), "bar" (default for multi-output), "violin", or "compact_dot"
             What type of summary plot to produce. Note that "compact_dot" is only used for SHAP interaction values.
 
-        color : str or matplotlib.colors.ColorMap 
+        color : str or matplotlib.colors.ColorMap
             Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
 
-        axis_color : str or int 
+        axis_color : str or int
             Color used to draw plot axes.
 
-        title : str 
+        title : str
             Title of the plot.
 
-        alpha : float 
+        alpha : float
             Alpha blending value in [0, 1] used to draw plot lines.
 
-        show : bool 
+        show : bool
             Whether to automatically display the plot.
 
         sort : bool
             Whether to sort features by importance, by default True
 
-        color_bar : bool 
+        color_bar : bool
             Whether to draw the color bar.
 
-        auto_size_plot : bool 
+        auto_size_plot : bool
             Whether to automatically size the matplotlib plot to fit the number of features displayed. If False, specify the plot size using matplotlib before calling this function.
 
         layered_violin_max_num_bins : int
@@ -244,41 +218,41 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
     ):
         """
         Visualize model decisions using cumulative SHAP values.
-        
-        Each colored line in the plot represents the model prediction for a single observation. 
-        
+
+        Each colored line in the plot represents the model prediction for a single observation.
+
         Note that plotting too many samples at once can make the plot unintelligible.
 
-        When is a decision plot useful:        
+        When is a decision plot useful:
             - Show a large number of feature effects clearly.
-            
+
             - Visualize multioutput predictions.
-            
+
             - Display the cumulative effect of interactions.
-            
+
             - Explore feature effects for a range of feature values.
-            
+
             - Identify outliers.
-            
+
             - Identify typical prediction paths.
-            
+
             - Compare and contrast predictions for several models.
 
         Explanation:
             - The plot is centered on the x-axis at the models expected value.
 
             - All SHAP values are relative to the model's expected value like a linear model's effects are relative to the intercept.
-            
-            - The y-axis lists the model's features. By default, the features are ordered by descending importance. 
-            
+
+            - The y-axis lists the model's features. By default, the features are ordered by descending importance.
+
             - The importance is calculated over the observations plotted. This is usually different than the importance ordering for the entire dataset. In addition to feature importance ordering, the decision plot also supports hierarchical cluster feature ordering and user-defined feature ordering.
-            
-            - Each observation's prediction is represented by a colored line. 
-            
+
+            - Each observation's prediction is represented by a colored line.
+
             - At the top of the plot, each line strikes the x-axis at its corresponding observation's predicted value. This value determines the color of the line on a spectrum.
-            
+
             - Moving from the bottom of the plot to the top, SHAP values for each feature are added to the model's base value. This shows how each feature contributes to the overall prediction.
-            
+
             - At the bottom of the plot, the observations converge at the models expected value.
 
         Parameters
@@ -303,57 +277,57 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         feature_display_range: slice or range
             The slice or range of features to plot after ordering features by feature_order. A step of 1 or None will display the features in ascending order. A step of -1 will display the features in descending order. If feature_display_range=None, slice(-1, -21, -1) is used (i.e. show the last 20 features in descending order). If shap_values contains interaction values, the number of features is automatically expanded to include all possible interactions: N(N + 1)/2 where N = shap_values.shape[1].
 
-        highlight : Any 
+        highlight : Any
             Specify which observations to draw in a different line style. All numpy indexing methods are supported. For example, list of integer indices, or a bool array.
 
-        link : str 
+        link : str
             Use "identity" or "logit" to specify the transformation used for the x-axis. The "logit" link transforms log-odds into probabilities.
 
-        plot_color : str or matplotlib.colors.ColorMap 
+        plot_color : str or matplotlib.colors.ColorMap
             Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
 
-        axis_color : str or int 
+        axis_color : str or int
             Color used to draw plot axes.
 
-        y_demarc_color : str or int 
+        y_demarc_color : str or int
             Color used to draw feature demarcation lines on the y-axis.
 
-        alpha : float 
+        alpha : float
             Alpha blending value in [0, 1] used to draw plot lines.
 
-        color_bar : bool 
+        color_bar : bool
             Whether to draw the color bar.
 
-        auto_size_plot : bool 
+        auto_size_plot : bool
             Whether to automatically size the matplotlib plot to fit the number of features displayed. If False, specify the plot size using matplotlib before calling this function.
 
-        title : str 
+        title : str
             Title of the plot.
 
-        xlim: tuple[float, float] 
+        xlim: tuple[float, float]
             The extents of the x-axis (e.g. (-1.0, 1.0)). If not specified, the limits are determined by the maximum/minimum predictions centered around base_value when link='identity'. When link='logit', the x-axis extents are (0, 1) centered at 0.5. x_lim values are not transformed by the link function. This argument is provided to simplify producing multiple plots on the same scale for comparison.
 
-        show : bool 
+        show : bool
             Whether to automatically display the plot.
 
-        return_objects : bool 
+        return_objects : bool
             Whether to return a DecisionPlotResult object containing various plotting features. This can be used to generate multiple decision plots using the same feature ordering and scale, by default True.
 
-        ignore_warnings : bool 
+        ignore_warnings : bool
             Plotting many data points or too many features at a time may be slow, or may create very large plots. Set this argument to True to override hard-coded limits that prevent plotting large amounts of data.
 
-        new_base_value : float 
+        new_base_value : float
             SHAP values are relative to a base value; by default, the expected value of the model's raw predictions. Use new_base_value to shift the base value to an arbitrary value (e.g. the cutoff point for a binary classification task).
 
-        legend_labels : list of str 
+        legend_labels : list of str
             List of legend labels. If None, legend will not be shown.
 
-        legend_location : str 
+        legend_location : str
             Legend location. Any of "best", "upper right", "upper left", "lower left", "lower right", "right", "center left", "center right", "lower center", "upper center", "center".
-    
+
         Returns
         -------
-        DecisionPlotResult 
+        DecisionPlotResult
             If return_objects=True (the default). Returns None otherwise.
 
         Examples
@@ -389,7 +363,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
     ):
         """
         Visualize the given SHAP values with an additive force layout
-        
+
         Parameters
         ----------
         sample_no : int, optional
@@ -403,12 +377,12 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
 
         link : "identity" or "logit"
             The transformation used when drawing the tick mark labels. Using logit will change log-odds numbers
-            into probabilities. 
+            into probabilities.
 
         matplotlib : bool
             Whether to use the default Javascript output, or the (less developed) matplotlib output. Using matplotlib
-            can be helpful in scenarios where rendering Javascript/HTML is inconvenient. 
-        
+            can be helpful in scenarios where rendering Javascript/HTML is inconvenient.
+
         Examples
         --------
         >>> m = model.LogisticRegression()
@@ -446,15 +420,15 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
 
         Explanation:
             - Each dot is a single prediction (row) from the dataset.
-        
+
             - The x-axis is the value of the feature (from the X matrix).
 
             - The y-axis is the SHAP value for that feature, which represents how much knowing that feature's value changes the output of the model for that sample's prediction.
 
-            - The color corresponds to a second feature that may have an interaction effect with the feature we are plotting (by default this second feature is chosen automatically). 
-            
-            - If an interaction effect is present between this other feature and the feature we are plotting it will show up as a distinct vertical pattern of coloring. 
-        
+            - The color corresponds to a second feature that may have an interaction effect with the feature we are plotting (by default this second feature is chosen automatically).
+
+            - If an interaction effect is present between this other feature and the feature we are plotting it will show up as a distinct vertical pattern of coloring.
+
         Parameters
         ----------
         feature : str
@@ -462,7 +436,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
 
         interaction : "auto", None, int, or string
             The index of the feature used to color the plot. The name of a feature can also be passed as a string. If "auto" then shap.common.approximate_interactions is used to pick what seems to be the strongest interaction (note that to find to true stongest interaction you need to compute the SHAP interaction values).
-        
+
         output_file: str
             Output file name including extension (.png, .jpg, etc.) to save image as.
 
@@ -481,7 +455,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         ax : matplotlib Axes object
             Optionally specify an existing matplotlib Axes object, into which the plot will be placed. In this case we do not create a Figure, otherwise we do.
 
-        cmap : str or matplotlib.colors.ColorMap 
+        cmap : str or matplotlib.colors.ColorMap
             Color spectrum used to draw the plot lines. If str, a registered matplotlib color name is assumed.
 
         Examples
@@ -558,7 +532,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         ROC: Receiver Operator Characteristic
         PR: Precision Recall
         regperf: RegeressionPerf
-        
+
         Parameters
         ----------
         method : str
@@ -567,7 +541,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         predictions : str, optional
             Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
 
-        show : bool, optional 
+        show : bool, optional
             False to not display the plot, by default True
 
         Examples
@@ -619,7 +593,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         Supported explainers are either 'lime' or 'shap'.
 
         If 'all' a dashboard is displayed with morris and dependence analysis displayed.
-        
+
         Parameters
         ----------
         num_samples : int, float, or 'all', optional
@@ -635,7 +609,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         predictions : str, optional
             Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
 
-        show : bool, optional 
+        show : bool, optional
             False to not display the plot, by default True
 
         Examples
@@ -686,9 +660,9 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         Provides an interpretable summary of your models behaviour based off an explainer.
 
         Can either be 'morris' or 'dependence' for Partial Dependence.
-        
+
         If 'all' a dashboard is displayed with morris and dependence analysis displayed.
-        
+
         Parameters
         ----------
         method : str, optional
@@ -697,7 +671,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         predictions : str, optional
             Prediction type, can either be 'default' (.predict) or 'probability' if the model can predict probabilities, by default 'default'
 
-        show : bool, optional 
+        show : bool, optional
             False to not display the plot, by default True
 
         Examples
@@ -737,7 +711,7 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
     def view_tree(self, tree_num=0, output_file=None, **kwargs):
         """
         Plot decision trees.
-        
+
         Parameters
         ----------
         tree_num: int, optional
@@ -754,7 +728,6 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
         >>> m.view_tree(2)
         """
 
-        import lightgbm as lgb
         from graphviz import Source
 
         if hasattr(self, "classes"):
@@ -779,9 +752,6 @@ class SupervisedModelAnalysis(ModelAnalysisBase):
 
         elif isinstance(self.model, xgb.XGBModel):
             return xgb.plot_tree(self.model)
-
-        elif isinstance(self.model, lgb.sklearn.LGBMModel):
-            return lgb.plot_tree(self.model)
 
         elif isinstance(self.model, sklearn.ensemble.BaseEnsemble):
             estimator = self.model.estimators_[tree_num]

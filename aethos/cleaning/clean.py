@@ -538,27 +538,27 @@ class Clean(object):
         k : int, default=5
             Number of neighboring samples to use for imputation.
 
-        weights : {‘uniform’, ‘distance’} or callable, default=’uniform’
+        weights : {'uniform', 'distance'} or callable, default='uniform'
             Weight function used in prediction. Possible values:
 
-                ‘uniform’ : uniform weights. All points in each neighborhood are weighted equally.
+                'uniform' : uniform weights. All points in each neighborhood are weighted equally.
 
-                ‘distance’ : weight points by the inverse of their distance. in this case, closer neighbors of a query point will have a greater influence than neighbors which are further away.
+                'distance' : weight points by the inverse of their distance. in this case, closer neighbors of a query point will have a greater influence than neighbors which are further away.
 
                 callable : a user-defined function which accepts an array of distances, and returns an array of the same shape containing the weights.
 
-        metric : {‘nan_euclidean’} or callable, default=’nan_euclidean’
+        metric : {'nan_euclidean'} or callable, default='nan_euclidean'
             Distance metric for searching neighbors. Possible values:
 
-                ‘nan_euclidean’
+                'nan_euclidean'
 
                 callable : a user-defined function which conforms to the definition of _pairwise_callable(X, Y, metric, **kwds).
                 The function accepts two arrays, X and Y, and a missing_values keyword in kwds and returns a scalar distance value.
 
         add_indicator : bool, default=False
-            If True, a MissingIndicator transform will stack onto the output of the imputer’s transform.
+            If True, a MissingIndicator transform will stack onto the output of the imputer's transform.
             This allows a predictive estimator to account for missingness despite imputation.
-            If a feature has no missing values at fit/train time, the feature won’t appear on the missing indicator even if there are missing values at transform/test time.
+            If a feature has no missing values at fit/train time, the feature won't appear on the missing indicator even if there are missing values at transform/test time.
 
         Returns
         -------
@@ -597,12 +597,12 @@ class Clean(object):
            
             - 'linear': Ignore the index and treat the values as equally spaced. This is the only method supported on MultiIndexes.
             - 'time': Works on daily and higher resolution data to interpolate given length of interval.
-            - 'index', ‘values’: use the actual numerical values of the index.
+            - 'index', 'values': use the actual numerical values of the index.
             - 'pad': Fill in NaNs using existing values.
-            - 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'spline', ‘barycentric’, ‘polynomial’: Passed to scipy.interpolate.interp1d.
-                - These methods use the numerical values of the index. Both ‘polynomial’ and ‘spline’ require that you also specify an order (int), e.g. df.interpolate(method='polynomial', order=5).
+            - 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'spline', 'barycentric', 'polynomial': Passed to scipy.interpolate.interp1d.
+                - These methods use the numerical values of the index. Both 'polynomial' and 'spline' require that you also specify an order (int), e.g. df.interpolate(method='polynomial', order=5).
             - 'krogh', 'piecewise_polynomial', 'spline', 'pchip', 'akima': Wrappers around the SciPy interpolation methods of similar names.
-            - 'from_derivatives': Refers to scipy.interpolate.BPoly.from_derivatives which replaces ‘piecewise_polynomial’ interpolation method in scipy 0.18.
+            - 'from_derivatives': Refers to scipy.interpolate.BPoly.from_derivatives which replaces 'piecewise_polynomial' interpolation method in scipy 0.18.
 
         For more information see: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.interpolate.html or https://docs.scipy.org/doc/scipy/reference/interpolate.html.
 
@@ -620,12 +620,12 @@ class Clean(object):
         limit : int, optional
             Maximum number of consecutive NaNs to fill. Must be greater than 0.
 
-        limit_area : {None, ‘inside’, ‘outside’}, default None
+        limit_area : {None, 'inside', 'outside'}, default None
             If limit is specified, consecutive NaNs will be filled with this restriction.
 
             - None: No fill restriction.
-            - ‘inside’: Only fill NaNs surrounded by valid values (interpolate).
-            - ‘outside’: Only fill NaNs outside valid values (extrapolate).
+            - 'inside': Only fill NaNs surrounded by valid values (interpolate).
+            - 'outside': Only fill NaNs outside valid values (extrapolate).
         
         Returns
         -------

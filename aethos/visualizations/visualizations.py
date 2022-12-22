@@ -329,7 +329,7 @@ class Visualizations(object):
             Either a name of a column in data_frame, or a pandas Series or array_like object. Values from this column or array_like appear in bold in the hover tooltip.
 
         hover_data : list of str or int, or Series or array-like, or dict)
-            Either a list of names of columns in data_frame, or pandas Series, or array_like objects or a dict with column names as keys, with values True (for default formatting) False (in order to remove this column from hover information), or a formatting string, for example ‘:.3f’ or ‘|%a’ or list-like data to appear in the hover tooltip or tuples with a bool or formatting string as first element, and list-like data to appear in hover as second element Values from these columns appear as extra data in the hover tooltip.
+            Either a list of names of columns in data_frame, or pandas Series, or array_like objects or a dict with column names as keys, with values True (for default formatting) False (in order to remove this column from hover information), or a formatting string, for example ':.3f' or '|%a' or list-like data to appear in the hover tooltip or tuples with a bool or formatting string as first element, and list-like data to appear in hover as second element Values from these columns appear as extra data in the hover tooltip.
 
         custom_data : list of str or int, or Series or array-like
             Either names of columns in data_frame, or pandas Series, or array_like objects Values from these columns are extra data, to be used in widgets or Dash callbacks for example. This data is not user-visible but is included in events emitted by the figure (lasso selection etc.)
@@ -395,7 +395,7 @@ class Visualizations(object):
             One of 'rug', 'box', 'violin', or 'histogram'. If set, a vertical subplot is drawn to the right of the main plot, visualizing the y-distribution.
 
         trendline : str
-            One of 'ols' or 'lowess'. If 'ols', an Ordinary Least Squares regression line will be drawn for each discrete-color/symbol group. If 'lowess’, a Locally Weighted Scatterplot Smoothing line will be drawn for each discrete-color/symbol group.
+            One of 'ols' or 'lowess'. If 'ols', an Ordinary Least Squares regression line will be drawn for each discrete-color/symbol group. If 'lowess', a Locally Weighted Scatterplot Smoothing line will be drawn for each discrete-color/symbol group.
 
         trendline_color_override : str)
             Valid CSS color. If provided, and if trendline is set, all trendlines will be drawn in this color.
@@ -679,11 +679,9 @@ class Visualizations(object):
         >>> data.jointplot(x='x', y='y', kind='kde', color='crimson', output_file='pair.png')
         """
 
-        fig = self._viz.jointplot(
+        return self._viz.jointplot(
             x=x, y=y, df=self.x_train, kind=kind, output_file=output_file, **kwargs
         )
-
-        return fig
 
     def histogram(self, *x, hue=None, plot_test=False, output_file="", **kwargs):
         """
@@ -851,7 +849,7 @@ class Visualizations(object):
         points : str, bool {'outlier', 'suspectedoutliers', 'all', False}
             One of 'outliers', 'suspectedoutliers', 'all', or False.
             If 'outliers', only the sample points lying outside the whiskers are shown.
-            If 'suspectedoutliers', all outlier points are shown and those less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1 are highlighted with the marker’s 'outliercolor'.
+            If 'suspectedoutliers', all outlier points are shown and those less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1 are highlighted with the marker's 'outliercolor'.
             If 'outliers', only the sample points lying outside the whiskers are shown.
             If 'all', all sample points are shown. If False, no sample points are shown and the whiskers extend to the full range of the sample.
 
@@ -919,7 +917,7 @@ class Visualizations(object):
         points : str, bool {'outlier', 'suspectedoutliers', 'all', False}
             One of 'outliers', 'suspectedoutliers', 'all', or False.
             If 'outliers', only the sample points lying outside the whiskers are shown.
-            If 'suspectedoutliers', all outlier points are shown and those less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1 are highlighted with the marker’s 'outliercolor'.
+            If 'suspectedoutliers', all outlier points are shown and those less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1 are highlighted with the marker's 'outliercolor'.
             If 'outliers', only the sample points lying outside the whiskers are shown.
             If 'all', all sample points are shown. If False, no sample points are shown and the whiskers extend to the full range of the sample.
 

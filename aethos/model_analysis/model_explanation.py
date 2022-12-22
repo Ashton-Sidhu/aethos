@@ -1,4 +1,5 @@
 import os
+import shap
 
 import matplotlib.pyplot as pl
 import numpy as np
@@ -13,9 +14,6 @@ warnings.simplefilter("ignore", UserWarning)
 class Shap(object):
     def __init__(self, model, model_name, x_train, x_test, y_test, learner: str):
 
-        import lightgbm as lgb
-        import shap
-
         self.model = model
         self.model_name = model_name
         self.x_train = x_train
@@ -28,13 +26,6 @@ class Shap(object):
             )
         elif learner == "tree":
             self.explainer = shap.TreeExplainer(self.model)
-        elif learner == "kernel":
-            if hasattr(self.model, "predict_proba"):
-                func = self.model.predict_proba
-            else:
-                func = self.model.predict
-
-            self.explainer = shap.KernelExplainer(func, self.x_train)
         else:
             raise ValueError(f"Learner: {learner} is not supported yet.")
 
@@ -42,11 +33,6 @@ class Shap(object):
         self.shap_values = np.array(self.explainer.shap_values(self.x_test)).astype(
             float
         )
-
-        if isinstance(self.model, lgb.sklearn.LGBMClassifier) and isinstance(
-            self.expected_value, np.float
-        ):
-            self.shap_values = self.shap_values[1]
 
         # Calculate misclassified values
         self.misclassified_values = self._calculate_misclassified()
@@ -82,7 +68,7 @@ class Shap(object):
     ):
         """
         Plots a SHAP decision plot.
-        
+
         Parameters
         ----------
         num_samples : int, float, or 'all', optional
@@ -94,7 +80,7 @@ class Shap(object):
 
         Returns
         -------
-        DecisionPlotResult 
+        DecisionPlotResult
             If return_objects=True (the default). Returns None otherwise.
         """
 
@@ -103,23 +89,23 @@ class Shap(object):
         return_objects = decisionplot_kwargs.pop("return_objects", True)
         highlight = decisionplot_kwargs.pop("highlight", None)
 
-        if sample_no is not None:
-            if sample_no < 1 or not isinstance(sample_no, int):
-                raise ValueError("Sample number must be greater than 1.")
-
-            samples = slice(sample_no - 1, sample_no)
-        else:
+        if sample_no is None:
             if num_samples == "all":
                 samples = slice(0, len(self.x_test_array))
             elif num_samples <= 0:
                 raise ValueError(
                     "Number of samples must be greater than 0. If it is less than 1, it will be treated as a percentage."
                 )
-            elif num_samples > 0 and num_samples < 1:
+            elif num_samples < 1:
                 samples = slice(0, int(num_samples * len(self.x_test_array)))
             else:
                 samples = slice(0, num_samples)
 
+        elif sample_no < 1 or not isinstance(sample_no, int):
+            raise ValueError("Sample number must be greater than 1.")
+
+        else:
+            samples = slice(sample_no - 1, sample_no)
         if highlight is not None:
             highlight = highlight[samples]
 
@@ -147,14 +133,14 @@ class Shap(object):
 
         shap_values = forceplot_kwargs.pop("shap_values", self.shap_values)
 
-        if sample_no is not None:
-            if sample_no < 1 or not isinstance(sample_no, int):
-                raise ValueError("Sample number must be greater than 1.")
-
-            samples = slice(sample_no - 1, sample_no)
-        else:
+        if sample_no is None:
             samples = slice(0, len(shap_values))
 
+        elif sample_no < 1 or not isinstance(sample_no, int):
+            raise ValueError("Sample number must be greater than 1.")
+
+        else:
+            samples = slice(sample_no - 1, sample_no)
         s = shap.force_plot(
             self.expected_value,
             shap_values[samples],
@@ -176,7 +162,8 @@ class Shap(object):
 
         import shap
 
-        interaction = dependenceplot_kwargs.pop("interaction_index", interaction)
+        interaction = dependenceplot_kwargs.pop(
+            "interaction_index", interaction)
 
         shap.dependence_plot(
             feature,
@@ -193,7 +180,7 @@ class Shap(object):
     def _calculate_misclassified(self) -> list:
         """
         Calculates misclassified points.
-        
+
         Returns
         -------
         list
@@ -202,14 +189,12 @@ class Shap(object):
 
         if len(self.shap_values.shape) > 2:
             y_pred = [
-                x.sum(1) + y > 0 for x, y in zip(self.shap_values, self.expected_value)
+                x.sum(axis=1) + y > 0 for x, y in zip(self.shap_values, self.expected_value)
             ]
-            misclassified = [x != self.y_test for x in y_pred]
+            return [x != self.y_test for x in y_pred]
         else:
-            y_pred = (self.shap_values.sum(1) + self.expected_value) > 0
-            misclassified = y_pred != self.y_test
-
-        return misclassified
+            y_pred = (self.shap_values.sum(axis=1) + self.expected_value) > 0
+            return y_pred != self.y_test
 
 
 class MSFTInterpret(object):
@@ -230,7 +215,7 @@ class MSFTInterpret(object):
         Can either be 'ROC' or 'PR' for precision, recall for classification problems.
 
         Can be 'regperf' for regression problems.
-        
+
         Parameters
         ----------
         method : str
@@ -241,7 +226,7 @@ class MSFTInterpret(object):
 
         show : bool, optional
             False to not display the plot, by default True
-        
+
         Returns
         -------
         Interpret
@@ -266,8 +251,10 @@ class MSFTInterpret(object):
         else:
             raise ValueError(
                 "Supported blackbox explainers are only {} for classification problems and {} for regression problems".format(
-                    ",".join(INTERPRET_EXPLAINERS["problem"]["classification"].keys()),
-                    ",".join(INTERPRET_EXPLAINERS["problem"]["regression"].keys()),
+                    ",".join(
+                        INTERPRET_EXPLAINERS["problem"]["classification"].keys()),
+                    ",".join(
+                        INTERPRET_EXPLAINERS["problem"]["regression"].keys()),
                 )
             )
 
@@ -291,7 +278,7 @@ class MSFTInterpret(object):
         Plots an interpretable display that explains individual predictions of your model.
 
         Supported explainers are either 'lime' or 'shap'.
-        
+
         Parameters
         ----------
         num_samples : int, float, or 'all', optional
@@ -309,7 +296,7 @@ class MSFTInterpret(object):
 
         show : bool, optional
             False to not display the plot, by default True
-        
+
         Returns
         -------
         Interpret
@@ -380,7 +367,7 @@ class MSFTInterpret(object):
         Provides an interpretable summary of your models behaviour based off an explainer.
 
         Can either be 'morris' or 'dependence' for Partial Dependence.
-        
+
         Parameters
         ----------
         method : str, optional
@@ -391,7 +378,7 @@ class MSFTInterpret(object):
 
         show : bool, optional
             False to not display the plot, by default True
-        
+
         Returns
         -------
         Interpret
@@ -428,7 +415,7 @@ class MSFTInterpret(object):
     def create_dashboard(self):  # pragma: no cover
         """
         Displays an interpretable dashboard of already created interpretable plots.
-        
+
         If a plot hasn't been interpreted yet it is created using default parameters for the dashboard.
         """
 
@@ -436,7 +423,8 @@ class MSFTInterpret(object):
         from aethos.model_analysis.constants import INTERPRET_EXPLAINERS
         from aethos.util import _interpret_data
 
-        dashboard_plots = [_interpret_data(self.x_train, self.y_train, show=False)]
+        dashboard_plots = [_interpret_data(
+            self.x_train, self.y_train, show=False)]
 
         for explainer_type in INTERPRET_EXPLAINERS:
 
@@ -447,11 +435,13 @@ class MSFTInterpret(object):
 
             for explainer in temp_explainer_type:
                 if explainer in self.trained_blackbox_explainers:
-                    dashboard_plots.append(self.trained_blackbox_explainers[explainer])
+                    dashboard_plots.append(
+                        self.trained_blackbox_explainers[explainer])
                 else:
                     if explainer_type == "problem":
                         dashboard_plots.append(
-                            self.blackbox_show_performance(explainer, show=False)
+                            self.blackbox_show_performance(
+                                explainer, show=False)
                         )
                     elif explainer_type == "local":
                         dashboard_plots.append(

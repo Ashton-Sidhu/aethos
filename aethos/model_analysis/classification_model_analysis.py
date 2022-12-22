@@ -1,3 +1,4 @@
+import itertools
 import os
 import numpy as np
 import warnings
@@ -133,18 +134,19 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         multi_class = kwargs.pop("multi_class", "ovr")
 
         if self.multiclass:
-            roc_auc = metrics.roc_auc_score(
+            return metrics.roc_auc_score(
                 self.y_test, self.probabilities, multi_class=multi_class, **kwargs
             )
         else:
-            if hasattr(self.model, "decision_function"):
-                roc_auc = metrics.roc_auc_score(
-                    self.y_test, self.model.decision_function(self.x_test), **kwargs
+            return (
+                metrics.roc_auc_score(
+                    self.y_test,
+                    self.model.decision_function(self.x_test),
+                    **kwargs
                 )
-            else:
-                roc_auc = np.nan
-
-        return roc_auc
+                if hasattr(self.model, "decision_function")
+                else np.nan
+            )
 
     def zero_one_loss(self, **kwargs):
         """
@@ -245,7 +247,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         Log loss, aka logistic loss or cross-entropy loss.
 
         This is the loss function used in (multinomial) logistic regression and extensions of it
-        such as neural networks, defined as the negative log-likelihood of the true labels given a probabilistic classifier’s predictions.
+        such as neural networks, defined as the negative log-likelihood of the true labels given a probabilistic classifier's predictions.
         
         Returns
         -------
@@ -354,10 +356,10 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
 
         if self.multiclass:
             return metrics.fbeta_score(
-                self.y_test, self.y_pred, beta, average=avg, **kwargs
+                self.y_test, self.y_pred, beta=beta, average=avg, **kwargs
             )
         else:
-            return metrics.fbeta_score(self.y_test, self.y_pred, beta, **kwargs)
+            return metrics.fbeta_score(self.y_test, self.y_pred, beta=beta, **kwargs)
 
     def f1(self, **kwargs):
         """
@@ -458,7 +460,7 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
             
             'Recall': 'It measures how many observations out of all positive observations have we classified as positive. Good to use when catching call positive occurences, usually at the cost of false positive.',
             
-            'Matthews Correlation Coefficient': 'It’s a correlation between predicted classes and ground truth.',
+            'Matthews Correlation Coefficient': 'It's a correlation between predicted classes and ground truth.',
             
             'Log Loss': 'Difference between ground truth and predicted score for every observation and average those errors over all observations.',
             
@@ -468,9 +470,9 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
             
             'Hamming Loss': 'The Hamming loss is the fraction of labels that are incorrectly predicted.',
             
-            'F-Beta': 'It’s the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+            'F-Beta': 'It's the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
             
-            'F1': 'It’s the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+            'F1': 'It's the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
             
             'Cohen Kappa': 'Cohen Kappa tells you how much better is your model over the random classifier that predicts based on class frequencies. Works well for imbalanced problems.',
             
@@ -620,17 +622,16 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         if not hide_counts:
             annot = np.zeros_like(confusion_matrix).astype("str")
 
-            for i in range(nrows):
-                for j in range(ncols):
-                    c = confusion_matrix[i, j]
-                    p = cm_perc[i, j]
-                    if i == j:
-                        s = cm_sum[i]
-                        annot[i, j] = "{:.2f}%\n{}/{}".format(float(p), int(c), int(s))
-                    elif c == 0:
-                        annot[i, j] = ""
-                    else:
-                        annot[i, j] = "{:.2f}%\n{}".format(p, c)
+            for i, j in itertools.product(range(nrows), range(ncols)):
+                c = confusion_matrix[i, j]
+                p = cm_perc[i, j]
+                if i == j:
+                    s = cm_sum[i]
+                    annot[i, j] = "{:.2f}%\n{}/{}".format(float(p), int(c), int(s))
+                elif c == 0:
+                    annot[i, j] = ""
+                else:
+                    annot[i, j] = "{:.2f}%\n{}".format(p, c)
         else:
             annot = np.zeros_like(confusion_matrix, dtype=str)
 
@@ -686,14 +687,13 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
             raise NotImplementedError(
                 "ROC Curve not implemented for multiclassification problems yet."
             )
-        else:
-            roc_auc = self.roc_auc()
+        roc_auc = self.roc_auc()
 
-            roc_plot = metrics.plot_roc_curve(self.model, self.x_test, self.y_test)
-            roc_plot.ax_.set_xlabel("False Positive Rate or (1 - Specifity)")
-            roc_plot.ax_.set_ylabel("True Positive Rate or (Sensitivity)")
-            if title:
-                roc_plot.figure_.suptitle("ROC Curve (area = {:.2f})".format(roc_auc))
+        roc_plot = metrics.RocCurveDisplay.from_estimator(self.model, self.x_test, self.y_test)
+        roc_plot.ax_.set_xlabel("False Positive Rate or (1 - Specifity)")
+        roc_plot.ax_.set_ylabel("True Positive Rate or (Sensitivity)")
+        if title:
+            roc_plot.figure_.suptitle("ROC Curve (area = {:.2f})".format(roc_auc))
 
         if output_file:  # pragma: no cover
             roc_plot.figure_.savefig(
@@ -745,24 +745,24 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
         Runs cross validation on a Classification model.
 
         Scoring Metrics:
-            - ‘accuracy’ 	
-            - ‘balanced_accuracy’ 	
-            - ‘average_precision’ 	
-            - ‘brier_score_loss’ 	
-            - ‘f1’ 	
-            - ‘f1_micro’ 	
-            - ‘f1_macro’ 	
-            - ‘f1_weighted’ 	
-            - ‘f1_samples’ 	
-            - ‘neg_log_loss’ 	
-            - ‘precision’	
-            - ‘recall’ 	
-            - ‘jaccard’ 	
-            - ‘roc_auc’'
-            - ‘roc_auc_ovr’
-            - ‘roc_auc_ovo’
-            - ‘roc_auc_ovr_weighted’
-            - ‘roc_auc_ovo_weighted’
+            - 'accuracy' 	
+            - 'balanced_accuracy' 	
+            - 'average_precision' 	
+            - 'brier_score_loss' 	
+            - 'f1' 	
+            - 'f1_micro' 	
+            - 'f1_macro' 	
+            - 'f1_weighted' 	
+            - 'f1_samples' 	
+            - 'neg_log_loss' 	
+            - 'precision'	
+            - 'recall' 	
+            - 'jaccard' 	
+            - 'roc_auc''
+            - 'roc_auc_ovr'
+            - 'roc_auc_ovo'
+            - 'roc_auc_ovr_weighted'
+            - 'roc_auc_ovo_weighted'
         
         Parameters
         ----------
@@ -806,11 +806,11 @@ class ClassificationModelAnalysis(SupervisedModelAnalysis):
             x or y
         ), "Both x and y (feature 1 and 2) must be provided"
 
-        if not x:
-            features = [self.train_results.columns[0], self.train_results.columns[1]]
-        else:
-            features = [x, y]
-
+        features = (
+            [x, y]
+            if x
+            else [self.train_results.columns[0], self.train_results.columns[1]]
+        )
         model = clone(self.model)
         viz = DecisionViz(model, title=title, features=features, classes=self.classes)
 

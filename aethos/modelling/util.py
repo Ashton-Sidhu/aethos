@@ -6,7 +6,6 @@ import warnings
 from functools import partial, wraps
 from pathlib import Path
 
-import lightgbm as lgb
 import matplotlib.pyplot as plt
 
 with warnings.catch_warnings():
@@ -72,7 +71,7 @@ def get_default_args(func):
 def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwargs):
     """
     Runs Gridsearch on a model
-    
+
     Parameters
     ----------
     model : Model
@@ -83,10 +82,10 @@ def run_gridsearch(model, gridsearch, cv=5, scoring="accuracy", **gridsearch_kwa
 
     cv : int, Crossvalidation Generator, optional
         Cross validation method, by default 12
-    
+
     scoring : str
         Scoring metric to use when evaluating models
-    
+
     Returns
     -------
     Model
@@ -111,7 +110,7 @@ def run_crossvalidation(
 ):
     """
     Runs cross validation on a certain model.
-    
+
     Parameters
     ----------
     model : Model
@@ -149,7 +148,7 @@ def run_crossvalidation(
 def _run_models_parallel(model_obj):
     """
     Runs queued models in parallel
-    
+
     Parameters
     ----------
     model_obj : Model
@@ -169,7 +168,7 @@ def _run_models_parallel(model_obj):
 def _run(model):
     """
     Runs a model
-        
+
     Returns
     -------
     Model
@@ -182,14 +181,11 @@ def _run(model):
 def _get_cv_type(cv_type, n_splits, shuffle, **kwargs):
     """Takes in cv type from the user and initiates the cross validation generator."""
 
-    n_splits = n_splits
-    shuffle = shuffle
-
     if cv_type == "kfold":
-        cv_type = KFold(n_splits=n_splits, shuffle=shuffle, random_state=42, **kwargs)
+        cv_type = KFold(n_splits=n_splits, shuffle=shuffle, **kwargs)
     elif cv_type == "strat-kfold":
         cv_type = StratifiedKFold(
-            n_splits=n_splits, shuffle=shuffle, random_state=42, **kwargs
+            n_splits=n_splits, shuffle=shuffle, **kwargs
         )
     else:
         raise ValueError("Cross Validation type is invalid.")
@@ -200,7 +196,7 @@ def _get_cv_type(cv_type, n_splits, shuffle, **kwargs):
 def to_pickle(model, name, project=False, project_name=None):
     """
     Writes model to a pickle file.
-    
+
     Parameters
     ----------
     model: Model object
@@ -208,7 +204,7 @@ def to_pickle(model, name, project=False, project_name=None):
 
     name : str
         Name of the model
-        
+
     project : bool
         Whether to write to the project folder, by default False
     """
@@ -225,13 +221,13 @@ def to_pickle(model, name, project=False, project_name=None):
 
     _make_dir(path)
 
-    pickle.dump(model, open(os.path.join(path, name + ".pkl"), "wb"))
+    pickle.dump(model, open(os.path.join(path, f"{name}.pkl"), "wb"))
 
 
 def _make_img_project_dir(model_name: str):
     """
     Make a model dir in images directory.
-    
+
     Parameters
     ----------
     model_name : str
@@ -245,15 +241,15 @@ def _validate_model_name(model_obj, model_name: str) -> bool:
     """
     Validates the inputted model name. If the object already has an
     attribute with that model name, it is invalid
-    
+
     Parameters
     ----------
     model_name : str
         Proposed name of the model
-        
+
     model_obj : Model
         Model object
-    
+
     Returns
     -------
     bool
@@ -271,7 +267,7 @@ def track_model(
 ):  # pragma: no cover
     """
     Logs model information into MLFlow console.
-    
+
     Parameters
     ----------
     exp_name: str
@@ -316,7 +312,7 @@ def track_model(
 def track_artifacts(run_id, model_name):  # pragma: no cover
     """
     Track artificats for modelling.
-    
+
     Parameters
     ----------
     run_id : str

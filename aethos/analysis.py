@@ -566,99 +566,12 @@ class Analysis(Visualizations, Stats):
         >>> data.correlation_matrix(data_labels=True, output_file='corr.png')
         """
 
-        fig = self._viz.viz_correlation_matrix(
+        return self._viz.viz_correlation_matrix(
             self.x_train.corr(),
             data_labels=data_labels,
             hide_mirror=hide_mirror,
             output_file=output_file,
             **kwargs,
-        )
-
-        return fig
-
-    def predictive_power(
-        self, col=None, data_labels=False, hide_mirror=False, output_file="", **kwargs
-    ):
-        """
-        Calculated the Predictive Power Score of each feature.
-
-        If a column is provided, it will calculate it in regards to the target variable.
-
-        Credits go to Florian Wetschorek - https://towardsdatascience.com/rip-correlation-introducing-the-predictive-power-score-3d90808b9598
-
-        Parameters
-        ----------
-        col : str
-            Column in the dataframe
-
-        data_labels : bool, optional
-            True to display the correlation values in the plot, by default False
-
-        hide_mirror : bool, optional
-            Whether to display the mirroring half of the correlation plot, by default False
-
-        output_file : str, optional
-            Output file name for image with extension (i.e. jpeg, png, etc.)
-
-        Examples
-        --------
-        >>> data.predictive_power(data_labels=True)
-        >>> data.predictive_power(col='col1')
-        """
-
-        import ppscore as pps
-        import seaborn as sns
-
-        if col:
-            return pps.score(self.x_train, col, self.target)
-        else:
-            pp_df = pps.matrix(self.x_train)
-
-            fig = self._viz.viz_correlation_matrix(
-                pp_df,
-                data_labels=data_labels,
-                hide_mirror=hide_mirror,
-                output_file=output_file,
-                **kwargs,
-            )
-
-            return fig
-
-    def autoviz(self, max_rows=150000, max_cols=30, verbose=0):  # pragma: no cover
-        """
-        Auto visualizes and analyzes your data to help explore your data.
-
-        Credits go to AutoViMl - https://github.com/AutoViML/AutoViz
-
-        Parameters
-        ----------
-        max_rows : int, optional
-            Max rows to analyze, by default 150000
-
-        max_cols : int, optional
-            Max columns to analyze, by default 30
-
-        verbose : {0, 1, 2}, optional
-            0 - it does not print any messages and goes into silent mode
-            1 - print messages on the terminal and also display
-                charts on terminal
-            2 - it will print messages but will not display charts,
-                it will simply save them.
-        """
-
-        from autoviz.AutoViz_Class import AutoViz_Class
-
-        target = self.target if self.target else ""
-
-        AV = AutoViz_Class()
-
-        dft = AV.AutoViz(
-            "",
-            dfte=self.x_train,
-            depVar=target,
-            max_cols_analyzed=max_cols,
-            max_rows_analyzed=max_rows,
-            verbose=verbose,
         )
 
     def interpret_data(self, show=True):

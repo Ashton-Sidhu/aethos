@@ -373,18 +373,16 @@ class VizCreator(object):
             Output file name for the image including extension (.jpg, .png, etc.)
         """
 
-        # NOTE: Ignore the deprecation warning for showing the R^2 statistic until Seaborn reimplements it
-        import warnings
         from scipy import stats
-
-        warnings.simplefilter("ignore", UserWarning)
 
         sns.set(style="ticks", color_codes=True)
         color = kwargs.pop("color", "crimson")
 
-        g = sns.jointplot(x=x, y=y, data=df, kind=kind, color=color, **kwargs).annotate(
-            stats.pearsonr
-        )
+        g = sns.jointplot(x=x, y=y, data=df, kind=kind, color=color, **kwargs)
+
+        r, p = stats.pearsonr(df[x], df[y])
+
+        g.ax_joint.annotate(f"$\\{r=:.3f}, {p=:.3f}$ ", xy=(.1, .9), xycoords="axes fraction", ha="left", va="center")
 
         if output_file:  # pragma: no cover
             g.savefig(os.path.join(IMAGE_DIR, output_file))

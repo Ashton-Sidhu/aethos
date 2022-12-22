@@ -67,11 +67,11 @@ class Unsupervised(
         n_clusters : int, optional, default: 8
             The number of clusters to form as well as the number of centroids to generate.
 
-        init : {‘k-means++’, ‘random’ or an ndarray}
-            Method for initialization, defaults to ‘k-means++’:
-                ‘k-means++’ : selects initial cluster centers for k-mean clustering in a smart way to speed up convergence. See section Notes in k_init for more details.
+        init : {'k-means++', 'random' or an ndarray}
+            Method for initialization, defaults to 'k-means++':
+                'k-means++' : selects initial cluster centers for k-mean clustering in a smart way to speed up convergence. See section Notes in k_init for more details.
 
-                ‘random’: choose k observations (rows) at random from data for the initial centroids.
+                'random': choose k observations (rows) at random from data for the initial centroids.
             If an ndarray is passed, it should be of shape (n_clusters, n_features) and gives the initial centers.
 
         n_init : int, default: 10
@@ -85,7 +85,7 @@ class Unsupervised(
 
         algorithm : “auto”, “full” or “elkan”, default=”auto”
             K-means algorithm to use.
-            The classical EM-style algorithm is “full”. The “elkan” variation is more efficient by using the triangle inequality, but currently doesn’t support sparse data. 
+            The classical EM-style algorithm is “full”. The “elkan” variation is more efficient by using the triangle inequality, but currently doesn't support sparse data. 
             “auto” chooses “elkan” for dense data and “full” for sparse data.
                     
         Returns
@@ -141,7 +141,7 @@ class Unsupervised(
     ):
         # region
         """
-        Based on a set of points (let’s think in a bidimensional space as exemplified in the figure), 
+        Based on a set of points (let's think in a bidimensional space as exemplified in the figure), 
         DBSCAN groups together points that are close to each other based on a distance measurement (usually Euclidean distance) and a minimum number of points.
         It also marks as outliers the points that are in low-density regions.
 
@@ -211,7 +211,7 @@ class Unsupervised(
 
         Return the anomaly score of each sample using the IsolationForest algorithm
 
-        The IsolationForest ‘isolates’ observations by randomly selecting a feature and then randomly selecting a split value between the maximum and minimum values of the selected feature.
+        The IsolationForest 'isolates' observations by randomly selecting a feature and then randomly selecting a split value between the maximum and minimum values of the selected feature.
 
         For more Isolation Forest info, you can view it here: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html#sklearn.ensemble.IsolationForest
         
@@ -241,7 +241,7 @@ class Unsupervised(
         contamination : float in (0., 0.5), optional (default=0.1)
             The amount of contamination of the data set, i.e. the proportion of outliers in the data set.
             Used when fitting to define the threshold on the decision function.
-            If ‘auto’, the decision function threshold is determined as in the original paper.
+            If 'auto', the decision function threshold is determined as in the original paper.
 
         max_features : int or float, optional (default=1.0)
             The number of features to draw from X to train each base estimator.
@@ -299,21 +299,21 @@ class Unsupervised(
         verbose : int, optional
             Verbosity level of model output, the higher the number - the more verbose. By default, 1    	
 
-        kernel : string, optional (default=’rbf’)
+        kernel : string, optional (default='rbf')
             Specifies the kernel type to be used in the algorithm.
-            It must be one of ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’ or a callable.
-            If none is given, ‘rbf’ will be used.
+            It must be one of 'linear', 'poly', 'rbf', 'sigmoid', 'precomputed' or a callable.
+            If none is given, 'rbf' will be used.
             If a callable is given it is used to precompute the kernel matrix.
 
         degree : int, optional (default=3)
-            Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.
+            Degree of the polynomial kernel function ('poly'). Ignored by all other kernels.
 
-        gamma : float, optional (default=’auto’)
-            Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.
-            Current default is ‘auto’ which uses 1 / n_features, if gamma='scale' is passed then it uses 1 / (n_features * X.var()) as value of gamma.
+        gamma : float, optional (default='auto')
+            Kernel coefficient for 'rbf', 'poly' and 'sigmoid'.
+            Current default is 'auto' which uses 1 / n_features, if gamma='scale' is passed then it uses 1 / (n_features * X.var()) as value of gamma.
 
         coef0 : float, optional (default=0.0)
-            Independent term in kernel function. It is only significant in ‘poly’ and ‘sigmoid’.
+            Independent term in kernel function. It is only significant in 'poly' and 'sigmoid'.
 
         tol : float, optional
             Tolerance for stopping criterion.
@@ -370,7 +370,7 @@ class Unsupervised(
         the choice of distance metric is critical. 
         
         A particularly good use case of hierarchical clustering methods is when the underlying data has a hierarchical structure and you want to recover the hierarchy;
-        other clustering algorithms can’t do this.
+        other clustering algorithms can't do this.
         
         These advantages of hierarchical clustering come at the cost of lower efficiency, as it has a time complexity of O(n³), unlike the linear complexity of K-Means and GMM.
 
@@ -394,7 +394,7 @@ class Unsupervised(
             If linkage is “ward”, only “euclidean” is accepted.
             If “precomputed”, a distance matrix (instead of a similarity matrix) is needed as input for the fit method.
 
-        compute_full_tree : bool or ‘auto’ (optional)
+        compute_full_tree : bool or 'auto' (optional)
             Stop early the construction of the tree at n_clusters.
             This is useful to decrease computation time if the number of clusters is not small compared to the number of samples.
             This option is useful only when specifying a connectivity matrix.
@@ -516,7 +516,7 @@ class Unsupervised(
         
         Firstly GMMs are a lot more flexible in terms of cluster covariance than K-Means; due to the standard deviation parameter, the clusters can take on any ellipse shape, rather than being restricted to circles.
         
-        K-Means is actually a special case of GMM in which each cluster’s covariance along all dimensions approaches 0.
+        K-Means is actually a special case of GMM in which each cluster's covariance along all dimensions approaches 0.
         Secondly, since GMMs use probabilities, they can have multiple clusters per data point.
         
         So if a data point is in the middle of two overlapping clusters, we can simply define its class by saying it belongs X-percent to class 1 and Y-percent to class 2. I.e GMMs support mixed membership.
@@ -537,19 +537,19 @@ class Unsupervised(
         n_components : int, defaults to 1.
             The number of mixture components/ number of unique y_train values.
 
-        covariance_type : {‘full’ (default), ‘tied’, ‘diag’, ‘spherical’}
+        covariance_type : {'full' (default), 'tied', 'diag', 'spherical'}
             String describing the type of covariance parameters to use. Must be one of:
 
-            ‘full’
+            'full'
                 each component has its own general covariance matrix
 
-            ‘tied’
+            'tied'
                 all components share the same general covariance matrix
 
-            ‘diag’
+            'diag'
                 each component has its own diagonal covariance matrix
 
-            ‘spherical’
+            'spherical'
                 each component has its own single variance
 
         tol : float, defaults to 1e-3.
@@ -565,7 +565,7 @@ class Unsupervised(
         n_init : int, defaults to 1.
             The number of initializations to perform. The best results are kept.
 
-        init_params : {‘kmeans’, ‘random’}, defaults to ‘kmeans’.
+        init_params : {'kmeans', 'random'}, defaults to 'kmeans'.
             The method used to initialize the weights, the means and the precisions. Must be one of:
 
             'kmeans' : responsibilities are initialized using kmeans.
@@ -582,7 +582,7 @@ class Unsupervised(
             Defaults to None
 
         precisions_init : array-like, optional.
-            The user-provided initial precisions (inverse of the covariance matrices), defaults to None. If it None, precisions are initialized using the ‘init_params’ method. The shape depends on ‘covariance_type’:
+            The user-provided initial precisions (inverse of the covariance matrices), defaults to None. If it None, precisions are initialized using the 'init_params' method. The shape depends on 'covariance_type':
 
             (n_components,)                        if 'spherical',
             (n_features, n_features)               if 'tied',

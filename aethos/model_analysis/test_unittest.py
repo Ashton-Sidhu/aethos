@@ -2,7 +2,7 @@ import pandas as pd
 import unittest
 import numpy as np
 
-from aethos import Classification, Regression, Unsupervised
+from aethos import Classification, Regression
 
 class TestModelAnalysis(unittest.TestCase):
     def test_plot_predicted_actual(self):

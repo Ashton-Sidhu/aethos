@@ -5,7 +5,7 @@ import warnings
 import math
 
 from aethos.config.config import _global_config
-from .model_analysis import SupervisedModelAnalysis
+from aethos.model_analysis.model_analysis import SupervisedModelAnalysis
 
 
 class RegressionModelAnalysis(SupervisedModelAnalysis):
@@ -71,16 +71,16 @@ class RegressionModelAnalysis(SupervisedModelAnalysis):
         
         Parameters
         ----------
-        multioutput : string in [‘raw_values’, ‘uniform_average’, ‘variance_weighted’] or array-like of shape (n_outputs)
+        multioutput : string in ['raw_values', 'uniform_average', 'variance_weighted'] or array-like of shape (n_outputs)
             Defines aggregating of multiple output scores. Array-like value defines weights used to average scores.
 
-            ‘raw_values’ :
+            'raw_values' :
                 Returns a full set of scores in case of multioutput input.
 
-            ‘uniform_average’ :
+            'uniform_average' :
                 Scores of all outputs are averaged with uniform weight.
 
-            ‘variance_weighted’ :
+            'variance_weighted' :
                 Scores of all outputs are averaged, weighted by the variances of each individual output.
 
             By default 'uniform_average'
@@ -341,15 +341,15 @@ class RegressionModelAnalysis(SupervisedModelAnalysis):
         Runs cross validation on a Regression model.
 
         Scoring Metrics: 
-            - ‘explained_variance’ 	 
-            - ‘max_error’ 	 
-            - ‘neg_mean_absolute_error’ --> MAE 
-            - ‘neg_mean_squared_error’ --> MSE
-            - ‘neg_mean_squared_log_error’ --> MSLE 
-            - ‘neg_median_absolute_error’ --> MeAE 
-            - ‘r2’
-            - ‘neg_mean_poisson_deviance’
-            - ‘neg_mean_gamma_deviance’
+            - 'explained_variance' 	 
+            - 'max_error' 	 
+            - 'neg_mean_absolute_error' --> MAE 
+            - 'neg_mean_squared_error' --> MSE
+            - 'neg_mean_squared_log_error' --> MSLE 
+            - 'neg_median_absolute_error' --> MeAE 
+            - 'r2'
+            - 'neg_mean_poisson_deviance'
+            - 'neg_mean_gamma_deviance'
         
         Parameters
         ----------
