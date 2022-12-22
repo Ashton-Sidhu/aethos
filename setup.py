@@ -17,7 +17,7 @@ pkgs = [
     "pandas-bokeh==0.4.2",
     "ptitprince==0.1.5",
     "nltk==3.4.5",
-    "ipython==7.10.1",
+    "ipython==7.16.3",
     "gensim==3.8.1",
     "pandas-profiling==2.3.0",
     "cookiecutter==1.6.0",
