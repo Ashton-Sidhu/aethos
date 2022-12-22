@@ -1,9 +1,24 @@
-from aethos.config import technique_reason_repo
-from aethos.feature_engineering import categorical as cat
-from aethos.feature_engineering import numeric as num
+import pandas as pd
+import numpy as np
+import spacy
+
+from sklearn.feature_extraction.text import (
+    CountVectorizer,
+    HashingVectorizer,
+    TfidfVectorizer,
+)
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.preprocessing import PolynomialFeatures
+
 from aethos.feature_engineering import text
 from aethos.feature_engineering import util
-from aethos.util import _input_columns, label_encoder
+from aethos.util import (
+    _input_columns,
+    _get_columns,
+    drop_replace_columns,
+    _numeric_input_conditions,
+)
 
 
 class Feature(object):
@@ -29,21 +44,21 @@ class Feature(object):
             A parameter to specify whether to drop the column being transformed, by default
             keep the column, True
 
-        categories : ‘auto’ or a list of array-like, default=’auto’
+        categories : 'auto' or a list of array-like, default='auto'
             Categories (unique values) per feature:
 
-                ‘auto’ : Determine categories automatically from the training data.
+                'auto' : Determine categories automatically from the training data.
 
                 list : categories[i] holds the categories expected in the ith column. The passed categories should not mix strings and numeric values within a single feature, and should be sorted in case of numeric values.
 
             The used categories can be found in the categories_ attribute.
 
-        drop : ‘first’ or a array-like of shape (n_features,), default=None
+        drop : 'first' or a array-like of shape (n_features,), default=None
             Specifies a methodology to use to drop one of the categories per feature. This is useful in situations where perfectly collinear features cause problems, such as when feeding the resulting data into a neural network or an unregularized regression.
 
                 None : retain all features (the default).
 
-                ‘first’ : drop the first category in each feature. If only one category is present, the feature will be dropped entirely.
+                'first' : drop the first category in each feature. If only one category is present, the feature will be dropped entirely.
 
                 array : drop[i] is the category in feature X[:, i] that should be dropped.
 
@@ -53,9 +68,9 @@ class Feature(object):
         dtype : number type, default=np.float
             Desired dtype of output.
 
-        handle_unknown: {‘error’, ‘ignore’}, default='ignore'
+        handle_unknown: {'error', 'ignore'}, default='ignore'
             Whether to raise an error or ignore if an unknown categorical feature is present during transform (default is to raise).
-            When this parameter is set to ‘ignore’ and an unknown category is encountered during transform, the resulting one-hot encoded columns for this feature will be all zeros.
+            When this parameter is set to 'ignore' and an unknown category is encountered during transform, the resulting one-hot encoded columns for this feature will be all zeros.
             In the inverse transform, an unknown category will be denoted as None.
 
         Returns
@@ -69,22 +84,28 @@ class Feature(object):
         >>> data.onehot_encode('col1', 'col2', 'col3', drop='first')
         """
 
-        report_info = technique_reason_repo["feature"]["categorical"]["onehotencode"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = cat.feature_one_hot_encode(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            keep_col=keep_col,
-            **onehot_kwargs,
-        )
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        enc = OneHotEncoder(handle_unknown="ignore", **onehot_kwargs)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        return self.copy()
+        enc_data = enc.fit_transform(self.x_train[list_of_cols]).toarray()
+        enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names_out(list_of_cols))
+        self.x_train = drop_replace_columns(
+            self.x_train, list_of_cols, enc_df, keep_col
+        )
+
+        if self.x_test is not None:
+            enc_test = enc.transform(self.x_test[list_of_cols]).toarray()
+            enc_test_df = pd.DataFrame(
+                enc_test, columns=enc.get_feature_names_out(list_of_cols)
+            )
+            self.x_test = drop_replace_columns(
+                self.x_test, list_of_cols, enc_test_df, keep_col
+            )
+
+        return self
 
     def tfidf(self, *list_args, list_of_cols=[], keep_col=True, **tfidf_kwargs):
         """
@@ -96,8 +117,6 @@ class Feature(object):
         For more information see: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
 
         If a list of columns is provided use the list, otherwise use arguments.
-
-        This function exists in `feature-extraction/text.py`
         
         Parameters
         ----------
@@ -110,21 +129,21 @@ class Feature(object):
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
 
-        encoding: str, default=’utf-8’
+        encoding: str, default='utf-8'
             If bytes or files are given to analyze, this encoding is used to decode.
 
-        decode_error: {‘strict’, ‘ignore’, ‘replace’} (default=’strict’)
+        decode_error: {'strict', 'ignore', 'replace'} (default='strict')
             Instruction on what to do if a byte sequence is given to analyze that contains characters not of the given encoding.
-            By default, it is ‘strict’, meaning that a UnicodeDecodeError will be raised.
-            Other values are ‘ignore’ and ‘replace’.
+            By default, it is 'strict', meaning that a UnicodeDecodeError will be raised.
+            Other values are 'ignore' and 'replace'.
 
-        strip_accents: {‘ascii’, ‘unicode’, None} (default=None)
+        strip_accents: {'ascii', 'unicode', None} (default=None)
             Remove accents and perform other character normalization during the preprocessing step.\
-            ‘ascii’ is a fast method that only works on characters that have an direct ASCII mapping.
-            ‘unicode’ is a slightly slower method that works on any characters.
+            'ascii' is a fast method that only works on characters that have an direct ASCII mapping.
+            'unicode' is a slightly slower method that works on any characters.
             None (default) does nothing.
 
-            Both ‘ascii’ and ‘unicode’ use NFKD normalization from unicodedata.normalize.
+            Both 'ascii' and 'unicode' use NFKD normalization from unicodedata.normalize.
 
         lowercase: bool (default=True)
             Convert all characters to lowercase before tokenizing.
@@ -137,17 +156,17 @@ class Feature(object):
             Override the string tokenization step while preserving the preprocessing and n-grams generation steps.
             Only applies if analyzer == 'word'.
 
-        analyzer: str, {‘word’, ‘char’, ‘char_wb’} or callable
+        analyzer: str, {'word', 'char', 'char_wb'} or callable
             Whether the feature should be made of word or character n-grams
-            Option ‘char_wb’ creates character n-grams only from text inside word boundaries;
+            Option 'char_wb' creates character n-grams only from text inside word boundaries;
             n-grams at the edges of words are padded with space.
 
             If a callable is passed it is used to extract the sequence of features out of the raw, unprocessed input.
 
-        stop_words: str {‘english’}, list, or None (default=None)
+        stop_words: str {'english'}, list, or None (default=None)
             If a string, it is passed to _check_stop_list and the appropriate stop list is returned.
-            ‘english’ is currently the only supported string value.
-            There are several known issues with ‘english’ and you should consider an alternative (see Using stop words).
+            'english' is currently the only supported string value.
+            There are several known issues with 'english' and you should consider an alternative (see Using stop words).
 
             If a list, that list is assumed to contain stop words, all of which will be removed from the resulting tokens. Only applies if analyzer == 'word'.
 
@@ -189,9 +208,9 @@ class Feature(object):
         dtype: type, optional (default=float64)
             Type of the matrix returned by fit_transform() or transform().
 
-        norm: ‘l1’, ‘l2’ or None, optional (default=’l2’)
-            Each output row will have unit norm, either: * ‘l2’: Sum of squares of vector elements is 1.
-            The cosine similarity between two vectors is their dot product when l2 norm has been applied. * ‘l1’: Sum of absolute values of vector elements is 1.
+        norm: 'l1', 'l2' or None, optional (default='l2')
+            Each output row will have unit norm, either: * 'l2': Sum of squares of vector elements is 1.
+            The cosine similarity between two vectors is their dot product when l2 norm has been applied. * 'l1': Sum of absolute values of vector elements is 1.
 
         use_idf: bool (default=True)
             Enable inverse-document-frequency reweighting.
@@ -214,23 +233,25 @@ class Feature(object):
         >>> data.tfidf('col1', 'col2', 'col3', lowercase=False, smoothidf=False)
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["tfidf"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        self.x_train, self.x_test = text.feature_tfidf(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            keep_col=keep_col,
-            **tfidf_kwargs,
-        )
+        enc = TfidfVectorizer(**tfidf_kwargs)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
+        for col in list_of_cols:
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
+            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names_out())
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
 
-        return self.copy()
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
+                enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names_out())
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
+                )
+
+        return self
 
     def bag_of_words(self, *list_args, list_of_cols=[], keep_col=True, **bow_kwargs):
         """
@@ -241,8 +262,6 @@ class Feature(object):
         For more information see: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
 
         If a list of columns is provided use the list, otherwise use arguments.
-
-        This function exists in `feature-extraction/text.py`
         
         Parameters
         ----------
@@ -255,21 +274,21 @@ class Feature(object):
         keep_col : bool, optional
             True if you want to keep the column(s) or False if you want to drop the column(s)
 
-        encoding: str, default=’utf-8’
+        encoding: str, default='utf-8'
             If bytes or files are given to analyze, this encoding is used to decode.
 
-        decode_error: {‘strict’, ‘ignore’, ‘replace’} (default=’strict’)
+        decode_error: {'strict', 'ignore', 'replace'} (default='strict')
             Instruction on what to do if a byte sequence is given to analyze that contains characters not of the given encoding.
-            By default, it is ‘strict’, meaning that a UnicodeDecodeError will be raised.
-            Other values are ‘ignore’ and ‘replace’.
+            By default, it is 'strict', meaning that a UnicodeDecodeError will be raised.
+            Other values are 'ignore' and 'replace'.
 
-        strip_accents: {‘ascii’, ‘unicode’, None} (default=None)
+        strip_accents: {'ascii', 'unicode', None} (default=None)
             Remove accents and perform other character normalization during the preprocessing step.\
-            ‘ascii’ is a fast method that only works on characters that have an direct ASCII mapping.
-            ‘unicode’ is a slightly slower method that works on any characters.
+            'ascii' is a fast method that only works on characters that have an direct ASCII mapping.
+            'unicode' is a slightly slower method that works on any characters.
             None (default) does nothing.
 
-            Both ‘ascii’ and ‘unicode’ use NFKD normalization from unicodedata.normalize.
+            Both 'ascii' and 'unicode' use NFKD normalization from unicodedata.normalize.
 
         lowercase: bool (default=True)
             Convert all characters to lowercase before tokenizing.
@@ -282,17 +301,17 @@ class Feature(object):
             Override the string tokenization step while preserving the preprocessing and n-grams generation steps.
             Only applies if analyzer == 'word'.
 
-        analyzer: str, {‘word’, ‘char’, ‘char_wb’} or callable
+        analyzer: str, {'word', 'char', 'char_wb'} or callable
             Whether the feature should be made of word or character n-grams
-            Option ‘char_wb’ creates character n-grams only from text inside word boundaries;
+            Option 'char_wb' creates character n-grams only from text inside word boundaries;
             n-grams at the edges of words are padded with space.
 
             If a callable is passed it is used to extract the sequence of features out of the raw, unprocessed input.
 
-        stop_words: str {‘english’}, list, or None (default=None)
+        stop_words: str {'english'}, list, or None (default=None)
             If a string, it is passed to _check_stop_list and the appropriate stop list is returned.
-            ‘english’ is currently the only supported string value.
-            There are several known issues with ‘english’ and you should consider an alternative (see Using stop words).
+            'english' is currently the only supported string value.
+            There are several known issues with 'english' and you should consider an alternative (see Using stop words).
 
             If a list, that list is assumed to contain stop words, all of which will be removed from the resulting tokens. Only applies if analyzer == 'word'.
 
@@ -342,27 +361,29 @@ class Feature(object):
         >>> data.bag_of_words('col1', 'col2', 'col3', binary=True)
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["bow"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.feature_bag_of_words(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            keep_col=keep_col,
-            **bow_kwargs,
-        )
+        enc = CountVectorizer(**bow_kwargs)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
+        for col in list_of_cols:
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
+            enc_df = pd.DataFrame(enc_data, columns=enc.get_feature_names_out())
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
 
-        return self.copy()
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
+                enc_test_df = pd.DataFrame(enc_test, columns=enc.get_feature_names_out())
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
+                )
+
+        return self
 
     def text_hash(self, *list_args, list_of_cols=[], keep_col=True, **hash_kwargs):
         """
-        Creates a matrix of how many times a word appears in a document. It can possibly normalized as token frequencies if norm=’l1’ or projected on the euclidean unit sphere if norm=’l2’.
+        Creates a matrix of how many times a word appears in a document. It can possibly normalized as token frequencies if norm='l1' or projected on the euclidean unit sphere if norm='l2'.
 
         The premise is that the more times a word appears the more the word represents that document.
 
@@ -377,8 +398,6 @@ class Feature(object):
         For more info please see: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.HashingVectorizer.html
 
         If a list of columns is provided use the list, otherwise use arguments.
-
-        This function exists in `feature-extraction/text.py`
         
         Parameters
         ----------
@@ -409,23 +428,25 @@ class Feature(object):
         >>> data.text_hash('col1', 'col2', 'col3', n_features=50)
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["hash"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.feature_hash_vectorizer(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            keep_col=keep_col,
-            **hash_kwargs,
-        )
+        enc = HashingVectorizer(**hash_kwargs)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
+        for col in list_of_cols:
+            enc_data = enc.fit_transform(self.x_train[col]).toarray()
+            enc_df = pd.DataFrame(enc_data)
+            self.x_train = drop_replace_columns(self.x_train, col, enc_df, keep_col)
 
-        return self.copy()
+            if self.x_test is not None:
+                enc_test = enc.transform(self.x_test[col]).toarray()
+                enc_test_df = pd.DataFrame(enc_test)
+                self.x_test = drop_replace_columns(
+                    self.x_test, col, enc_test_df, keep_col
+                )
+
+        return self
 
     def postag_nltk(self, *list_args, list_of_cols=[], new_col_name="_postagged"):
         """
@@ -456,21 +477,17 @@ class Feature(object):
         >>> data.postag_nltk('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["nltk_postag"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.nltk_feature_postag(
+        (self.x_train, self.x_test,) = text.textblob_features(
             x_train=self.x_train,
             x_test=self.x_test,
+            feature="tags",
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
         )
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
-
-        return self.copy()
+        return self
 
     def postag_spacy(self, *list_args, list_of_cols=[], new_col_name="_postagged"):
         """
@@ -501,8 +518,6 @@ class Feature(object):
         >>> data.postag_spacy('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["spacy_postag"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (self.x_train, self.x_test,) = text.spacy_feature_postag(
@@ -510,15 +525,14 @@ class Feature(object):
             x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
-            method='s'
+            method="s",
         )
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        return self
 
-        return self.copy()
-
-    def postag_spacy_detailed(self, *list_args, list_of_cols=[], new_col_name="_postagged"):
+    def postag_spacy_detailed(
+        self, *list_args, list_of_cols=[], new_col_name="_postagged"
+    ):
         """
         Tag documents with their respective "Part of Speech" tag with the Spacy NLP engine and the PennState PoS tags.
         These tags classify a word as a noun, verb, adjective, etc. A full list and their meaning can be found here:
@@ -547,8 +561,6 @@ class Feature(object):
         >>> data.postag_spacy_detailed('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["spacy_postag"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
         (self.x_train, self.x_test,) = text.spacy_feature_postag(
@@ -556,13 +568,10 @@ class Feature(object):
             x_test=self.x_test,
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
-            method='d',
+            method="d",
         )
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
-
-        return self.copy()
+        return self
 
     def nounphrases_nltk(self, *list_args, list_of_cols=[], new_col_name="_phrases"):
         """
@@ -591,21 +600,17 @@ class Feature(object):
         >>> data.nounphrases_nltk('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["nltk_np"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = text.nltk_feature_noun_phrases(
+        (self.x_train, self.x_test,) = text.textblob_features(
             x_train=self.x_train,
             x_test=self.x_test,
+            feature="noun_phrases",
             list_of_cols=list_of_cols,
             new_col_name=new_col_name,
         )
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
-
-        return self.copy()
+        return self
 
     def nounphrases_spacy(self, *list_args, list_of_cols=[], new_col_name="_phrases"):
         """
@@ -634,21 +639,34 @@ class Feature(object):
         >>> data.nounphrases_spacy('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["text"]["spacy_np"]
-
         list_of_cols = _input_columns(list_args, list_of_cols)
+        list_of_cols = _get_columns(list_of_cols, self.x_train)
 
-        (self.x_train, self.x_test,) = text.spacy_feature_noun_phrases(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            new_col_name=new_col_name,
-        )
+        nlp = spacy.load("en_core_web_sm")
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        for col in list_of_cols:
 
-        return self.copy()
+            if new_col_name.startswith("_"):
+                new_col_name = col + new_col_name
+
+            transformed_text = list(map(nlp, self.x_train[col]))
+            self.x_train[new_col_name] = pd.Series(
+                map(
+                    lambda x: [str(phrase) for phrase in x.noun_chunks],
+                    transformed_text,
+                )
+            )
+
+            if self.x_test is not None:
+                transformed_text = map(nlp, self.x_test[col])
+                self.x_test[new_col_name] = pd.Series(
+                    map(
+                        lambda x: [str(phrase) for phrase in x.noun_chunks],
+                        transformed_text,
+                    )
+                )
+
+        return self
 
     def polynomial_features(self, *list_args, list_of_cols=[], **poly_kwargs):
         """
@@ -683,24 +701,26 @@ class Feature(object):
         >>> data.polynomial_features('col1', 'col2', 'col3')
         """
 
-        report_info = technique_reason_repo["feature"]["numeric"]["poly"]
-
-        ## If a list of columns is provided use the list, otherwise use arguemnts.
+        # If a list of columns is provided use the list, otherwise use arguemnts.
         list_of_cols = _input_columns(list_args, list_of_cols)
 
-        (self.x_train, self.x_test,) = num.polynomial_features(
-            x_train=self.x_train,
-            x_test=self.x_test,
-            list_of_cols=list_of_cols,
-            **poly_kwargs,
-        )
+        poly = PolynomialFeatures(**poly_kwargs)
+        list_of_cols = _numeric_input_conditions(list_of_cols, self.x_train)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        scaled_data = poly.fit_transform(self.x_train[list_of_cols])
+        scaled_df = pd.DataFrame(scaled_data, columns=poly.get_feature_names_out())
+        self.x_train = drop_replace_columns(self.x_train, list_of_cols, scaled_df)
 
-        return self.copy()
+        if self.x_test is not None:
+            scaled_test = poly.transform(self.x_test)
+            scaled_test_df = pd.DataFrame(scaled_test, columns=poly.get_feature_names_out())
+            self.x_test = drop_replace_columns(
+                self.x_test, list_of_cols, scaled_test_df
+            )
 
-    def apply(self, func, output_col: str, description=""):
+        return self
+
+    def apply(self, func, output_col: str):
         """
         Calls pandas apply function. Will apply the function to your dataset, or
         both your training and testing dataset.
@@ -712,9 +732,6 @@ class Feature(object):
 
         output_col : str
             New column name
-            
-        description : str, optional
-            Description of the new column to be logged into the report, by default ''
         
         Returns
         -------
@@ -734,30 +751,35 @@ class Feature(object):
             2     1     0     1     1
         """
 
-        self.x_train, self.x_test = util.apply(
-            x_train=self.x_train, func=func, output_col=output_col, x_test=self.x_test,
+        import swifter
+
+        self.x_train.loc[:, output_col] = self.x_train.swifter.progress_bar().apply(
+            func, axis=1
         )
 
-        if self.report is not None:
-            self.report.log(f"Added feature {output_col}. {description}")
+        if self.x_test is not None:
+            self.x_test.loc[:, output_col] = self.x_test.swifter.progress_bar().apply(
+                func, axis=1
+            )
 
-        return self.copy()
+        return self
 
-    def encode_labels(self, *list_args, list_of_cols=[]):
+    def ordinal_encode_labels(self, col: str, ordered_cat=[]):
         """
         Encode categorical values with value between 0 and n_classes-1.
 
         Running this function will automatically set the corresponding mapping for the target variable mapping number to the original value.
 
-        Note that this will not work if your test data will have labels that your train data does not.        
+        Note: that this will not work if your test data will have labels that your train data does not.
+        Note: 
 
         Parameters
         ----------
-        list_args : str(s), optional
-            Specific columns to apply this technique to.
+        col : str, optional
+            Columnm in the data to ordinally encode.
 
-        list_of_cols : list, optional
-            A list of specific columns to apply this technique to., by default []
+        ordered_cat : list, optional
+            A list of ordered categories for the Ordinal encoder. Should be sorted.
         
         Returns
         -------
@@ -766,21 +788,20 @@ class Feature(object):
 
         Examples
         --------
-        >>> data.encode_labels('col1', 'col2', 'col3')
+        >>> data.encode_labels('col1')
+        >>> data.encode_labels('col1', ordered_cat=["Low", "Medium", "High"])
         """
 
-        report_info = technique_reason_repo["preprocess"]["categorical"]["label_encode"]
+        categories = ordered_cat if ordered_cat else "auto"
 
-        list_of_cols = _input_columns(list_args, list_of_cols)
+        enc = OrdinalEncoder(categories=categories)
 
-        self.x_train, self.x_test, _ = label_encoder(
-            x_train=self.x_train, x_test=self.x_test, list_of_cols=list_of_cols,
-        )
+        self.x_train[col] = enc.fit_transform(self.x_train[col].values.reshape(-1, 1))
 
-        if self.report is not None:
-            self.report.report_technique(report_info, list_of_cols)
+        if self.x_test is not None:
+            self.x_test[col] = enc.transform(self.x_test[col].values.reshape(-1, 1))
 
-        return self.copy()
+        return self
 
     def pca(self, n_components=10, **pca_kwargs):
         """
@@ -800,7 +821,7 @@ class Feature(object):
             Number of components to keep.
             
             If n_components is not set all components are kept.
-            If n_components == 'mle' and svd_solver == 'full', Minka’s MLE is used to guess the dimension.
+            If n_components == 'mle' and svd_solver == 'full', Minka's MLE is used to guess the dimension.
             Use of n_components == 'mle' will interpret svd_solver == 'auto' as svd_solver == 'full'
             If 0 < n_components < 1 and svd_solver == 'full', select the number of components such that the amount of variance that needs to be explained is greater than the percentage specified by n_components
             If svd_solver == 'arpack', the number of components must be strictly less than the minimum of n_features and n_samples
@@ -809,9 +830,9 @@ class Feature(object):
             When True (False by default) the components_ vectors are multiplied by the square root of n_samples and then divided by the singular values to ensure uncorrelated outputs with unit component-wise variances.
             Whitening will remove some information from the transformed signal (the relative variance scales of the components) but can sometime improve the predictive accuracy of the downstream estimators by making their data respect some hard-wired assumptions.
 
-        svd_solver : string {‘auto’, ‘full’, ‘arpack’, ‘randomized’}
+        svd_solver : string {'auto', 'full', 'arpack', 'randomized'}
             auto :
-                the solver is selected by a default policy based on X.shape and n_components: if the input data is larger than 500x500 and the number of components to extract is lower than 80% of the smallest dimension of the data, then the more efficient ‘randomized’ method is enabled. Otherwise the exact full SVD is computed and optionally truncated afterwards.
+                the solver is selected by a default policy based on X.shape and n_components: if the input data is larger than 500x500 and the number of components to extract is lower than 80% of the smallest dimension of the data, then the more efficient 'randomized' method is enabled. Otherwise the exact full SVD is computed and optionally truncated afterwards.
             full :
                 run exact full SVD calling the standard LAPACK solver via scipy.linalg.svd and select the components by postprocessing
             arpack :
@@ -820,16 +841,16 @@ class Feature(object):
                 run randomized SVD by the method of Halko et al.
 
         tol : float >= 0, optional (default .0)
-            Tolerance for singular values computed by svd_solver == ‘arpack’.
+            Tolerance for singular values computed by svd_solver == 'arpack'.
 
-        iterated_power : int >= 0, or ‘auto’, (default ‘auto’)
-            Number of iterations for the power method computed by svd_solver == ‘randomized’.
+        iterated_power : int >= 0, or 'auto', (default 'auto')
+            Number of iterations for the power method computed by svd_solver == 'randomized'.
 
         random_state : int, RandomState instance or None, optional (default None)
             If int, random_state is the seed used by the random number generator;
             If RandomState instance, random_state is the random number generator;
             If None, the random number generator is the RandomState instance used by np.random.
-            Used when svd_solver == ‘arpack’ or ‘randomized’.
+            Used when svd_solver == 'arpack' or 'randomized'.
         
         Returns
         -------
@@ -841,14 +862,9 @@ class Feature(object):
         >>> data.pca(n_components=2)
         """
 
-        report_info = technique_reason_repo["feature"]["general"]["pca"]
-
         self._run_sklearn_dim_reduction("pca", n_components=n_components, **pca_kwargs)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
-
-        return self.copy()
+        return self
 
     def truncated_svd(self, n_components=50, **svd_kwargs):
         """
@@ -891,14 +907,9 @@ class Feature(object):
         >>> data.truncated_svd(n_components=2)
         """
 
-        report_info = technique_reason_repo["feature"]["general"]["tsvd"]
-
         self._run_sklearn_dim_reduction("tsvd", n_components=n_components, **svd_kwargs)
 
-        if self.report is not None:
-            self.report.report_technique(report_info, [])
-
-        return self.copy()
+        return self
 
     def drop_correlated_features(self, threshold=0.95):
         """
@@ -919,19 +930,71 @@ class Feature(object):
         >>> data.drop_correlated_features(threshold=0.9)
         """
 
-        report_info = technique_reason_repo["clean"]["numeric"]["corr"]
-        orig_cols = set(self.x_train.columns)
+        corr = self.x_train.corr().abs()
+        upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
+        drop_cols = [col for col in upper.columns if any(upper[col] > threshold)]
 
-        (self.x_train, self.x_test,) = num.drop_correlated_features(
-            x_train=self.x_train, x_test=self.x_test, threshold=threshold,
+        self.x_train.drop(drop_cols, axis=1, inplace=True)
+
+        if self.x_test is not None:
+            self.x_test.drop(drop_cols, axis=1, inplace=True)
+
+        return self
+
+    def chi2_feature_selection(self, k: int, verbose=False):
+        """
+        Uses Chi2 to choose the best K features.
+
+        The Chi2 null hypothesis is that 2 variables are independent.
+
+        Chi-square test feature selection “weeds out” the features that are the most likely to be independent of class and therefore irrelevant for classification.
+        
+        Parameters
+        ----------
+        k : int or "all"
+            Number of features to keep.
+
+        verbose : bool
+            True to print p-values for each feature, by default False
+        
+        Returns
+        -------
+        Data:
+            Returns a deep copy of the Data object.
+
+        Examples
+        --------
+        >>> data.chi2_feature_selection(k=10)
+        """
+
+        y_train = self.y_train
+        y_test = self.y_test
+        self.x_train = self.x_train.drop(self.target, axis=1)
+        self.x_test = (
+            None if self.x_test is None else self.x_test.drop(self.target, axis=1)
         )
 
-        if self.report is not None:
-            self.report.report_technique(
-                report_info, list(orig_cols.difference(self.x_train.columns))
-            )
+        chi2_best = SelectKBest(chi2, k=k).fit(self.x_train, y_train)
 
-        return self.copy()
+        column_indices = chi2_best.get_support()
+
+        if verbose:
+            for col, p in zip(
+                self.x_train.columns[column_indices], chi2_best.pvalues_[column_indices]
+            ):
+                print(f"{col} p-value: {p}")
+
+        self.x_train = self.x_train[self.x_train.columns[column_indices]]
+
+        if self.x_test is not None:
+            self.x_test = self.x_test[self.x_test.columns[column_indices]]
+
+        # Re add the target field back to the dataset.
+        self.x_train[self.target] = y_train
+        if self.x_test is not None:
+            self.x_test[self.target] = y_test
+
+        return self
 
     def _run_sklearn_dim_reduction(self, algo: str, n_components, **kwargs):
         """
@@ -943,25 +1006,31 @@ class Feature(object):
             Dim Reduction algorithm to run.
         """
 
-        if self.target_field:
-            train_target_data = self.x_train[self.target_field]
+        if self.target:
+            train_target_data = self.x_train[self.target]
             test_target_data = (
-                self.x_test[self.target_field] if self.x_test is not None else None
+                self.x_test[self.target] if self.x_test is not None else None
             )
-            x_train = self.x_train.drop(self.target_field, axis=1)
-            x_test = (
-                self.x_test.drop(self.target_field, axis=1)
+            self.x_train = self.x_train.drop(self.target, axis=1)
+            self.x_test = (
+                self.x_test.drop(self.target, axis=1)
                 if self.x_test is not None
                 else None
             )
         else:
-            x_train = self.x_train
-            x_test = self.x_test
+            self.x_train = self.x_train
+            self.x_test = self.x_test
 
-        self.x_train, self.x_test = util.sklearn_dim_reduction(x_train=x_train, x_test=x_test, algo=algo, n_components=n_components, **kwargs)
+        self.x_train, self.x_test = util.sklearn_dim_reduction(
+            x_train=self.x_train,
+            x_test=self.x_test,
+            algo=algo,
+            n_components=n_components,
+            **kwargs,
+        )
 
-        if self.target_field:
-            self.x_train[self.target_field] = train_target_data
-            self.x_test[self.target_field] = (
+        if self.target:
+            self.x_train[self.target] = train_target_data
+            self.x_test[self.target] = (
                 test_target_data if test_target_data is not None else None
             )

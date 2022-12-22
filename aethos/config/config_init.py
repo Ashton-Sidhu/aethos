@@ -37,7 +37,7 @@ project_metric_doc = """
         
         'Recall': 'It measures how many observations out of all positive observations have we classified as positive. Good to use when catching call positive occurences, usually at the cost of false positive.',
         
-        'Matthews Correlation Coefficient': 'It’s a correlation between predicted classes and ground truth.',
+        'Matthews Correlation Coefficient': 'It's a correlation between predicted classes and ground truth.',
         
         'Log Loss': 'Difference between ground truth and predicted score for every observation and average those errors over all observations.',
         
@@ -47,9 +47,9 @@ project_metric_doc = """
         
         'Hamming Loss': 'The Hamming loss is the fraction of labels that are incorrectly predicted.',
         
-        'F-Beta': 'It’s the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+        'F-Beta': 'It's the harmonic mean between precision and recall, with an emphasis on one or the other. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
         
-        'F1': 'It’s the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
+        'F1': 'It's the harmonic mean between precision and recall. Takes into account both metrics, good for imbalanced problems (spam, fraud, etc.).',
         
         'Cohen Kappa': 'Cohen Kappa tells you how much better is your model over the random classifier that predicts based on class frequencies. Works well for imbalanced problems.',
         
@@ -74,13 +74,6 @@ project_metric_doc = """
         'SMAPE': 'Symmetric mean absolute percentage error. It is an accuracy measure based on percentage (or relative) errors.
     """
 
-word_doc = """
-: bool
-    Write report in a word file
-    Default value is False
-    Valid values: False, True
-"""
-
 track_experiments_doc = """
 : bool
     Track experminets with MLFlow
@@ -99,12 +92,14 @@ def use_qgrid(key):
         else:
             qgrid.disable()
 
+
 def use_itable(key):
     import itables.interactive
     import itables.options as opt
 
     opt.lengthMenu = [5, 10, 20, 50, 100, 200, 500]
     opt.maxBytes = 0
+
 
 def create_experiment_dir(key):
     _make_experiment_dir()
@@ -131,9 +126,9 @@ cf.register_option(
 )
 
 cf.register_option(
-    "word_report", default=False, doc=word_doc, validator=is_bool,
-)
-
-cf.register_option(
-    "track_experiments", default=False, doc=track_experiments_doc, validator=is_bool, cb=create_experiment_dir,
+    "track_experiments",
+    default=False,
+    doc=track_experiments_doc,
+    validator=is_bool,
+    cb=create_experiment_dir,
 )

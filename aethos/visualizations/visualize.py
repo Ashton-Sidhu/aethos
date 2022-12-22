@@ -4,537 +4,644 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import pandas_bokeh
 import plotly.express as px
-import ptitprince as pt
 import seaborn as sns
 from aethos.config import IMAGE_DIR, cfg
 from aethos.util import _make_dir
-from bokeh.io import export_png
-from scipy import stats
-from sklearn.manifold import LocallyLinearEmbedding, TSNE
-from sklearn.decomposition import PCA, TruncatedSVD
-import plotly.graph_objects as go
 
 
+class VizCreator(object):
+    def raincloud(
+        self, col: str, target_col: str, data: pd.DataFrame, output_file="", **params
+    ):
+        """
+        Visualizes 2 columns using raincloud.
+        
+        Parameters
+        ----------
+        col : str
+            Column name of general data
 
-def raincloud(col: str, target_col: str, data: pd.DataFrame, output_file="", **params):
-    """
-    Visualizes 2 columns using raincloud.
-    
-    Parameters
-    ----------
-    col : str
-        Column name of general data
+        target_col : str
+            Column name of measurable data, numerical
 
-    target_col : str
-        Column name of measurable data, numerical
+        data : Dataframe
+            Dataframe of the data
 
-    data : Dataframe
-        Dataframe of the data
+        params: dict
+            Parameters for the RainCloud visualization
 
-    params: dict
-        Parameters for the RainCloud visualization
+        ouput_file : str
+            Output file name for the image including extension (.jpg, .png, etc.)
+        """
 
-    ouput_file : str
-        Output file name for the image including extension (.jpg, .png, etc.)
-    """
+        import ptitprince as pt
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+        fig, ax = plt.subplots(figsize=(12, 8))
 
-    if not params:
-        params = {
-            "pointplot": True,
-            "width_viol": 0.8,
-            "width_box": 0.4,
-            "orient": "h",
-            "move": 0.0,
-            "ax": ax,
-        }
-
-    ax = pt.RainCloud(x=col, y=target_col, data=data.infer_objects(), **params)
-
-    if output_file:  # pragma: no cover
-        fig.savefig(os.path.join(IMAGE_DIR, output_file))
-
-
-def barplot(
-    x,
-    y,
-    data,
-    method=None,
-    orient="v",
-    barmode='relative',
-    title='',
-    yaxis_params=None,
-    xaxis_params=None,
-    output_file="",
-    **barplot_kwargs,
-):
-    """
-    Visualizes a bar plot.
-    
-    Parameters
-    ----------
-    x : str
-        Column name for the x axis.
-
-    y : str, list
-        Columns for the y axis
-
-    data : Dataframe
-        Dataset
-
-    method : str
-        Method to aggregate groupy data
-        Examples: min, max, mean, etc., optional
-        by default None
-
-    orient : str, optional
-        Orientation of graph, 'h' for horizontal
-        'v' for vertical, by default 'v'
-
-    barmode : str {'relative', 'overlay', 'group', 'stack'}
-        Relative is a normal barplot
-        Overlay barplot shows positive values above 0 and negative values below 0
-        Group are the bars beside each other.
-        Stack groups the bars on top of each other
-        by default 'relative'
-
-    yaxis_params : dict
-        Parameters for the y axis
-
-    xaxis_params : dict
-        Parameters for the x axis
-    """
-
-    if isinstance(y, str):
-        y = [y]
-
-    data_copy = data.copy()
-
-    if method:
-        data_copy = data_copy.groupby(x, as_index=False)
-        data_copy = getattr(data_copy, method)()
-
-    fig = go.Figure()
-
-    if not xaxis_params:
-        xaxis_params = {
-            'title': x.capitalize()
-        }
-
-    if not yaxis_params:
-        if method:
-            yaxis_params = {
-                'title': method.capitalize()
+        if not params:
+            params = {
+                "pointplot": True,
+                "width_viol": 0.8,
+                "width_box": 0.4,
+                "orient": "h",
+                "move": 0.0,
+                "ax": ax,
             }
 
-    if len(y) > 1:
+        ax = pt.RainCloud(x=col, y=target_col, data=data.infer_objects(), **params)
 
-        for col in y:
-            fig.add_trace(go.Bar(
-                x=data_copy[x],
-                y=data[col],
-                name=col,
-                width=[0.1] * len(data_copy[x]),
-                orientation=orient,
+        if output_file:  # pragma: no cover
+            fig.savefig(os.path.join(IMAGE_DIR, output_file))
 
-            ))
+        return ax
 
-        fig.update_layout(
-            title=title,
-            xaxis=xaxis_params,
-            yaxis=yaxis_params,
-            barmode=barmode,
-            bargap=0.8, # gap between bars of adjacent location coordinates.
-            bargroupgap=0.1 # gap between bars of the same location coordinate
-        )
-    
-    else:
-        for col in y:
-            fig.add_trace(go.Bar(
-                x=data_copy[x],
-                y=data[col],
-                name=col,
-                width=[0.5] * len(data_copy[x]),
-                orientation=orient,
+    def barplot(
+        self,
+        x: str,
+        y: str,
+        data: pd.DataFrame,
+        method=None,
+        asc=None,
+        output_file="",
+        **barplot_kwargs,
+    ):
+        """
+        Visualizes a bar plot.
+        
+        Parameters
+        ----------
+        x : str
+            Column name for the x axis.
 
-            ))
+        y : str
+            Columns for the y axis
 
-        fig.update_layout(
-            title=title,
-            xaxis=xaxis_params,
-            yaxis=yaxis_params,
-            barmode=barmode,
-        )
+        data : Dataframe
+            Dataset
 
-    if output_file:  # pragma: no cover
-        fig.write_image(os.path.join(IMAGE_DIR, output_file))
+        method : str
+            Method to aggregate groupy data
+            Examples: min, max, mean, etc., optional
+            by default None
 
-    fig.show()
-    
-def scatterplot(
-    x: str,
-    y: str,
-    z=None,
-    data=None,
-    category=None,
-    title="Scatter Plot",
-    output_file="",
-    **scatterplot_kwargs,
-):
-    """
-    Plots a scatter plot.
-    
-    Parameters
-    ----------
-    x : str
-        X axis column
+        asc : bool
+            To sort values in ascending order, False for descending
+        """
 
-    y : str
-        Y axis column
+        import plotly.express as px
 
-    z: str
-        Z axis column
+        orient = barplot_kwargs.get("orientation", None)
 
-    data : Dataframe
-        Dataframe
+        if method:
+            if orient == "h":
+                data = data.groupby(y, as_index=False)
+            else:
+                data = data.groupby(x, as_index=False)
 
-    category : str, optional
-        Category to group your data, by default None
+            data = getattr(data, method)()
 
-    title : str, optional
-        Title of the plot, by default 'Scatterplot'
+            if not y:
+                y = data.iloc[:, 1].name
 
-    size : int or str, optional
-        Size of the circle, can either be a number
-        or a column name to scale the size, by default 8
+        if asc is not None:
+            data[x] = data[x].astype(str)
+            data = data.sort_values(y, ascending=asc)
 
-    output_file : str, optional
-        If a name is provided save the plot to an html file, by default ''
-    """
+        fig = px.bar(data, x=x, y=y, **barplot_kwargs)
 
-    if z is None:
+        if asc is not None:
+            fig.update_layout(xaxis_type="category")
 
-        fig = px.scatter(
-            data,
-            x=x,
-            y=y,
-            color=category,
-            title=title,
-            **scatterplot_kwargs
-        )
+        if output_file:  # pragma: no cover
+            fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-    else:
-        fig = px.scatter_3d(data, x=x, y=y, z=z, color=category, title=title, **scatterplot_kwargs)
+        return fig
 
-    if output_file:  # pragma: no cover
-        fig.write_image(os.path.join(IMAGE_DIR, output_file))
+    def scatterplot(
+        self,
+        x: str,
+        y: str,
+        z=None,
+        data=None,
+        color=None,
+        title="Scatter Plot",
+        output_file="",
+        **scatterplot_kwargs,
+    ):
+        """
+        Plots a scatter plot.
+        
+        Parameters
+        ----------
+        x : str
+            X axis column
 
-    fig.show()
+        y : str
+            Y axis column
 
+        z: str
+            Z axis column
 
-def lineplot(
-    x: str, y: list, data, title="Line Plot", output_file="", **lineplot_kwargs
-):
-    """
-    Plots a line plot.
-    
-    Parameters
-    ----------
-    x : str
-        X axis column
+        data : Dataframe
+            Dataframe
 
-    y : list
-        Y axis column
+        color : str, optional
+            Category to group your data, by default None
 
-    data : Dataframe
-        Dataframe
+        title : str, optional
+            Title of the plot, by default 'Scatterplot'
 
-    title : str, optional
-        Title of the plot, by default 'Line Plot'
+        size : int or str, optional
+            Size of the circle, can either be a number
+            or a column name to scale the size, by default 8
 
-    output_file : str, optional
-        If a name is provided save the plot to an html file, by default ''
-    """
+        output_file : str, optional
+            If a name is provided save the plot to an html file, by default ''
+        """
 
-    y.append(x)
-    data_copy = data[y].copy()
-    data_copy = data_copy.set_index(x)
-    xlabel = lineplot_kwargs.pop("xlabel", x)
+        if color:
+            data[color] = data[color].astype(str)
 
-    p_line = data_copy.plot_bokeh.line(title=title, xlabel=xlabel, **lineplot_kwargs)
+        if z is None:
+            fig = px.scatter(
+                data, x=x, y=y, color=color, title=title, **scatterplot_kwargs
+            )
 
-    if output_file:  # pragma: no cover
-
-        if Path(output_file).suffix == ".html":
-            pandas_bokeh.output_file(os.path.join(IMAGE_DIR, output_file))
         else:
-            export_png(p_line, os.path.join(IMAGE_DIR, output_file))
+            fig = px.scatter_3d(
+                data, x=x, y=y, z=z, color=color, title=title, **scatterplot_kwargs
+            )
 
+        if output_file:  # pragma: no cover
+            fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-def correlation_matrix(
-    df, data_labels=False, hide_mirror=False, output_file="", **kwargs
-):
-    """
-    Plots a correlation matrix.
-    
-    Parameters
-    ----------
-    df : DataFrame
-        Data
+        return fig
 
-    data_labels : bool, optional
-        Whether to display the correlation values, by default False
+    def lineplot(
+        self,
+        x: str,
+        y: str,
+        z: str,
+        data,
+        color=None,
+        title="Line Plot",
+        output_file="",
+        **lineplot_kwargs,
+    ):
+        """
+        Plots a line plot.
+        
+        Parameters
+        ----------
+        x : str
+            X axis column
 
-    hide_mirror : bool, optional
-        Whether to display the mirroring half of the correlation plot, by default False
+        y : str
+            Y axis column
 
-    ouput_file : str
-        Output file name for the image including extension (.jpg, .png, etc.)
-    """
+        z : str
+            Z axis column
 
-    corr = df.corr()
+        data : Dataframe
+            Dataframe
 
-    fig, ax = plt.subplots(figsize=(11, 9))
+        color : str
+            Column to draw multiple line plots of
 
-    if hide_mirror:
-        mask = np.zeros_like(corr, dtype=np.bool)
-        mask[np.triu_indices_from(mask)] = True
-    else:
-        mask = None
+        title : str, optional
+            Title of the plot, by default 'Line Plot'
 
-    cmap = sns.diverging_palette(220, 10, as_cmap=True)
+        output_file : str, optional
+            If a name is provided save the plot to an html file, by default ''
+        """
 
-    sns.heatmap(
-        corr,
-        cmap=cmap,
-        vmax=0.3,
-        center=0,
-        square=True,
-        mask=mask,
-        annot=data_labels,
-        fmt=".2f",
-        linewidths=0.5,
-        cbar_kws={"shrink": 0.5},
-        **kwargs,
-    )
+        if color:
+            data[color] = data[color].astype(str)
 
-    if output_file:  # pragma: no cover
-        fig.savefig(os.path.join(IMAGE_DIR, output_file))
+        if z is None:
+            fig = px.line(data, x=x, y=y, color=color, title=title, **lineplot_kwargs)
 
+            fig.data[0].update(mode="markers+lines")
 
-def pairplot(
-    df, kind="scatter", diag_kind="auto", upper_kind=None, lower_kind=None, hue=None, output_file=None, **kwargs
-):
-    """
-    Plots pairplots of the variables in the DataFrame
-    
-    Parameters
-    ----------
-    df : DataFrame
-        Data
+        else:
+            fig = px.line_3d(
+                data, x=x, y=y, z=z, color=color, title=title, **lineplot_kwargs
+            )
 
-    kind : {'scatter', 'reg'}, optional
-        Type of plot for off-diag plots, by default 'scatter'
+        if output_file:  # pragma: no cover
+            fig.write_image(os.path.join(IMAGE_DIR, output_file))
 
-    diag_kind : {'auto', 'hist', 'kde'}, optional
-        Type of plot for diagonal, by default 'auto'
+        return fig
 
-    upper_kind : str {'scatter', 'kde'}, optional
-        Type of plot for upper triangle of pair plot, by default None
+    def viz_correlation_matrix(
+        self, df, data_labels=False, hide_mirror=False, output_file="", **kwargs
+    ):
+        """
+        Plots a correlation matrix.
+        
+        Parameters
+        ----------
+        df : DataFrame
+            Data
 
-    lower_kind : str {'scatter', 'kde'}, optional
-        Type of plot for lower triangle of pair plot, by default None
+        data_labels : bool, optional
+            Whether to display the correlation values, by default False
 
-    hue : str, optional
-        Column to colour points by, by default None
+        hide_mirror : bool, optional
+            Whether to display the mirroring half of the correlation plot, by default False
 
-    ouput_file : str
-        Output file name for the image including extension (.jpg, .png, etc.)
-    """
+        ouput_file : str
+            Output file name for the image including extension (.jpg, .png, etc.)
+        """
 
-    plot_mapping = {
-        'scatter': plt.scatter,
-        'kde': sns.kdeplot,
-        'hist': sns.distplot
-    }
+        fig, ax = plt.subplots(figsize=(11, 9))
 
-    palette = kwargs.pop("color", sns.color_palette("pastel"))
+        if hide_mirror:
+            mask = np.zeros_like(df, dtype=np.bool)
+            mask[np.triu_indices_from(mask)] = True
+        else:
+            mask = None
 
-    if upper_kind or lower_kind:
-        assert (upper_kind is not None), "upper_kind cannot be None."
-        assert (lower_kind is not None), "lower_kind cannot be None."
-        assert (diag_kind is not "auto"), "diag_kind must be either `hist` or `kde`."
+        cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
-        g = sns.PairGrid(df, hue=hue, palette=palette, **kwargs)
-        g = g.map_upper(plot_mapping[upper_kind])
-        g = g.map_diag(plot_mapping[diag_kind])
-        g = g.map_lower(plot_mapping[lower_kind])
-        g = g.add_legend()        
-
-    else:
-        g = sns.pairplot(
-            df, kind=kind, diag_kind=diag_kind, hue=hue, palette=palette, **kwargs
+        sns.heatmap(
+            df,
+            cmap=cmap,
+            vmax=0.3,
+            center=0,
+            square=True,
+            mask=mask,
+            annot=data_labels,
+            fmt=".2f",
+            linewidths=0.5,
+            cbar_kws={"shrink": 0.5},
+            **kwargs,
         )
 
-    if output_file:  # pragma: no cover
-        g.savefig(os.path.join(IMAGE_DIR, output_file))
+        if output_file:  # pragma: no cover
+            fig.savefig(os.path.join(IMAGE_DIR, output_file))
 
+        return ax
 
-def jointplot(x, y, df, kind="scatter", output_file="", **kwargs):
-    """
-    Plots a joint plot of 2 variables.
-    
-    Parameters
-    ----------
-    x : str
-        X axis column
+    def pairplot(
+        self,
+        df,
+        kind="scatter",
+        diag_kind="auto",
+        upper_kind=None,
+        lower_kind=None,
+        hue=None,
+        output_file=None,
+        **kwargs,
+    ):
+        """
+        Plots pairplots of the variables in the DataFrame
+        
+        Parameters
+        ----------
+        df : DataFrame
+            Data
 
-    y : str
-        y axis column
+        kind : {'scatter', 'reg'}, optional
+            Type of plot for off-diag plots, by default 'scatter'
 
-    df : DataFrame
-        Data
+        diag_kind : {'auto', 'hist', 'kde'}, optional
+            Type of plot for diagonal, by default 'auto'
 
-    kind : { “scatter” | “reg” | “resid” | “kde” | “hex” }, optional
-        Kind of plot to draw, by default 'scatter'
+        upper_kind : str {'scatter', 'kde'}, optional
+            Type of plot for upper triangle of pair plot, by default None
 
-    ouput_file : str
-        Output file name for the image including extension (.jpg, .png, etc.)
-    """
+        lower_kind : str {'scatter', 'kde'}, optional
+            Type of plot for lower triangle of pair plot, by default None
 
-    # NOTE: Ignore the deprecation warning for showing the R^2 statistic until Seaborn reimplements it
-    import warnings
+        hue : str, optional
+            Column to colour points by, by default None
 
-    warnings.simplefilter("ignore", UserWarning)
+        ouput_file : str
+            Output file name for the image including extension (.jpg, .png, etc.)
+        """
 
-    sns.set(style="ticks", color_codes=True)
-    color = kwargs.pop("color", "crimson")
+        plot_mapping = {
+            "scatter": plt.scatter,
+            "kde": sns.kdeplot,
+            "hist": sns.distplot,
+        }
 
-    g = sns.jointplot(x=x, y=y, data=df, kind=kind, color=color, **kwargs).annotate(
-        stats.pearsonr
-    )
+        palette = kwargs.pop("color", sns.color_palette("pastel"))
 
-    if output_file:  # pragma: no cover
-        g.savefig(os.path.join(IMAGE_DIR, output_file))
+        if upper_kind or lower_kind:
+            assert upper_kind is not None, "upper_kind cannot be None."
+            assert lower_kind is not None, "lower_kind cannot be None."
+            assert diag_kind is not "auto", "diag_kind must be either `hist` or `kde`."
 
+            g = sns.PairGrid(df, hue=hue, palette=palette, **kwargs)
+            g = g.map_upper(plot_mapping[upper_kind])
+            g = g.map_diag(plot_mapping[diag_kind])
+            g = g.map_lower(plot_mapping[lower_kind])
+            g = g.add_legend()
 
-def histogram(x: list, x_train: pd.DataFrame, x_test=None, output_file="", **kwargs):
-    """
-    Plots a histogram.
-    
-    Parameters
-    ----------
-    x : list
-        Columns to plot histogram for.
+        else:
+            g = sns.pairplot(
+                df, kind=kind, diag_kind=diag_kind, hue=hue, palette=palette, **kwargs
+            )
 
-    x_train : pd.DataFrame
-        Dataframe of the data.
+        if output_file:  # pragma: no cover
+            g.savefig(os.path.join(IMAGE_DIR, output_file))
 
-    x_test : pd.DataFrame
-        Dataframe of the data.
+        return g
 
-    ouput_file : str
-        Output file name for the image including extension (.jpg, .png, etc.)
-    """
+    def jointplot(self, x, y, df, kind="scatter", output_file="", **kwargs):
+        """
+        Plots a joint plot of 2 variables.
+        
+        Parameters
+        ----------
+        x : str
+            X axis column
 
-    import math
+        y : str
+            y axis column
 
-    sns.set(style="ticks", color_codes=True)
-    sns.set_palette(sns.color_palette("pastel"))
+        df : DataFrame
+            Data
 
-    # Make the single plot look pretty
-    if len(x) == 1:
-        data = x_train[~x_train[x[0]].isnull()]
-        g = sns.distplot(data[x], label='Train Data', **kwargs)
+        kind : { “scatter” | “reg” | “resid” | “kde” | “hex” }, optional
+            Kind of plot to draw, by default 'scatter'
 
-        if x_test is not None:
-            data = x_test[~x_test[x[0]].isnull()]
-            g = sns.distplot(data[x], label='Test Data', **kwargs)
-            g.legend(loc='upper right')
+        ouput_file : str
+            Output file name for the image including extension (.jpg, .png, etc.)
+        """
 
-        g.set_title(f'Histogram for {x[0].capitalize()}')        
+        from scipy import stats
 
-    else:
-        n_cols = 2
-        n_rows = math.ceil(len(x) / n_cols)
+        sns.set(style="ticks", color_codes=True)
+        color = kwargs.pop("color", "crimson")
 
-        _, ax = plt.subplots(n_rows, n_cols, figsize=(30, 10 * n_cols))
+        g = sns.jointplot(x=x, y=y, data=df, kind=kind, color=color, **kwargs)
 
-        for ax, col in zip(ax.flat, x):
-            g = None
+        r, p = stats.pearsonr(df[x], df[y])
 
-            data = x_train[~x_train[col].isnull()]
-            g = sns.distplot(data[col], ax=ax, label='Train Data', **kwargs)
+        g.ax_joint.annotate(f"$\\{r=:.3f}, {p=:.3f}$ ", xy=(.1, .9), xycoords="axes fraction", ha="left", va="center")
+
+        if output_file:  # pragma: no cover
+            g.savefig(os.path.join(IMAGE_DIR, output_file))
+
+        return g
+
+    def histogram(
+        self,
+        x: list,
+        x_train: pd.DataFrame,
+        x_test=None,
+        hue=None,
+        output_file="",
+        **kwargs,
+    ):
+        """
+        Plots a histogram.
+        
+        Parameters
+        ----------
+        x : list
+            Columns to plot histogram for.
+
+        x_train : pd.DataFrame
+            Dataframe of the data.
+
+        x_test : pd.DataFrame
+            Dataframe of the data.
+
+        hue : str, optional
+            Column to colour points by, by default None
+
+        ouput_file : str
+            Output file name for the image including extension (.jpg, .png, etc.)
+        """
+
+        import math
+
+        sns.set(style="ticks", color_codes=True)
+        sns.set_palette(sns.color_palette("pastel"))
+
+        if hue:
+            classes = np.unique(x_train[hue])
+
+        # Make the single plot look pretty
+        if len(x) == 1:
+            data = x_train[~x_train[x[0]].isnull()]
+
+            if hue:
+                for item in classes:
+                    g = sns.distplot(
+                        data[data[hue] == item][x],
+                        label=f"Train Data, {item}",
+                        **kwargs,
+                    )
+            else:
+                g = sns.distplot(data[x], label="Train Data", **kwargs)
 
             if x_test is not None:
-                data = x_test[~x_test[col].isnull()]
-                g = sns.distplot(data[col], ax=ax, label='Test Data', **kwargs)
-                ax.legend(loc='upper right')
-            
-            ax.set_title(f'Histogram for {col.capitalize()}', fontsize=20)
+                data = x_test[~x_test[x[0]].isnull()]
 
-        plt.tight_layout()
+                if hue:
+                    for item in classes:
+                        g = sns.distplot(
+                            data[data[hue] == item][x],
+                            label=f"Test Data, {item}",
+                            **kwargs,
+                        )
+                else:
+                    g = sns.distplot(data[x], label="Test Data", **kwargs)
 
-    if output_file:  # pragma: no cover
-        g.figure.savefig(os.path.join(IMAGE_DIR, output_file))
+            g.legend(loc="upper right")
+            g.set_title(f"Histogram for {x[0].capitalize()}")
 
-def viz_clusters(data: pd.DataFrame, algo: str, category: str, dim=2, output_file="", **kwargs):
-    """
-    Visualize clusters
-    
-    Parameters
-    ----------
-    data : pd.DataFrame
-        Data
+        else:
+            n_cols = 2
+            n_rows = math.ceil(len(x) / n_cols)
 
-    algo : str {'tsne', 'lle', 'pca', 'tsvd'}, optional
-        Algorithm to reduce the dimensions by, by default 'tsne'
+            _, ax = plt.subplots(n_rows, n_cols, figsize=(30, 5 * n_cols))
 
-    category : str
-        Column name of the labels/data points to highlight in the plot
+            for ax, col in zip(ax.flat, x):
+                g = None
+                data = x_train[~x_train[col].isnull()]
 
-    dim : int {2, 3}
-        Dimensions of the plot to show, either 2d or 3d, by default 2
+                if hue:
+                    for item in classes:
+                        g = sns.distplot(
+                            data[data[hue] == item][col],
+                            ax=ax,
+                            label=f"Train Data, {item}",
+                            **kwargs,
+                        )
+                else:
+                    g = sns.distplot(data[col], ax=ax, label="Train Data", **kwargs)
 
-    output_file : str, optional
-        Output file name for image with extension (i.e. jpeg, png, etc.)
-    """
+                if x_test is not None:
+                    data = x_test[~x_test[col].isnull()]
 
-    if dim != 2 and dim != 3:
-        raise ValueError("Dimension must be either 2d (2) or 3d (3)")
+                    if hue:
+                        for item in classes:
+                            g = sns.distplot(
+                                data[data[hue] == item][col],
+                                ax=ax,
+                                label=f"Test Data, {item}",
+                                **kwargs,
+                            )
+                    else:
+                        g = sns.distplot(data[col], ax=ax, label="Test Data", **kwargs)
 
-    algorithms = {
-        'tsne': TSNE(n_components=dim, random_state=42,),
-        'lle': LocallyLinearEmbedding(n_components=dim, random_state=42,),
-        'pca': PCA(n_components=dim, random_state=42,),
-        'tsvd': TruncatedSVD(n_components=dim, random_state=42,), 
-    }
+                ax.legend(loc="upper right")
 
-    reducer = algorithms[algo]
-    reduced_df = pd.DataFrame(reducer.fit_transform(data.drop(category, axis=1)))
-    reduced_df.columns = map(str, reduced_df.columns)
-    reduced_df[category] = data[category]
-    reduced_df[category] = reduced_df[category].astype(str)
+                ax.set_title(f"Histogram for {col.capitalize()}", fontsize=20)
 
-    if dim == 2:
-        scatterplot(
-            "0",
-            "1",
-            data=reduced_df,
-            category=category,
-            output_file=output_file,
-            **kwargs,
+            plt.tight_layout()
+
+        if output_file:  # pragma: no cover
+            g.figure.savefig(os.path.join(IMAGE_DIR, output_file))
+
+        return g
+
+    def boxplot(
+        self,
+        x=None,
+        y=None,
+        data=None,
+        orient="v",
+        title="",
+        output_file="",
+        **boxplot_kwargs,
+    ):
+        """
+        Plots a box plot
+
+        Parameters
+        ----------
+        x : str, optional
+            Column from data, by default None
+
+        y : str, optional
+            Column from data, by default None
+
+        data : DataFrame, optional
+            Data, by default None
+
+        orient : str, optional
+            Orientation of the plot, by default "v"
+
+        title : str, optional
+            Title of the plot, by default ''
+
+        output_file : str, optional
+            File name, by default ""
+        """
+
+        fig = px.box(data, x=x, y=y, orientation=orient, title=title, **boxplot_kwargs)
+
+        if output_file:  # pragma: no cover
+            fig.write_image(os.path.join(IMAGE_DIR, output_file))
+
+        return fig
+
+    def violinplot(
+        self,
+        x=None,
+        y=None,
+        data=None,
+        orient="v",
+        title="",
+        output_file="",
+        **violin_kwargs,
+    ):
+        """
+        Plots a violin plot.
+
+        Parameters
+        ----------
+        x : str, optional
+            Column from data, by default None
+
+        y : str, optional
+            Column from data, by default None
+
+        data : DataFrame, optional
+            Data, by default None
+
+        orient : str, optional
+            Orientation of the plot, by default "v"
+
+        title : str, optional
+            Title of the plot, by default ''
+
+        output_file : str, optional
+            File name, by default ""
+        """
+
+        fig = px.violin(
+            data, x=x, y=y, orientation=orient, title=title, **violin_kwargs
         )
-    else:
-        scatterplot(
-            "0",
-            "1",
-            "2",
-            data=reduced_df,
-            category=category,
-            output_file=output_file,
-            **kwargs,
-        )
+
+        if output_file:  # pragma: no cover
+            fig.write_image(os.path.join(IMAGE_DIR, output_file))
+
+        return fig
+
+    def pieplot(
+        self,
+        values: str,
+        names: str,
+        data=None,
+        textposition=None,
+        textinfo=None,
+        output_file="",
+        **pieplot_kwargs,
+    ):
+        """
+        Plots a pie plot.
+        
+        Parameters
+        ----------
+        values : str
+            Values of the pie plot.
+
+        names : str
+            Labels for the pie plot
+
+        data : DataFrame, optional
+            Data, by default None
+
+        textposition : str
+            Text position location
+
+        textinfo : str
+            Text info
+
+        output_file : str, optional
+            File name, by default ""
+        """
+
+        fig = px.pie(data, names=names, values=values, **pieplot_kwargs)
+
+        fig.update_traces(textposition=textposition, textinfo=textinfo)
+
+        return fig
+
+    def create_table(self, matrix, index, output_file, **kwargs):
+        """
+        Creates a table using plotly.
+        
+        Parameters
+        ----------
+        matrix : 2d array
+            Table values
+        """
+
+        from plotly.tools import FigureFactory as FF
+
+        table = FF.create_table(matrix, index=True)
+
+        if output_file:  # pragma: no cover
+            table.write_image(os.path.join(IMAGE_DIR, output_file))
+
+        table.show()

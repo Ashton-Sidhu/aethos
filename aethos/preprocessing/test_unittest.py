@@ -4,14 +4,10 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from aethos import Data
+from aethos import Classification
 
 
 class TestPreprocessing(unittest.TestCase):
-    @classmethod
-    def tearDownClass(cls):
-        shutil.rmtree(str(Path.home()) + "/.aethos/reports/")
-
     def test_preprocessnumeric_normalize(self):
 
         unnormal_data = [[5.0, 3, 1], [2.0, 2, 1], [10.0, 1, 1], [10.0, 1, 1]]
@@ -19,9 +15,8 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Data(x_train=data, test_split_percentage=0.5, report_name="test")
+        preprocess = Classification(x_train=data, target="col3", x_test=data)
         preprocess.normalize_numeric()
-        validate = preprocess.x_train.values.tolist()
 
         self.assertTrue(True)
 
@@ -32,9 +27,8 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Data(x_train=data, test_split_percentage=0.5, report_name="test")
+        preprocess = Classification(x_train=data, target="col3", x_test=data)
         preprocess.normalize_quantile_range()
-        validate = preprocess.x_train.values.tolist()
 
         self.assertTrue(True)
 
@@ -45,7 +39,7 @@ class TestPreprocessing(unittest.TestCase):
         columns = ["col1", "col2", "col3"]
         data = pd.DataFrame(unnormal_data, columns=columns)
 
-        preprocess = Data(x_train=data, test_split_percentage=0.5, report_name="test")
+        preprocess = Classification(x_train=data, target="col3", x_test=data)
         preprocess.normalize_log()
         preprocess.normalize_log(base=2)
         preprocess.normalize_log(base=10)
@@ -62,13 +56,8 @@ class TestPreprocessing(unittest.TestCase):
         x_train = pd.DataFrame(unnormal_x_train, columns=columns)
         x_test = pd.DataFrame(unnormal_x_test, columns=columns)
 
-        preprocess = Data(
-            x_train=x_train,
-            x_test=x_test,
-            test_split_percentage=0.5,
-            report_name="test",
-        )
-        preprocess.normalize_numeric("col1", "col2", "col3")
+        preprocess = Classification(x_train=x_train, target="col3", x_test=x_test,)
+        preprocess.normalize_numeric("col1", "col2")
         validate_train = preprocess.x_train.values.tolist()
         validate_test = preprocess.x_test.values.tolist()
 
@@ -81,8 +70,9 @@ class TestPreprocessing(unittest.TestCase):
             "This function is going to split by sentence. Automation is great.",
         ]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1, 2]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.split_sentences("data")
         validate = prep.x_train["data_sentences"].values.tolist()
 
@@ -104,19 +94,21 @@ class TestPreprocessing(unittest.TestCase):
             "This function is going to split by sentence. Automation is great.",
         ]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1, 2]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.stem_nltk("data")
         validate = prep.x_train.shape[1]
 
-        self.assertEqual(validate, 2)
+        self.assertEqual(validate, 3)
 
     def test_preprocess_nltksplit(self):
 
         text_data = ["Please.exe split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.split_words_nltk("data")
         validate = prep.x_train.data_tokenized.values.tolist()
 
@@ -126,8 +118,9 @@ class TestPreprocessing(unittest.TestCase):
 
         text_data = ["Please123 split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.split_words_nltk("data", regexp=r"\w+\d+")
         validate = prep.x_train.data_tokenized.values.tolist()
 
@@ -137,8 +130,9 @@ class TestPreprocessing(unittest.TestCase):
 
         text_data = ["Please split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.remove_punctuation("data")
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -148,8 +142,9 @@ class TestPreprocessing(unittest.TestCase):
 
         text_data = ["Please.exe, split me.", "hello it's me, testing.dll."]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1, 2]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.remove_punctuation("data", regexp=r"\w+\.\w+|\w+")
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -159,10 +154,11 @@ class TestPreprocessing(unittest.TestCase):
 
     def test_preprocess_cleantext(self):
 
-        text_data = ["Please.exe, split me.", "hello it's me, testing.dll."]
+        text_data = ["Please.exe, split me.", "hello it's me123, test1ing.dll."]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1, 2]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.clean_text("data")
         validate = prep.x_train["data_clean"].tolist()
 
@@ -172,8 +168,9 @@ class TestPreprocessing(unittest.TestCase):
 
         text_data = ["Please,> split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.remove_punctuation("data", exceptions=[".", ">"])
         validate = prep.x_train.data_rem_punct.values.tolist()
 
@@ -183,12 +180,29 @@ class TestPreprocessing(unittest.TestCase):
 
         text_data = ["Please the split me."]
         data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1]
 
-        prep = Data(x_train=data, split=False, report_name="test")
+        prep = Classification(x_train=data, target="col3", x_test=data)
         prep.remove_stopwords_nltk("data", custom_stopwords=["please"])
         validate = prep.x_train.data_rem_stop.values.tolist()
 
         self.assertListEqual(validate, ["split ."])
+
+    def test_preprocess_remnum(self):
+
+        text_data = ["0Please.3exe,56 split me1.", "h123ello it'1s me, testing.dll.123"]
+        data = pd.DataFrame(data=text_data, columns=["data"])
+        data["col3"] = [1, 2]
+
+        prep = Classification(x_train=data, target="col3", x_test=data)
+        prep.remove_numbers("data", new_col_name="test")
+        text = prep.x_train["test"].tolist()[0]
+
+        validate = (
+            text == "Please.exe, split me." or text == "hello it's me, testing.dll."
+        )
+
+        self.assertTrue(validate)
 
 
 if __name__ == "__main__":

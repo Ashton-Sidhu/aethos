@@ -19,7 +19,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = "aethos"
-copyright = "2019, Ashton Sidhu"
+copyright = "2020, Ashton Sidhu"
 author = "Ashton Sidhu"
 
 # The full version, including alpha/beta/rc tags

@@ -5,40 +5,42 @@ from subprocess import check_call
 from setuptools import find_packages, setup
 from setuptools.command.install import install
 
-VERSION = "1.1.2"
+VERSION = "2.0.1"
 
 pkgs = [
-    "numpy==1.17.4",
-    "pandas>=0.25",
+    "numpy==1.22.0",
+    "pandas==1.0.3",
     "scikit-learn>=0.22",
     "textblob==0.15.3",
-    "matplotlib<3.2.0",
+    "matplotlib==3.2.1",
     "pandas_summary",
-    "pandas-bokeh==0.4.2",
-    "ptitprince==0.1.5",
-    "nltk==3.4.5",
-    "ipython==7.10.1",
-    "gensim==3.8.1",
-    "pandas-profiling==2.3.0",
-    "cookiecutter==1.6.0",
-    "shap==0.33.0",
-    "interpret==0.1.20",
-    "yellowbrick==1.0.1",
-    "spacy==2.2.3",
+    "ptitprince==0.2.3",
+    "nltk==3.6.6",
+    "ipython==7.16.3",
+    "gensim==3.8.2",
+    "pandas-profiling==2.8.0",
+    "cookiecutter==2.1.1",
+    "shap==0.35.0",
+    "interpret==0.1.21",
+    "yellowbrick==1.1",
+    "spacy==2.2.4",
     "xgboost==0.90",
     "ipywidgets==7.5.1",
-    "qgrid==1.1.1",
+    "qgrid==1.3.1",
     "python-dateutil<2.8.1",
     "itables==0.2.1",
     "selenium==3.141.0",
-    "python-docx==0.8.10",
     "graphviz==0.13.2",
     "pyldavis==2.1.2",
-    "swifter==0.297",
+    "swifter==0.302",
     "lightgbm==2.3.1",
-    "catboost==0.20.1",
-    "mlflow==1.5.0"
+    "mlflow==1.23.1",
+    "statsmodels==0.11.1",
+    "ppscore==0.0.2",
+    "autoviz==0.0.68",
 ]
+
+extras = {"ptmodels": ["transformers==2.3.0", "tensorflow==2.1.0"]}
 
 
 class VerifyVersionCommand(install):
@@ -61,11 +63,12 @@ with open("README.md", "r") as fh:
 
 setup(
     name="aethos",
-    url="https://github.com/Ashton-Sidhu/py-automl",
+    url="https://github.com/Ashton-Sidhu/aethos",
     packages=find_packages(),
     author="Ashton Sidhu",
     author_email="ashton.sidhu1994@gmail.com",
     install_requires=pkgs,
+    extras_require=extras,
     version=VERSION,
     license="GPL-3.0",
     description="A library of data science and machine learning techniques to help automate your workflow.",

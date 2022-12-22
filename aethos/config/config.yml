@@ -1,7 +1,3 @@
-report:
-  # Directory where reports are saved, default is $HOME/.aethos/reports/
-  dir: ''
-
 models:
   # Directory where any pickled models would be stored
   dir: ''

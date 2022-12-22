@@ -8,6 +8,8 @@
 
 To track development of the project, you can view the [Trello board](https://trello.com/b/EZVs9Hxz/automated-ds-ml).
 
+**What's new in Aethos 2.0?** For a summary of new features and changes to Aethos in v2.0 you can read this [blog post](https://towardsdatascience.com/aethos-2-0-an-improved-way-to-automate-your-data-science-work-flow-8bfb2ac3a29a#8542-d7c094f06e28). Alternatively, there is a Google Collab notebook available [here](https://ashton-sidhu.github.io/Blog/jupyter/aethos/datascience/2020/05/12/Aethos-2.0.html).
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
@@ -31,7 +33,6 @@ Aethos is a library/platform that automates your data science and analytical tas
 Aethos provides:
 
   - Automated data science cleaning, preprocessing, feature engineering and modelling techniques through one line of code
-  - Automated reporting - as you perform your analysis, a report is created along side with it
   - Automated visualizations through one line of code
   - Reusable code - no more copying code from notebook to notebook
   - Automated dependency and corpus management
@@ -43,6 +44,8 @@ Aethos provides:
   - Comparing train and test data distribution
   - Exporting trained models as a service (Generates the necessary code, files and folder structure)
   - Experiment tracking with MLFlow
+  - Pre-trained models - BERT, GPT2, etc.
+  - Statistical tests - Anova, T-test, etc.
   
 You can view a full list of implemented techniques in the documentation or here: [TECHNIQUES.md](https://github.com/Ashton-Sidhu/aethos/blob/develop/TECHNIQUES.md)
 
@@ -50,8 +53,6 @@ Plus more coming soon such as:
 
   - Testing for model drift
   - Recommendation models
-  - Statistical tests - Anova, T-test, etc.
-  - Pre-trained models - BERT, GPT2, etc.
   - Parralelization through Dask and/or Spark
   - Uniform API for deep learning models
   - Automated code and file generation for jupyter notebook development and a python file of your data pipeline.
@@ -85,12 +86,34 @@ Currently the following options are:
   - `interactive_table`: Interactive grid with Itable - comes with built in client side searching
   - `project_metrics`: Setting project metrics
     - Project metrics is a metric or set of metrics to evaluate models.
-  - `word_report`: Writes report to a word document as well as the .txt file
   - `track_experiments`: Uses MLFlow to track models and experiments.
 
-User options such as changing the directory where images, reports, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
+User options such as changing the directory where images, and projects are saved can be edited in the config file. This is located at `USER_HOME`/.aethos/ .
 
-This location is also the default location of where any images, reports and projects are stored.
+This location is also the default location of where any images, and projects are stored.
+
+***New in 2.0***
+
+The Data and Model objects no longer exist but instead there a multiple objects you can use with more of a purpose.
+
+Analysis - Used to analyze, visualize and run statistical models (t-tests, anovas, etc.)
+
+Classification - Used to analyze, visualize, run statistical models and train classification models.
+
+Regression - Used to analyze, visualize, run statistical models and train regression models.
+
+Unsupervised - Used to analyze, visualize, run statistical models and train unsupervised models.
+
+ClassificationModelAnalysis - Used to analyze, interpret and visualize results of a Classification model.
+
+RegressionModelAnalysis - Used to analyze, interpret and visualize results of a Regression model.
+
+UnsupervisedModelAnalysis - Used to analyze, interpret and visualize results of a Unsupervised model.
+
+TextModelAnalysis - Used to analyze, interpret and visualize results of a Text model.
+
+Now all modelling and anlysis can be achieved via one object.
+
 
 ### Analysis
 
@@ -98,13 +121,13 @@ This location is also the default location of where any images, reports and proj
 import aethos as at
 import pandas as pd
 
-x_train = pd.read_csv('data/train.csv') # load data into pandas
+x_train = pd.read_csv('https://raw.githubusercontent.com/Ashton-Sidhu/aethos/develop/examples/data/train.csv') # load data into pandas
 
 # Initialize Data object with training data
 # By default, if no test data (x_test) is provided, then the data is split with 20% going to the test set
+# 
 # Specify predictor field as 'Survived'
-# Specify report name
-df = at.Data(x_train, target_field='Survived', report_name='Titanic')
+df = at.Classification(x_train, target='Survived')
 
 df.x_train # View your training data
 df.x_test # View your testing data
@@ -113,14 +136,14 @@ df # Glance at your training data
 
 df[df.Age > 25] # Filter the data
 
-df['new_col'] = [1, 2]  # Add a new column to the data, based off the length of the data provided, it will add it to the train or test set.
-
 df.x_train['new_col'] = [1,2] # This is the exact same as the either of code above
 df.x_test['new_col'] = [1,2]
 
 df.data_report(title='Titanic Summary', output_file='titanic_summary.html') # Automate EDA with pandas profiling with an autogenerated report
 
 df.describe() # Display a high level view of your data using an extended version of pandas describe
+
+df.column_info() # Display info about each column in your data
 
 df.describe_column('Fare') # Get indepth statistics about the 'Fare' column
 
@@ -129,6 +152,10 @@ df.mean() # Run pandas functions on the aethos objects
 df.missing_data # View your missing data at anytime
 
 df.correlation_matrix() # Generate a correlation matrix for your training data
+
+df.predictive_power() # Calculates the predictive power of each variable
+
+df.autoviz() # Runs autoviz on the data and runs EDA on your data
 
 df.pairplot() # Generate pairplots for your training data features at any time
 
@@ -155,17 +182,16 @@ As you've started to notice, alot of tasks to df the data and to explore the dat
 
 ```python
 # Create a barplot of the mean surivial rate grouped by age.
-df.barplot(x='Age', y=['Survived'], method='mean', xlabel='Age') 
+df.barplot(x='Age', y='Survived', method='mean')
+
+# Plots a scatter plot of Age vs. Fare and colours the dots based off the Survived column.
+df.scatterplot(x='Age', y='Fare', color='Survived')
 
 # One hot encode the `Person` and `Embarked` columns and then drop the original columns
 df.onehot_encode('Person', 'Embarked', drop_col=True) 
 ```
 
 ### Modelling
-
-```python
-model = at.Model(df)
-```
 
 #### Running a Single Model
 
@@ -174,19 +200,23 @@ Models can be trained one at a time or multiple at a time. They can also be trai
 After a model has been ran, it comes with use cases such as plotting RoC curves, calculating performance metrics, confusion matrices, SHAP plots, decision tree plots and other local and global model interpretability use cases.
 
 ```python
-lr_model = model.LogisticRegression(random_state=42) # Train a logistic regression model
+lr_model = df.LogisticRegression(random_state=42) # Train a logistic regression model
 
 # Train a logistic regression model with gridsearch
-lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42)
+lr_model = df.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, random_state=42)
 
-# Crossvalidatea a logistic regression model, displays the scores and the learning curve and builds the model
-lr_model = model.LogisticRegression(cv=5, n_splits=10)
+# Crossvalidate a a logistic regression model, displays the scores and the learning curve and builds the model
+lr_model = df.LogisticRegression()
+lr_model.cross_validate(n_splits=10) # default is strat-kfold for classification  problems
 
 # Build a Logistic Regression model with Gridsearch and then cross validates the best model using stratified K-Fold cross validation.
-lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv='strat-kfold', n_splits=10) 
+lr_model = model.LogisticRegression(gridsearch={'penalty': ['l1', 'l2']}, cv_type="strat-kfold") 
+
+lr_model.help_debug() # Interface with items to check for to help debug your model.
 
 lr_model.metrics() # Views all metrics for the model
 lr_model.confusion_matrix()
+lr_model.decision_boundary()
 lr_model.roc_curve()
 ```
 
@@ -194,20 +224,31 @@ lr_model.roc_curve()
 
 ```python
 # Add a Logistic Regression, Random Forest Classification and a XGBoost Classification model to the queue.
-model.LogisticRegression(random_state=42, model_name='log_reg', run=False)
-model.RandomForestClassification(run=False)
-model.XGBoostClassification(run=False)
+lr = df.LogisticRegression(random_state=42, model_name='log_reg', run=False)
+rf = df.RandomForestClassification(run=False)
+xgbc = df.XGBoostClassification(run=False)
 
-model.run_models() # This will run all queued models in parallel
-model.run_models(method='series') # Run each model one after the other
+df.run_models() # This will run all queued models in parallel
+df.run_models(method='series') # Run each model one after the other
 
-model.compare_models() # This will display each model evaluated against every metric
+df.compare_models() # This will display each model evaluated against every metric
 
 # Every model is accessed by a unique name that is assiged when you run the model.
 # Default model names can be seen in the function header of each model.
 
-model.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
-model.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
+df.log_reg.confusion_matrix() # Displays a confusion matrix for the logistic regression model
+df.rf_cls.confusion_matrix() # Displays a confusion matrix for the random forest model
+```
+
+#### Using Pretrained Models
+
+Currently you can use pretrained models such as BERT, XLNet, AlBERT, etc. to calculate sentiment and answer questions.
+
+```python
+df.pretrained_sentiment_analysis(`text_column`)
+
+# To answer questions, context for the question has to be supplied
+df.pretrained_question_answer(`context_column`, `question_column`)
 ```
 
 ### Model Interpretability
@@ -242,6 +283,10 @@ Now navigate to 'your_home_folder'('~' on linux and Users/'your_user_name' on wi
 **Python Requirements**: 3.6, 3.7
 
 `pip install aethos`
+
+To install the dependencies to use pretrained models such as BERT, XLNet, AlBERT, etc:
+
+`pip install aethos[ptmodels]`
 
 To install associating corpora for nltk analysis:
 
@@ -284,15 +329,16 @@ NOTE: This only works for local use of MLFLOW, if you are running MLFlow on a re
   - [x] Quality of life/addons
   - [x] Code Generation V1
   - [x] Experiment Tracking
-  - [ ] Pre trained models
+  - [x] Pre trained models
 
 #### Phase 4
   - [ ]	Deep learning integration
-  - [ ] Statistical Models
+  - [x] Statistical Tests
   - [ ] Recommendation Models
   - [ ] Code Generation V2
     
 #### Phase 5
+  - [ ] Add time series models (i.e ARIMA) and feature engineering
   - [ ] Parallelization (Spark, Dask, etc.)
   - [ ]	Cloud computing
   - [ ] Graph based learning and representation
@@ -340,28 +386,13 @@ Community credits go to:
 
 [@mlflow](https://github.com/mlflow/) for their model tracking library [mlflow](https://github.com/mlflow/mlflow/).
 
+[@huggingface](https://github.com/huggingface/) for their automated pretrained model library [transformers](https://github.com/huggingface/transformers).
+
+[@AutoViML](https://github.com/AutoViML/) for their auto visualization library [autoviz](https://github.com/AutoViML/AutoViz).
+
+[@8080labs](https://github.com/8080labs/) for their predictive power score library [ppscore](https://github.com/8080labs/ppscore).
+
 ## For Developers
-
-### Contributing data analysis techniques
-
-  1. The code for the transformation belongs in the `numeric`, `categorical`, etc. file for the stage it belongs.
-  2. In the stage.py (`clean.py`, `preprocess.py`, etc. ) file, call the analytical method as well as add the reporting code
-  3. Add a description for the technique in the `aethos/config/technique_reasons.yml` file.
-  4. Write the unit test in the `test_unittest.py` file in the stage folder.
-
-### Contributing models
-
-  1. Define the model as its own function in `model.py`
-  2. The import statements happen within the function.
-  3. Call the approriate `_run_` function (supervised or unsupervised)
-      - Text models go in text.py and call them from model.py
-  4. Add the model type to the dictionaries `SHAP_LEARNER` AND `PROBLEM_TYPE` dict in `model/constants.py`
-  5. Write the unittest in `test_unittest.py`
-
-### Contributing model analysis use cases
-
-  1. Generic model analysis goes in `model_analysis.py`
-  2. Model interpretability goes in `model_explanation.py`
 
 To install packages `pip3 install -r requirements-dev.txt`
 
