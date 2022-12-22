@@ -26,9 +26,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip poetry==1.1.12
         poetry install
+    - name: Install Graphviz
+      run: |
+        sudo apt-get install graphviz
     - name: Install nltk dependencies
       run: |
         poetry run python -c 'import nltk;nltk.download("punkt");nltk.download("stopwords")'
+        poetry run python -m textblob.download_corpora
+        poetry run python -m spacy download en
     - name: Test with pytest
       run: |
         poetry run python -m unittest discover
